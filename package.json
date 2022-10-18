@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@chakra-ui/react": "^2.3.5",
+    "@cyntler/react-doc-viewer": "^1.8.0",
     "@electron/remote": "^2.0.8",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
@@ -22,6 +23,7 @@
     "react-chartjs-2": "^4.3.1",
     "react-color": "^2.19.3",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.6.0",
     "react-redux": "^8.0.4",
     "react-router-dom": "^6.4.2",
     "react-scripts": "5.0.1",
@@ -45,22 +47,23 @@
     "extends": null,
     "appId": "com.jkimbareeba.chuss",
     "productName": "CHUSS",
-    "win":{
-      "target":["nsis"],
-      "icon":"./build/chuss512.ico" 
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "./build/chuss512.ico"
     },
-    "nsis":{
-      "oneClick":false,
+    "nsis": {
+      "oneClick": false,
       "installerIcon": "./build/chuss512.ico",
-      "uninstallerIcon":"./build/chuss512.ico",
-      "uninstallDisplayName":"chuss-uninstall",
-      "allowToChangeInstallationDirectory":true
+      "uninstallerIcon": "./build/chuss512.ico",
+      "uninstallDisplayName": "chuss-uninstall",
+      "allowToChangeInstallationDirectory": true
     },
-      
-    "mac":{
-    "category":"public.app-category.education", 
-    "target":"dmg",
-    "icon":"./build/chuss256.icns"
+    "mac": {
+      "category": "public.app-category.education",
+      "target": "dmg",
+      "icon": "./build/chuss256.icns"
     },
     "files": [
       "dist/**/**",

@@ -1,0 +1,198 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import preferenceService from './preferenceService'
+
+/** initial State for examiners */
+const initialState = {
+    allProgramItems: {
+        items: [],
+    },
+    allYearItems: {
+        items: [],
+    },
+    isError: false,
+    isSuccess: false,
+    isLoading: false,
+    message: '',
+}
+
+/** Program types */
+/** create program type */
+export const programTypeCreate = createAsyncThunk(
+    'preference/program/create',
+    async (values, thunkAPI) => {
+        const createAttempt = await preferenceService.createProgramType(values)
+
+        if (createAttempt.type === 'success') {
+            return createAttempt
+        } else {
+            return thunkAPI.rejectWithValue(createAttempt.message)
+        }
+    }
+)
+/** edit program type */
+export const programTypeUpdate = createAsyncThunk(
+    'preference/program/update',
+    async (values, thunkAPI) => {
+        const updateAttempt = await preferenceService.updateProgramType(values)
+
+        if (updateAttempt.type === 'success') {
+            return updateAttempt
+        } else {
+            return thunkAPI.rejectWithValue(updateAttempt.message)
+        }
+    }
+)
+/** get all program type */
+export const programTypeGetAll = createAsyncThunk(
+    'preference/program/getall',
+    async (values, thunkAPI) => {
+        const getAttempt = await preferenceService.getProgramType(values)
+
+        if (getAttempt.type === 'success') {
+            return getAttempt
+        } else {
+            return thunkAPI.rejectWithValue(getAttempt.message)
+        }
+    }
+)
+
+/** Academic Year */
+/** create academic year */
+export const academicYearCreate = createAsyncThunk(
+    'preference/academicYear/create',
+    async (values, thunkAPI) => {
+        const createAttempt = await preferenceService.createAcademicYear(values)
+
+        if (createAttempt.type === 'success') {
+            return createAttempt
+        } else {
+            return thunkAPI.rejectWithValue(createAttempt.message)
+        }
+    }
+)
+/** edit academic year */
+export const academicYearUpdate = createAsyncThunk(
+    'preference/academicYear/update',
+    async (values, thunkAPI) => {
+        const updateAttempt = await preferenceService.updateAcademicYear(values)
+
+        if (updateAttempt.type === 'success') {
+            return updateAttempt
+        } else {
+            return thunkAPI.rejectWithValue(updateAttempt.message)
+        }
+    }
+)
+
+/** get all academic year */
+export const academicYearGetAll = createAsyncThunk(
+    'preference/academicYear/getall',
+    async (values, thunkAPI) => {
+        const getAttempt = await preferenceService.getAcademicYear(values)
+
+        if (getAttempt.type === 'success') {
+            return getAttempt
+        } else {
+            return thunkAPI.rejectWithValue(getAttempt.message)
+        }
+    }
+)
+
+export const preferenceSlice = createSlice({
+    name: 'preferences',
+    initialState,
+    reducers: {
+        reset: (state) => {
+            state.isLoading = false
+            state.isSuccess = false
+            state.isError = false
+            state.message = ''
+        },
+    },
+
+    extraReducers: (builder) => {
+        builder
+            .addCase(programTypeCreate.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(programTypeCreate.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(programTypeCreate.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(programTypeGetAll.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(programTypeGetAll.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.allProgramItems = action.payload
+            })
+            .addCase(programTypeGetAll.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(programTypeUpdate.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(programTypeUpdate.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(programTypeUpdate.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(academicYearCreate.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(academicYearCreate.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(academicYearCreate.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(academicYearGetAll.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(academicYearGetAll.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.allYearItems = action.payload
+            })
+            .addCase(academicYearGetAll.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(academicYearUpdate.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(academicYearUpdate.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(academicYearUpdate.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+    },
+})
+
+export const { reset } = preferenceSlice.actions
+
+export default preferenceSlice.reducer
