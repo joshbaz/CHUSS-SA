@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter,HashRouter, Routes, Route } from 'react-router-dom'
 import { dashboardLightTheme } from '../theme/dashboard_theme'
 import { ThemeProvider } from 'styled-components'
 
@@ -35,7 +35,7 @@ import Login from '../views/AuthViews/Login'
 import Dashboard from '../views/DesktopViews/Dashboard/Dashboard'
 const AllRoutes = () => {
     return (
-        <BrowserRouter>
+        <HashRouter>
             <ThemeProvider theme={dashboardLightTheme}>
                 <Routes>
                     <Route exact path='/reset' component={Reset} />
@@ -289,7 +289,7 @@ const AllRoutes = () => {
                     />
                 </Routes>
             </ThemeProvider>
-        </BrowserRouter>
+        </HashRouter>
     )
 }
 
