@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
 import { MdArrowBack } from 'react-icons/md'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
@@ -28,6 +28,7 @@ const CreateProjectOpponent = ({ ...props }) => {
     const [projectId, setProjectId] = React.useState('')
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let routeNavigate = useNavigate()
+    let params = useParams()
     let toast = useToast()
     let dispatch = useDispatch()
     const { isLoading, isError, isSuccess, message } = useSelector(
@@ -35,9 +36,9 @@ const CreateProjectOpponent = ({ ...props }) => {
     )
     let IndividualProject = useSelector((state) => state.project)
     useEffect(() => {
-        if (props.match.params.pid) {
-            setProjectId(props.match.params.pid)
-            dispatch(getIndividualProject(props.match.params.pid))
+        if (params.pid) {
+            setProjectId(params.pid)
+            dispatch(getIndividualProject(params.pid))
         }
     }, [])
 

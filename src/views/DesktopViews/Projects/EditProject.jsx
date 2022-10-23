@@ -8,7 +8,7 @@ import EditStudentDetailForm from '../../../components/ProjectComponents/EditPro
 import EditContactForm from '../../../components/ProjectComponents/EditProject/EditContactForm'
 import EditSupervisorForm from '../../../components/ProjectComponents/EditProject/EditSupervisorForm'
 import EditUploadFileForm from '../../../components/ProjectComponents/EditProject/EditUploadFileForm'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
     reset,
     getIndividualProject,
@@ -31,15 +31,16 @@ const EditProject = (props) => {
     const [errors, setErrors] = React.useState({})
 
     let routeNavigate = useNavigate()
+    let params = useParams()
     let dispatch = useDispatch()
 
     React.useEffect(() => {
-        let id = props.match.params.id
+        let id = params.id
         console.log(id, 'iddss')
         dispatch(getIndividualProject(id))
         dispatch(programTypeGetAll())
         dispatch(academicYearGetAll())
-    }, [props.match.params.id, dispatch])
+    }, [params.id, dispatch])
 
     let { individual, isLoading, isSuccess, isError, message } = useSelector(
         (state) => state.project
@@ -80,9 +81,9 @@ const EditProject = (props) => {
 
     React.useEffect(() => {
         if (initials === null && individual !== null) {
-            if (individual._id === props.match.params.id) {
+            if (individual._id === params.id) {
                 setInitials({
-                    id: props.match.params.id,
+                    id: params.id,
                     registrationNumber:
                         individual !== null &&
                         individual.student.registrationNumber
@@ -161,7 +162,7 @@ const EditProject = (props) => {
         // return () => {
         //     setInitials(null)
         // }
-    }, [individual, props.match.params.id, initials])
+    }, [individual, params.id, initials])
 
     const handleChange = (e) => {
         e.preventDefault()

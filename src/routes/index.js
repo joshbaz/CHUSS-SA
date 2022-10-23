@@ -1,8 +1,6 @@
 import React from 'react'
 
-import { BrowserRouter,HashRouter, Routes, Route } from 'react-router-dom'
-import { dashboardLightTheme } from '../theme/dashboard_theme'
-import { ThemeProvider } from 'styled-components'
+import { BrowserRouter, HashRouter, Routes, Route } from 'react-router-dom'
 
 import ProtectedRoute from './protectedRoutes'
 import Reset from '../views/AuthViews/Reset'
@@ -36,259 +34,138 @@ import Dashboard from '../views/DesktopViews/Dashboard/Dashboard'
 const AllRoutes = () => {
     return (
         <HashRouter>
-            <ThemeProvider theme={dashboardLightTheme}>
-                <Routes>
-                    <Route exact path='/reset' component={Reset} />
-                    <Route exact path='/auth/signin' element={<Login />} />
-                    <Route
-                        exact
-                        path='/'
-                        element={
-                            <ProtectedRoute>
-                                <Dashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        exact
-                        path='/projects'
-                        element={
-                            <ProtectedRoute>
-                                <AllProjects />
-                            </ProtectedRoute>
-                        }
-                    />
+            <Routes>
+                <Route exact path='/reset' component={Reset} />
+                <Route exact path='/auth/signin' element={<Login />} />
+                <Route element={<ProtectedRoute />}>
+                    <Route exact path='/' element={<Dashboard />} />
+                    <Route exact path='/projects' element={<AllProjects />} />
                     <Route
                         exact
                         path='/projects/create'
-                        element={
-                            <ProtectedRoute>
-                                <CreateProject />
-                            </ProtectedRoute>
-                        }
+                        element={<CreateProject />}
                     />
 
                     <Route
                         exact
                         path='/projects/edit/:id'
-                        element={
-                            <ProtectedRoute>
-                                <EditProject />
-                            </ProtectedRoute>
-                        }
+                        element={<EditProject />}
                     />
                     <Route
                         exact
                         path='/projects/projectreport/:id'
-                        element={
-                            <ProtectedRoute>
-                                <ProjectReport />
-                            </ProtectedRoute>
-                        }
+                        element={<ProjectReport />}
                     />
-
                     {/** route for assign opponents */}
                     <Route
                         exact
                         path='/projects/opponents/assign/:pid'
-                        element={
-                            <ProtectedRoute>
-                                <AssignOpponent />
-                            </ProtectedRoute>
-                        }
+                        element={<AssignOpponent />}
                     />
                     {/** create opponents if not found in assign inside project*/}
                     <Route
                         exact
                         path='/projects/opponents/p_create/:pid'
-                        element={
-                            <ProtectedRoute>
-                                <CreateProjectOpponent />
-                            </ProtectedRoute>
-                        }
+                        element={<CreateProjectOpponent />}
                     />
 
                     {/** route for assign examiners */}
                     <Route
                         exact
                         path='/projects/examiners/assign/:pid'
-                        element={
-                            <ProtectedRoute>
-                                <AssignExaminer />
-                            </ProtectedRoute>
-                        }
+                        element={<AssignExaminer />}
                     />
 
                     {/** create examiner if not found in assign inside project*/}
                     <Route
                         exact
                         path='/projects/examiners/p_create/:pid'
-                        element={
-                            <ProtectedRoute>
-                                <CreateProjectExaminer />
-                            </ProtectedRoute>
-                        }
+                        element={<CreateProjectExaminer />}
                     />
 
                     {/** create examiner from project tab/page */}
                     <Route
                         exact
                         path='/projects/examiners/create/:id'
-                        element={
-                            <ProtectedRoute>
-                                <AddExaminers />
-                            </ProtectedRoute>
-                        }
+                        element={<AddExaminers />}
                     />
 
                     {/** view examiner from project tab/page */}
                     <Route
                         exact
                         path='/projects/examiners/view/:p_id/:e_id'
-                        element={
-                            <ProtectedRoute>
-                                <ViewProjectExaminer />
-                            </ProtectedRoute>
-                        }
+                        element={<ViewProjectExaminer />}
                     />
 
                     {/** update examiner from project tab/page */}
                     <Route
                         exact
                         path='/projects/examiners/update/:s_id/:e_id'
-                        element={
-                            <ProtectedRoute>
-                                <UpdateExaminer />
-                            </ProtectedRoute>
-                        }
+                        element={<UpdateExaminer />}
                     />
 
                     {/** route to be removed */}
                     <Route
                         exact
                         path='/projects/examiners/createreport/:s_id/:e_id'
-                        element={
-                            <ProtectedRoute>
-                                <CreateExaminerReport />
-                            </ProtectedRoute>
-                        }
+                        element={<CreateExaminerReport />}
                     />
 
                     <Route
                         exact
                         path='/projects/examiners/viewreport/:p_id/:rp_id'
-                        element={
-                            <ProtectedRoute>
-                                <ViewExaminerReport />
-                            </ProtectedRoute>
-                        }
+                        element={<ViewExaminerReport />}
                     />
 
                     <Route
                         exact
                         path='/projects/examiners/updatereport/:p_id/:rp_id'
-                        element={
-                            <ProtectedRoute>
-                                <EditExaminerReport />
-                            </ProtectedRoute>
-                        }
+                        element={<EditExaminerReport />}
                     />
 
                     {/** Examiner page routes */}
-                    <Route
-                        exact
-                        path='/examiners'
-                        element={
-                            <ProtectedRoute>
-                                <AllExaminers />
-                            </ProtectedRoute>
-                        }
-                    />
+                    <Route exact path='/examiners' element={<AllExaminers />} />
 
                     <Route
                         exact
                         path='/examiners/create'
-                        element={
-                            <ProtectedRoute>
-                                <CreateNewExaminer />
-                            </ProtectedRoute>
-                        }
+                        element={<CreateNewExaminer />}
                     />
 
                     <Route
                         exact
                         path='/examiners/view/:id'
-                        element={
-                            <ProtectedRoute>
-                                <ViewExaminer />
-                            </ProtectedRoute>
-                        }
+                        element={<ViewExaminer />}
                     />
 
                     <Route
                         exact
                         path='/examiners/edit/:id'
-                        element={
-                            <ProtectedRoute>
-                                <EditExaminer />
-                            </ProtectedRoute>
-                        }
+                        element={<EditExaminer />}
                     />
 
                     {/** payment page routes */}
 
-                    <Route
-                        exact
-                        path='/payments'
-                        element={
-                            <ProtectedRoute>
-                                <AllPayments />
-                            </ProtectedRoute>
-                        }
-                    />
+                    <Route exact path='/payments' element={<AllPayments />} />
 
                     <Route
                         exact
                         path='/payments/view/:id'
-                        element={
-                            <ProtectedRoute>
-                                <ViewPayment />
-                            </ProtectedRoute>
-                        }
+                        element={<ViewPayment />}
                     />
 
                     <Route
                         exact
                         path='/payments/edit/:id'
-                        element={
-                            <ProtectedRoute>
-                                <UpdatePayment />
-                            </ProtectedRoute>
-                        }
+                        element={<UpdatePayment />}
                     />
                     {/** Advanced search */}
-                    <Route
-                        exact
-                        path='/advsearch'
-                        element={
-                            <ProtectedRoute>
-                                <AdvSearch />
-                            </ProtectedRoute>
-                        }
-                    />
+                    <Route exact path='/advsearch' element={<AdvSearch />} />
 
                     {/** settings */}
-                    <Route
-                        exact
-                        path='/setting'
-                        element={
-                            <ProtectedRoute>
-                                <Settings />
-                            </ProtectedRoute>
-                        }
-                    />
-                </Routes>
-            </ThemeProvider>
+                    <Route exact path='/setting' element={<Settings />} />
+                </Route>
+            </Routes>
         </HashRouter>
     )
 }

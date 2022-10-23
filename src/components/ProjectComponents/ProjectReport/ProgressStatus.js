@@ -16,10 +16,10 @@ import {
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { renderToStaticMarkup } from 'react-dom/server'
 //import { useElementSize } from 'use-element-size'
-const reactSvgComponentToMarkupString = (Component, props) =>
-    `data:image/svg+xml,${encodeURIComponent(
-        renderToStaticMarkup(React.createElement(Component, props))
-    )}`
+// const reactSvgComponentToMarkupString = (Component, props) =>
+//     `data:image/svg+xml,${encodeURIComponent(
+//         renderToStaticMarkup(React.createElement(Component, props))
+//     )}`
 
 const ProgressStatus = ({ values, allTagData }) => {
     const [projectTagData, setProjectTagData] = React.useState([])
@@ -113,7 +113,7 @@ const ProgressStatus = ({ values, allTagData }) => {
                 }
             })
         }
-    }, [values])
+    }, [values, listState])
 
     useEffect(() => {
         let allInfoData = allTagData.filter(
@@ -474,7 +474,7 @@ const StatusContainer = styled(Stack)`
         }
     }
 
-    li:nth-last-child(2) {
+    li:nth-last-child(1) {
         width: 50%;
 
         &:after {

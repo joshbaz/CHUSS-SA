@@ -5,7 +5,7 @@ import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
 
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 import {
@@ -19,15 +19,16 @@ import ViewPayStudent from '../../../components/PaymentComponents/ViewPayment/Vi
 
 const ViewPayment = (props) => {
     let routeNavigate = useNavigate()
+    let params = useParams()
     let dispatch = useDispatch()
     let toast = useToast()
 
     useEffect(() => {
-        console.log('props', props.match.params.id)
+        console.log('props', params.id)
 
         /** dispatch to getSinglePayment */
-        dispatch(getSinglePayment(props.match.params.id))
-    }, [props.match.params.id, dispatch])
+        dispatch(getSinglePayment(params.id))
+    }, [params.id, dispatch])
     let paymentCase = useSelector((state) => state.payment)
 
     useEffect(() => {

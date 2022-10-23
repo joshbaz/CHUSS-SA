@@ -5,7 +5,7 @@ import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
 
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     getIndividualExaminer,
@@ -21,21 +21,21 @@ import GEViewVerification from '../../../components/ExaminerComponents/ViewExami
 
 const ViewExaminer = (props) => {
     let routeNavigate = useNavigate()
-
+let params = useParams()
     let dispatch = useDispatch()
     let projectCase = useSelector((state) => state.project)
 
     let examinerCase = useSelector((state) => state.examiner)
     useEffect(() => {
-        console.log('props', props.match.params.id)
+        console.log('props', params.id)
 
         /** dispatch to get project */
-        // dispatch(getIndividualProject(props.match.params.p_id))
+        // dispatch(getIndividualProject(params.p_id))
         /** dispatch to get examiner */
-        dispatch(getIndividualExaminer(props.match.params.id))
+        dispatch(getIndividualExaminer(params.id))
         /** dispatch to get all students by examiner */
-        dispatch(getStudentsByExaminer(props.match.params.id))
-    }, [props.match.params.id, dispatch])
+        dispatch(getStudentsByExaminer(params.id))
+    }, [params.id, dispatch])
 
     console.log(examinerCase)
     let toast = useToast()
@@ -101,7 +101,7 @@ const ViewExaminer = (props) => {
                                 as='button'
                                 onClick={() =>
                                     routeNavigate(
-                                        `/examiners/edit/${props.match.params.id}`
+                                        `/examiners/edit/${params.id}`
                                     )
                                 }>
                                 Edit Details

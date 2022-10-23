@@ -10,7 +10,7 @@ import GradingProgress from '../../../components/ProjectComponents/ProjectReport
 import AssignedExaminers from '../../../components/ProjectComponents/ProjectReport/AssignedExaminers'
 import ExaminersReports from '../../../components/ProjectComponents/ProjectReport/ExaminersReports'
 import CandidatesFiles from '../../../components/ProjectComponents/ProjectReport/CandidatesFiles'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     getIndividualProject,
@@ -26,7 +26,9 @@ import FinalSubmission from '../../../components/ProjectComponents/ProjectReport
 
 const ProjectReport = ({ ...props }) => {
     let routeNavigate = useNavigate()
-    let location = useLocation()
+    //let location = useLocation()
+    let params = useParams()
+
     let toast = useToast()
     let dispatch = useDispatch()
     let { individual, isLoading, isSuccess, isError, message } = useSelector(
@@ -35,11 +37,11 @@ const ProjectReport = ({ ...props }) => {
     const tagsData = useSelector((state) => state.tag)
 
     useEffect(() => {
-        let id = props.match.params.id
+        let id = params.id
         console.log(id)
         dispatch(getIndividualProject(id))
         dispatch(tagGetAll())
-    }, [props.match.params.id, dispatch])
+    }, [params.id, dispatch])
 
     useEffect(() => {
         if (isError) {

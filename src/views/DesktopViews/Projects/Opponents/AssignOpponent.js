@@ -16,7 +16,7 @@ import {
 import styled from 'styled-components'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BiSearch } from 'react-icons/bi'
 import ExaminerTable from '../../../../components/ProjectComponents/AssignExaminer/ExaminerTable'
@@ -44,6 +44,7 @@ const AssignOpponent = ({ ...props }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const { isOpen, onOpen, onClose } = useDisclosure()
     let dispatch = useDispatch()
+    let params = useParams()
     let toast = useToast()
     let { allExaminerItems, isSuccess, isError, message } = useSelector(
         (state) => state.examiner
@@ -115,9 +116,9 @@ const AssignOpponent = ({ ...props }) => {
     let routeNavigate = useNavigate()
 
     useEffect(() => {
-        if (props.match.params.pid) {
-            setProjectId(props.match.params.pid)
-            dispatch(getIndividualProject(props.match.params.pid))
+        if (params.pid) {
+            setProjectId(params.pid)
+            dispatch(getIndividualProject(params.pid))
         }
     }, [])
 
@@ -150,7 +151,7 @@ const AssignOpponent = ({ ...props }) => {
             setIsSubmittingp(false)
 
             onClose()
-            routeNavigate(`/projects/projectreport/${props.match.params.pid}`, {
+            routeNavigate(`/projects/projectreport/${params.pid}`, {
                 replace: true,
             })
             dispatch(reset())

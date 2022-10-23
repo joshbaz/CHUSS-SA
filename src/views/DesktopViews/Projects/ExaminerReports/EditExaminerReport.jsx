@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import UpdateOverallScores from '../../../../components/ProjectComponents/ExaminerReportUpdate/UpdateOverallScores'
 import ViewUpdatedFiles from '../../../../components/ProjectComponents/ExaminerReportUpdate/ViewUpdatedFiles'
 import ViewUpdateExaminerDetail from '../../../../components/ProjectComponents/ExaminerReportUpdate/ViewUpdateExaminerDetail'
@@ -23,13 +23,13 @@ const EditExaminerReport = (props) => {
     const [errors, setErrors] = React.useState({})
     const [loadingComponent, setloadingComponent] = React.useState(false)
     let routeNavigate = useNavigate()
-
+    let params = useParams()
     let dispatch = useDispatch()
 
     useEffect(() => {
-        console.log('props.match.params.rp_id', props.match.params.rp_id)
-        dispatch(getExaminerReport(props.match.params.rp_id))
-    }, [props.match.params.rp_id, dispatch])
+        console.log('params.rp_id', params.rp_id)
+        dispatch(getExaminerReport(params.rp_id))
+    }, [params.rp_id, dispatch])
 
     let { individualReport, isSuccess, isError, message } = useSelector(
         (state) => state.report
@@ -69,7 +69,7 @@ const EditExaminerReport = (props) => {
 
     useEffect(() => {
         if (initials === null && individualReport !== null) {
-            if (individualReport._id === props.match.params.rp_id) {
+            if (individualReport._id === params.rp_id) {
                 setInitials({
                     score: '',
                     remarks: '',
@@ -89,7 +89,7 @@ const EditExaminerReport = (props) => {
         // return () => {
         //     setInitials(null)
         // }
-    }, [individualReport, props.match.params.rp_id, initials])
+    }, [individualReport, params.rp_id, initials])
 
     const handleChange = (e) => {
         e.preventDefault()

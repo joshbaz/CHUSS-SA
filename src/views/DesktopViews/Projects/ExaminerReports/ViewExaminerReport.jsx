@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import ViewOverallScores from '../../../../components/ProjectComponents/ExaminerReportView/ViewOverallScores'
 import ViewFiles from '../../../../components/ProjectComponents/ExaminerReportView/ViewFiles'
 import ViewExaminerReportDetail from '../../../../components/ProjectComponents/ExaminerReportView/ViewExaminerReportDetail'
@@ -17,28 +17,29 @@ import {
     reset as preset,
 } from '../../../../store/features/project/projectSlice'
 import { useSelector, useDispatch } from 'react-redux'
+
 const ViewExaminerReport = (props) => {
     const [initials, setInitials] = React.useState(null)
     let routeNavigate = useNavigate()
-
+    let params = useParams()
     let dispatch = useDispatch()
     let { individualReport, isLoading, isSuccess, isError, message } =
         useSelector((state) => state.report)
     let IndividualProject = useSelector((state) => state.project)
     useEffect(() => {
-        if (props.match.params.p_id) {
-            dispatch(getIndividualProject(props.match.params.p_id))
+        if (params.p_id) {
+            dispatch(getIndividualProject(params.p_id))
         }
     }, [])
     useEffect(() => {
         if (
             individualReport !== null &&
-            individualReport._id !== props.match.params.rp_id
+            individualReport._id !== params.rp_id
         ) {
-            dispatch(getExaminerReport(props.match.params.rp_id))
+            dispatch(getExaminerReport(params.rp_id))
         }
         if (individualReport === null) {
-            dispatch(getExaminerReport(props.match.params.rp_id))
+            dispatch(getExaminerReport(params.rp_id))
         }
     }, [props, dispatch, individualReport])
 
@@ -78,7 +79,7 @@ const ViewExaminerReport = (props) => {
 
     useEffect(() => {
         if (initials === null && individualReport !== null) {
-            if (individualReport._id === props.match.params.rp_id) {
+            if (individualReport._id === params.rp_id) {
                 setInitials({
                     score: '',
                     remarks: '',
@@ -97,7 +98,7 @@ const ViewExaminerReport = (props) => {
         // return () => {
         //     setInitials(null)
         // }
-    }, [individualReport, props.match.params.rp_id, initials])
+    }, [individualReport, params.rp_id, initials])
 
     if (isLoading) {
         return <h1>loading...</h1>
@@ -148,7 +149,7 @@ const ViewExaminerReport = (props) => {
                                 as='button'
                                 onClick={() =>
                                     routeNavigate(
-                                        `/projects/examiners/updatereport/${props.match.params.p_id}/${props.match.params.rp_id}`
+                                        `/projects/examiners/updatereport/${params.p_id}/${params.rp_id}`
                                     )
                                 }>
                                 Update report

@@ -22,7 +22,7 @@ import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
 import { MdArrowBack } from 'react-icons/md'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { Formik, Form, useFormik } from 'formik'
 import * as yup from 'yup'
@@ -46,18 +46,19 @@ const EditExaminer = (props) => {
     const [errors, setErrors] = React.useState({})
     const [loadingComponent, setloadingComponent] = React.useState(false)
     let routeNavigate = useNavigate()
+    let params = useParams()
     let dispatch = useDispatch()
 
     const { individualExaminer, isLoading, isError, isSuccess, message } =
         useSelector((state) => state.examiner)
     useEffect(() => {
-        console.log('props', props.match.params.id)
+        console.log('props', params.id)
 
         /** dispatch to get project */
-        // dispatch(getIndividualProject(props.match.params.p_id))
+        // dispatch(getIndividualProject(params.p_id))
         /** dispatch to get examiner */
-        dispatch(getIndividualExaminer(props.match.params.id))
-    }, [props.match.params.id, dispatch])
+        dispatch(getIndividualExaminer(params.id))
+    }, [params.id, dispatch])
 
     let toast = useToast()
     useEffect(() => {
@@ -135,7 +136,7 @@ const EditExaminer = (props) => {
                     ...individualExaminer,
                     ...paymentDetails,
                     examinerAppLetter: null,
-                    examinerId: props.match.params.id,
+                    examinerId: params.id,
                 })
                 setloadingComponent(false)
             }

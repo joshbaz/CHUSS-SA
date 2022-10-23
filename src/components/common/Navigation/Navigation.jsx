@@ -2,12 +2,13 @@ import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack } from '@chakra-ui/react'
 import Logo from '../../../logo.svg'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { RiDashboardLine, RiFoldersFill } from 'react-icons/ri'
 import { MdOutlineAccountBalanceWallet, MdManageSearch } from 'react-icons/md'
 import { AiOutlineSetting } from 'react-icons/ai'
 import { FaChalkboardTeacher } from 'react-icons/fa'
 const Navigation = () => {
+    let location = useLocation()
     const menuData = [
         {
             title: 'dashboard',
@@ -29,11 +30,11 @@ const Navigation = () => {
             icon: <FaChalkboardTeacher />,
             link: '/examiners',
         },
-        // {
-        //     title: 'advanced search',
-        //     icon: <MdManageSearch />,
-        //     link: '/advsearch',
-        // },
+        {
+            title: 'advanced search',
+            icon: <MdManageSearch />,
+            link: '/advsearch',
+        },
         {
             title: 'settings',
             icon: <AiOutlineSetting />,
@@ -51,9 +52,11 @@ const Navigation = () => {
                     <NavLink
                         key={index}
                         to={data.link}
-                        exact={data.link === '/' ? true : false}
-                        className='menu_wrap'
-                        activeClassName='activeItem'>
+                        end={data.link === '/' ? true : false}
+                        className={({ isActive }) =>
+                            isActive ? 'menu_wrap activeItem' : 'menu_wrap'
+                        }
+                        activeClassName={'activeItem'}>
                         <Box className='menu_icon'>{data.icon}</Box>
                     </NavLink>
                 ))}
@@ -93,7 +96,7 @@ const Container = styled(Stack)`
     }
 
     .activeItem {
-        background: #15151d;
+        background: #15151d !important;
         border: 1px solid #22222c;
         color: #ffffff;
     }

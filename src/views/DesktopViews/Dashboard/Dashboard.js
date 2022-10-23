@@ -141,8 +141,7 @@ const Dashboard = () => {
                                     <Button className='button'>Search</Button>
                                 </InputStack>
                             </Stack>
-                            {/**
-                                 *  <AdStack direction='row' alignItems={'center'}>
+                            <AdStack direction='row' alignItems={'center'}>
                                 <Box className='ad_icon'>
                                     <MdManageSearch />
                                 </Box>
@@ -151,8 +150,6 @@ const Dashboard = () => {
                                     <Text>Advanced search</Text>
                                 </Box>
                             </AdStack>
-                                 * 
-                                 */}
                         </Stack>
 
                         {/** shortLinks */}
@@ -162,9 +159,7 @@ const Dashboard = () => {
                             <Stack direction='row' spacing='25px'>
                                 {tiledata.map((data, index) => (
                                     <Stack
-                                        onClick={() =>
-                                            routeNavigate(data.link)
-                                        }
+                                        onClick={() => routeNavigate(data.link)}
                                         direction='row'
                                         alignItems={'center'}
                                         justifyContent='center'
@@ -218,7 +213,7 @@ export default Dashboard
 
 const Container = styled(Stack)`
     .s_title {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 20px;

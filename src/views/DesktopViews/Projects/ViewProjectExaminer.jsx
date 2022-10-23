@@ -7,7 +7,7 @@ import TopBar from '../../../components/common/Navigation/TopBar'
 import ViewExaminerDetail from '../../../components/ProjectComponents/ViewExaminer/ViewExaminerDetail'
 import ViewInfoForm from '../../../components/ProjectComponents/ViewExaminer/ViewInfoForm'
 import ViewPaymentInfo from '../../../components/ProjectComponents/ViewExaminer/ViewPaymentInfo'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     getIndividualExaminer,
@@ -20,20 +20,20 @@ import {
 import ViewExaminerFiles from '../../../components/ProjectComponents/ViewExaminer/ViewExaminerFiles'
 const ViewProjectExaminer = (props) => {
     let routeNavigate = useNavigate()
-
+    let params = useParams()
     let dispatch = useDispatch()
     let projectCase = useSelector((state) => state.project)
 
     let examinerCase = useSelector((state) => state.examiner)
     useEffect(() => {
-        console.log('props', props.match.params.e_id)
-        console.log('props2', props.match.params.p_id)
+        console.log('props', params.e_id)
+        console.log('props2', params.p_id)
 
         /** dispatch to get project */
-        dispatch(getIndividualProject(props.match.params.p_id))
+        dispatch(getIndividualProject(params.p_id))
         /** dispatch to get examiner */
-        dispatch(getIndividualExaminer(props.match.params.e_id))
-    }, [props.match.params.e_id, props.match.params.p_id, dispatch])
+        dispatch(getIndividualExaminer(params.e_id))
+    }, [params.e_id, params.p_id, dispatch])
 
     console.log(examinerCase)
     let toast = useToast()
