@@ -19,7 +19,7 @@ import { MdOutlineAccountBalanceWallet } from 'react-icons/md'
 import LineGraph from '../../../components/Dashboard/Graph/LineGraph'
 import DashTable from '../../../components/Dashboard/Table/DashTable'
 import Stats from '../../../components/Dashboard/Stats/Stats'
-
+import { initSocketConnection } from '../../../socketio.service'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     getPProjects,
@@ -57,6 +57,12 @@ const Dashboard = () => {
     let Location = useLocation()
     let toast = useToast()
     let { isError, isSuccess, message } = useSelector((state) => state.project)
+
+    //websocket trial
+    React.useEffect(() => {
+        const io = initSocketConnection()
+       
+    }, [])
 
     React.useEffect(() => {
         let page = Location.search.split('').slice(3).join('')

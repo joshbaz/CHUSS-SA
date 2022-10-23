@@ -1,7 +1,7 @@
 const { BrowserWindow, app, dialog, ipcMain } = require('electron')
 const fs = require('fs')
 const path = require('path')
-const url = require('url')
+
 const isDev = require('electron-is-dev')
 const os = require('os')
 const axios = require('axios')
@@ -15,7 +15,7 @@ const preferenceController = require('./controllers/preferences')
 const reportController = require('./controllers/reports')
 const paymentController = require('./controllers/payments')
 const fileController = require('./controllers/files')
-//const { url } = require('inspector')
+
 let mainWindow = null
 require('@electron/remote/main').initialize()
 
@@ -28,17 +28,17 @@ function createWindow() {
         minWidth: 800,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            nodeIntegration: true,
+            nodeIntegration: false,
             enableRemoteModule: true,
             devTools: true,
         },
     })
 
     // mainWindow.loadURL(
-    //   isDev
-    //     ? "http://localhost:3000#"
-    //     : `file://${path.join(__dirname, "../build/index.html#")}`
-    // );
+    //     isDev
+    //         ? 'http://localhost:3000#'
+    //         : `file://${path.join(__dirname, '../build/index.html#')}`
+    // )
     // mainWindow.loadURL(
     //     isDev
     //         ? 'http://localhost:3000'
