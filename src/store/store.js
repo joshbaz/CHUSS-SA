@@ -7,6 +7,7 @@ import tagReducer from './features/tags/tagSlice'
 import preferenceReducer from './features/preferences/preferenceSlice'
 import reportReducer from './features/reports/reportSlice'
 import paymentReducer from './features/payments/paymentSlice'
+import statusReducer from './features/project/statusSlice'
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -17,5 +18,6 @@ export const store = configureStore({
         preference: preferenceReducer,
         report: reportReducer,
         payment: paymentReducer,
+        projectstatus: statusReducer
     },
 })

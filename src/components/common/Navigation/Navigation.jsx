@@ -55,8 +55,7 @@ const Navigation = () => {
                         end={data.link === '/' ? true : false}
                         className={({ isActive }) =>
                             isActive ? 'menu_wrap activeItem' : 'menu_wrap'
-                        }
-                        activeClassName={'activeItem'}>
+                        }>
                         <Box className='menu_icon'>{data.icon}</Box>
                     </NavLink>
                 ))}

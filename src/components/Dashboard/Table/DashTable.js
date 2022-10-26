@@ -137,6 +137,7 @@ const DashTable = () => {
                             {filterTabData.map((data, index) => {
                                 return (
                                     <Tab
+                                        key={index}
                                         _selected={{
                                             color: '#F14C54',
                                             fontWeight: '700',

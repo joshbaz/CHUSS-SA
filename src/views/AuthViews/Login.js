@@ -9,7 +9,10 @@ import * as yup from 'yup'
 import { useNavigate } from 'react-router-dom'
 
 import { useSelector, useDispatch } from 'react-redux'
-import { Login as LoginAction, reset } from '../../store/features/auth/authSlice'
+import {
+    Login as LoginAction,
+    reset,
+} from '../../store/features/auth/authSlice'
 
 const Login = () => {
     const [passError, setPassError] = React.useState(false)
@@ -78,7 +81,7 @@ const Login = () => {
     return (
         <Container>
             <Stack direction='row' w='100vw' h='100vh'>
-                <Box w='50%' height='100%' className='form'>
+                <Box w='50%' height='100vh' className='form'>
                     <Box className='Logo'>
                         <img src={logo} alt='Makerere Logo' />
                     </Box>
@@ -122,7 +125,7 @@ const Login = () => {
                     </Formik>
                 </Box>
 
-                <Box w='50%' className='background' />
+                <Box w='50%' h='100vh' className='background' />
             </Stack>
         </Container>
     )

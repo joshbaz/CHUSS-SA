@@ -74,9 +74,6 @@ const ProjectReport = ({ ...props }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
 
-    if (isLoading) {
-        return <h1>Loading</h1>
-    }
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -115,7 +112,7 @@ const ProjectReport = ({ ...props }) => {
                             {/** first set */}
                             <Stack h='100%'>
                                 <ProgressStatus
-                                    values={individual}
+                                    valuess={individual}
                                     allTagData={tagsData.allTagItems.items}
                                 />
                             </Stack>

@@ -37,7 +37,7 @@ const updateVivaDefense = async (values) => {
     return response
 }
 
-//final submission
+//final submission files
 const updateFinalSubmission = async (values) => {
     const response = await window.electronAPI.updateFinalSubmission(values)
     return response
