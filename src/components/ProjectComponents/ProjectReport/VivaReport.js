@@ -14,6 +14,12 @@ import {
     InputRightElement,
     useDisclosure,
     Select,
+    useToast,
+    Textarea,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
 } from '@chakra-ui/react'
 import { BsListUl } from 'react-icons/bs'
 import { RiLayoutGridFill } from 'react-icons/ri'
@@ -23,19 +29,40 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+    updateProjectStatus,
+    reset,
+} from '../../../store/features/project/projectSlice'
+import { FiCheck } from 'react-icons/fi'
+import VivaPopupFileUpload from './VivaPopupFileUpload'
+import VivaPopupDefense from './VivaPopupDefense'
 
-const VivaReport = ({ values = null, allTagData }) => {
+const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
     const [filesList, setFilesList] = React.useState([])
     const [fileUploadActive, setFileUploadActive] = React.useState(false)
+    const [defenseUploadActive, setDefenseUploadActive] = React.useState(false)
     const [projectTagData, setProjectTagData] = React.useState([])
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [activeStatusE, setActiveStatus] = React.useState(null)
-    const [activeStatusESelect, setActiveStatusSelect] = React.useState('')
+    const [activeDataStatus, setActiveDataStatus] = React.useState('')
+    const [newActiveStatus, setNewActiveStatus] = React.useState({
+        status: '',
+        notes: '',
+    })
+    const [errors, setErrors] = React.useState({})
+    const [changeMade, setChangeMade] = React.useState(false)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [projectId, setProjectId] = React.useState('')
+    const [selectedFile, setSelectedFile] = React.useState(null)
     let routeNavigate = useNavigate()
-    
+    let dispatch = useDispatch()
+    let toast = useToast()
+    let { isLoading, isSuccess, isError, message } = useSelector(
+        (state) => state.project
+    )
+
     React.useEffect(() => {
         if (values !== null && values._id) {
             setProjectId(values._id)
@@ -60,13 +87,17 @@ const VivaReport = ({ values = null, allTagData }) => {
                 (element) => element.active
             )
             if (activeStatus) {
+                setNewActiveStatus({
+                    status: activeStatus.status,
+                    notes: activeStatus.notes,
+                })
+                setActiveDataStatus(activeStatus)
                 let activeElementSet = allInfoData.find(
                     (element) => element.tagName === activeStatus.status
                 )
 
                 if (activeElementSet) {
                     setActiveStatus(activeElementSet)
-                    setActiveStatusSelect(activeElementSet.tagName)
                 }
             }
         } else {
@@ -102,6 +133,172 @@ const VivaReport = ({ values = null, allTagData }) => {
             projectId,
         }
         //dispatch(assignOpponent(allValues))
+    }
+
+    /**
+     * function to update status change
+     *
+     */
+    const statusUpdateChange = (data, type) => {
+        if (type === 'status') {
+            setIsSubmittingp(false)
+            setChangeMade(true)
+            setNewActiveStatus({
+                status: data.tagName,
+                notes: '',
+            })
+        }
+    }
+
+    const statusNotesUpdate = (e) => {
+        e.preventDefault()
+        setIsSubmittingp(false)
+        setChangeMade(true)
+        setNewActiveStatus({
+            ...newActiveStatus,
+            notes: e.target.value,
+        })
+    }
+
+    let validate = (values) => {
+        const errors = {}
+        if (!values.notes) {
+            errors.notes = 'notes required'
+        }
+
+        return errors
+    }
+
+    /**
+     * function to submit change to server
+     */
+
+    const statusSubmitChange = (e) => {
+        e.preventDefault()
+        setErrors(validate(newActiveStatus))
+        setIsSubmittingp(true)
+    }
+
+    /**
+     * function to cancel submit change
+     */
+
+    const cancelStatusChange = () => {
+        setNewActiveStatus(activeDataStatus)
+
+        setChangeMade(false)
+        setIsSubmittingp(false)
+        onClose()
+    }
+
+    /** run after submission awaiting for response */
+
+    React.useEffect(() => {
+        if (isError) {
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            setChangeMade(false)
+
+            dispatch(reset())
+        }
+
+        if (isSuccess && isSubmittingp) {
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            setChangeMade(false)
+            onClose()
+            dispatch(reset())
+        }
+        dispatch(reset())
+    }, [isError, isSuccess, message, dispatch])
+
+    /** submittion of the changes */
+    React.useEffect(() => {
+        if (
+            Object.keys(errors).length === 0 &&
+            setIsSubmittingp &&
+            changeMade
+        ) {
+            dispatch(
+                updateProjectStatus({
+                    ...newActiveStatus,
+                    projectId,
+                })
+            )
+            //setIsSubmittingp(false)
+        }
+
+        if (Object.keys(errors).length > 0 && setIsSubmittingp && changeMade) {
+            setIsSubmittingp(false)
+            setChangeMade(false)
+        }
+    }, [isSubmittingp])
+
+    //size format
+    const formatSize = (size) => {
+        var i = Math.floor(Math.log(size) / Math.log(1024))
+        return (
+            (size / Math.pow(1024, i)).toFixed(2) * 1 +
+            ' ' +
+            ['B', 'KB', 'MB', 'GB', 'TB'][i]
+        )
+    }
+
+    const handleFileView = async (data) => {
+        setSelectedFile([
+            {
+                uri: `https://chuss-test.herokuapp.com/docs/files/${data.fileId.fileId}`,
+                fileType: data.fileId.fileType,
+            },
+        ])
+        onOpen()
+    }
+
+    const handleDownloadFile = async (data) => {
+        const dataGiven = await window.electronAPI.getdownloadFile(
+            data.fileId.fileId
+        )
+        console.log(dataGiven, 'testing')
+
+        if (!dataGiven.message) {
+            let newData = {
+                ...dataGiven,
+            }
+            if (nameValues !== null) {
+                console.log(nameValues, 'nameValues')
+                let newNameValue = nameValues.toString().split(' ')[0]
+
+                newData = {
+                    ...newData,
+                    name: newNameValue,
+                    filename: data.fileId.fileName
+                        ? data.fileId.fileName
+                        : 'files',
+                }
+            } else {
+            }
+
+            const performDowload = await window.electronAPI.downloadFile(
+                newData
+            )
+
+            console.log('messahe', performDowload)
+            if (performDowload.message) {
+                alert(performDowload.message)
+            }
+        }
     }
 
     return (
@@ -227,18 +424,21 @@ const VivaReport = ({ values = null, allTagData }) => {
                                         </label>
 
                                         <Box className='form_input'>
-                                            <Input
-                                                placeholder='Select Date and Time'
-                                                size='md'
-                                                type='datetime-local'
-                                                name='DateOfDefense'
-                                                value={
-                                                    values !== null &&
-                                                    values.DateOfDefense
-                                                        ? values.DateOfDefense
-                                                        : ''
-                                                }
-                                            />
+                                            <InputGroup>
+                                                <Input
+                                                    placeholder='Select Date and Time'
+                                                    size='md'
+                                                    readOnly
+                                                    type='text'
+                                                    name='DateOfDefense'
+                                                    value={
+                                                        values !== null &&
+                                                        values.DateOfDefense
+                                                            ? values.DateOfDefense
+                                                            : ''
+                                                    }
+                                                />
+                                            </InputGroup>
                                         </Box>
 
                                         <Box
@@ -246,7 +446,12 @@ const VivaReport = ({ values = null, allTagData }) => {
                                             justifyContent={'center'}>
                                             <Stack
                                                 direction='row'
-                                                alignItems='center'>
+                                                alignItems='center'
+                                                onClick={() =>
+                                                    setDefenseUploadActive(
+                                                        !defenseUploadActive
+                                                    )
+                                                }>
                                                 <EditIcon>
                                                     <HiPencil />
                                                 </EditIcon>
@@ -366,67 +571,111 @@ const VivaReport = ({ values = null, allTagData }) => {
                                         {selectedView === 'grid' ? (
                                             <Stack direction='row'>
                                                 {filesList.map(
-                                                    (data, index) => (
-                                                        <FileStack
-                                                            key={index}
-                                                            w='202.6px'
-                                                            h='168px'
-                                                            direction='column'
-                                                            alignitems='space-between'
-                                                            className='filedoc'>
-                                                            <Box
-                                                                h='96px'
-                                                                className='icon_wrap '>
-                                                                <Stack
-                                                                    spacing='0'
-                                                                    direction='column'
-                                                                    w='55px'
-                                                                    h='55px'
-                                                                    className='icon_stack doc'>
-                                                                    <Box>
-                                                                        <BsFileEarmark />
-                                                                    </Box>
-                                                                    <Text>
-                                                                        {
-                                                                            data
-                                                                                .fileId
-                                                                                .fileExtension
-                                                                        }
-                                                                    </Text>
-                                                                </Stack>
-                                                            </Box>
-
-                                                            <Box>
-                                                                <Stack
-                                                                    direction='row'
-                                                                    justifyContent={
-                                                                        'space-between'
-                                                                    }
-                                                                    padding='0 20px'
-                                                                    alignItems='center'>
-                                                                    <Stack direction='column'>
-                                                                        <Text className='filename'>
+                                                    (data, index) => {
+                                                        let size = formatSize(
+                                                            parseInt(
+                                                                data.fileId
+                                                                    .fileSize
+                                                            )
+                                                        )
+                                                        return (
+                                                            <FileStack
+                                                                key={index}
+                                                                w='202.6px'
+                                                                h='168px'
+                                                                direction='column'
+                                                                alignitems='space-between'
+                                                                className='filedoc'>
+                                                                <Box
+                                                                    h='96px'
+                                                                    className='icon_wrap '>
+                                                                    <Stack
+                                                                        spacing='0'
+                                                                        direction='column'
+                                                                        w='55px'
+                                                                        h='55px'
+                                                                        className='icon_stack doc'>
+                                                                        <Box>
+                                                                            <BsFileEarmark />
+                                                                        </Box>
+                                                                        <Text>
                                                                             {
                                                                                 data
                                                                                     .fileId
-                                                                                    .fileName
-                                                                            }
-                                                                        </Text>
-                                                                        <Text className='filesize'>
-                                                                            {
-                                                                                data
-                                                                                    .fileId
-                                                                                    .fileSize
+                                                                                    .fileExtension
                                                                             }
                                                                         </Text>
                                                                     </Stack>
-                                                                    <Box color='#838389'>
-                                                                        <BsThreeDots />
-                                                                    </Box>
-                                                                </Stack>
-                                                            </Box>
-                                                        </FileStack>
-                                                    )
+                                                                </Box>
+
+                                                                <Box>
+                                                                    <Stack
+                                                                        direction='row'
+                                                                        justifyContent={
+                                                                            'space-between'
+                                                                        }
+                                                                        padding='0 20px'
+                                                                        alignItems='center'>
+                                                                        <Stack direction='column'>
+                                                                            <Text className='filename'>
+                                                                                {
+                                                                                    data
+                                                                                        .fileId
+                                                                                        .fileName
+                                                                                }
+                                                                            </Text>
+                                                                            <Text className='filesize'>
+                                                                                {
+                                                                                    size
+                                                                                }
+                                                                            </Text>
+                                                                        </Stack>
+                                                                        <Menu>
+                                                                            <MenuButton>
+                                                                                <Box color='#838389'>
+                                                                                    <BsThreeDots />
+                                                                                </Box>
+                                                                            </MenuButton>
+
+                                                                            <MenuList>
+                                                                                <MenuItem
+                                                                                    onClick={() =>
+                                                                                        handleFileView(
+                                                                                            data
+                                                                                        )
+                                                                                    }
+                                                                                    fontSize={
+                                                                                        '14px'
+                                                                                    }>
+                                                                                    View
+                                                                                    File
+                                                                                </MenuItem>
+                                                                                <MenuItem
+                                                                                    onClick={() =>
+                                                                                        handleDownloadFile(
+                                                                                            data
+                                                                                        )
+                                                                                    }
+                                                                                    fontSize={
+                                                                                        '14px'
+                                                                                    }>
+                                                                                    Download
+                                                                                    File
+                                                                                </MenuItem>
+                                                                                <MenuItem
+                                                                                    fontSize={
+                                                                                        '14px'
+                                                                                    }>
+                                                                                    Delete
+                                                                                    File
+                                                                                </MenuItem>
+                                                                            </MenuList>
+                                                                        </Menu>
+                                                                    </Stack>
+                                                                </Box>
+                                                            </FileStack>
+                                                        )
+                                                    }
                                                 )}
                                             </Stack>
                                         ) : (
@@ -512,269 +761,161 @@ const VivaReport = ({ values = null, allTagData }) => {
                     </Stack>
                 </Stack>
             </Box>
-            {/** change status */}
+            {/** change project status */}
             <Modal w='100vw' isOpen={isOpen} p='0' onClose={onClose}>
                 <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
                 <ModalContent p='0'>
                     <ModalBody p='0'>
-                        <PopupForm
-                            p='0px'
-                            direction='column'
-                            spacing='0'
-                            justifyContent='space-between'>
-                            <Stack
-                                p='10px 20px 10px 20px'
+                        <form onSubmit={statusSubmitChange}>
+                            <PopupForm
+                                p='0px'
                                 direction='column'
-                                spacing={'10px'}
-                                h='50%'>
-                                <Box className='pop_title'>Change Status</Box>
+                                spacing='0'
+                                justifyContent='space-between'>
+                                <Stack
+                                    p='10px 20px 10px 20px'
+                                    direction='column'
+                                    spacing={'10px'}
+                                    h='50%'>
+                                    <Box className='pop_title'>
+                                        Change Project Status Update
+                                    </Box>
 
-                                <Stack direction='column'>
-                                    <Stack>
-                                        <label>
-                                            Status <span>*</span>
-                                        </label>
+                                    <Stack direction='column'>
+                                        <Stack>
+                                            <label>
+                                                Status <span>*</span>
+                                            </label>
 
-                                        <fieldset>
-                                            <Select value={activeStatusESelect}>
+                                            <Stack
+                                                direction='column'
+                                                spacing='0'>
                                                 {projectTagData.length > 0 ? (
                                                     <>
                                                         {' '}
                                                         {projectTagData.map(
                                                             (data, index) => {
                                                                 return (
-                                                                    <option
+                                                                    <StatusChangeItem
                                                                         key={
                                                                             index
                                                                         }
-                                                                        value={
-                                                                            data.tagName
-                                                                        }>
-                                                                        {
-                                                                            data.tagName
+                                                                        onClick={() =>
+                                                                            statusUpdateChange(
+                                                                                data,
+                                                                                'status'
+                                                                            )
                                                                         }
-                                                                    </option>
+                                                                        tcolors={
+                                                                            data.hex
+                                                                        }
+                                                                        bcolors={
+                                                                            newActiveStatus.status ===
+                                                                            data.tagName
+                                                                                ? '#F8A5A9'
+                                                                                : '#ffffff'
+                                                                        }
+                                                                        color={
+                                                                            newActiveStatus.status ===
+                                                                            data.tagName
+                                                                                ? '#ffffff'
+                                                                                : '#464f60'
+                                                                        }
+                                                                        minW='90px'
+                                                                        h='28px'
+                                                                        direction='row'
+                                                                        justifyContent='space-between'
+                                                                        alignItems='center'>
+                                                                        <Stack
+                                                                            direction='row'
+                                                                            alignItems='center'>
+                                                                            <div className='colorcontainer' />
+                                                                            <Text>
+                                                                                {
+                                                                                    data.tagName
+                                                                                }
+                                                                            </Text>
+                                                                        </Stack>
+
+                                                                        {newActiveStatus.status ===
+                                                                        data.tagName ? (
+                                                                            <Box color='#ffffff'>
+                                                                                <FiCheck />
+                                                                            </Box>
+                                                                        ) : null}
+                                                                    </StatusChangeItem>
                                                                 )
                                                             }
                                                         )}{' '}
                                                     </>
                                                 ) : null}
-                                            </Select>
-                                        </fieldset>
+                                            </Stack>
+                                        </Stack>
+                                    </Stack>
+
+                                    <Stack
+                                        direction='column'
+                                        width='100%'
+                                        h='100%'>
+                                        <Stack width='100%'>
+                                            <label>
+                                                Notes <span>*</span>
+                                            </label>
+
+                                            <StatusNotesArea
+                                                type='text'
+                                                placeholder='Please add a note'
+                                                value={newActiveStatus.notes}
+                                                onChange={statusNotesUpdate}
+                                            />
+                                        </Stack>
                                     </Stack>
                                 </Stack>
-
-                                <Stack direction='column' width='100%' h='100%'>
-                                    <Stack width='100%'>
-                                        <label>
-                                            Notes <span>*</span>
-                                        </label>
-
-                                        <Box
-                                            width='100%'
-                                            display='flex'
-                                            height='100%'>
-                                            <textarea></textarea>
-                                        </Box>
-                                    </Stack>
+                                <Stack
+                                    p='0px 20px'
+                                    h='65px'
+                                    bg='#ffffff'
+                                    direction='row'
+                                    borderTop='1px solid #E9EDF5'
+                                    borderRadius='0 0 8px 8px'
+                                    justifyContent='flex-end'
+                                    alignItems='center'>
+                                    <Button
+                                        variant='outline'
+                                        className='cancel_button'
+                                        onClick={cancelStatusChange}>
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        disabled={
+                                            isSubmittingp || !changeMade
+                                                ? true
+                                                : false
+                                        }
+                                        type='submit'
+                                        isLoading={isSubmittingp ? true : false}
+                                        className='apply_button'>
+                                        Confirm
+                                    </Button>
                                 </Stack>
-                            </Stack>
-                            <Stack
-                                p='0px 20px'
-                                h='65px'
-                                bg='#ffffff'
-                                direction='row'
-                                borderTop='1px solid #E9EDF5'
-                                borderRadius='0 0 8px 8px'
-                                justifyContent='flex-end'
-                                alignItems='center'>
-                                <Button
-                                    variant='outline'
-                                    className='cancel_button'
-                                    onClick={() => onClose()}>
-                                    Cancel
-                                </Button>
-                                <Button
-                                    disabled={true}
-                                    type='submit'
-                                    isLoading={false}
-                                    className='apply_button'>
-                                    Confirm
-                                </Button>
-                            </Stack>
-                        </PopupForm>
+                            </PopupForm>
+                        </form>
                     </ModalBody>
                 </ModalContent>
             </Modal>
             {/** viva files report */}
-            <Modal
-                w='100vw'
-                isOpen={fileUploadActive}
-                p='0'
-                onClose={() => setFileUploadActive(!fileUploadActive)}>
-                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
-                <ModalContent p='0'>
-                    <ModalBody p='0'>
-                        <PopupForm
-                            p='0px'
-                            direction='column'
-                            spacing='0'
-                            justifyContent='space-between'>
-                            <Stack
-                                p='10px 20px 10px 20px'
-                                direction='column'
-                                spacing={'10px'}
-                                h='50%'>
-                                <Box className='pop_title'>
-                                    Viva Files Submit?
-                                </Box>
-
-                                <Stack
-                                    spacing={'2px'}
-                                    direction='row'
-                                    className='list_text'>
-                                    <p>
-                                        Are you sure you want to assign for this
-                                        project.
-                                    </p>
-                                </Stack>
-                            </Stack>
-                            <Stack
-                                p='0px 20px'
-                                h='65px'
-                                bg='#ffffff'
-                                direction='row'
-                                borderTop='1px solid #E9EDF5'
-                                borderRadius='0 0 8px 8px'
-                                justifyContent='flex-end'
-                                alignItems='center'>
-                                <Button
-                                    variant='outline'
-                                    className='cancel_button'
-                                    onClick={() => onClose()}>
-                                    Cancel
-                                </Button>
-                                <Button
-                                    isLoading={isSubmittingp ? true : false}
-                                    className='apply_button'
-                                    onClick={handleFilesSubmit}>
-                                    Confirm
-                                </Button>
-                            </Stack>
-                        </PopupForm>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-            {/** viva status update */}
-            <Modal w='100vw' isOpen={isOpen} p='0' onClose={onClose}>
-                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
-                <ModalContent p='0'>
-                    <ModalBody p='0'>
-                        <PopupForm
-                            p='0px'
-                            direction='column'
-                            spacing='0'
-                            justifyContent='space-between'>
-                            <Stack
-                                p='10px 20px 10px 20px'
-                                direction='column'
-                                spacing={'10px'}
-                                h='50%'>
-                                <Box className='pop_title'>
-                                    Project Status Update?
-                                </Box>
-
-                                <Stack
-                                    spacing={'2px'}
-                                    direction='row'
-                                    className='list_text'>
-                                    <p>
-                                        Are you sure you want to assign for this
-                                        project.
-                                    </p>
-                                </Stack>
-                            </Stack>
-                            <Stack
-                                p='0px 20px'
-                                h='65px'
-                                bg='#ffffff'
-                                direction='row'
-                                borderTop='1px solid #E9EDF5'
-                                borderRadius='0 0 8px 8px'
-                                justifyContent='flex-end'
-                                alignItems='center'>
-                                <Button
-                                    variant='outline'
-                                    className='cancel_button'
-                                    onClick={() => onClose()}>
-                                    Cancel
-                                </Button>
-                                <Button
-                                    isLoading={isSubmittingp ? true : false}
-                                    className='apply_button'
-                                    onClick={handleStatusSubmit}>
-                                    Confirm
-                                </Button>
-                            </Stack>
-                        </PopupForm>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+            <VivaPopupFileUpload
+                projectId={projectId}
+                fileUploadActive={fileUploadActive}
+                setFileUploadActive={setFileUploadActive}
+            />
             {/** viva defense Date */}
-            <Modal w='100vw' isOpen={isOpen} p='0' onClose={onClose}>
-                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
-                <ModalContent p='0'>
-                    <ModalBody p='0'>
-                        <PopupForm
-                            p='0px'
-                            direction='column'
-                            spacing='0'
-                            justifyContent='space-between'>
-                            <Stack
-                                p='10px 20px 10px 20px'
-                                direction='column'
-                                spacing={'10px'}
-                                h='50%'>
-                                <Box className='pop_title'>
-                                    Viva Defense Date
-                                </Box>
-
-                                <Stack
-                                    spacing={'2px'}
-                                    direction='row'
-                                    className='list_text'>
-                                    <p>
-                                        Are you sure you want to submit viva
-                                        defense date for this project.
-                                    </p>
-                                </Stack>
-                            </Stack>
-                            <Stack
-                                p='0px 20px'
-                                h='65px'
-                                bg='#ffffff'
-                                direction='row'
-                                borderTop='1px solid #E9EDF5'
-                                borderRadius='0 0 8px 8px'
-                                justifyContent='flex-end'
-                                alignItems='center'>
-                                <Button
-                                    variant='outline'
-                                    className='cancel_button'
-                                    onClick={() => onClose()}>
-                                    Cancel
-                                </Button>
-                                <Button
-                                    isLoading={isSubmittingp ? true : false}
-                                    className='apply_button'
-                                    onClick={handleDefenseSubmit}>
-                                    Confirm
-                                </Button>
-                            </Stack>
-                        </PopupForm>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+            <VivaPopupDefense
+                projectId={projectId}
+                valuess={values}
+                setDefenseUploadActive={setDefenseUploadActive}
+                defenseUploadActive={defenseUploadActive}
+            />
         </Container>
     )
 }
@@ -782,7 +923,8 @@ const VivaReport = ({ values = null, allTagData }) => {
 export default VivaReport
 
 const Container = styled(Box)`
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
 
     .form_container {
         width: 100%;
@@ -1103,4 +1245,36 @@ const PopupForm = styled(Stack)`
             background: #f4797f;
         }
     }
+`
+
+const StatusChangeItem = styled(Stack)`
+    border-radius: 4px;
+
+    padding: 3px 8px 3px 8px;
+    background: ${({ bcolors }) => bcolors};
+    cursor: pointer;
+    .colorcontainer {
+        border-radius: 2px;
+        width: 6px;
+        height: 6px;
+        background: ${({ tcolors }) => tcolors};
+    }
+    p {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 18px;
+        letter-spacing: 0.03em;
+        text-transform: capitalize;
+    }
+
+    :hover {
+        color: #ffffff;
+        background: #f8a5a9;
+    }
+`
+
+const StatusNotesArea = styled(Textarea)`
+    background: #ffffff !important;
 `

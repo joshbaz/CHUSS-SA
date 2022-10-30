@@ -247,7 +247,7 @@ const CandidateProfile = ({ values }) => {
 export default CandidateProfile
 
 const Container = styled(Box)`
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;

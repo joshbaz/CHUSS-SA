@@ -27,55 +27,7 @@ import {
     reset,
 } from '../../../store/features/project/projectSlice'
 import { FiCheck } from 'react-icons/fi'
-import { Formik, Form } from 'formik'
-import * as yup from 'yup'
-import PopupEditStatus from './PopupEditStatus'
-
-const DataArray = [
-    {
-        title: 'Create Project',
-        completed: false,
-        completeA: false,
-        step: 1,
-    },
-    {
-        title: 'Looking For Examinar',
-        completed: false,
-        completeA: false,
-        step: 2,
-    },
-    {
-        title: 'Marking in Progress',
-        completed: false,
-        completeA: false,
-        step: 3,
-    },
-    {
-        title: 'Waiting for viva approval',
-        completed: false,
-        completeA: false,
-        step: 4,
-    },
-    {
-        title: 'waiting for viva minutes',
-        completed: false,
-        completeA: false,
-        step: 5,
-    },
-    {
-        title: 'waiting for final submission',
-        completed: false,
-        completeA: false,
-        step: 6,
-    },
-    {
-        title: 'Graduated',
-        completed: false,
-        completeA: false,
-        step: 7,
-    },
-]
-const ProgressStatus = ({ valuess, allTagData }) => {
+const ProgressStatus = ({ values, allTagData }) => {
     const [projectId, setProjectId] = React.useState(null)
     const [projectTagData, setProjectTagData] = React.useState([])
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -85,7 +37,6 @@ const ProgressStatus = ({ valuess, allTagData }) => {
         status: '',
         notes: '',
     })
-    const [helperFunctions, setHelperFunctions] = React.useState(null)
     const [errors, setErrors] = React.useState({})
     //submitting state
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
@@ -94,7 +45,57 @@ const ProgressStatus = ({ valuess, allTagData }) => {
         width: 100,
         height: 100,
     })
-    const [listState, setListState] = React.useState([])
+    const [listState, setListState] = React.useState([
+        {
+            title: 'Admissions',
+            completed: false,
+            completeA: false,
+            step: 1,
+        },
+       
+        {
+            title: 'Create Project',
+            completed: false,
+            completeA: false,
+            step: 1,
+        },
+        {
+            title: 'Looking For Examinar',
+            completed: false,
+            completeA: false,
+            step: 2,
+        },
+        {
+            title: 'Marking In Progress',
+            completed: false,
+            completeA: false,
+            step: 3,
+        },
+        {
+            title: 'Waiting For viva approval',
+            completed: false,
+            completeA: false,
+            step: 4,
+        },
+        {
+            title: 'waiting for viva minutes',
+            completed: false,
+            completeA: false,
+            step: 5,
+        },
+        {
+            title: 'waiting for final submission',
+            completed: false,
+            completeA: false,
+            step: 6,
+        },
+        {
+            title: 'Graduated',
+            completed: false,
+            completeA: false,
+            step: 7,
+        },
+    ])
     // const ref = useElementSize((size, prevSize, elem) => {})
     const ref = React.useRef(null)
     let dispatch = useDispatch()
@@ -102,51 +103,52 @@ const ProgressStatus = ({ valuess, allTagData }) => {
     let { isLoading, isSuccess, isError, message } = useSelector(
         (state) => state.project
     )
+    useEffect(() => {
+        const newList = [...listState]
+        if (
+            values !== null &&
+            values.projectStatus &&
+            values.projectStatus.length > 0
+        ) {
+            values.projectStatus.filter((data, index) => {
+                for (
+                    let iteration = 0;
+                    iteration < newList.length;
+                    iteration++
+                ) {
+                    if (
+                        newList[iteration].title.toLowerCase() ===
+                        data.status.toLowerCase()
+                    ) {
+                        newList[iteration].completed = data.completed
+                        newList[iteration].active = data.active
+                        let checkStep =
+                            newList[iteration].step === 1 ||
+                            newList[iteration].step === 7
+                                ? false
+                                : true
 
-    useEffect(() => {}, [])
-    // useEffect(() => {
-    //     const newList = [...listState]
-    //     if (
-    //         valuess !== null &&
-    //         valuess.projectStatus &&
-    //         valuess.projectStatus.length > 0
-    //     ) {
-    //         valuess.projectStatus.filter((data, index) => {
-    //             for (
-    //                 let iteration = 0;
-    //                 iteration < newList.length;
-    //                 iteration++
-    //             ) {
-    //                 if (newList[iteration].title === data.status) {
-    //                     newList[iteration].completed = data.completed
-    //                     newList[iteration].active = data.active
-    //                     let checkStep =
-    //                         newList[iteration].step === 1 ||
-    //                         newList[iteration].step === 7
-    //                             ? false
-    //                             : true
+                        if (checkStep) {
+                            let value = iteration - 1
 
-    //                     if (checkStep) {
-    //                         let value = iteration - 1
+                            let completeA =
+                                newList[value].completed && data.completed
+                                    ? true
+                                    : false
 
-    //                         let completeA =
-    //                             newList[value].completed && data.completed
-    //                                 ? true
-    //                                 : false
-
-    //                         newList[iteration].completeA = completeA
-    //                         if (
-    //                             newList[iteration].completeA &&
-    //                             newList[iteration].step === 2
-    //                         ) {
-    //                             newList[value].completeA = completeA
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         })
-    //     }
-    // }, [valuess])
+                            newList[iteration].completeA = completeA
+                            if (
+                                newList[iteration].completeA &&
+                                newList[iteration].step === 2
+                            ) {
+                                newList[value].completeA = completeA
+                            }
+                        }
+                    }
+                }
+            })
+        }
+    }, [values, listState])
 
     useEffect(() => {
         let allInfoData = allTagData.filter(
@@ -154,12 +156,12 @@ const ProgressStatus = ({ valuess, allTagData }) => {
         )
 
         if (
-            valuess !== null &&
-            valuess.projectStatus &&
-            valuess.projectStatus.length > 0 &&
+            values !== null &&
+            values.projectStatus &&
+            values.projectStatus.length > 0 &&
             allInfoData.length > 0
         ) {
-            let activeStatus = valuess.projectStatus.find(
+            let activeStatus = values.projectStatus.find(
                 (element) => element.active
             )
             if (activeStatus) {
@@ -180,65 +182,61 @@ const ProgressStatus = ({ valuess, allTagData }) => {
         } else {
         }
         setProjectTagData(allInfoData)
-    }, [valuess])
+    }, [allTagData, values])
 
     /**
      * effect for projectId to change
      * the state
      */
     React.useEffect(() => {
-        if (valuess !== null && valuess._id) {
-            setProjectId(valuess._id)
+        if (values !== null && values._id) {
+            setProjectId(values._id)
         }
-    }, [valuess])
+    }, [values])
 
     /**
      * function to update status change
      *
      */
-    // const statusUpdateChange = (data, type) => {
-    //     if (type === 'status') {
-    //         setIsSubmittingp(false)
-    //         setChangeMade(true)
-    //         setNewActiveStatus({
-    //             status: data.tagName,
-    //             notes: '',
-    //         })
-    //     }
-    // }
+    const statusUpdateChange = (data, type) => {
+        if (type === 'status') {
+            setIsSubmittingp(false)
+            setChangeMade(true)
+            setNewActiveStatus({
+                status: data.tagName,
+                notes: '',
+            })
+        }
+    }
 
-    // const statusNotesUpdate = (e) => {
-    //     e.preventDefault()
-    //     setIsSubmittingp(false)
-    //     setChangeMade(true)
-    //     setNewActiveStatus({
-    //         ...newActiveStatus,
-    //         notes: e.target.value,
-    //     })
-    // }
+    const statusNotesUpdate = (e) => {
+        e.preventDefault()
+        setIsSubmittingp(false)
+        setChangeMade(true)
+        setNewActiveStatus({
+            ...newActiveStatus,
+            notes: e.target.value,
+        })
+    }
 
-    // let validate = (valuess) => {
-    //     const errors = {}
-    //     if (!valuess.notes) {
-    //         errors.notes = 'notes required'
-    //     }
+    let validate = (values) => {
+        const errors = {}
+        if (!values.notes) {
+            errors.notes = 'notes required'
+        }
 
-    //     return errors
-    // }
-    const validationSchema = yup.object().shape({
-        notes: yup.string().required('notes is required'),
-        status: yup.string().required('status is required'),
-    })
+        return errors
+    }
 
     /**
      * function to submit change to server
      */
 
-    // const statusSubmitChange = (e) => {
-    //     e.preventDefault()
-    //     setErrors(validate(newActiveStatus))
-    //     setIsSubmittingp(true)
-    // }
+    const statusSubmitChange = (e) => {
+        e.preventDefault()
+        setErrors(validate(newActiveStatus))
+        setIsSubmittingp(true)
+    }
 
     /**
      * function to cancel submit change
@@ -254,41 +252,8 @@ const ProgressStatus = ({ valuess, allTagData }) => {
 
     /** run after submission awaiting for response */
 
-    // React.useEffect(() => {
-    //     if (isError) {
-    //         toast({
-    //             position: 'top',
-    //             title: message,
-    //             status: 'error',
-    //             duration: 10000,
-    //             isClosable: true,
-    //         })
-    //         setIsSubmittingp(false)
-    //         setChangeMade(false)
-
-    //         dispatch(reset())
-    //     }
-
-    //     if (isSuccess && isSubmittingp) {
-    //         toast({
-    //             position: 'top',
-    //             title: message.message,
-    //             status: 'success',
-    //             duration: 10000,
-    //             isClosable: true,
-    //         })
-    //         setIsSubmittingp(false)
-    //         setChangeMade(false)
-    //         dispatch(reset())
-    //     }
-    //     dispatch(reset())
-    // }, [isError, isSuccess, message, dispatch])
-
-    useEffect(() => {
+    React.useEffect(() => {
         if (isError) {
-            if (helperFunctions !== null) {
-                helperFunctions.setSubmitting(false)
-            }
             toast({
                 position: 'top',
                 title: message.message,
@@ -297,53 +262,48 @@ const ProgressStatus = ({ valuess, allTagData }) => {
                 isClosable: true,
             })
             setIsSubmittingp(false)
+            setChangeMade(false)
 
             dispatch(reset())
         }
 
-        if (isSuccess) {
-            if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
+        if (isSuccess && isSubmittingp) {
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            setChangeMade(false)
+            onClose()
+            dispatch(reset())
+        }
+        dispatch(reset())
+    }, [isError, isSuccess, message, dispatch])
+
+    /** submittion of the changes */
+    React.useEffect(() => {
+        if (
+            Object.keys(errors).length === 0 &&
+            setIsSubmittingp &&
+            changeMade
+        ) {
+            dispatch(
+                updateProjectStatus({
+                    ...newActiveStatus,
+                    projectId,
                 })
-                helperFunctions.resetForm()
-                helperFunctions.setSubmitting(false)
-                setIsSubmittingp(false)
-                setChangeMade(false)
-                //setEditDetails(null)
-                onClose()
-                setHelperFunctions(null)
-            }
-            dispatch(reset())
+            )
+            //setIsSubmittingp(false)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isError, message])
 
-    // /** submittion of the changes */
-    // React.useEffect(() => {
-    //     if (
-    //         Object.keys(errors).length === 0 &&
-    //         setIsSubmittingp &&
-    //         changeMade
-    //     ) {
-    //         dispatch(
-    //             updateProjectStatus({
-    //                 ...newActiveStatus,
-    //                 projectId,
-    //             })
-    //         )
-    //         //setIsSubmittingp(false)
-    //     }
-
-    //     if (Object.keys(errors).length > 0 && setIsSubmittingp && changeMade) {
-    //         setIsSubmittingp(false)
-    //         setChangeMade(false)
-    //     }
-    // }, [isSubmittingp])
+        if (Object.keys(errors).length > 0 && setIsSubmittingp && changeMade) {
+            setIsSubmittingp(false)
+            setChangeMade(false)
+        }
+    }, [isSubmittingp])
 
     return (
         <Container>
@@ -429,46 +389,144 @@ const ProgressStatus = ({ valuess, allTagData }) => {
                     </StatusContainer>
                 </Stack>
             </Stack>
-            {/** edit status */}
-            <Modal w='100vw' isOpen={isOpen} p='0' onClose={onClose}>
+            <Modal w='100vw' isOpen={isOpen} p='0' onClose={cancelStatusChange}>
                 <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
                 <ModalContent p='0'>
                     <ModalBody p='0'>
-                        <Formik
-                            initialValues={{
-                                ...newActiveStatus,
-                            }}
-                            validationSchema={validationSchema}
-                            onSubmit={(values, helpers) => {
-                                setHelperFunctions(helpers)
-                                setIsSubmittingp(true)
-                                console.log('vddgsdsd', values)
-                                let newValues = {
-                                    ...values,
-                                    projectId,
-                                }
-                                dispatch(updateProjectStatus(newValues))
-                            }}>
-                            {({
-                                values,
-                                handleChange,
-                                setFieldValue,
-                                isValid,
-                                dirty,
-                            }) => (
-                                <Form>
-                                    <PopupEditStatus
-                                        values={values}
-                                        setFieldValue={setFieldValue}
-                                        setChangeMade={setChangeMade}
-                                        projectTagData={projectTagData}
-                                        isSubmittingp={isSubmittingp}
-                                        cancelStatusChange={cancelStatusChange}
-                                        changeMade={changeMade}
-                                    />
-                                </Form>
-                            )}
-                        </Formik>
+                        <form onSubmit={statusSubmitChange}>
+                            <PopupForm
+                                p='0px'
+                                direction='column'
+                                spacing='0'
+                                justifyContent='space-between'>
+                                <Stack
+                                    p='10px 20px 10px 20px'
+                                    direction='column'
+                                    spacing={'10px'}
+                                    h='50%'>
+                                    <Box className='pop_title'>
+                                        Change Status
+                                    </Box>
+
+                                    <Stack direction='column'>
+                                        <Stack>
+                                            <label>
+                                                Status <span>*</span>
+                                            </label>
+
+                                            <Stack
+                                                direction='column'
+                                                spacing='0'>
+                                                {projectTagData.length > 0 ? (
+                                                    <>
+                                                        {' '}
+                                                        {projectTagData.map(
+                                                            (data, index) => {
+                                                                return (
+                                                                    <StatusChangeItem
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        onClick={() =>
+                                                                            statusUpdateChange(
+                                                                                data,
+                                                                                'status'
+                                                                            )
+                                                                        }
+                                                                        tcolors={
+                                                                            data.hex
+                                                                        }
+                                                                        bcolors={
+                                                                            newActiveStatus.status ===
+                                                                            data.tagName
+                                                                                ? '#F8A5A9'
+                                                                                : '#ffffff'
+                                                                        }
+                                                                        color={
+                                                                            newActiveStatus.status ===
+                                                                            data.tagName
+                                                                                ? '#ffffff'
+                                                                                : '#464f60'
+                                                                        }
+                                                                        minW='90px'
+                                                                        h='28px'
+                                                                        direction='row'
+                                                                        justifyContent='space-between'
+                                                                        alignItems='center'>
+                                                                        <Stack
+                                                                            direction='row'
+                                                                            alignItems='center'>
+                                                                            <div className='colorcontainer' />
+                                                                            <Text>
+                                                                                {
+                                                                                    data.tagName
+                                                                                }
+                                                                            </Text>
+                                                                        </Stack>
+
+                                                                        {newActiveStatus.status ===
+                                                                        data.tagName ? (
+                                                                            <Box color='#ffffff'>
+                                                                                <FiCheck />
+                                                                            </Box>
+                                                                        ) : null}
+                                                                    </StatusChangeItem>
+                                                                )
+                                                            }
+                                                        )}{' '}
+                                                    </>
+                                                ) : null}
+                                            </Stack>
+                                        </Stack>
+                                    </Stack>
+
+                                    <Stack
+                                        direction='column'
+                                        width='100%'
+                                        h='100%'>
+                                        <Stack width='100%'>
+                                            <label>
+                                                Notes <span>*</span>
+                                            </label>
+
+                                            <StatusNotesArea
+                                                type='text'
+                                                placeholder='Please add a note'
+                                                value={newActiveStatus.notes}
+                                                onChange={statusNotesUpdate}
+                                            />
+                                        </Stack>
+                                    </Stack>
+                                </Stack>
+                                <Stack
+                                    p='0px 20px'
+                                    h='65px'
+                                    bg='#ffffff'
+                                    direction='row'
+                                    borderTop='1px solid #E9EDF5'
+                                    borderRadius='0 0 8px 8px'
+                                    justifyContent='flex-end'
+                                    alignItems='center'>
+                                    <Button
+                                        variant='outline'
+                                        className='cancel_button'
+                                        onClick={cancelStatusChange}>
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        disabled={
+                                            isSubmittingp || !changeMade
+                                                ? true
+                                                : false
+                                        }
+                                        type='submit'
+                                        isLoading={isSubmittingp ? true : false}
+                                        className='apply_button'>
+                                        Confirm
+                                    </Button>
+                                </Stack>
+                            </PopupForm>
+                        </form>
                     </ModalBody>
                 </ModalContent>
             </Modal>
@@ -658,5 +716,124 @@ const StatusItem = styled(Stack)`
         letter-spacing: 0.03em;
         text-transform: capitalize;
         color: ${({ tcolors }) => tcolors};
+    }
+`
+
+const StatusChangeItem = styled(Stack)`
+    border-radius: 4px;
+
+    padding: 3px 8px 3px 8px;
+    background: ${({ bcolors }) => bcolors};
+    cursor: pointer;
+    .colorcontainer {
+        border-radius: 2px;
+        width: 6px;
+        height: 6px;
+        background: ${({ tcolors }) => tcolors};
+    }
+    p {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 18px;
+        letter-spacing: 0.03em;
+        text-transform: capitalize;
+    }
+
+    :hover {
+        color: #ffffff;
+        background: #f8a5a9;
+    }
+`
+
+const StatusNotesArea = styled(Textarea)`
+    background: #ffffff !important;
+`
+
+const PopupForm = styled(Stack)`
+    width: 100%;
+    min-height: 182px;
+    height: 100%;
+    background: #fbfbfb;
+    box-shadow: 0px 0px 0px 1px rgba(152, 161, 178, 0.1),
+        0px 30px 70px -10px rgba(17, 24, 38, 0.25),
+        0px 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+
+    span {
+        margin: 0 5px;
+    }
+
+    .pop_title {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 28px;
+        color: #464f60;
+        letter-spacing: 0.02em;
+    }
+
+    .list_text {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 24px;
+
+        li {
+            list-style: none;
+            display: inline-block;
+            font-weight: 700;
+            color: #20202a;
+        }
+        li:after {
+            content: ', ';
+            padding-right: 10px;
+        }
+        li:last-child:after {
+            content: '';
+            padding-right: 0px;
+        }
+    }
+
+    .cancel_button {
+        padding: 6px 12px;
+        height: 32px;
+        color: #464f60;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+        border-radius: 6px;
+        background: #ffffff;
+    }
+    .apply_button {
+        height: 32px;
+        padding: 6px 12px;
+        color: #ffffff;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+
+        background: #f4797f;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
+        border-radius: 6px;
+
+        &:hover {
+            background: #f4797f;
+        }
     }
 `

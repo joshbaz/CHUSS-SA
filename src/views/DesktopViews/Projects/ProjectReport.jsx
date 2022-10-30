@@ -112,7 +112,7 @@ const ProjectReport = ({ ...props }) => {
                             {/** first set */}
                             <Stack h='100%'>
                                 <ProgressStatus
-                                    valuess={individual}
+                                    values={individual}
                                     allTagData={tagsData.allTagItems.items}
                                 />
                             </Stack>

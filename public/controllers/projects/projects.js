@@ -228,22 +228,20 @@ exports.updateVivaFiles = async (event, values) => {
   try {
     const fd = new FormData();
 
-    if (values.vivaminutes !== null) {
-      fd.append(
-        "projectFiles",
-        fs.createReadStream(values.vivaminutes.url),
-        `VivaMinutes${values.vivaminutes.ext}`
-      );
+    if (values.vivafiles !== null) {
+
+      let filename =
+          values.filetypename === 'others'
+              ? values.othername
+              : values.filetypename
+        fd.append(
+            'projectFiles',
+            fs.createReadStream(values.vivafiles.url),
+            `${filename}${values.vivafiles.ext}`
+        )
     } else {
     }
-    if (values.AuthViva !== null) {
-      fd.append(
-        "projectFiles",
-        fs.createReadStream(values.AuthViva.url),
-        `AuthViva${values.AuthViva.ext}`
-      );
-    } else {
-    }
+   
 
     let responseData = await axios.put(
       `${BASE_API_}/project/v1/vivafiles/update/${values.projectId}`,
