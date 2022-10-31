@@ -19,23 +19,23 @@ import {
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-    updateVivaDefense,
+    updateGraduationDate,
     reset,
 } from '../../../store/features/project/projectSlice'
 import { useNavigate } from 'react-router-dom'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 
-const VivaPopupDefense = ({
-    defenseUploadActive,
-    setDefenseUploadActive,
-    valuess,
+const FinalSubmitGraduationPopup = ({
     projectId,
+    graduationDateActive,
+    setGraduationDateActive,
+    valuess,
 }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [helperFunctions, setHelperFunctions] = React.useState(null)
     const [filesList, setFilesList] = React.useState([])
-    const [dateOfDefense, setDateOfDefense] = React.useState('')
+    const [dateOfGraduation, setDateOfGraduation] = React.useState('')
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
@@ -45,25 +45,25 @@ const VivaPopupDefense = ({
      * function to cancel submit change
      */
 
-    const cancelDefenseUpload = () => {
-        //setNewActiveStatus(activeDataStatus)
+    const cancelGraduationUpload = () => {
+        setIsSubmittingp(false)
+        setGraduationDateActive(false)
 
-        setDefenseUploadActive(false)
-        //setIsSubmittingp(false)
         // onClose()
     }
+
     React.useEffect(() => {
-        if (valuess !== null && valuess.DateOfDefense !== null) {
-            setDateOfDefense(valuess.DateOfDefense)
+        if (valuess !== null && valuess.GraduationDate !== null) {
+            setDateOfGraduation(valuess.GraduationDate)
         }
     }, [valuess])
 
     const validationSchema = yup.object().shape({
-        DateOfDefense: yup.string().required('defense date is required'),
+        GraduationDate: yup.string().required('submission date is required'),
     })
 
     const initialValues = {
-        DateOfDefense: dateOfDefense ? dateOfDefense : '',
+        GraduationDate: dateOfGraduation ? dateOfGraduation : '',
     }
 
     /** run after submission awaiting for response */
@@ -116,9 +116,9 @@ const VivaPopupDefense = ({
     return (
         <Modal
             w='100vw'
-            isOpen={defenseUploadActive}
+            isOpen={graduationDateActive}
             p='0'
-            onClose={() => setDefenseUploadActive(!defenseUploadActive)}>
+            onClose={() => setGraduationDateActive(!graduationDateActive)}>
             <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
             <ModalContent p='0'>
                 <ModalBody p='0'>
@@ -133,7 +133,7 @@ const VivaPopupDefense = ({
                                     ...values,
                                     projectId,
                                 }
-                                dispatch(updateVivaDefense(values2))
+                                dispatch(updateGraduationDate(values2))
                             }
                         }}>
                         {({
@@ -164,7 +164,7 @@ const VivaPopupDefense = ({
                                             alignItems='center'
                                             justifyContent='space-between'>
                                             <Box>
-                                                <h1>Viva Defense Date</h1>
+                                                <h1>Graduation Date</h1>
                                             </Box>
                                         </Stack>
 
@@ -181,20 +181,20 @@ const VivaPopupDefense = ({
                                                     placeholder='Select Date and Time'
                                                     size='md'
                                                     type='date'
-                                                    name='DateOfDefense'
+                                                    name='GraduationDate'
                                                     value={
                                                         values !== null &&
-                                                        values.DateOfDefense
-                                                            ? values.DateOfDefense
+                                                        values.GraduationDate
+                                                            ? values.GraduationDate
                                                             : ''
                                                     }
                                                     onChange={handleChange}
                                                 />
 
                                                 {errors &&
-                                                errors.DateOfDefense ? (
+                                                errors.GraduationDate ? (
                                                     <ErrorMsg>
-                                                        {errors.DateOfDefense}
+                                                        {errors.GraduationDate}
                                                     </ErrorMsg>
                                                 ) : null}
                                             </Box>
@@ -213,7 +213,7 @@ const VivaPopupDefense = ({
                                             variant='outline'
                                             className='cancel_button'
                                             onClick={() =>
-                                                cancelDefenseUpload()
+                                                cancelGraduationUpload()
                                             }>
                                             Cancel
                                         </Button>
@@ -237,7 +237,7 @@ const VivaPopupDefense = ({
     )
 }
 
-export default VivaPopupDefense
+export default FinalSubmitGraduationPopup
 
 const PopupForm = styled(Stack)`
     width: 100%;
@@ -271,7 +271,7 @@ const PopupForm = styled(Stack)`
     }
 
     .list_text {
-        font-family: 'Inter', sans-serif;
+       
         font-style: normal;
         font-weight: 400;
         font-size: 16px;
@@ -351,3 +351,4 @@ const ErrorMsg = styled(Text)`
         padding: 0;
     }
 `
+

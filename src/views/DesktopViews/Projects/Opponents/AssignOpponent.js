@@ -46,8 +46,8 @@ const AssignOpponent = ({ ...props }) => {
     let dispatch = useDispatch()
     let params = useParams()
     let toast = useToast()
-    let { allExaminerItems, isSuccess, isError, message } = useSelector(
-        (state) => state.examiner
+    let { allOpponentItems, isSuccess, isError, message } = useSelector(
+        (state) => state.opponent
     )
     let IndividualProject = useSelector((state) => state.project)
 
@@ -277,7 +277,7 @@ const AssignOpponent = ({ ...props }) => {
 
                     <Stack>
                         <OpponentTable
-                            allExaminerItems={allExaminerItems}
+                            allExaminerItems={allOpponentItems}
                             selectedExaminers={selectedExaminers}
                             setSelectedExaminers={setSelectedExaminers}
                         />

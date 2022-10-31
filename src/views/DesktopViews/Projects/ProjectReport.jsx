@@ -166,7 +166,7 @@ const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 17px;

@@ -32,7 +32,7 @@ const CreateProjectOpponent = ({ ...props }) => {
     let toast = useToast()
     let dispatch = useDispatch()
     const { isLoading, isError, isSuccess, message } = useSelector(
-        (state) => state.examiner
+        (state) => state.opponent
     )
     let IndividualProject = useSelector((state) => state.project)
     useEffect(() => {

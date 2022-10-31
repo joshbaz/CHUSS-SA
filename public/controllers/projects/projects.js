@@ -223,6 +223,54 @@ exports.updateProjectStatuses = async (event, values) => {
   }
 };
 
+/** update candidate files */
+exports.updateCandidateFiles = async (event, values) => {
+  try {
+    const fd = new FormData();
+
+    if (values.candidatefiles !== null) {
+
+      let filename =
+          values.filetypename === 'others'
+              ? values.othername
+              : values.filetypename
+        fd.append(
+            'projectFiles',
+            fs.createReadStream(values.candidatefiles.url),
+            `${filename}${values.candidatefiles.ext}`
+        )
+    } else {
+    }
+   
+
+    let responseData = await axios.put(
+        `${BASE_API_}/project/v1/candidatefiles/update/${values.projectId}`,
+        fd
+    )
+    //console.log("values", responseData.data);
+    let data = {
+      message: responseData.data,
+      type: "success",
+    };
+    return data;
+  } catch (error) {
+    let errorArray = [];
+    errorArray.push(error);
+
+    let response = {
+      message: "",
+      type: "error",
+    };
+    if (errorArray.length !== 0 && errorArray[0].response) {
+      response.message = errorArray[0].response.data;
+    } else if (errorArray.length !== 0 && !errorArray[0].response) {
+      response.message = errorArray[0].message;
+    }
+
+    return response;
+  }
+};
+
 /** update viva files */
 exports.updateVivaFiles = async (event, values) => {
   try {
@@ -308,12 +356,16 @@ exports.updateFinalSubmission = async (event, values) => {
   try {
     const fd = new FormData();
 
-    if (values.finalsubmission !== null) {
-      fd.append(
-        "projectFiles",
-        fs.createReadStream(values.finalsubmission.url),
-        `finalSubmission${values.finalsubmission.ext}`
-      );
+    if (values.finalsubmitfiles !== null) {
+       let filename =
+           values.filetypename === 'others'
+               ? values.othername
+               : values.filetypename
+        fd.append(
+            'projectFiles',
+            fs.createReadStream(values.finalsubmitfiles.url),
+            `${filename}${values.finalsubmitfiles.ext}`
+        )
     } else {
     }
 

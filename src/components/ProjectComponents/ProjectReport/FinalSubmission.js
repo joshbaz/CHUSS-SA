@@ -9,26 +9,95 @@ import {
     ModalContent,
     ModalBody,
     Input,
-    Button
+    Button,
+    useDisclosure,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
 } from '@chakra-ui/react'
 import { BsListUl } from 'react-icons/bs'
 import { RiLayoutGridFill } from 'react-icons/ri'
 import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
 import { HiPencil } from 'react-icons/hi'
+import FinalSubmitPopupUpload from './FinalSubmitPopupUpload'
+import FinalSubmitDatePopup from './FinalSubmitDatePopup'
+import FinalSubmitGraduationPopup from './FinalSubmitGraduationPopup'
 
-const FinalSubmission = ({ values }) => {
+const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
     const [filesList, setFilesList] = React.useState([])
-      const [projectId, setProjectId] = React.useState('')
-
+    const [projectId, setProjectId] = React.useState('')
+    const [fileUploadActive, setFileUploadActive] = React.useState(false)
+    const [submissionDateActive, setSubmissionDateActive] =
+        React.useState(false)
+    const [graduationDateActive, setGraduationDateActive] =
+        React.useState(false)
+    const [selectedFile, setSelectedFile] = React.useState(null)
+    const { isOpen, onOpen, onClose } = useDisclosure()
     React.useEffect(() => {
-         if (values !== null && values._id) {
-             setProjectId(values._id)
-         }
+        if (values !== null && values._id) {
+            setProjectId(values._id)
+        }
         if (values !== null && values.FinalSubmissionFiles.length > 0) {
             setFilesList(values.FinalSubmissionFiles)
         }
     }, [values])
+
+    //size format
+    const formatSize = (size) => {
+        var i = Math.floor(Math.log(size) / Math.log(1024))
+        return (
+            (size / Math.pow(1024, i)).toFixed(2) * 1 +
+            ' ' +
+            ['B', 'KB', 'MB', 'GB', 'TB'][i]
+        )
+    }
+
+    const handleFileView = async (data) => {
+        setSelectedFile([
+            {
+                uri: `https://chuss-test.herokuapp.com/docs/files/${data.fileId.fileId}`,
+                fileType: data.fileId.fileType,
+            },
+        ])
+        onOpen()
+    }
+
+    const handleDownloadFile = async (data) => {
+        const dataGiven = await window.electronAPI.getdownloadFile(
+            data.fileId.fileId
+        )
+        console.log(dataGiven, 'testing')
+
+        if (!dataGiven.message) {
+            let newData = {
+                ...dataGiven,
+            }
+            if (nameValues !== null) {
+                console.log(nameValues, 'nameValues')
+                let newNameValue = nameValues.toString().split(' ')[0]
+
+                newData = {
+                    ...newData,
+                    name: newNameValue,
+                    filename: data.fileId.fileName
+                        ? data.fileId.fileName
+                        : 'files',
+                }
+            } else {
+            }
+
+            const performDowload = await window.electronAPI.downloadFile(
+                newData
+            )
+
+            console.log('messahe', performDowload)
+            if (performDowload.message) {
+                alert(performDowload.message)
+            }
+        }
+    }
     return (
         <Container>
             {' '}
@@ -46,7 +115,13 @@ const FinalSubmission = ({ values }) => {
                     </Box>
 
                     <Stack direction='row' alignItems='center;'>
-                        <Box className={`uploadBtn`}>Upload file</Box>
+                        <Box
+                            className={`uploadBtn`}
+                            onClick={() =>
+                                setFileUploadActive(!fileUploadActive)
+                            }>
+                            Upload file
+                        </Box>
                         <Box
                             onClick={() => setSelectedView('grid')}
                             className={`icon ${
@@ -101,7 +176,8 @@ const FinalSubmission = ({ values }) => {
                                             <Input
                                                 placeholder='Select Date and Time'
                                                 size='md'
-                                                type='datetime-local'
+                                                type='text'
+                                                readOnly
                                                 name='FinalSubmissionDate'
                                                 value={
                                                     values !== null &&
@@ -117,7 +193,12 @@ const FinalSubmission = ({ values }) => {
                                             justifyContent={'center'}>
                                             <Stack
                                                 direction='row'
-                                                alignItems='center'>
+                                                alignItems='center'
+                                                onClick={() =>
+                                                    setSubmissionDateActive(
+                                                        !submissionDateActive
+                                                    )
+                                                }>
                                                 <EditIcon>
                                                     <HiPencil />
                                                 </EditIcon>
@@ -142,7 +223,8 @@ const FinalSubmission = ({ values }) => {
                                             <Input
                                                 placeholder='Select Date and Time'
                                                 size='md'
-                                                type='datetime-local'
+                                                type='text'
+                                                readOnly
                                                 name='GraduationDate'
                                                 value={
                                                     values !== null &&
@@ -158,7 +240,12 @@ const FinalSubmission = ({ values }) => {
                                             justifyContent={'center'}>
                                             <Stack
                                                 direction='row'
-                                                alignItems='center'>
+                                                alignItems='center'
+                                                onClick={() =>
+                                                    setGraduationDateActive(
+                                                        !graduationDateActive
+                                                    )
+                                                }>
                                                 <EditIcon>
                                                     <HiPencil />
                                                 </EditIcon>
@@ -189,67 +276,111 @@ const FinalSubmission = ({ values }) => {
                                         {selectedView === 'grid' ? (
                                             <Stack direction='row'>
                                                 {filesList.map(
-                                                    (data, index) => (
-                                                        <FileStack
-                                                            key={index}
-                                                            w='202.6px'
-                                                            h='168px'
-                                                            direction='column'
-                                                            alignitems='space-between'
-                                                            className='filedoc'>
-                                                            <Box
-                                                                h='96px'
-                                                                className='icon_wrap '>
-                                                                <Stack
-                                                                    spacing='0'
-                                                                    direction='column'
-                                                                    w='55px'
-                                                                    h='55px'
-                                                                    className='icon_stack doc'>
-                                                                    <Box>
-                                                                        <BsFileEarmark />
-                                                                    </Box>
-                                                                    <Text>
-                                                                        {
-                                                                            data
-                                                                                .fileId
-                                                                                .fileExtension
-                                                                        }
-                                                                    </Text>
-                                                                </Stack>
-                                                            </Box>
-
-                                                            <Box>
-                                                                <Stack
-                                                                    direction='row'
-                                                                    justifyContent={
-                                                                        'space-between'
-                                                                    }
-                                                                    padding='0 20px'
-                                                                    alignItems='center'>
-                                                                    <Stack direction='column'>
-                                                                        <Text className='filename'>
+                                                    (data, index) => {
+                                                        let size = formatSize(
+                                                            parseInt(
+                                                                data.fileId
+                                                                    .fileSize
+                                                            )
+                                                        )
+                                                        return (
+                                                            <FileStack
+                                                                key={index}
+                                                                w='202.6px'
+                                                                h='168px'
+                                                                direction='column'
+                                                                alignitems='space-between'
+                                                                className='filedoc'>
+                                                                <Box
+                                                                    h='96px'
+                                                                    className='icon_wrap '>
+                                                                    <Stack
+                                                                        spacing='0'
+                                                                        direction='column'
+                                                                        w='55px'
+                                                                        h='55px'
+                                                                        className='icon_stack doc'>
+                                                                        <Box>
+                                                                            <BsFileEarmark />
+                                                                        </Box>
+                                                                        <Text>
                                                                             {
                                                                                 data
                                                                                     .fileId
-                                                                                    .fileName
-                                                                            }
-                                                                        </Text>
-                                                                        <Text className='filesize'>
-                                                                            {
-                                                                                data
-                                                                                    .fileId
-                                                                                    .fileSize
+                                                                                    .fileExtension
                                                                             }
                                                                         </Text>
                                                                     </Stack>
-                                                                    <Box color='#838389'>
-                                                                        <BsThreeDots />
-                                                                    </Box>
-                                                                </Stack>
-                                                            </Box>
-                                                        </FileStack>
-                                                    )
+                                                                </Box>
+
+                                                                <Box>
+                                                                    <Stack
+                                                                        direction='row'
+                                                                        justifyContent={
+                                                                            'space-between'
+                                                                        }
+                                                                        padding='0 20px'
+                                                                        alignItems='center'>
+                                                                        <Stack direction='column'>
+                                                                            <Text className='filename'>
+                                                                                {
+                                                                                    data
+                                                                                        .fileId
+                                                                                        .fileName
+                                                                                }
+                                                                            </Text>
+                                                                            <Text className='filesize'>
+                                                                                {
+                                                                                    size
+                                                                                }
+                                                                            </Text>
+                                                                        </Stack>
+                                                                        <Menu>
+                                                                            <MenuButton>
+                                                                                <Box color='#838389'>
+                                                                                    <BsThreeDots />
+                                                                                </Box>
+                                                                            </MenuButton>
+
+                                                                            <MenuList>
+                                                                                <MenuItem
+                                                                                    onClick={() =>
+                                                                                        handleFileView(
+                                                                                            data
+                                                                                        )
+                                                                                    }
+                                                                                    fontSize={
+                                                                                        '14px'
+                                                                                    }>
+                                                                                    View
+                                                                                    File
+                                                                                </MenuItem>
+                                                                                <MenuItem
+                                                                                    onClick={() =>
+                                                                                        handleDownloadFile(
+                                                                                            data
+                                                                                        )
+                                                                                    }
+                                                                                    fontSize={
+                                                                                        '14px'
+                                                                                    }>
+                                                                                    Download
+                                                                                    File
+                                                                                </MenuItem>
+                                                                                <MenuItem
+                                                                                    fontSize={
+                                                                                        '14px'
+                                                                                    }>
+                                                                                    Delete
+                                                                                    File
+                                                                                </MenuItem>
+                                                                            </MenuList>
+                                                                        </Menu>
+                                                                    </Stack>
+                                                                </Box>
+                                                            </FileStack>
+                                                        )
+                                                    }
                                                 )}
                                             </Stack>
                                         ) : (
@@ -336,173 +467,25 @@ const FinalSubmission = ({ values }) => {
                 </Stack>
             </Stack>
             {/** final submission files report */}
-            <Modal w='100vw'  p='0' >
-                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
-                <ModalContent p='0'>
-                    <ModalBody p='0'>
-                        <PopupForm
-                            p='0px'
-                            direction='column'
-                            spacing='0'
-                            justifyContent='space-between'>
-                            <Stack
-                                p='10px 20px 10px 20px'
-                                direction='column'
-                                spacing={'10px'}
-                                h='50%'>
-                                <Box className='pop_title'>
-                                    Assign Opponent?
-                                </Box>
-
-                                <Stack
-                                    spacing={'2px'}
-                                    direction='row'
-                                    className='list_text'>
-                                    <p>
-                                        Are you sure you want to assign
-                                       
-                                        for this project.
-                                    </p>
-                                </Stack>
-                            </Stack>
-                            <Stack
-                                p='0px 20px'
-                                h='65px'
-                                bg='#ffffff'
-                                direction='row'
-                                borderTop='1px solid #E9EDF5'
-                                borderRadius='0 0 8px 8px'
-                                justifyContent='flex-end'
-                                alignItems='center'>
-                                <Button
-                                    variant='outline'
-                                    className='cancel_button'
-                                   >
-                                    Cancel
-                                </Button>
-                                <Button
-                                   
-                                    className='apply_button'
-                                    >
-                                    Confirm
-                                </Button>
-                            </Stack>
-                        </PopupForm>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+            <FinalSubmitPopupUpload
+                projectId={projectId}
+                fileUploadActive={fileUploadActive}
+                setFileUploadActive={setFileUploadActive}
+            />
             {/** final submission date */}
-            <Modal w='100vw'  p='0' >
-                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
-                <ModalContent p='0'>
-                    <ModalBody p='0'>
-                        <PopupForm
-                            p='0px'
-                            direction='column'
-                            spacing='0'
-                            justifyContent='space-between'>
-                            <Stack
-                                p='10px 20px 10px 20px'
-                                direction='column'
-                                spacing={'10px'}
-                                h='50%'>
-                                <Box className='pop_title'>
-                                    Assign Opponent?
-                                </Box>
-
-                                <Stack
-                                    spacing={'2px'}
-                                    direction='row'
-                                    className='list_text'>
-                                    <p>
-                                        Are you sure you want to assign
-                                        
-                                        for this project.
-                                    </p>
-                                </Stack>
-                            </Stack>
-                            <Stack
-                                p='0px 20px'
-                                h='65px'
-                                bg='#ffffff'
-                                direction='row'
-                                borderTop='1px solid #E9EDF5'
-                                borderRadius='0 0 8px 8px'
-                                justifyContent='flex-end'
-                                alignItems='center'>
-                                <Button
-                                    variant='outline'
-                                    className='cancel_button'
-                                    >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    
-                                    className='apply_button'
-                                   >
-                                    Confirm
-                                </Button>
-                            </Stack>
-                        </PopupForm>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+            <FinalSubmitDatePopup
+                projectId={projectId}
+                valuess={values}
+                submissionDateActive={submissionDateActive}
+                setSubmissionDateActive={setSubmissionDateActive}
+            />
             {/** graduation date */}
-            <Modal w='100vw'  p='0' >
-                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
-                <ModalContent p='0'>
-                    <ModalBody p='0'>
-                        <PopupForm
-                            p='0px'
-                            direction='column'
-                            spacing='0'
-                            justifyContent='space-between'>
-                            <Stack
-                                p='10px 20px 10px 20px'
-                                direction='column'
-                                spacing={'10px'}
-                                h='50%'>
-                                <Box className='pop_title'>
-                                    Assign Opponent?
-                                </Box>
-
-                                <Stack
-                                    spacing={'2px'}
-                                    direction='row'
-                                    className='list_text'>
-                                    <p>
-                                        Are you sure you want to assign
-                                     
-                                        for this project.
-                                    </p>
-                                </Stack>
-                            </Stack>
-                            <Stack
-                                p='0px 20px'
-                                h='65px'
-                                bg='#ffffff'
-                                direction='row'
-                                borderTop='1px solid #E9EDF5'
-                                borderRadius='0 0 8px 8px'
-                                justifyContent='flex-end'
-                                alignItems='center'>
-                                <Button
-                                    variant='outline'
-                                    className='cancel_button'
-                                    >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    
-                                    className='apply_button'
-                                   >
-                                    Confirm
-                                </Button>
-                            </Stack>
-                        </PopupForm>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+            <FinalSubmitGraduationPopup
+                projectId={projectId}
+                valuess={values}
+                graduationDateActive={graduationDateActive}
+                setGraduationDateActive={setGraduationDateActive}
+            />
         </Container>
     )
 }
@@ -510,7 +493,7 @@ const FinalSubmission = ({ values }) => {
 export default FinalSubmission
 
 const Container = styled(Box)`
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -539,7 +522,7 @@ const Container = styled(Box)`
 
     .s_name {
         color: #5e5c60;
-        font-family: 'Inter';
+
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -547,7 +530,6 @@ const Container = styled(Box)`
         letter-spacing: 0.02em;
     }
     .form_subtitle {
-        font-family: 'Inter';
         font-style: normal;
         font-weight: 700;
         font-size: 14px;
@@ -573,10 +555,10 @@ const Container = styled(Box)`
         border-radius: 6px;
         color: #ffffff;
         letter-spacing: 0.02em;
+        cursor: pointer;
     }
 
     .form_subtitle {
-        font-family: 'Inter';
         font-style: normal;
         font-weight: 700;
         font-size: 14px;
@@ -590,7 +572,7 @@ const Container = styled(Box)`
         border-radius: 6px;
 
         height: 32px;
-        font-family: 'Inter';
+
         font-style: normal;
         font-weight: 500;
         font-size: 13px;
@@ -625,7 +607,6 @@ const Container = styled(Box)`
         justify-content: center;
         align-items: center;
 
-        font-family: 'Inter';
         font-style: normal;
         font-weight: 500;
         font-size: 13px;
@@ -669,7 +650,6 @@ const FileStack = styled(Stack)`
         align-items: center;
 
         p {
-            font-family: 'Inter';
             font-style: normal;
             font-weight: 700;
             font-size: 8px;
@@ -691,7 +671,6 @@ const FileStack = styled(Stack)`
     }
 
     .filename {
-        font-family: 'Inter';
         font-style: normal;
         font-weight: 500;
         font-size: 13px;
@@ -701,98 +680,10 @@ const FileStack = styled(Stack)`
 
     .filesize {
         color: #838389;
-        font-family: 'Inter';
+
         font-style: normal;
         font-weight: 400;
         font-size: 13px;
         line-height: 20px;
     }
 `
-
-const PopupForm = styled(Stack)`
-    width: 100%;
-    min-height: 182px;
-    height: 100%;
-    background: #fbfbfb;
-    box-shadow: 0px 0px 0px 1px rgba(152, 161, 178, 0.1),
-        0px 30px 70px -10px rgba(17, 24, 38, 0.25),
-        0px 10px 30px rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
-
-    span {
-        margin: 0 5px;
-    }
-
-    .pop_title {
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 20px;
-        line-height: 28px;
-        color: #464f60;
-        letter-spacing: 0.02em;
-    }
-
-    .list_text {
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 24px;
-
-        li {
-            list-style: none;
-            display: inline-block;
-            font-weight: 700;
-            color: #20202a;
-        }
-        li:after {
-            content: ', ';
-            padding-right: 10px;
-        }
-        li:last-child:after {
-            content: '';
-            padding-right: 0px;
-        }
-    }
-
-    .cancel_button {
-        padding: 6px 12px;
-        height: 32px;
-        color: #464f60;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-
-        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
-            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
-        border-radius: 6px;
-        background: #ffffff;
-    }
-    .apply_button {
-        height: 32px;
-        padding: 6px 12px;
-        color: #ffffff;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        letter-spacing: 0.02em;
-
-        background: #f4797f;
-        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
-        border-radius: 6px;
-
-        &:hover {
-            background: #f4797f;
-        }
-    }
-`
-

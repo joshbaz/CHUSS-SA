@@ -966,7 +966,7 @@ const Container = styled(Box)`
 
     .s_name {
         color: #5e5c60;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -974,7 +974,7 @@ const Container = styled(Box)`
         letter-spacing: 0.02em;
     }
     .form_subtitle {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 700;
         font-size: 14px;
@@ -1004,7 +1004,7 @@ const Container = styled(Box)`
     }
 
     .form_subtitle {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 700;
         font-size: 14px;
@@ -1018,7 +1018,7 @@ const Container = styled(Box)`
         border-radius: 6px;
 
         height: 32px;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 13px;
@@ -1053,7 +1053,7 @@ const Container = styled(Box)`
         justify-content: center;
         align-items: center;
 
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 13px;
@@ -1097,7 +1097,7 @@ const FileStack = styled(Stack)`
         align-items: center;
 
         p {
-            font-family: 'Inter';
+            font-family: 'Inter', sans-serif;
             font-style: normal;
             font-weight: 700;
             font-size: 8px;
@@ -1119,7 +1119,7 @@ const FileStack = styled(Stack)`
     }
 
     .filename {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 13px;
@@ -1129,7 +1129,7 @@ const FileStack = styled(Stack)`
 
     .filesize {
         color: #838389;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 400;
         font-size: 13px;
@@ -1150,7 +1150,7 @@ const StatusItem = styled(Stack)`
         background: ${({ tcolors }) => tcolors};
     }
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -1175,7 +1175,7 @@ const PopupForm = styled(Stack)`
     }
 
     .pop_title {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 700;
         font-size: 20px;
@@ -1185,7 +1185,7 @@ const PopupForm = styled(Stack)`
     }
 
     .list_text {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 400;
         font-size: 16px;

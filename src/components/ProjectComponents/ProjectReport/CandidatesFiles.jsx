@@ -18,14 +18,20 @@ import {
 import { BsListUl } from 'react-icons/bs'
 import { RiLayoutGridFill } from 'react-icons/ri'
 import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
+import CandidatesFilesPopup from './CandidatesFilesPopup'
 
 const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
     const [filesList, setFilesList] = React.useState([])
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [selectedFile, setSelectedFile] = React.useState(null)
+    const [projectId, setProjectId] = React.useState('')
+    const [fileUploadActive, setFileUploadActive] = React.useState(false)
 
     useEffect(() => {
+         if (values !== null && values._id) {
+             setProjectId(values._id)
+         }
         if (values !== null && values.files.length > 0) {
             setFilesList(values.files)
             console.log(values.files, 'gill')
@@ -96,10 +102,17 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
                     justifyContent='space-between'
                     className='formtitle'>
                     <Box>
-                        <h1>Files</h1>
+                        <h1>Candidate Files</h1>
                     </Box>
 
-                    <Stack direction='row'>
+                    <Stack direction='row' alignItems='center;'>
+                        <Box
+                            className={`uploadBtn`}
+                            onClick={() =>
+                                setFileUploadActive(!fileUploadActive)
+                            }>
+                            Upload file
+                        </Box>
                         <Box
                             onClick={() => setSelectedView('grid')}
                             className={`icon ${
@@ -338,6 +351,11 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
                     )}
                 </Stack>
             </Box>
+            <CandidatesFilesPopup
+                projectId={projectId}
+                fileUploadActive={fileUploadActive}
+                setFileUploadActive={setFileUploadActive}
+            />
         </FormContainer>
     )
 }
@@ -369,6 +387,15 @@ const FormContainer = styled(Box)`
             line-height: 137.5%;
             color: #111827;
         }
+    }
+    .uploadBtn {
+        padding: 6px 12px;
+        background: #f4797f;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
+        border-radius: 6px;
+        color: #ffffff;
+        letter-spacing: 0.02em;
+        cursor: pointer;
     }
 
     .icon {

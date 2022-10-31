@@ -243,6 +243,9 @@ ipcMain.handle(
     'update-project-statuses',
     projectController.updateProjectStatuses
 )
+
+//handle candidate files
+ipcMain.handle('update-candidate-files', projectController.updateCandidateFiles)
 //handle viva files
 ipcMain.handle('update-viva-files', projectController.updateVivaFiles)
 

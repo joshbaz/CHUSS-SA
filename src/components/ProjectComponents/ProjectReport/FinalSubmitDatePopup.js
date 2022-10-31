@@ -19,23 +19,23 @@ import {
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-    updateVivaDefense,
+    updateSubmissionDate,
     reset,
 } from '../../../store/features/project/projectSlice'
 import { useNavigate } from 'react-router-dom'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 
-const VivaPopupDefense = ({
-    defenseUploadActive,
-    setDefenseUploadActive,
-    valuess,
+const FinalSubmitDatePopup = ({
     projectId,
+    submissionDateActive,
+    setSubmissionDateActive,
+    valuess
 }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [helperFunctions, setHelperFunctions] = React.useState(null)
     const [filesList, setFilesList] = React.useState([])
-    const [dateOfDefense, setDateOfDefense] = React.useState('')
+    const [dateOfSubmission, setDateOfSubmission] = React.useState('')
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
@@ -45,80 +45,83 @@ const VivaPopupDefense = ({
      * function to cancel submit change
      */
 
-    const cancelDefenseUpload = () => {
-        //setNewActiveStatus(activeDataStatus)
+    const cancelSubmissionUpload = () => {
+        
+        setIsSubmittingp(false)
+        setSubmissionDateActive(false)
 
-        setDefenseUploadActive(false)
-        //setIsSubmittingp(false)
         // onClose()
     }
-    React.useEffect(() => {
-        if (valuess !== null && valuess.DateOfDefense !== null) {
-            setDateOfDefense(valuess.DateOfDefense)
-        }
-    }, [valuess])
 
-    const validationSchema = yup.object().shape({
-        DateOfDefense: yup.string().required('defense date is required'),
-    })
+     React.useEffect(() => {
+         if (valuess !== null && valuess.FinalSubmissionDate !== null) {
+             setDateOfSubmission(valuess.FinalSubmissionDate)
+         }
+     }, [valuess])
 
-    const initialValues = {
-        DateOfDefense: dateOfDefense ? dateOfDefense : '',
-    }
+      const validationSchema = yup.object().shape({
+          FinalSubmissionDate: yup
+              .string()
+              .required('submission date is required'),
+      })
 
-    /** run after submission awaiting for response */
+      const initialValues = {
+          FinalSubmissionDate: dateOfSubmission ? dateOfSubmission : '',
+      }
 
-    React.useEffect(() => {
-        if (isError) {
-            if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'error',
-                    duration: 10000,
-                    isClosable: true,
-                })
-                setIsSubmittingp(false)
-                helperFunctions.setSubmitting(false)
-                setIsSubmittingp(false)
-            }
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+      /** run after submission awaiting for response */
 
-            dispatch(reset())
-        }
+      React.useEffect(() => {
+          if (isError) {
+              if (helperFunctions !== null) {
+                  toast({
+                      position: 'top',
+                      title: message.message,
+                      status: 'error',
+                      duration: 10000,
+                      isClosable: true,
+                  })
+                  setIsSubmittingp(false)
+                  helperFunctions.setSubmitting(false)
+                  setIsSubmittingp(false)
+              }
+              toast({
+                  position: 'top',
+                  title: message.message,
+                  status: 'error',
+                  duration: 10000,
+                  isClosable: true,
+              })
 
-        if (isSuccess && isSubmittingp) {
-            if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
-                helperFunctions.resetForm()
-                helperFunctions.setSubmitting(false)
-                setIsSubmittingp(false)
-                setHelperFunctions(null)
+              dispatch(reset())
+          }
 
-                // setDefenseUploadActive(false)
-                dispatch(reset())
-            }
-        }
-        dispatch(reset())
-    }, [isError, isSuccess, message, dispatch])
+          if (isSuccess && isSubmittingp) {
+              if (helperFunctions !== null) {
+                  toast({
+                      position: 'top',
+                      title: message.message,
+                      status: 'success',
+                      duration: 10000,
+                      isClosable: true,
+                  })
+                  helperFunctions.resetForm()
+                  helperFunctions.setSubmitting(false)
+                  setIsSubmittingp(false)
+                  setHelperFunctions(null)
+
+                  // setDefenseUploadActive(false)
+                  dispatch(reset())
+              }
+          }
+          dispatch(reset())
+      }, [isError, isSuccess, message, dispatch])
     return (
         <Modal
             w='100vw'
-            isOpen={defenseUploadActive}
+            isOpen={submissionDateActive}
             p='0'
-            onClose={() => setDefenseUploadActive(!defenseUploadActive)}>
+            onClose={() => setSubmissionDateActive(!submissionDateActive)}>
             <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
             <ModalContent p='0'>
                 <ModalBody p='0'>
@@ -133,7 +136,7 @@ const VivaPopupDefense = ({
                                     ...values,
                                     projectId,
                                 }
-                                dispatch(updateVivaDefense(values2))
+                                dispatch(updateSubmissionDate(values2))
                             }
                         }}>
                         {({
@@ -164,7 +167,7 @@ const VivaPopupDefense = ({
                                             alignItems='center'
                                             justifyContent='space-between'>
                                             <Box>
-                                                <h1>Viva Defense Date</h1>
+                                                <h1>Final Submission Date</h1>
                                             </Box>
                                         </Stack>
 
@@ -181,20 +184,22 @@ const VivaPopupDefense = ({
                                                     placeholder='Select Date and Time'
                                                     size='md'
                                                     type='date'
-                                                    name='DateOfDefense'
+                                                    name='FinalSubmissionDate'
                                                     value={
                                                         values !== null &&
-                                                        values.DateOfDefense
-                                                            ? values.DateOfDefense
+                                                        values.FinalSubmissionDate
+                                                            ? values.FinalSubmissionDate
                                                             : ''
                                                     }
                                                     onChange={handleChange}
                                                 />
 
                                                 {errors &&
-                                                errors.DateOfDefense ? (
+                                                errors.FinalSubmissionDate ? (
                                                     <ErrorMsg>
-                                                        {errors.DateOfDefense}
+                                                        {
+                                                            errors.FinalSubmissionDate
+                                                        }
                                                     </ErrorMsg>
                                                 ) : null}
                                             </Box>
@@ -213,7 +218,7 @@ const VivaPopupDefense = ({
                                             variant='outline'
                                             className='cancel_button'
                                             onClick={() =>
-                                                cancelDefenseUpload()
+                                                cancelSubmissionUpload()
                                             }>
                                             Cancel
                                         </Button>
@@ -237,7 +242,7 @@ const VivaPopupDefense = ({
     )
 }
 
-export default VivaPopupDefense
+export default FinalSubmitDatePopup
 
 const PopupForm = styled(Stack)`
     width: 100%;
@@ -271,7 +276,7 @@ const PopupForm = styled(Stack)`
     }
 
     .list_text {
-        font-family: 'Inter', sans-serif;
+        
         font-style: normal;
         font-weight: 400;
         font-size: 16px;

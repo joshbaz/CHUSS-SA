@@ -25,6 +25,12 @@ const updateProjectStatus = async (values) => {
     const response = await window.electronAPI.updateProjectStatus(values)
     return response
 }
+
+//candidate files
+const updateCandidateFiles = async (values) => {
+    const response = await window.electronAPI.updateCandidateFiles(values)
+    return response
+}
 //viva files
 const updateVivaFiles = async (values) => {
     const response = await window.electronAPI.updateVivaFiles(values)
@@ -60,6 +66,7 @@ const projectService = {
     getPProjects,
     getIndividualProject,
     projectUpdate,
+    updateCandidateFiles,
     updateProjectStatus,
     updateVivaFiles,
     updateVivaDefense,

@@ -83,6 +83,19 @@ export const updateProjectStatus = createAsyncThunk(
     }
 )
 
+/** update project candidate files */
+export const updateCandidateFiles = createAsyncThunk(
+    'projects/candidatefiles/update',
+    async (Info, thunkAPI) => {
+        const updateAttempt = await projectService.updateCandidateFiles(Info)
+        if (updateAttempt.type === 'success') {
+            return updateAttempt
+        } else {
+            return thunkAPI.rejectWithValue(updateAttempt.message)
+        }
+    }
+)
+
 /** update project viva files */
 export const updateVivaFiles = createAsyncThunk(
     'projects/vivafiles/update',
@@ -113,7 +126,7 @@ export const updateVivaDefense = createAsyncThunk(
 export const updateFinalSubmission = createAsyncThunk(
     'projects/finalsubmission/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateVivaDefense(Info)
+        const updateAttempt = await projectService.updateFinalSubmission(Info)
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
@@ -225,6 +238,21 @@ export const projectSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(updateProjectStatus.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            //project candidate files update
+            .addCase(updateCandidateFiles.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(updateCandidateFiles.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(updateCandidateFiles.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload
