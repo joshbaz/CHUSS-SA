@@ -2,8 +2,11 @@ import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Text } from '@chakra-ui/react'
 import { BsInfoCircleFill } from 'react-icons/bs'
+import { AiOutlinePlus } from 'react-icons/ai'
+import { useNavigate } from 'react-router-dom'
 
 const ProjectDetails = ({ values }) => {
+    let routeNavigate = useNavigate()
     return (
         <Container>
             <Box className='form_container'>
@@ -56,128 +59,377 @@ const ProjectDetails = ({ values }) => {
                         </Box>
                     </Stack>
 
-                    <Stack direction='row' w='100%' spacing='30px'>
-                        <Stack direction='column' w='50%'>
-                            <Box className='form_subtitle'>
-                                <h1>Registration</h1>
-                            </Box>
-                            <Stack spacing={'8px'}>
+                    <Stack direction='column' w='100%' spacing='30px'>
+                        {/** Members */}
+                        <Stack direction='row' spacing='5%'>
+                            {/** supervisors */}
+                            <Stack direction='column' w='50%'>
+                                {/** title and button */}
                                 <Stack
                                     direction='row'
                                     alignItems='center'
-                                    spacing='15px'>
-                                    <label htmlFor='phone'>
-                                        <Stack
-                                            direction={'row'}
-                                            alignItems='center'
-                                            spacing='8px'>
-                                            <Text>Semester</Text>
-                                        </Stack>
-                                    </label>
-
-                                    <Box className='form_input'>
-                                        <input
-                                            readOnly
-                                            value={
-                                                values !== null &&
-                                                values.student.semester
-                                                    ? values.student.semester
-                                                    : ''
-                                            }
-                                            id='phone'
-                                        />
+                                    justifyContent='space-between'>
+                                    <Box className='form_subtitle'>
+                                        <h1>Supervisors</h1>
                                     </Box>
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        onClick={() =>
+                                            routeNavigate(
+                                                `/projects/supervisors/assign/${values._id}`
+                                            )
+                                        }
+                                        style={{ cursor: 'pointer' }}>
+                                        <Box className='add_examiners'>
+                                            <AiOutlinePlus />
+                                        </Box>
+                                        <Box className='s_name'>
+                                            <Text>Assign Supervisor</Text>
+                                        </Box>
+                                    </Stack>
                                 </Stack>
+                                {/** lists */}
+                                <Stack spacing={'8px'}>
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        spacing='15px'>
+                                        <label htmlFor='phone'>
+                                            <Stack
+                                                direction={'row'}
+                                                alignItems='center'
+                                                spacing='8px'>
+                                                <Text>
+                                                    Name of Supervisor 1
+                                                </Text>
+                                            </Stack>
+                                        </label>
 
+                                        <Box className='form_input'>
+                                            <input
+                                                readOnly
+                                                value={
+                                                    values !== null &&
+                                                    values.supervisors.length >
+                                                        0
+                                                        ? values.supervisors[0]
+                                                              .name
+                                                        : ''
+                                                }
+                                                id='phone'
+                                            />
+                                        </Box>
+                                    </Stack>
+
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        spacing='15px'>
+                                        <label htmlFor='email'>
+                                            <Stack
+                                                direction={'row'}
+                                                alignItems='center'
+                                                spacing='8px'>
+                                                <Text>
+                                                    Name of Supervisor 2
+                                                </Text>
+                                            </Stack>
+                                        </label>
+
+                                        <Box className='form_input'>
+                                            <input
+                                                readOnly
+                                                value={
+                                                    values !== null &&
+                                                    values.supervisors.length >
+                                                        1 &&
+                                                    values.supervisors[1].name
+                                                        ? values.supervisors[1]
+                                                              .name
+                                                        : ''
+                                                }
+                                                id='email'
+                                            />
+                                        </Box>
+                                    </Stack>
+                                </Stack>
+                            </Stack>
+
+                            {/** doctoral members */}
+                            <Stack direction='column' w='50%'>
+                                {/** title and button */}
                                 <Stack
                                     direction='row'
                                     alignItems='center'
-                                    spacing='15px'>
-                                    <label htmlFor='email'>
-                                        <Stack
-                                            direction={'row'}
-                                            alignItems='center'
-                                            spacing='8px'>
-                                            <Text>Academic Year</Text>
-                                        </Stack>
-                                    </label>
-
-                                    <Box className='form_input'>
-                                        <input
-                                            readOnly
-                                            value={
-                                                values !== null &&
-                                                values.student.academicYear
-                                                    ? values.student
-                                                          .academicYear
-                                                    : ''
-                                            }
-                                            id='email'
-                                        />
+                                    justifyContent='space-between'>
+                                    <Box className='form_subtitle'>
+                                        <h1>Doctoral Com. Members</h1>
                                     </Box>
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        onClick={() =>
+                                            routeNavigate(
+                                                `/projects/doctoralmember/assign/${values._id}`
+                                            )
+                                        }
+                                        style={{ cursor: 'pointer' }}>
+                                        <Box className='add_examiners'>
+                                            <AiOutlinePlus />
+                                        </Box>
+                                        <Box className='s_name'>
+                                            <Text>Assign Member</Text>
+                                        </Box>
+                                    </Stack>
+                                </Stack>
+                                {/** lists */}
+                                <Stack spacing={'8px'}>
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        spacing='15px'>
+                                        <label htmlFor='phone'>
+                                            <Stack
+                                                direction={'row'}
+                                                alignItems='center'
+                                                spacing='8px'>
+                                                <Text>
+                                                    Name of Supervisor 1
+                                                </Text>
+                                            </Stack>
+                                        </label>
+
+                                        <Box className='form_input'>
+                                            <input
+                                                readOnly
+                                                value={
+                                                    values !== null &&
+                                                    values.supervisors.length >
+                                                        0
+                                                        ? values.supervisors[0]
+                                                              .name
+                                                        : ''
+                                                }
+                                                id='phone'
+                                            />
+                                        </Box>
+                                    </Stack>
+
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        spacing='15px'>
+                                        <label htmlFor='email'>
+                                            <Stack
+                                                direction={'row'}
+                                                alignItems='center'
+                                                spacing='8px'>
+                                                <Text>
+                                                    Name of Supervisor 2
+                                                </Text>
+                                            </Stack>
+                                        </label>
+
+                                        <Box className='form_input'>
+                                            <input
+                                                readOnly
+                                                value={
+                                                    values !== null &&
+                                                    values.supervisors.length >
+                                                        1 &&
+                                                    values.supervisors[1].name
+                                                        ? values.supervisors[1]
+                                                              .name
+                                                        : ''
+                                                }
+                                                id='email'
+                                            />
+                                        </Box>
+                                    </Stack>
                                 </Stack>
                             </Stack>
                         </Stack>
 
-                        {/** academic details */}
-                        <Stack direction='column' w='50%'>
+                        {/** Admissions */}
+                        <Stack direction='column' w='100%'>
                             <Box className='form_subtitle'>
-                                <h1>Supervisors</h1>
+                                <h1>Admissions</h1>
                             </Box>
-                            <Stack spacing={'8px'}>
-                                <Stack
-                                    direction='row'
-                                    alignItems='center'
-                                    spacing='15px'>
-                                    <label htmlFor='phone'>
-                                        <Stack
-                                            direction={'row'}
-                                            alignItems='center'
-                                            spacing='8px'>
-                                            <Text>Name of Supervisor 1</Text>
-                                        </Stack>
-                                    </label>
 
-                                    <Box className='form_input'>
-                                        <input
-                                            readOnly
-                                            value={
-                                                values !== null &&
-                                                values.supervisors.length > 0
-                                                    ? values.supervisors[0].name
-                                                    : ''
-                                            }
-                                            id='phone'
-                                        />
-                                    </Box>
+                            {/** lists of admission */}
+                            <Stack direction='row' width='100%' spacing='5%'>
+                                {/** provisional */}
+                                <Stack spacing={'8px'} width='50%'>
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        spacing='15px'>
+                                        <label htmlFor='phone'>
+                                            <Stack
+                                                direction={'row'}
+                                                alignItems='center'
+                                                spacing='8px'>
+                                                <Text>Type</Text>
+                                            </Stack>
+                                        </label>
+
+                                        <Box className='form_input'>
+                                            <input
+                                                readOnly
+                                                value={
+                                                    values !== null &&
+                                                    values.student.semester
+                                                        ? values.student
+                                                              .semester
+                                                        : ''
+                                                }
+                                                id='phone'
+                                            />
+                                        </Box>
+                                    </Stack>
+
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        spacing='15px'>
+                                        <label htmlFor='email'>
+                                            <Stack
+                                                direction={'row'}
+                                                alignItems='center'
+                                                spacing='8px'>
+                                                <Text>Date</Text>
+                                            </Stack>
+                                        </label>
+
+                                        <Box className='form_input'>
+                                            <input
+                                                readOnly
+                                                value={
+                                                    values !== null &&
+                                                    values.student.academicYear
+                                                        ? values.student
+                                                              .academicYear
+                                                        : ''
+                                                }
+                                                id='email'
+                                            />
+                                        </Box>
+                                    </Stack>
+
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        spacing='15px'>
+                                        <label htmlFor='email'>
+                                            <Stack
+                                                direction={'row'}
+                                                alignItems='center'
+                                                spacing='8px'>
+                                                <Text>Semester</Text>
+                                            </Stack>
+                                        </label>
+
+                                        <Box className='form_input'>
+                                            <input
+                                                readOnly
+                                                value={
+                                                    values !== null &&
+                                                    values.student.academicYear
+                                                        ? values.student
+                                                              .academicYear
+                                                        : ''
+                                                }
+                                                id='email'
+                                            />
+                                        </Box>
+                                    </Stack>
                                 </Stack>
+                                {/** full */}
+                                <Stack spacing={'8px'} width='50%'>
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        spacing='15px'>
+                                        <label htmlFor='phone'>
+                                            <Stack
+                                                direction={'row'}
+                                                alignItems='center'
+                                                spacing='8px'>
+                                                <Text>Type</Text>
+                                            </Stack>
+                                        </label>
 
-                                <Stack
-                                    direction='row'
-                                    alignItems='center'
-                                    spacing='15px'>
-                                    <label htmlFor='email'>
-                                        <Stack
-                                            direction={'row'}
-                                            alignItems='center'
-                                            spacing='8px'>
-                                            <Text>Name of Supervisor 2</Text>
-                                        </Stack>
-                                    </label>
+                                        <Box className='form_input'>
+                                            <input
+                                                readOnly
+                                                value={
+                                                    values !== null &&
+                                                    values.student.semester
+                                                        ? values.student
+                                                              .semester
+                                                        : ''
+                                                }
+                                                id='phone'
+                                            />
+                                        </Box>
+                                    </Stack>
 
-                                    <Box className='form_input'>
-                                        <input
-                                            readOnly
-                                            value={
-                                                values !== null &&
-                                                values.supervisors.length > 1 &&
-                                                values.supervisors[1].name
-                                                    ? values.supervisors[1].name
-                                                    : ''
-                                            }
-                                            id='email'
-                                        />
-                                    </Box>
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        spacing='15px'>
+                                        <label htmlFor='email'>
+                                            <Stack
+                                                direction={'row'}
+                                                alignItems='center'
+                                                spacing='8px'>
+                                                <Text>Date</Text>
+                                            </Stack>
+                                        </label>
+
+                                        <Box className='form_input'>
+                                            <input
+                                                readOnly
+                                                value={
+                                                    values !== null &&
+                                                    values.student.academicYear
+                                                        ? values.student
+                                                              .academicYear
+                                                        : ''
+                                                }
+                                                id='email'
+                                            />
+                                        </Box>
+                                    </Stack>
+
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        spacing='15px'>
+                                        <label htmlFor='email'>
+                                            <Stack
+                                                direction={'row'}
+                                                alignItems='center'
+                                                spacing='8px'>
+                                                <Text>Semester</Text>
+                                            </Stack>
+                                        </label>
+
+                                        <Box className='form_input'>
+                                            <input
+                                                readOnly
+                                                value={
+                                                    values !== null &&
+                                                    values.student.academicYear
+                                                        ? values.student
+                                                              .academicYear
+                                                        : ''
+                                                }
+                                                id='email'
+                                            />
+                                        </Box>
+                                    </Stack>
                                 </Stack>
                             </Stack>
                         </Stack>
@@ -191,7 +443,7 @@ const ProjectDetails = ({ values }) => {
 export default ProjectDetails
 
 const Container = styled(Box)`
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -218,13 +470,27 @@ const Container = styled(Box)`
         }
     }
 
+    .add_examiners {
+        width: 24px;
+        height: 24px;
+        border: 1px dashed #f4797f;
+        border-radius: 6px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #5e5c60;
+        font-size: 15px;
+        background: #eeeeef;
+    }
+
     .s_name {
-        color: #20202a;
-        font-family: 'Inter';
+        color: #5e5c60;
+
         font-style: normal;
         font-weight: 500;
-        font-size: 21px;
-        line-height: 20px;
+        font-size: 12px;
+        line-height: 15px;
+        letter-spacing: 0.02em;
     }
 
     label {
@@ -243,7 +509,7 @@ const Container = styled(Box)`
         height: 79px;
         padding: 7px 15px;
 
-        font-family: 'Inter';
+       
         font-style: normal;
         font-weight: 500;
         font-size: 14px;
@@ -263,7 +529,7 @@ const Container = styled(Box)`
     }
 
     .form_subtitle {
-        font-family: 'Inter';
+      
         font-style: normal;
         font-weight: 700;
         font-size: 14px;
@@ -277,7 +543,7 @@ const Container = styled(Box)`
         border-radius: 6px;
         text-indent: 21px;
         height: 32px;
-        font-family: 'Inter';
+      
         font-style: normal;
         font-weight: 500;
         font-size: 13px;

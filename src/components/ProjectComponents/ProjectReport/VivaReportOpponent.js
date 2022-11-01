@@ -56,7 +56,8 @@ const TableHead = [
     },
     { title: '' },
 ]
-const ExaminersReports = ({ values }) => {
+
+const VivaReportOpponent = () => {
     const [activityDrpdown, setActivityDropDown] = React.useState(false)
     const [reportLists, setReportLists] = React.useState([])
     let activeDrop = React.useRef(null)
@@ -64,71 +65,29 @@ const ExaminersReports = ({ values }) => {
         setActivityDropDown(!activityDrpdown)
     }
     let routeNavigate = useNavigate()
-
-    useEffect(() => {
-        if (values !== null && values.examinerReports.length > 0) {
-            let arrayData = []
-            values.examinerReports.filter((data, index) => {
-                let newData = { ...data }
-
-                let examinerData2 = values.examiners.find(
-                    (element) =>
-                        element.examinerId._id === data.reportId.examiner
-                )
-                newData.examinerDetails = examinerData2
-
-                arrayData.push(newData)
-            })
-
-            setReportLists(arrayData)
-        } else {
-            setReportLists([])
-        }
-    }, [values])
     return (
-        <Container>
+        <Container p='25px 20px'>
             <Box className='form_container'>
                 {/** form title */}
                 <Stack
-                    className='formtitle'
+                    className='form_subtitle'
                     direction='row'
                     w='100%'
                     alignItems='center'
                     justifyContent='space-between'>
                     <Box>
-                        <h1>Examiners reports</h1>
+                        <h1>Opponent reports</h1>
                     </Box>
                 </Stack>
 
                 {/** details */}
                 <Stack
-                    p='25px 20px'
+                    p='25px 0px'
                     direction='column'
                     className='formfields'
                     alignItems='space-between'
                     spacing='20px'
                     h='100%'>
-                    {/*
-                
-                <Stack
-                        w='140px'
-                        direction='row'
-                        alignItems='center'
-                        onClick={() =>
-                            routeNavigate(
-                                '/projects/examiners/createreport/:s_id/:e_id'
-                            )
-                        }
-                        style={{ cursor: 'pointer' }}>
-                        <Box className='add_examiners'>
-                            <AiOutlinePlus />
-                        </Box>
-                        <Box className='s_name'>
-                            <Text>Upload Report</Text>
-                        </Box>
-                    </Stack>
-                */}
-
                     {/** table */}
                     <Box>
                         <Table size='sm'>
@@ -286,20 +245,10 @@ const ExaminersReports = ({ values }) => {
                                                                     </Box>
                                                                 </MenuButton>
                                                                 <MenuList>
-                                                                    <MenuItem
-                                                                        onClick={() =>
-                                                                            routeNavigate(
-                                                                                `/projects/examiners/updatereport/${values._id}/${data.reportId._id}`
-                                                                            )
-                                                                        }>
+                                                                    <MenuItem>
                                                                         Edit
                                                                     </MenuItem>
-                                                                    <MenuItem
-                                                                        onClick={() =>
-                                                                            routeNavigate(
-                                                                                `/projects/examiners/viewreport/${values._id}/${data.reportId._id}`
-                                                                            )
-                                                                        }>
+                                                                    <MenuItem>
                                                                         View
                                                                     </MenuItem>
                                                                     <MenuItem>
@@ -503,35 +452,20 @@ const ExaminersReports = ({ values }) => {
     )
 }
 
-export default ExaminersReports
+export default VivaReportOpponent
 
 const Container = styled(Box)`
     font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
-        min-height: 288px;
+        min-height: 188px;
         height: 100%;
         background: #ffffff;
         border-radius: 9px;
     }
 
-    .formtitle {
-        height: 54px;
-        width: 100%;
-
-        border-bottom: 1px solid #ebeefa;
-        padding: 0 30px;
-        h1 {
-            width: 100%;
-
-            font-style: normal;
-            font-weight: 600;
-            font-size: 18px;
-            line-height: 137.5%;
-            color: #111827;
-        }
-    }
+   
 
     .add_examiners {
         width: 24px;
@@ -548,7 +482,7 @@ const Container = styled(Box)`
 
     .s_name {
         color: #5e5c60;
-        
+
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -556,7 +490,6 @@ const Container = styled(Box)`
         letter-spacing: 0.02em;
     }
     .form_subtitle {
-       
         font-style: normal;
         font-weight: 700;
         font-size: 14px;
@@ -567,7 +500,7 @@ const Container = styled(Box)`
 
     .table_head {
         color: #5e5c60 !important;
-        
+
         font-style: normal;
         font-weight: 500;
         font-size: 12px !important;
@@ -622,7 +555,7 @@ const Container = styled(Box)`
     .sub_date {
         height: 20px;
         color: #3a3a43;
-    
+
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -665,7 +598,6 @@ const StatusItem = styled(Stack)`
         height: 6px;
     }
     p {
-        
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -780,3 +712,4 @@ const NoItems = styled(Box)`
     font-weight: 500;
     font-size: 14px;
 `
+

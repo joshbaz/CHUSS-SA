@@ -56,7 +56,7 @@ const TableHead = [
     },
     { title: '' },
 ]
-const ExaminersReports = ({ values }) => {
+const RegistrationReports = ({ values }) => {
     const [activityDrpdown, setActivityDropDown] = React.useState(false)
     const [reportLists, setReportLists] = React.useState([])
     let activeDrop = React.useRef(null)
@@ -96,8 +96,10 @@ const ExaminersReports = ({ values }) => {
                     alignItems='center'
                     justifyContent='space-between'>
                     <Box>
-                        <h1>Examiners reports</h1>
+                        <h1>Registration</h1>
                     </Box>
+
+                    <Box className={`registrationBtn`}>Add registration</Box>
                 </Stack>
 
                 {/** details */}
@@ -503,7 +505,7 @@ const ExaminersReports = ({ values }) => {
     )
 }
 
-export default ExaminersReports
+export default RegistrationReports
 
 const Container = styled(Box)`
     font-family: 'Inter', sans-serif;
@@ -533,6 +535,16 @@ const Container = styled(Box)`
         }
     }
 
+    .registrationBtn {
+        padding: 6px 12px;
+        background: #f4797f;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
+        border-radius: 6px;
+        color: #ffffff;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+    }
+
     .add_examiners {
         width: 24px;
         height: 24px;
@@ -548,7 +560,7 @@ const Container = styled(Box)`
 
     .s_name {
         color: #5e5c60;
-        
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -556,7 +568,7 @@ const Container = styled(Box)`
         letter-spacing: 0.02em;
     }
     .form_subtitle {
-       
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 700;
         font-size: 14px;
@@ -567,7 +579,7 @@ const Container = styled(Box)`
 
     .table_head {
         color: #5e5c60 !important;
-        
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px !important;
@@ -622,7 +634,7 @@ const Container = styled(Box)`
     .sub_date {
         height: 20px;
         color: #3a3a43;
-    
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -665,7 +677,7 @@ const StatusItem = styled(Stack)`
         height: 6px;
     }
     p {
-        
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -676,7 +688,6 @@ const StatusItem = styled(Stack)`
 `
 
 const TableDropDown = styled(Stack)`
-    font-family: 'Inter', sans-serif;
     padding: 10px 0 0 52px;
     .icon_add,
     .icon_stat,
@@ -709,6 +720,7 @@ const TableDropDown = styled(Stack)`
     }
 
     .activities {
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;
@@ -728,7 +740,6 @@ const TableDropDown = styled(Stack)`
 `
 
 const ListStack = styled(Stack)`
-font-family: 'Inter', sans-serif;
     position: relative;
     height: 100%;
     list-style-type: none;
@@ -768,7 +779,6 @@ font-family: 'Inter', sans-serif;
 `
 
 const NoItems = styled(Box)`
-    font-family: 'Inter', sans-serif;
     position: absolute;
     height: 100%;
     width: 100%;
@@ -776,6 +786,7 @@ const NoItems = styled(Box)`
     justify-content: center;
     align-items: center;
 
+    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;

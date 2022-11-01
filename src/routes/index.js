@@ -31,6 +31,10 @@ import AssignOpponent from '../views/DesktopViews/Projects/Opponents/AssignOppon
 import CreateProjectOpponent from '../views/DesktopViews/Projects/Opponents/CreateProjectOpponent'
 import Login from '../views/AuthViews/Login'
 import Dashboard from '../views/DesktopViews/Dashboard/Dashboard'
+import AssignSupervisor from '../views/DesktopViews/Projects/Supervisors/AssignSupervisor'
+import CreateProjectSupervisor from '../views/DesktopViews/Projects/Supervisors/CreateProjectSupervisor'
+import AssignDoctoralMember from '../views/DesktopViews/Projects/DoctoralMembers/AssignDoctoralMember'
+import CreateProjectDMember from '../views/DesktopViews/Projects/DoctoralMembers/CreateProjectDMember'
 const AllRoutes = () => {
     return (
         <HashRouter>
@@ -55,6 +59,32 @@ const AllRoutes = () => {
                         exact
                         path='/projects/projectreport/:id'
                         element={<ProjectReport />}
+                    />
+
+                    {/** route for assign supervisor */}
+                    <Route
+                        exact
+                        path='/projects/supervisors/assign/:pid'
+                        element={<AssignSupervisor />}
+                    />
+                    {/** create supervisors if not found in assign inside project*/}
+                    <Route
+                        exact
+                        path='/projects/supervisors/p_create/:pid'
+                        element={<CreateProjectSupervisor />}
+                    />
+
+                    {/** route for assign doctoral comm member */}
+                    <Route
+                        exact
+                        path='/projects/doctoralmember/assign/:pid'
+                        element={<AssignDoctoralMember />}
+                    />
+                    {/** create doctoral comm member if not found in assign inside project*/}
+                    <Route
+                        exact
+                        path='/projects/doctoralmember/p_create/:pid'
+                        element={<CreateProjectDMember />}
                     />
                     {/** route for assign opponents */}
                     <Route

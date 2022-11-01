@@ -37,6 +37,7 @@ import {
 import { FiCheck } from 'react-icons/fi'
 import VivaPopupFileUpload from './VivaPopupFileUpload'
 import VivaPopupDefense from './VivaPopupDefense'
+import VivaReportOpponent from './VivaReportOpponent'
 
 const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
@@ -550,6 +551,17 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                 ) : null}
                             </Stack>
                         </Stack>
+                    </Stack>
+
+                    {/** opponent reports */}
+                    <Stack
+                        p='25px 0px'
+                        borderBottom='1px solid #EEEEEF'
+                        direction='column'
+                        className='formfields'
+                        alignItems='space-between'
+                        spacing='15px'>
+                        <VivaReportOpponent />
                     </Stack>
 
                     {/** files */}

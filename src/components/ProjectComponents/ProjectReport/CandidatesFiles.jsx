@@ -363,7 +363,7 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
 export default CandidatesFiles
 
 const FormContainer = styled(Box)`
-    font-family: Inter;
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -424,7 +424,7 @@ const FormContainer = styled(Box)`
         justify-content: center;
         align-items: center;
 
-        font-family: 'Inter';
+        
         font-style: normal;
         font-weight: 500;
         font-size: 13px;
@@ -442,6 +442,7 @@ const FormContainer = styled(Box)`
 `
 
 const FileStack = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     .icon_wrap {
         display: flex;
         justify-content: center;
@@ -455,7 +456,6 @@ const FileStack = styled(Stack)`
         align-items: center;
 
         p {
-            font-family: 'Inter';
             font-style: normal;
             font-weight: 700;
             font-size: 8px;
@@ -477,7 +477,6 @@ const FileStack = styled(Stack)`
     }
 
     .filename {
-        font-family: 'Inter';
         font-style: normal;
         font-weight: 500;
         font-size: 13px;
@@ -487,7 +486,7 @@ const FileStack = styled(Stack)`
 
     .filesize {
         color: #838389;
-        font-family: 'Inter';
+
         font-style: normal;
         font-weight: 400;
         font-size: 13px;

@@ -23,6 +23,8 @@ import {
 import ProgressStatus from '../../../components/ProjectComponents/ProjectReport/ProgressStatus'
 import VivaReport from '../../../components/ProjectComponents/ProjectReport/VivaReport'
 import FinalSubmission from '../../../components/ProjectComponents/ProjectReport/FinalSubmission'
+import AdmissionStatus from '../../../components/ProjectComponents/ProjectReport/AdmissionStatus'
+import RegistrationReports from '../../../components/ProjectComponents/ProjectReport/RegistrationReports'
 
 const ProjectReport = ({ ...props }) => {
     let routeNavigate = useNavigate()
@@ -134,6 +136,7 @@ const ProjectReport = ({ ...props }) => {
                                     direction='column'
                                     w='30%'
                                     spacing='20px'>
+                                    <AdmissionStatus values={individual} />
                                     <GradingProgress values={individual} />
 
                                     <AssignedExaminers values={individual} />
@@ -142,6 +145,7 @@ const ProjectReport = ({ ...props }) => {
 
                             {/** third set */}
                             <Stack>
+                                <RegistrationReports values={individual} />
                                 <CandidatesFiles values={individual} />
                                 {/** table */}
                                 <ExaminersReports values={individual} />
