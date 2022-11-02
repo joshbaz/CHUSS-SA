@@ -428,7 +428,7 @@ const ProjectTable = ({ allTagData }) => {
                                                         }>
                                                         <Box className='supervisor'>
                                                             {
-                                                                data.supervisors
+                                                                data.supervisor
                                                                     .length
                                                             }
                                                         </Box>

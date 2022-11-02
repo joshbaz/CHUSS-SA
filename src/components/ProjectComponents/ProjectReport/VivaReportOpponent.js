@@ -31,7 +31,7 @@ const TableHead = [
         title: '#',
         filter: true,
     },
-    { title: '' },
+
     {
         title: 'Type',
         filter: true,
@@ -42,9 +42,7 @@ const TableHead = [
     {
         title: 'email',
     },
-    {
-        title: 'Grade',
-    },
+
     {
         title: 'Report Status',
     },
@@ -57,7 +55,7 @@ const TableHead = [
     { title: '' },
 ]
 
-const VivaReportOpponent = () => {
+const VivaReportOpponent = ({ values }) => {
     const [activityDrpdown, setActivityDropDown] = React.useState(false)
     const [reportLists, setReportLists] = React.useState([])
     let activeDrop = React.useRef(null)
@@ -65,6 +63,28 @@ const VivaReportOpponent = () => {
         setActivityDropDown(!activityDrpdown)
     }
     let routeNavigate = useNavigate()
+
+    useEffect(() => {
+        if (values !== null && values.opponentReports.length > 0) {
+            let arrayData = []
+            values.opponentReports.filter((data, index) => {
+                let newData = { ...data }
+
+                let examinerData2 = values.opponents.find(
+                    (element) =>
+                        element.opponentId._id === data.reportId.opponent
+                )
+                newData.examinerDetails = examinerData2
+                console.log(newData)
+                arrayData.push(newData)
+            })
+
+            setReportLists(arrayData)
+        } else {
+            setReportLists([])
+        }
+    }, [values])
+    
     return (
         <Container p='25px 20px'>
             <Box className='form_container'>
@@ -148,29 +168,12 @@ const VivaReportOpponent = () => {
                                                     {' '}
                                                     <Tr className='table_row'>
                                                         <Td>1</Td>
-                                                        <Td w='36px'>
-                                                            <Box
-                                                                onClick={
-                                                                    handleDropDown
-                                                                }
-                                                                ref={activeDrop}
-                                                                style={{
-                                                                    color: '#5E5C60',
-                                                                    fontSize:
-                                                                        '16px',
-                                                                }}>
-                                                                {activityDrpdown ? (
-                                                                    <IoIosArrowDropdown />
-                                                                ) : (
-                                                                    <IoIosArrowDropright />
-                                                                )}
-                                                            </Box>
-                                                        </Td>
+
                                                         <Td className='type_examiner'>
                                                             {
                                                                 data
                                                                     .examinerDetails
-                                                                    .examinerId
+                                                                    .opponentId
                                                                     .typeOfExaminer
                                                             }
                                                         </Td>
@@ -178,13 +181,13 @@ const VivaReportOpponent = () => {
                                                             {
                                                                 data
                                                                     .examinerDetails
-                                                                    .examinerId
+                                                                    .opponentId
                                                                     .jobtitle
                                                             }{' '}
                                                             {
                                                                 data
                                                                     .examinerDetails
-                                                                    .examinerId
+                                                                    .opponentId
                                                                     .name
                                                             }
                                                         </Td>
@@ -192,17 +195,11 @@ const VivaReportOpponent = () => {
                                                             {
                                                                 data
                                                                     .examinerDetails
-                                                                    .examinerId
+                                                                    .opponentId
                                                                     .email
                                                             }
                                                         </Td>
-                                                        <Td>
-                                                            {
-                                                                data.reportId
-                                                                    .score
-                                                            }
-                                                            %
-                                                        </Td>
+
                                                         <Td>
                                                             {' '}
                                                             <StatusItem
@@ -246,189 +243,16 @@ const VivaReportOpponent = () => {
                                                                 </MenuButton>
                                                                 <MenuList>
                                                                     <MenuItem>
-                                                                        Edit
+                                                                        Edit Report
                                                                     </MenuItem>
                                                                     <MenuItem>
-                                                                        View
+                                                                        View Report
                                                                     </MenuItem>
-                                                                    <MenuItem>
-                                                                        Delete
-                                                                    </MenuItem>
+                                                                   
                                                                 </MenuList>
                                                             </Menu>
                                                         </Td>
                                                     </Tr>
-                                                    {activityDrpdown && (
-                                                        <Tr
-                                                            position='relative'
-                                                            h='200px'>
-                                                            <Box h='100%'>
-                                                                <TableDropDown
-                                                                    w='100vw'
-                                                                    bg='#ffffff'
-                                                                    position='absolute'>
-                                                                    <ListStack spacing='36px'>
-                                                                        <Stack
-                                                                            className='list-item'
-                                                                            direction='row'
-                                                                            w='100%'
-                                                                            alignItems={
-                                                                                'center'
-                                                                            }>
-                                                                            <Box className='icon_add'>
-                                                                                <RiPencilFill />
-                                                                            </Box>
-
-                                                                            <Box className='activities'>
-                                                                                <Text>
-                                                                                    <span className='activity_identity'>{`{name}`}</span>{' '}
-                                                                                    updated{' '}
-                                                                                    <span className='activity_type'>
-                                                                                        payment
-                                                                                        reciept
-                                                                                    </span>{' '}
-                                                                                    from{' '}
-                                                                                    <span className='activity_text'>
-                                                                                        150000
-                                                                                    </span>{' '}
-                                                                                    to{' '}
-                                                                                    <span className='activity_text'>
-                                                                                        520,000
-                                                                                        Ugx
-                                                                                    </span>{' '}
-                                                                                    on{' '}
-                                                                                    {`{Date}`}{' '}
-                                                                                    @{' '}
-                                                                                    {`{time}`}
-                                                                                </Text>
-                                                                            </Box>
-                                                                        </Stack>
-
-                                                                        <Stack
-                                                                            direction='row'
-                                                                            w='100%'
-                                                                            className='list-item'
-                                                                            alignItems={
-                                                                                'flex-start'
-                                                                            }>
-                                                                            <Box className='icon_stat'>
-                                                                                <IoIosStats />
-                                                                            </Box>
-
-                                                                            <Stack className='activities'>
-                                                                                <Box>
-                                                                                    <Stack
-                                                                                        spacing='5px'
-                                                                                        direction='row'
-                                                                                        className='activities_texts'>
-                                                                                        <Text className='activity_identity'>{`{name}`}</Text>{' '}
-                                                                                        <Text>
-                                                                                            updated
-                                                                                        </Text>
-                                                                                        <span className='activity_type'>
-                                                                                            status
-                                                                                        </span>
-                                                                                        <Text>
-                                                                                            from
-                                                                                        </Text>
-                                                                                        <StatusItem
-                                                                                            className='reviews'
-                                                                                            direction='row'
-                                                                                            alignItems='center'>
-                                                                                            <div />
-                                                                                            <Text>
-                                                                                                {' '}
-                                                                                                In
-                                                                                                Review
-                                                                                            </Text>
-                                                                                        </StatusItem>
-                                                                                        <Text>
-                                                                                            to
-                                                                                        </Text>
-                                                                                        <StatusItem
-                                                                                            className='approved'
-                                                                                            direction='row'
-                                                                                            alignItems='center'>
-                                                                                            <div />
-                                                                                            <Text>
-                                                                                                Approved
-                                                                                                Viva
-                                                                                            </Text>
-                                                                                        </StatusItem>
-                                                                                        <Text>
-                                                                                            on{' '}
-                                                                                            {`{Date}`}{' '}
-                                                                                            @{' '}
-                                                                                            {`{time}`}
-                                                                                        </Text>
-                                                                                    </Stack>
-                                                                                </Box>
-
-                                                                                <Stack
-                                                                                    className='status_update'
-                                                                                    direction='row'
-                                                                                    alignItems={
-                                                                                        'center'
-                                                                                    }>
-                                                                                    <Box>
-                                                                                        <CgNotes />
-                                                                                    </Box>
-
-                                                                                    <Box>
-                                                                                        <Text>
-                                                                                            This
-                                                                                            is
-                                                                                            a
-                                                                                            note,
-                                                                                            user
-                                                                                            fills
-                                                                                            in
-                                                                                            while
-                                                                                            changing
-                                                                                            the
-                                                                                            status,
-                                                                                            which
-                                                                                            explains
-                                                                                            the
-                                                                                            current
-                                                                                            project
-                                                                                            status.
-                                                                                        </Text>
-                                                                                    </Box>
-                                                                                </Stack>
-                                                                            </Stack>
-                                                                        </Stack>
-
-                                                                        <Stack
-                                                                            direction='row'
-                                                                            w='100%'
-                                                                            alignItems={
-                                                                                'center'
-                                                                            }
-                                                                            className='list-item'>
-                                                                            <Box className='icon_create'>
-                                                                                <AiOutlinePlus />
-                                                                            </Box>
-
-                                                                            <Box className='activities'>
-                                                                                <Text>
-                                                                                    <span className='activity_identity'>{`{name}`}</span>{' '}
-                                                                                    created{' '}
-                                                                                    <span className='activity_type'>
-                                                                                        project
-                                                                                    </span>{' '}
-                                                                                    on{' '}
-                                                                                    {`{Date}`}{' '}
-                                                                                    @{' '}
-                                                                                    {`{time}`}
-                                                                                </Text>
-                                                                            </Box>
-                                                                        </Stack>
-                                                                    </ListStack>
-                                                                </TableDropDown>
-                                                            </Box>
-                                                        </Tr>
-                                                    )}
                                                 </>
                                             )
                                         })}
@@ -464,8 +288,6 @@ const Container = styled(Box)`
         background: #ffffff;
         border-radius: 9px;
     }
-
-   
 
     .add_examiners {
         width: 24px;
@@ -712,4 +534,3 @@ const NoItems = styled(Box)`
     font-weight: 500;
     font-size: 14px;
 `
-

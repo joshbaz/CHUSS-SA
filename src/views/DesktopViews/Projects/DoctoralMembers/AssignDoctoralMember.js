@@ -19,17 +19,18 @@ import TopBar from '../../../../components/common/Navigation/TopBar'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BiSearch } from 'react-icons/bi'
-import ExaminerTable from '../../../../components/ProjectComponents/AssignExaminer/ExaminerTable'
+
 import { useSelector, useDispatch } from 'react-redux'
 import {
     reset,
-    allExaminers,
-    assignExaminer,
-} from '../../../../store/features/Examiner/examinerSlice'
+    allDCMembers,
+    assignDCMember,
+} from '../../../../store/features/doctoralmembers/doctoralSlice'
 import {
     getIndividualProject,
     reset as preset,
 } from '../../../../store/features/project/projectSlice'
+import DoctoralTable from '../../../../components/ProjectComponents/AssignDoctoralMembers/DoctoralTable'
 
 const AssignDoctoralMember = () => {
      const [filterSearchOption, setFilterSearchOption] = React.useState('All')
@@ -45,8 +46,8 @@ const AssignDoctoralMember = () => {
      let dispatch = useDispatch()
      let params = useParams()
      let toast = useToast()
-     let { allExaminerItems, isSuccess, isError, message } = useSelector(
-         (state) => state.examiner
+     let { allDCMemberItems, isSuccess, isError, message } = useSelector(
+         (state) => state.doctoralMembers
      )
      let IndividualProject = useSelector((state) => state.project)
 
@@ -122,7 +123,7 @@ const AssignDoctoralMember = () => {
      }, [])
 
      useEffect(() => {
-         dispatch(allExaminers())
+         dispatch(allDCMembers())
      }, [])
 
      useEffect(() => {
@@ -166,7 +167,7 @@ const AssignDoctoralMember = () => {
              items: selectedExaminers,
              projectId,
          }
-         dispatch(assignExaminer(allValues))
+         dispatch(assignDCMember(allValues))
      }
     return (
         <Container direction='row' w='100vw'>
@@ -275,8 +276,8 @@ const AssignDoctoralMember = () => {
                     </Stack>
 
                     <Stack>
-                        <ExaminerTable
-                            allExaminerItems={allExaminerItems}
+                        <DoctoralTable
+                            allExaminerItems={allDCMemberItems}
                             selectedExaminers={selectedExaminers}
                             setSelectedExaminers={setSelectedExaminers}
                         />
@@ -299,7 +300,7 @@ const AssignDoctoralMember = () => {
                                 spacing={'10px'}
                                 h='50%'>
                                 <Box className='pop_title'>
-                                    Assign Examiner?
+                                    Assign Committee Member?
                                 </Box>
 
                                 <Stack

@@ -462,7 +462,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                 </Stack>
                             </Stack>
 
-                            {/**oponnets */}
+                            {/**oponents */}
                             <Stack direction='column' w='50%'>
                                 <Stack
                                     direction='row'
@@ -561,7 +561,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                         className='formfields'
                         alignItems='space-between'
                         spacing='15px'>
-                        <VivaReportOpponent />
+                        <VivaReportOpponent values={values} />
                     </Stack>
 
                     {/** files */}

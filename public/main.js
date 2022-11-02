@@ -9,10 +9,13 @@ const { BASE_API_ } = require('./base_url.config')
 
 const projectController = require('./controllers/projects/projects')
 const examinerController = require('./controllers/Examiners/Examiners')
+const supervisorController = require('./controllers/supervisors')
+const doctoralMController = require('./controllers/doctoralMembers')
 const opponentController = require('./controllers/opponents')
 const tagController = require('./controllers/tags')
 const preferenceController = require('./controllers/preferences')
 const reportController = require('./controllers/reports')
+const opponentReportController = require('./controllers/opponentReport')
 const paymentController = require('./controllers/payments')
 const fileController = require('./controllers/files')
 
@@ -280,12 +283,60 @@ ipcMain.handle(
 )
 //handle assign opponents
 ipcMain.handle('assign-opponents', opponentController.assignOpponent)
-//handle paginated examiners
+//handle paginated opponent
 ipcMain.handle('paginated-opponents', opponentController.paginatedOpponents)
-//handle all examiners
+//handle all opponent
 ipcMain.handle('all-opponents', opponentController.allOpponents)
-//handle individual examiners
+//handle individual opponent
 ipcMain.handle('individual-opponent', opponentController.getIndividualOpponent)
+
+/*
+ * Supervisors
+ *
+ */
+/** handle Supervisors creation from project */
+ipcMain.handle(
+    'create-supervisor-project',
+    supervisorController.createProjectSupervisor
+)
+//handle assign Supervisors
+ipcMain.handle('assign-supervisors', supervisorController.assignSupervisor)
+//handle paginated Supervisors
+ipcMain.handle(
+    'paginated-supervisors',
+    supervisorController.paginatedSupervisors
+)
+//handle all Supervisors
+ipcMain.handle('all-supervisors', supervisorController.allSupervisors)
+//handle individual Supervisors
+ipcMain.handle(
+    'individual-supervisor',
+    supervisorController.getIndividualSupervisor
+)
+
+/** update Supervisors */
+ipcMain.handle('update-supervisor', supervisorController.updateSupervisor)
+
+/*
+ * Doctoral Members
+ *
+ */
+/** handle Doctoral Members creation from project */
+ipcMain.handle(
+    'create-dcmember-project',
+    doctoralMController.createProjectDCMember
+)
+//handle assign Doctoral Members
+ipcMain.handle('assign-dcmembers', doctoralMController.assignDCMember)
+//handle paginated Doctoral Members
+ipcMain.handle('paginated-dcmembers', doctoralMController.paginatedDCMembers)
+//handle all Doctoral Members
+ipcMain.handle('all-dcmembers', doctoralMController.allDCMembers)
+//handle individual Doctoral Members
+ipcMain.handle('individual-dcmember', doctoralMController.getIndividualDCMember)
+
+/** update Doctoral Members */
+ipcMain.handle('update-dcmember', doctoralMController.updateDCMember)
 
 /*
  * Examiners
@@ -322,6 +373,19 @@ ipcMain.handle('update-examiner', examinerController.updateExaminer)
 ipcMain.handle('update-examiner-report', reportController.updateExaminerReport)
 ipcMain.handle('get-examiner-report', reportController.getExaminerReport)
 
+/** opponent reports */
+/**
+ * 1.handle update opponent reports
+ * 2.get opponent reports
+ */
+ipcMain.handle(
+    'update-opponent-report',
+    opponentReportController.updateOpponentReport
+)
+ipcMain.handle(
+    'get-opponent-report',
+    opponentReportController.getOpponentReport
+)
 /** tags */
 //handle create tags
 ipcMain.handle('create-tags', tagController.createTags)

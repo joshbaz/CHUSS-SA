@@ -91,68 +91,52 @@ const ProjectDetails = ({ values }) => {
                                 </Stack>
                                 {/** lists */}
                                 <Stack spacing={'8px'}>
-                                    <Stack
-                                        direction='row'
-                                        alignItems='center'
-                                        spacing='15px'>
-                                        <label htmlFor='phone'>
-                                            <Stack
-                                                direction={'row'}
-                                                alignItems='center'
-                                                spacing='8px'>
-                                                <Text>
-                                                    Name of Supervisor 1
-                                                </Text>
-                                            </Stack>
-                                        </label>
+                                    {values !== null &&
+                                    values.supervisor.length > 0 ? (
+                                        <Stack spacing={'8px'}>
+                                            {values.supervisor.map(
+                                                (data, index) => {
+                                                    return (
+                                                        <Stack
+                                                            key={index}
+                                                            direction='row'
+                                                            alignItems='center'
+                                                            spacing='15px'>
+                                                            <label htmlFor='phone'>
+                                                                <Stack
+                                                                    direction={
+                                                                        'row'
+                                                                    }
+                                                                    alignItems='center'
+                                                                    spacing='8px'>
+                                                                    <Text>
+                                                                        Name of
+                                                                        Supervisor
+                                                                    </Text>
+                                                                </Stack>
+                                                            </label>
 
-                                        <Box className='form_input'>
-                                            <input
-                                                readOnly
-                                                value={
-                                                    values !== null &&
-                                                    values.supervisors.length >
-                                                        0
-                                                        ? values.supervisors[0]
-                                                              .name
-                                                        : ''
+                                                            <Box className='form_input'>
+                                                                <input
+                                                                    readOnly
+                                                                    value={
+                                                                        data
+                                                                            .supervisorId
+                                                                            .name
+                                                                    }
+                                                                    id='phone'
+                                                                />
+                                                            </Box>
+                                                        </Stack>
+                                                    )
                                                 }
-                                                id='phone'
-                                            />
+                                            )}
+                                        </Stack>
+                                    ) : (
+                                        <Box className='noItems2'>
+                                            No Supervisors
                                         </Box>
-                                    </Stack>
-
-                                    <Stack
-                                        direction='row'
-                                        alignItems='center'
-                                        spacing='15px'>
-                                        <label htmlFor='email'>
-                                            <Stack
-                                                direction={'row'}
-                                                alignItems='center'
-                                                spacing='8px'>
-                                                <Text>
-                                                    Name of Supervisor 2
-                                                </Text>
-                                            </Stack>
-                                        </label>
-
-                                        <Box className='form_input'>
-                                            <input
-                                                readOnly
-                                                value={
-                                                    values !== null &&
-                                                    values.supervisors.length >
-                                                        1 &&
-                                                    values.supervisors[1].name
-                                                        ? values.supervisors[1]
-                                                              .name
-                                                        : ''
-                                                }
-                                                id='email'
-                                            />
-                                        </Box>
-                                    </Stack>
+                                    )}
                                 </Stack>
                             </Stack>
 
@@ -185,68 +169,52 @@ const ProjectDetails = ({ values }) => {
                                 </Stack>
                                 {/** lists */}
                                 <Stack spacing={'8px'}>
-                                    <Stack
-                                        direction='row'
-                                        alignItems='center'
-                                        spacing='15px'>
-                                        <label htmlFor='phone'>
-                                            <Stack
-                                                direction={'row'}
-                                                alignItems='center'
-                                                spacing='8px'>
-                                                <Text>
-                                                    Name of Supervisor 1
-                                                </Text>
-                                            </Stack>
-                                        </label>
+                                    {values !== null &&
+                                    values.doctoralmembers.length > 0 ? (
+                                        <Stack spacing={'8px'}>
+                                            {values.doctoralmembers.map(
+                                                (data, index) => {
+                                                    return (
+                                                        <Stack
+                                                            key={index}
+                                                            direction='row'
+                                                            alignItems='center'
+                                                            spacing='15px'>
+                                                            <label htmlFor='phone'>
+                                                                <Stack
+                                                                    direction={
+                                                                        'row'
+                                                                    }
+                                                                    alignItems='center'
+                                                                    spacing='8px'>
+                                                                    <Text>
+                                                                        Name of
+                                                                        Member
+                                                                    </Text>
+                                                                </Stack>
+                                                            </label>
 
-                                        <Box className='form_input'>
-                                            <input
-                                                readOnly
-                                                value={
-                                                    values !== null &&
-                                                    values.supervisors.length >
-                                                        0
-                                                        ? values.supervisors[0]
-                                                              .name
-                                                        : ''
+                                                            <Box className='form_input'>
+                                                                <input
+                                                                    readOnly
+                                                                    value={
+                                                                        data
+                                                                            .doctoralmemberId
+                                                                            .name
+                                                                    }
+                                                                    id='phone'
+                                                                />
+                                                            </Box>
+                                                        </Stack>
+                                                    )
                                                 }
-                                                id='phone'
-                                            />
+                                            )}
+                                        </Stack>
+                                    ) : (
+                                        <Box className='noItems2'>
+                                            No Members.
                                         </Box>
-                                    </Stack>
-
-                                    <Stack
-                                        direction='row'
-                                        alignItems='center'
-                                        spacing='15px'>
-                                        <label htmlFor='email'>
-                                            <Stack
-                                                direction={'row'}
-                                                alignItems='center'
-                                                spacing='8px'>
-                                                <Text>
-                                                    Name of Supervisor 2
-                                                </Text>
-                                            </Stack>
-                                        </label>
-
-                                        <Box className='form_input'>
-                                            <input
-                                                readOnly
-                                                value={
-                                                    values !== null &&
-                                                    values.supervisors.length >
-                                                        1 &&
-                                                    values.supervisors[1].name
-                                                        ? values.supervisors[1]
-                                                              .name
-                                                        : ''
-                                                }
-                                                id='email'
-                                            />
-                                        </Box>
-                                    </Stack>
+                                    )}
                                 </Stack>
                             </Stack>
                         </Stack>
@@ -509,12 +477,19 @@ const Container = styled(Box)`
         height: 79px;
         padding: 7px 15px;
 
-       
         font-style: normal;
         font-weight: 500;
         font-size: 14px;
         line-height: 20px;
         color: #171c26;
+    }
+
+    .noItems2 {
+        font-style: italic;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 20px;
+        color: #abaaaf;
     }
 
     .form_input {
@@ -529,7 +504,6 @@ const Container = styled(Box)`
     }
 
     .form_subtitle {
-      
         font-style: normal;
         font-weight: 700;
         font-size: 14px;
@@ -543,7 +517,7 @@ const Container = styled(Box)`
         border-radius: 6px;
         text-indent: 21px;
         height: 32px;
-      
+
         font-style: normal;
         font-weight: 500;
         font-size: 13px;

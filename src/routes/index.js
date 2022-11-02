@@ -35,6 +35,8 @@ import AssignSupervisor from '../views/DesktopViews/Projects/Supervisors/AssignS
 import CreateProjectSupervisor from '../views/DesktopViews/Projects/Supervisors/CreateProjectSupervisor'
 import AssignDoctoralMember from '../views/DesktopViews/Projects/DoctoralMembers/AssignDoctoralMember'
 import CreateProjectDMember from '../views/DesktopViews/Projects/DoctoralMembers/CreateProjectDMember'
+import ViewOpponentReport from '../views/DesktopViews/Projects/OpponentReports/ViewOpponentReport'
+import EditOpponentReport from '../views/DesktopViews/Projects/OpponentReports/EditOpponentReport'
 const AllRoutes = () => {
     return (
         <HashRouter>
@@ -97,6 +99,19 @@ const AllRoutes = () => {
                         exact
                         path='/projects/opponents/p_create/:pid'
                         element={<CreateProjectOpponent />}
+                    />
+
+                    {/** opponent reports */}
+                    <Route
+                        exact
+                        path='/projects/opponents/viewreport/:p_id/:rp_id'
+                        element={<ViewOpponentReport />}
+                    />
+
+                    <Route
+                        exact
+                        path='/projects/opponents/updatereport/:p_id/:rp_id'
+                        element={<EditOpponentReport />}
                     />
 
                     {/** route for assign examiners */}

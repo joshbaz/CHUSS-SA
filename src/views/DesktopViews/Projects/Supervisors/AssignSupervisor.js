@@ -19,17 +19,18 @@ import TopBar from '../../../../components/common/Navigation/TopBar'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { BiSearch } from 'react-icons/bi'
-import ExaminerTable from '../../../../components/ProjectComponents/AssignExaminer/ExaminerTable'
+
 import { useSelector, useDispatch } from 'react-redux'
 import {
     reset,
-    allExaminers,
-    assignExaminer,
-} from '../../../../store/features/Examiner/examinerSlice'
+    allSupervisors,
+    assignSupervisor,
+} from '../../../../store/features/supervisors/supervisorSlice'
 import {
     getIndividualProject,
     reset as preset,
 } from '../../../../store/features/project/projectSlice'
+import SupervisorTable from '../../../../components/ProjectComponents/AssignSupervisors/SupervisorTable'
 
 const AssignSupervisor = () => {
      const [filterSearchOption, setFilterSearchOption] = React.useState('All')
@@ -45,8 +46,8 @@ const AssignSupervisor = () => {
      let dispatch = useDispatch()
      let params = useParams()
      let toast = useToast()
-     let { allExaminerItems, isSuccess, isError, message } = useSelector(
-         (state) => state.examiner
+     let { allSupervisorItems, isSuccess, isError, message } = useSelector(
+         (state) => state.supervisor
      )
      let IndividualProject = useSelector((state) => state.project)
 
@@ -122,7 +123,7 @@ const AssignSupervisor = () => {
      }, [])
 
      useEffect(() => {
-         dispatch(allExaminers())
+         dispatch(allSupervisors())
      }, [])
 
      useEffect(() => {
@@ -166,7 +167,7 @@ const AssignSupervisor = () => {
              items: selectedExaminers,
              projectId,
          }
-         dispatch(assignExaminer(allValues))
+         dispatch(assignSupervisor(allValues))
      }
     return (
         <Container direction='row' w='100vw'>
@@ -275,8 +276,8 @@ const AssignSupervisor = () => {
                     </Stack>
 
                     <Stack>
-                        <ExaminerTable
-                            allExaminerItems={allExaminerItems}
+                        <SupervisorTable
+                            allExaminerItems={allSupervisorItems}
                             selectedExaminers={selectedExaminers}
                             setSelectedExaminers={setSelectedExaminers}
                         />
@@ -299,7 +300,7 @@ const AssignSupervisor = () => {
                                 spacing={'10px'}
                                 h='50%'>
                                 <Box className='pop_title'>
-                                    Assign Examiner?
+                                    Assign Supervisor?
                                 </Box>
 
                                 <Stack

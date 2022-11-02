@@ -24,6 +24,28 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('update-final-submissionDate', values),
     updateGraduationDate: (values) =>
         ipcRenderer.invoke('update-graduationdate', values),
+    /** supervisors */
+    createProjectSupervisor: (values) =>
+        ipcRenderer.invoke('create-supervisor-project', values),
+    assignSupervisor: (values) =>
+        ipcRenderer.invoke('assign-supervisors', values),
+    paginatedSupervisor: (values) =>
+        ipcRenderer.invoke('paginated-supervisors', values),
+    allSupervisors: (values) => ipcRenderer.invoke('all-supervisors', values),
+    getIndividualSupervisor: (id) =>
+        ipcRenderer.invoke('individual-supervisor', id),
+    updateSupervisor: (values) =>
+        ipcRenderer.invoke('update-supervisor', values),
+    /** doctoral committee members */
+    createProjectDCMember: (values) =>
+        ipcRenderer.invoke('create-dcmember-project', values),
+    assignDCMember: (values) => ipcRenderer.invoke('assign-dcmembers', values),
+    paginatedDCMember: (values) =>
+        ipcRenderer.invoke('paginated-dcmembers', values),
+    allDCMembers: (values) => ipcRenderer.invoke('all-dcmembers', values),
+    getIndividualDCMember: (id) =>
+        ipcRenderer.invoke('individual-dcmember', id),
+    updateDCmember: (values) => ipcRenderer.invoke('update-dcmember', values),
     /** opponents */
     createProjectOpponent: (values) =>
         ipcRenderer.invoke('create-opponent-project', values),
@@ -46,6 +68,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     allStudentsByExaminer: (id) =>
         ipcRenderer.invoke('get-students-by-examiner', id),
     updateExaminer: (values) => ipcRenderer.invoke('update-examiner', values),
+    /** opponent reports */
+    updateOpponentReport: (values) =>
+        ipcRenderer.invoke('update-opponent-report', values),
+    getOpponentReport: (id) => ipcRenderer.invoke('get-opponent-report', id),
     /**reports */
     updateExaminerReport: (values) =>
         ipcRenderer.invoke('update-examiner-report', values),

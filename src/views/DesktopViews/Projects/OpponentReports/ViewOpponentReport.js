@@ -18,7 +18,7 @@ import {
 } from '../../../../store/features/project/projectSlice'
 import { useSelector, useDispatch } from 'react-redux'
 
-const ViewExaminerReport = (props) => {
+const ViewOpponentReport = (props) => {
     const [initials, setInitials] = React.useState(null)
     let routeNavigate = useNavigate()
     let params = useParams()
@@ -99,8 +99,6 @@ const ViewExaminerReport = (props) => {
         //     setInitials(null)
         // }
     }, [individualReport, params.rp_id, initials])
-
-   
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -183,7 +181,7 @@ const ViewExaminerReport = (props) => {
     )
 }
 
-export default ViewExaminerReport
+export default ViewOpponentReport
 
 const Container = styled(Stack)``
 
@@ -211,3 +209,4 @@ const SubmitButton = styled(Box)`
     font-size: 14px;
     line-height: 20px;
 `
+
