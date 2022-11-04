@@ -553,22 +553,12 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                         </Stack>
                     </Stack>
 
-                    {/** opponent reports */}
-                    <Stack
-                        p='25px 0px'
-                        borderBottom='1px solid #EEEEEF'
-                        direction='column'
-                        className='formfields'
-                        alignItems='space-between'
-                        spacing='15px'>
-                        <VivaReportOpponent values={values} />
-                    </Stack>
-
                     {/** files */}
 
                     <Stack
                         h='100%'
-                        p='25px 20px'
+                        p='30px 20px'
+                        borderBottom='1px solid #EEEEEF'
                         direction='column'
                         w='100%'
                         spacing='30px'>
@@ -770,6 +760,16 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                 )}
                             </Stack>
                         </Stack>
+                    </Stack>
+
+                    {/** opponent reports */}
+                    <Stack
+                        p='20px 0px'
+                        direction='column'
+                        className='formfields'
+                        alignItems='space-between'
+                        spacing='15px'>
+                        <VivaReportOpponent values={values} />
                     </Stack>
                 </Stack>
             </Box>

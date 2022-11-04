@@ -5,16 +5,15 @@ import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
 import { useNavigate, useParams } from 'react-router-dom'
-import UpdateOverallScores from '../../../../components/ProjectComponents/ExaminerReportUpdate/UpdateOverallScores'
-import ViewUpdatedFiles from '../../../../components/ProjectComponents/ExaminerReportUpdate/ViewUpdatedFiles'
-import ViewUpdateExaminerDetail from '../../../../components/ProjectComponents/ExaminerReportUpdate/ViewUpdateExaminerDetail'
-import UploadUpdateReport from '../../../../components/ProjectComponents/ExaminerReportUpdate/UploadUpdateReport'
 import {
     reset,
-    getExaminerReport,
-    updateExaminerReport,
-} from '../../../../store/features/reports/reportSlice'
+    getOpponentReport,
+    updateOpponentReport,
+} from '../../../../store/features/opponentReports/opponentReportSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import OpponentUpdatedFile from '../../../../components/ProjectComponents/OpponentReportUpdate/OpponentUpdatedFile'
+import OpponentDetailsView from '../../../../components/ProjectComponents/OpponentReportUpdate/OpponentDetailsView'
+import OpponentUpdateReport from '../../../../components/ProjectComponents/OpponentReportUpdate/OpponentUpdateReport'
 
 const EditOpponentReport = (props) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
@@ -28,11 +27,11 @@ const EditOpponentReport = (props) => {
 
     useEffect(() => {
         console.log('params.rp_id', params.rp_id)
-        dispatch(getExaminerReport(params.rp_id))
+        dispatch(getOpponentReport(params.rp_id))
     }, [params.rp_id, dispatch])
 
     let { individualReport, isSuccess, isError, message } = useSelector(
-        (state) => state.report
+        (state) => state.opponentReport
     )
 
     let toast = useToast()
@@ -123,8 +122,8 @@ const EditOpponentReport = (props) => {
 
     let validate = (values) => {
         const errors = {}
-        if (!values.score && !values.ungraded) {
-            errors.score = 'either add score or check ungraded'
+        if (values.reportFile === null) {
+            errors.reportFile = ' add a file'
         }
 
         return errors
@@ -143,7 +142,7 @@ const EditOpponentReport = (props) => {
             changeMade
         ) {
             console.log(Object.keys(errors).length, 'No errors', errors)
-            dispatch(updateExaminerReport(initials))
+            dispatch(updateOpponentReport(initials))
         } else if (
             Object.keys(errors).length > 0 &&
             setIsSubmittingp &&
@@ -160,13 +159,16 @@ const EditOpponentReport = (props) => {
             </Box>
 
             <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar topbarData={{ title: 'Projects', count: null }} />
+                <TopBar
+                    topbarData={{ title: 'Edit Opponent Report', count: null }}
+                />
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={handleSubmit}>
                         <Stack
                             direction='column'
                             bg='#FBFBFB'
+                            h='80vh'
                             spacing={'20px'}
                             padding={'20px 20px 30px 20px'}>
                             {/** back & submit button*/}
@@ -183,7 +185,7 @@ const EditOpponentReport = (props) => {
                                         onClick={() => routeNavigate(-1)}>
                                         <MdArrowBack />
                                     </Box>
-                                    <Text>Examiner's Report</Text>
+                                    <Text>Opponent's Report</Text>
                                 </BackButtonStack>
 
                                 <SubmitButton
@@ -212,12 +214,7 @@ const EditOpponentReport = (props) => {
                                     direction='column'
                                     w='70%'
                                     spacing='20px'>
-                                    <UpdateOverallScores
-                                        values={initials}
-                                        errors={errors}
-                                        handleChange={handleChange}
-                                    />
-                                    <ViewUpdatedFiles
+                                    <OpponentUpdatedFile
                                         values={initials}
                                         errors={errors}
                                         handleChange={handleChange}
@@ -228,13 +225,13 @@ const EditOpponentReport = (props) => {
                                     direction='column'
                                     w='30%'
                                     spacing='20px'>
-                                    <ViewUpdateExaminerDetail
+                                    <OpponentDetailsView
                                         values={initials}
                                         errors={errors}
                                         handleChange={handleChange}
                                     />
 
-                                    <UploadUpdateReport
+                                    <OpponentUpdateReport
                                         values={initials}
                                         errors={errors}
                                         handleChange={handleChange}

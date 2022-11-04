@@ -5,18 +5,17 @@ import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
 import { useNavigate, useParams } from 'react-router-dom'
-import ViewOverallScores from '../../../../components/ProjectComponents/ExaminerReportView/ViewOverallScores'
-import ViewFiles from '../../../../components/ProjectComponents/ExaminerReportView/ViewFiles'
-import ViewExaminerReportDetail from '../../../../components/ProjectComponents/ExaminerReportView/ViewExaminerReportDetail'
 import {
     reset,
-    getExaminerReport,
-} from '../../../../store/features/reports/reportSlice'
+    getOpponentReport,
+} from '../../../../store/features/opponentReports/opponentReportSlice'
 import {
     getIndividualProject,
     reset as preset,
 } from '../../../../store/features/project/projectSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import OpponentViewFile from '../../../../components/ProjectComponents/OpponentReportView/OpponentViewFile'
+import OpponentReportDetails from '../../../../components/ProjectComponents/OpponentReportView/OpponentReportDetails'
 
 const ViewOpponentReport = (props) => {
     const [initials, setInitials] = React.useState(null)
@@ -24,7 +23,7 @@ const ViewOpponentReport = (props) => {
     let params = useParams()
     let dispatch = useDispatch()
     let { individualReport, isLoading, isSuccess, isError, message } =
-        useSelector((state) => state.report)
+        useSelector((state) => state.opponentReport)
     let IndividualProject = useSelector((state) => state.project)
     useEffect(() => {
         if (params.p_id) {
@@ -36,10 +35,10 @@ const ViewOpponentReport = (props) => {
             individualReport !== null &&
             individualReport._id !== params.rp_id
         ) {
-            dispatch(getExaminerReport(params.rp_id))
+            dispatch(getOpponentReport(params.rp_id))
         }
         if (individualReport === null) {
-            dispatch(getExaminerReport(params.rp_id))
+            dispatch(getOpponentReport(params.rp_id))
         }
     }, [props, dispatch, individualReport])
 
@@ -111,8 +110,8 @@ const ViewOpponentReport = (props) => {
                         title: `${
                             IndividualProject.individual !== null &&
                             IndividualProject.individual.student.studentName
-                                ? `Examiner Report for ${IndividualProject.individual.student.studentName}`
-                                : `Examiner Report`
+                                ? `Opponent Report for ${IndividualProject.individual.student.studentName}`
+                                : `Opponent Report`
                         }`,
                         count: null,
                     }}
@@ -122,6 +121,7 @@ const ViewOpponentReport = (props) => {
                     <Stack
                         direction='column'
                         bg='#FBFBFB'
+                        h='80vh'
                         spacing={'20px'}
                         padding={'20px 20px 30px 20px'}>
                         {/** back & submit button*/}
@@ -138,14 +138,14 @@ const ViewOpponentReport = (props) => {
                                     onClick={() => routeNavigate(-1)}>
                                     <MdArrowBack />
                                 </Box>
-                                <Text>Examiner's Report</Text>
+                                <Text>Opponent's Report</Text>
                             </BackButtonStack>
 
                             <SubmitButton
                                 as='button'
                                 onClick={() =>
                                     routeNavigate(
-                                        `/projects/examiners/updatereport/${params.p_id}/${params.rp_id}`
+                                        `/projects/opponents/updatereport/${params.p_id}/${params.rp_id}`
                                     )
                                 }>
                                 Update report
@@ -155,8 +155,7 @@ const ViewOpponentReport = (props) => {
                         <Stack direction='row' w='100%'>
                             {/** student and contact forms */}
                             <Stack direction='column' w='70%' spacing='20px'>
-                                <ViewOverallScores values={initials} />
-                                <ViewFiles
+                                <OpponentViewFile
                                     values={initials}
                                     nameValues={
                                         IndividualProject.individual !== null &&
@@ -170,7 +169,7 @@ const ViewOpponentReport = (props) => {
                             </Stack>
                             {/** supervisior && date of submission & scanned form */}
                             <Stack direction='column' w='30%' spacing='20px'>
-                                <ViewExaminerReportDetail values={initials} />
+                                <OpponentReportDetails values={initials} />
                             </Stack>
                         </Stack>
                     </Stack>

@@ -1,8 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Text, Input } from '@chakra-ui/react'
 
-const OpponentReportDetails = ({ values }) => {
+const OpponentDetailsView = ({ values }) => {
+     const [name, setName] = React.useState('')
+
+     useEffect(() => {
+         if (values !== null && values.opponent.name) {
+             setName(values.opponent.name)
+         }
+     }, [values])
     return (
         <Container>
             <Box className='form_container'>
@@ -37,14 +44,7 @@ const OpponentReportDetails = ({ values }) => {
                         </label>
 
                         <Box className='form_input'>
-                            <Input
-                                readOnly
-                                value={
-                                    values !== null && values.opponent.name
-                                        ? values.opponent.name
-                                        : ''
-                                }
-                            />
+                            <Input readOnly value={name} />
                         </Box>
                     </Stack>
                 </Stack>
@@ -53,7 +53,7 @@ const OpponentReportDetails = ({ values }) => {
     )
 }
 
-export default OpponentReportDetails
+export default OpponentDetailsView
 
 const Container = styled(Box)`
     font-family: 'Inter';

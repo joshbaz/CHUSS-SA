@@ -242,13 +242,24 @@ const VivaReportOpponent = ({ values }) => {
                                                                     </Box>
                                                                 </MenuButton>
                                                                 <MenuList>
-                                                                    <MenuItem>
-                                                                        Edit Report
+                                                                    <MenuItem
+                                                                        onClick={() =>
+                                                                            routeNavigate(
+                                                                                `/projects/opponents/updatereport/${values._id}/${data.reportId._id}`
+                                                                            )
+                                                                        }>
+                                                                        Edit
+                                                                        Report
                                                                     </MenuItem>
-                                                                    <MenuItem>
-                                                                        View Report
+                                                                    <MenuItem
+                                                                        onClick={() =>
+                                                                            routeNavigate(
+                                                                                `/projects/opponents/viewreport/${values._id}/${data.reportId._id}`
+                                                                            )
+                                                                        }>
+                                                                        View
+                                                                        Report
                                                                     </MenuItem>
-                                                                   
                                                                 </MenuList>
                                                             </Menu>
                                                         </Td>

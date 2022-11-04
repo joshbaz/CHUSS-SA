@@ -32,9 +32,7 @@ exports.updateOpponentReport = async (event, values) => {
                 fs.createReadStream(values.reportFile.url)
             )
            
-            fd.append('score', values.score)
-            fd.append('ungraded', values.ungraded)
-            fd.append('remarks', values.remarks)
+          
             let responseData = await axios.patch(
                 `${BASE_API_}/opponentreports/v1/update/${values._id}`,
                 fd
