@@ -236,6 +236,9 @@ ipcMain.handle('update-project', projectController.updateProject)
 //handle paginatedProjects
 ipcMain.handle('get-p-project', projectController.getProjects)
 
+//handle all Projects
+ipcMain.handle('get-all-projects', projectController.getAllProjects)
+
 //handle individualProjects
 ipcMain.handle(
     'get-individual-project',

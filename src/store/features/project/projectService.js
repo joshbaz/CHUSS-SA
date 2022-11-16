@@ -15,6 +15,11 @@ const getPProjects = async (values) => {
     return response
 }
 
+const getAllProjects = async (values) => {
+    const response = await window.electronAPI.getAllProjects(values)
+    return response
+}
+
 const getIndividualProject = async (id) => {
     const response = await window.electronAPI.getIndividualProject(id)
     return response
@@ -64,6 +69,7 @@ const updateGraduationDate = async (values) => {
 const projectService = {
     projectCreate,
     getPProjects,
+    getAllProjects,
     getIndividualProject,
     projectUpdate,
     updateCandidateFiles,

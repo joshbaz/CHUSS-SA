@@ -130,13 +130,44 @@ exports.updateProject = async (event, values) => {
   }
 };
 
-//get Project
+//get paginated Project
 exports.getProjects = async (event, values) => {
   try {
     let responseData = await axios.get(
       `${BASE_API_}/project/vl/pprojects?page=${values.page}`,
       values
     );
+    console.log("values", responseData.data);
+    let data = {
+      ...responseData.data,
+      type: "success",
+    };
+    return data;
+  } catch (error) {
+    let errorArray = [];
+    errorArray.push(error);
+
+    let response = {
+      message: "",
+      type: "error",
+    };
+    if (errorArray.length !== 0 && errorArray[0].response) {
+      response.message = errorArray[0].response.data;
+    } else if (errorArray.length !== 0 && !errorArray[0].response) {
+      response.message = errorArray[0].message;
+    }
+
+    return response;
+  }
+};
+
+//get all Projects
+exports.getAllProjects = async (event, values) => {
+  try {
+    let responseData = await axios.get(
+        `${BASE_API_}/project/v1/allprojects`,
+        values
+    )
     console.log("values", responseData.data);
     let data = {
       ...responseData.data,

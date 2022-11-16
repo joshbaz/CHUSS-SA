@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     projectCreation: (values) => ipcRenderer.invoke('create-project', values),
     projectUpdate: (values) => ipcRenderer.invoke('update-project', values),
     getPProjects: (values) => ipcRenderer.invoke('get-p-project', values),
+    getAllProjects: (values) => ipcRenderer.invoke('get-all-projects', values),
     getIndividualProject: (id) =>
         ipcRenderer.invoke('get-individual-project', id),
     updateProjectStatus: (values) =>

@@ -8,6 +8,10 @@ const initialState = {
         perPage: 8,
         current_total: 0,
     },
+    allprojects: {
+        items: [],
+        overall_total: 0,
+    },
     individual: null,
     isError: false,
     isSuccess: false,
@@ -41,7 +45,7 @@ export const projectUpdate = createAsyncThunk(
     }
 )
 
-/** get projects */
+/** get paginated projects */
 export const getPProjects = createAsyncThunk(
     'projects/getPProjects',
     async (Info, thunkAPI) => {
@@ -50,6 +54,19 @@ export const getPProjects = createAsyncThunk(
             return getPProjectAttempt
         } else {
             return thunkAPI.rejectWithValue(getPProjectAttempt.message)
+        }
+    }
+)
+
+/** get all projects */
+export const getAllProjects = createAsyncThunk(
+    'projects/allProjects',
+    async (Info, thunkAPI) => {
+        const getAttempt = await projectService.getAllProjects(Info)
+        if (getAttempt.type === 'success') {
+            return getAttempt
+        } else {
+            return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -215,6 +232,21 @@ export const projectSlice = createSlice({
                 state.isError = true
                 state.message = action.payload
             })
+            //all Project
+            .addCase(getAllProjects.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getAllProjects.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.allprojects = action.payload
+            })
+            .addCase(getAllProjects.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            //individual project
             .addCase(getIndividualProject.pending, (state) => {
                 state.isLoading = true
             })

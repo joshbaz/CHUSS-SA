@@ -24,6 +24,8 @@ import {
     ModalBody,
     useDisclosure,
     Checkbox,
+    Radio,
+    RadioGroup,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -32,6 +34,7 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io'
 import { RiArrowRightSLine, RiArrowDownSLine } from 'react-icons/ri'
 
+import { IoMdClose } from 'react-icons/io'
 import { FaFilter } from 'react-icons/fa'
 import { BiSearch } from 'react-icons/bi'
 import { CgFormatSlash } from 'react-icons/cg'
@@ -41,72 +44,433 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     getPProjects,
+    getAllProjects,
     reset,
 } from '../../../store/features/project/projectSlice'
+import {
+    reset as treset,
+    tagGetAll,
+} from '../../../store/features/tags/tagSlice'
 import { MdTableView, MdPrint } from 'react-icons/md'
+import AdvStudentTable from '../../../components/AdvSearchItems/AdvStudentTable'
+import AdvReportTable from '../../../components/AdvSearchItems/AdvReportTable'
+import AdvExaminerTable from '../../../components/AdvSearchItems/AdvExaminerTable'
 
 const dataModels = [
     {
-        title: 'Projects',
+        title: 'Student Table',
         models: [
             {
-                modelTitle: 'topic',
+                mtitle: 'Student Name',
             },
             {
-                modelTitle: 'supervisors',
-                type: 'array',
+                mtitle: 'Student Contacts',
             },
             {
-                modelTitle: 'projectStatus',
-                type: 'array',
+                mtitle: 'topic',
             },
             {
-                modelTitle: 'student',
-                type: 'object',
-                subModel: [
-                    {
-                        modelTitle: 'registrationNumber',
-                    },
-                    {
-                        modelTitle: 'studentName',
-                    },
-                    {
-                        modelTitle: 'graduate_program_type',
-                    },
-                    {
-                        modelTitle: 'degree_program',
-                    },
-                    {
-                        modelTitle: 'semester',
-                    },
-                    {
-                        modelTitle: 'academicYear',
-                    },
-                    {
-                        modelTitle: 'schoolName',
-                    },
-                    {
-                        modelTitle: 'departmentName',
-                    },
-                    {
-                        modelTitle: 'phoneNumber',
-                    },
-                    {
-                        modelTitle: 'email',
-                    },
-                    {
-                        modelTitle: 'alternative_email',
-                    },
-                ],
+                mtitle: 'status',
+            },
+            {
+                mtitle: 'Registration',
+            },
+            {
+                mtitle: 'Resubmission',
+            },
+        ],
+    },
+    {
+        title: 'Examiner Reports Table',
+        models: [
+            {
+                mtitle: 'Student Name',
+            },
+            {
+                mtitle: 'Student Contacts',
+            },
+            {
+                mtitle: 'topic',
+            },
+            {
+                mtitle: 'Report Status',
+            },
+            {
+                mtitle: 'Examiner Name',
+            },
+            {
+                mtitle: 'Examiner Contacts',
+            },
+            {
+                mtitle: 'Report Delay',
+            },
+        ],
+    },
+    {
+        title: 'Examiners Table',
+        models: [
+            {
+                mtitle: 'Examiner Name',
+            },
+            {
+                mtitle: 'Type',
+            },
+            {
+                mtitle: 'PhoneNumber',
+            },
+            {
+                mtitle: 'Email',
+            },
+            {
+                mtitle: 'No. of Students',
             },
         ],
     },
 ]
 
+const QuerySets = [
+    {
+        title: 'is',
+    },
+    {
+        title: 'greater than',
+    },
+    {
+        title: 'equal to',
+    },
+    {
+        title: 'less than',
+    },
+]
+
 const AdvSearch = () => {
     const [selectedTable, setSelectedTable] = React.useState('')
+    const [selectingTable, setSelectingTable] = React.useState('')
+    const [searchWordOption, setSearchWordOption] = React.useState('')
+    const [searchWordQuery, setSearchWordQuery] = React.useState('is')
+    const [searchWord, setSearchWord] = React.useState('')
+    const [searchStatus, setSearchStatus] = React.useState('')
+    const [searchActive, setSearchActive] = React.useState(false)
+    const [filterInfo, setFilterInfo] = React.useState([])
+
     const [dropDownActive, setDropDownActive] = React.useState(false)
     const { isOpen, onOpen, onClose } = useDisclosure()
+
+    let dispatch = useDispatch()
+    let toast = useToast()
+    React.useEffect(() => {
+        dispatch(getAllProjects())
+        dispatch(tagGetAll())
+    }, [])
+
+    let { allprojects, isError, isSuccess, message } = useSelector(
+        (state) => state.project
+    )
+
+    const tagsData = useSelector((state) => state.tag)
+
+    useEffect(() => {
+        if (tagsData.isError) {
+            toast({
+                position: 'top',
+                title: tagsData.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            dispatch(treset())
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
+
+    /** function to select table */
+    const onSelectTable = (value) => {
+        setSelectingTable(value)
+    }
+
+    /** function to add table */
+    const onAddTable = () => {
+        if (selectingTable) {
+            setSearchActive(false)
+            setSelectedTable(selectingTable)
+            onClose()
+        }
+    }
+
+    /** function to reset table */
+
+    const onResetTable = () => {
+        setSelectedTable('')
+        setSelectingTable('')
+        setSearchActive(false)
+    }
+
+    /** function to cancel selection process */
+    const onCancelTable = () => {
+        setSelectingTable(selectedTable)
+        onClose()
+    }
+
+    /** function to select the table list */
+    const TableLists = React.useMemo(() => {
+        if (selectedTable) {
+            const newdataArray = dataModels.filter((data, index) => {
+                if (data.title === selectedTable) {
+                    return data
+                }
+            })
+
+            return newdataArray[0].models
+        } else {
+            return []
+        }
+    }, [selectedTable])
+
+    console.log(TableLists, 'TableLists')
+
+    /** function to select statuses */
+    const TableStatuses = React.useMemo(() => {
+        if (selectedTable) {
+            if (selectedTable === 'Student Table') {
+                let allInfoData = tagsData.allTagItems.items.filter(
+                    (data, index) => data.table === 'project'
+                )
+
+                return allInfoData
+            } else {
+                return []
+            }
+        } else {
+            return []
+        }
+    }, [tagsData.allTagItems.items, selectedTable])
+
+    /** function to handle filter change option */
+    const handleFilterSearchOption = (e) => {
+        e.preventDefault()
+
+        console.log('changes', e.target.value)
+        setSearchWord('')
+        setSearchStatus('')
+        setSearchWordOption(e.target.value)
+    }
+
+    /** function to handle query-set change */
+    const handleQueryChange = (e) => {
+        e.preventDefault()
+
+        console.log('changes', e.target.value)
+        setSearchWordQuery(e.target.value)
+    }
+
+    /** function to add a search text */
+    const handleSearchWordChange = (e) => {
+        e.preventDefault()
+        let searchvalue = e.target.value || ''
+        setSearchWord(searchvalue.toLowerCase())
+    }
+
+    /** function to add a search status */
+    const handleSearchStatusChange = (e) => {
+        e.preventDefault()
+        setSearchStatus(e.target.value.toLowerCase())
+    }
+
+    /** function to add the search options to filter Array */
+    const handleSearchFilterAddition = () => {
+        if (searchWord) {
+            if (filterInfo.length > 0) {
+                let newFilterInfo = [...filterInfo]
+
+                for (
+                    let iteration = 0;
+                    iteration < newFilterInfo.length;
+                    iteration++
+                ) {
+                    let noIteration = iteration + 1
+
+                    /** check whether search title are equal */
+                    if (newFilterInfo[iteration].title === searchWordOption) {
+                        /** check whether search query equal */
+                        if (
+                            newFilterInfo[iteration].queryfunction ===
+                            searchWordQuery
+                        ) {
+                            /** check whether the search word is already there */
+                            if (
+                                newFilterInfo[iteration].searchfor.includes(
+                                    searchWord
+                                )
+                            ) {
+                                return null
+                            } else {
+                                let filterSelected = {
+                                    title: searchWordOption,
+                                    queryfunction: searchWordQuery,
+                                    searchfor: [
+                                        ...newFilterInfo[iteration].searchfor,
+                                        searchWord,
+                                    ],
+                                }
+
+                                newFilterInfo.splice(
+                                    iteration,
+                                    1,
+                                    filterSelected
+                                )
+
+                                setFilterInfo(newFilterInfo)
+                                setSearchWord('')
+                                setSearchWordOption('')
+                                return filterSelected
+                            }
+                        }
+                        // else {
+                        //     let filterSelected = {
+                        //         title: searchWordOption,
+                        //         queryfunction: searchWordQuery,
+                        //         searchfor: [searchWord],
+                        //     }
+
+                        //     setFilterInfo([...newFilterInfo, filterSelected])
+                        //     setSearchWord('')
+                        //     setSearchWordOption('')
+                        //     return
+                        // }
+                    } else if (
+                        /** search title doesnot exist */
+                        newFilterInfo[iteration].title !== searchWordOption &&
+                        noIteration === newFilterInfo.length
+                    ) {
+                        let filterSelected = {
+                            title: searchWordOption,
+                            queryfunction: searchWordQuery,
+                            searchfor: [searchWord],
+                        }
+
+                        setFilterInfo([...filterInfo, filterSelected])
+                        setSearchWord('')
+                        setSearchWordOption('')
+                    }
+                }
+            } else {
+                let filterSelected = {
+                    title: searchWordOption,
+                    queryfunction: searchWordQuery,
+                    searchfor: [searchWord],
+                }
+
+                setFilterInfo([...filterInfo, filterSelected])
+                setSearchWord('')
+                setSearchWordOption('')
+            }
+        }
+
+        if (searchStatus) {
+            if (filterInfo.length > 0) {
+                let newFilterInfo = [...filterInfo]
+
+                for (
+                    let iteration = 0;
+                    iteration < newFilterInfo.length;
+                    iteration++
+                ) {
+                    let noIteration = iteration + 1
+
+                    /** check whether search title are equal */
+                    if (newFilterInfo[iteration].title === searchWordOption) {
+                        /** check whether search query equal */
+                        if (
+                            newFilterInfo[iteration].queryfunction ===
+                            searchWordQuery
+                        ) {
+                            /** check whether the search word is already there */
+                            if (
+                                newFilterInfo[iteration].searchfor.includes(
+                                    searchStatus
+                                )
+                            ) {
+                                return null
+                            } else {
+                                let filterSelected = {
+                                    title: searchWordOption,
+                                    queryfunction: searchWordQuery,
+                                    searchfor: [
+                                        ...newFilterInfo[iteration].searchfor,
+                                        searchStatus,
+                                    ],
+                                }
+
+                                newFilterInfo.splice(
+                                    iteration,
+                                    1,
+                                    filterSelected
+                                )
+
+                                setFilterInfo(newFilterInfo)
+                                setSearchStatus('')
+                                setSearchWordOption('')
+                                return filterSelected
+                            }
+                        }
+                        // else {
+                        //     let filterSelected = {
+                        //         title: searchWordOption,
+                        //         queryfunction: searchWordQuery,
+                        //         searchfor: [searchStatus],
+                        //     }
+
+                        //     setFilterInfo([...newFilterInfo, filterSelected])
+                        //     setSearchStatus('')
+                        //     setSearchWordOption('')
+                        //     return
+                        // }
+                    } else if (
+                        /** search title doesnot exist */
+                        newFilterInfo[iteration].title !== searchWordOption &&
+                        noIteration === newFilterInfo.length
+                    ) {
+                        let filterSelected = {
+                            title: searchWordOption,
+                            queryfunction: searchWordQuery,
+                            searchfor: [searchStatus],
+                        }
+
+                        setFilterInfo([...filterInfo, filterSelected])
+                        setSearchStatus('')
+                        setSearchWordOption('')
+                    }
+                }
+            } else {
+                let filterSelected = {
+                    title: searchWordOption,
+                    queryfunction: searchWordQuery,
+                    searchfor: [searchStatus],
+                }
+
+                setFilterInfo([...filterInfo, filterSelected])
+                setSearchStatus('')
+                setSearchWordOption('')
+            }
+        }
+    }
+
+    /** function to clear all filter functions */
+    const clearAllFilters = () => {
+        setFilterInfo([])
+        setSearchWord('')
+        setSearchStatus('')
+        setSearchWordOption('')
+        setSearchActive(false)
+    }
+
+    /** function to set the search active  */
+    const handleSearchActive = () => {
+        if (filterInfo.length > 0) {
+            setSearchActive(true)
+        }
+    }
 
     return (
         <Container direction='row' w='100vw'>
@@ -121,9 +485,12 @@ const AdvSearch = () => {
                 <Stack direction='column' padding={'0 20px'}>
                     {/** filter inputs */}
                     <Stack direction='column'>
-                        <Stack direction='row' alignItems={'center'}>
+                        <Stack
+                            direction='row'
+                            alignItems={'center'}
+                            spacing='46px'>
                             {/** title */}
-                            <Box>{selectedTable}</Box>
+                            <Box className='table_title'>{selectedTable}</Box>
 
                             {/** table selection && print report button */}
                             <Stack direction='row'>
@@ -136,7 +503,9 @@ const AdvSearch = () => {
                                     </Button>
                                 </TableButton>
 
-                                {selectedTable && (
+                                {/**
+                                     * 
+                                     *    {selectedTable && (
                                     <TableButton>
                                         {' '}
                                         <Button
@@ -146,6 +515,11 @@ const AdvSearch = () => {
                                         </Button>
                                     </TableButton>
                                 )}
+                                     * 
+                                     * 
+                                     * 
+                                     */}
+
                                 <TableButton>
                                     <Button
                                         leftIcon={<MdPrint />}
@@ -156,46 +530,124 @@ const AdvSearch = () => {
                             </Stack>
                         </Stack>
 
-                        {/** Rule section */}
+                        {/** Rule & search section */}
                         <Stack direction='row'>
+                            {/** column to filter */}
                             <Box>
-                                <Select placeholder='select'></Select>
+                                {TableLists.length > 0 ? (
+                                    <Select
+                                        onChange={handleFilterSearchOption}
+                                        className='option_text'
+                                        value={searchWordOption}
+                                        placeholder='select'>
+                                        {TableLists.map((data, index) => {
+                                            return (
+                                                <option
+                                                    className='option_text'
+                                                    key={index}
+                                                    value={data.mtitle}>
+                                                    {data.mtitle}
+                                                </option>
+                                            )
+                                        })}
+                                    </Select>
+                                ) : (
+                                    <Select
+                                        onChange={handleFilterSearchOption}
+                                        className='option_text'
+                                        value={searchWordOption}
+                                        placeholder='select'></Select>
+                                )}
                             </Box>
-
+                            {/** search type option */}
                             <Box>
-                                <Select placeholder='is'></Select>
+                                <Select
+                                    className='option_text'
+                                    onChange={handleQueryChange}
+                                    value={searchWordQuery}>
+                                    {QuerySets.map((data, index) => {
+                                        return (
+                                            <option
+                                                key={index}
+                                                default={
+                                                    data.title === 'is' && true
+                                                }>
+                                                {data.title}
+                                            </option>
+                                        )
+                                    })}
+                                </Select>
                             </Box>
-
+                            {/** search option */}
                             <Box>
-                                <InputGroup
-                                    h='32px'
-                                    pr='0'
-                                    p='0'
-                                    m='0'
-                                    className='input_group'>
-                                    <InputLeftElement h='32px' p='0' m='0'>
-                                        <Button
-                                            p='0'
-                                            m='0'
-                                            h='100%'
-                                            w='100%'
-                                            bg='transparent'
-                                            size='28px'>
-                                            <BiSearch />
-                                        </Button>
-                                    </InputLeftElement>
-
-                                    <Input
+                                {searchWordOption === 'status' ||
+                                searchWordOption === 'Report Status' ? (
+                                    <InputGroup
                                         h='32px'
-                                        type='text'
-                                        placeholder='Search'
-                                        style={{ textIndent: '5px' }}
-                                    />
-                                </InputGroup>
+                                        pr='0'
+                                        p='0'
+                                        m='0'
+                                        className='input_group'>
+                                        {TableStatuses.length > 0 ? (
+                                            <Select
+                                                placeholder='select status'
+                                                onChange={
+                                                    handleSearchStatusChange
+                                                }
+                                                value={searchStatus}>
+                                                {TableStatuses.map(
+                                                    (data, index) => {
+                                                        return (
+                                                            <option key={index}>
+                                                                {data.tagName.toLowerCase()}
+                                                            </option>
+                                                        )
+                                                    }
+                                                )}
+                                            </Select>
+                                        ) : (
+                                            <Select placeholder='select status'></Select>
+                                        )}
+                                    </InputGroup>
+                                ) : (
+                                    <InputGroup
+                                        h='32px'
+                                        pr='0'
+                                        p='0'
+                                        m='0'
+                                        className='input_group'>
+                                        <InputLeftElement h='32px' p='0' m='0'>
+                                            <Button
+                                                p='0'
+                                                m='0'
+                                                h='100%'
+                                                w='100%'
+                                                bg='transparent'
+                                                size='28px'>
+                                                <BiSearch />
+                                            </Button>
+                                        </InputLeftElement>
+
+                                        <Input
+                                            h='32px'
+                                            type='text'
+                                            placeholder='Search'
+                                            style={{ textIndent: '5px' }}
+                                            value={searchWord}
+                                            onChange={handleSearchWordChange}
+                                        />
+                                    </InputGroup>
+                                )}
                             </Box>
 
                             <TableButton>
                                 <Button
+                                    disabled={
+                                        searchWord || searchStatus
+                                            ? false
+                                            : true
+                                    }
+                                    onClick={handleSearchFilterAddition}
                                     leftIcon={<AiOutlinePlus />}
                                     className='btn__rule'>
                                     Add Rule
@@ -203,38 +655,133 @@ const AdvSearch = () => {
                             </TableButton>
                         </Stack>
 
-                        {/** Rule Items */}
-                        <FilterInfoStack direction='column'>
-                            <Stack
-                                spacing='20px'
-                                direction='row'
-                                alignItems={'center'}>
-                                <Box className='close_icon'>
-                                    <GrClose />
-                                </Box>
-                                <Box className='filterTitle'>
-                                    <FilterKey
+                        {/** Rule Items & filter information */}
+                        <Stack direction='column' spacing='28px'>
+                            <Box>
+                                <Stack direction='column'>
+                                    {/** filter information */}
+                                    <Stack
                                         direction='row'
-                                        alignItems='center'>
+                                        alignItems={'center'}
+                                        spacing='14px'>
                                         <Box
-                                            p='0'
-                                            m='0'
-                                            color={'#464f60'}
-                                            bg='transparent'
-                                            size='28px'>
-                                            <FaFilter />
+                                            className='filter_query'
+                                            onClick={handleSearchActive}>
+                                            Query
                                         </Box>
-                                        <Box className='filterKey__text'>
-                                            Academic Year
+                                        <Box className='filter_num'>
+                                            Filter : {filterInfo.length}
                                         </Box>
-                                    </FilterKey>
-                                </Box>
-                                <Box className='filterOperation'>is</Box>
-                                <Stack direction='row'>
-                                    <Box className='filterText'>2021/22</Box>
+                                        <Box
+                                            onClick={clearAllFilters}
+                                            as='button'
+                                            className='clear_button'>
+                                            Clear all
+                                        </Box>
+                                    </Stack>
+
+                                    {/** filter items */}
+                                    {filterInfo.length > 0 && (
+                                        <Stack direction='column'>
+                                            {filterInfo.map((data, index) => {
+                                                return (
+                                                    <FilterInfoStack
+                                                        direction='column'
+                                                        key={index}>
+                                                        <Stack
+                                                            spacing='20px'
+                                                            direction='row'
+                                                            alignItems={
+                                                                'center'
+                                                            }>
+                                                            {index !== 0 && (
+                                                                <Box className='filterOperation'>
+                                                                    and
+                                                                </Box>
+                                                            )}
+                                                            <Box className='close_icon'>
+                                                                <IoMdClose />
+                                                            </Box>
+                                                            <Box className='filterTitle'>
+                                                                <FilterKey
+                                                                    direction='row'
+                                                                    alignItems='center'>
+                                                                    <Box
+                                                                        p='0'
+                                                                        m='0'
+                                                                        color={
+                                                                            '#464f60'
+                                                                        }
+                                                                        bg='transparent'
+                                                                        size='28px'>
+                                                                        <FaFilter />
+                                                                    </Box>
+                                                                    <Box className='filterKey__text'>
+                                                                        {
+                                                                            data.title
+                                                                        }
+                                                                    </Box>
+                                                                </FilterKey>
+                                                            </Box>
+                                                            <Box className='filterOperation'>
+                                                                {
+                                                                    data.queryfunction
+                                                                }
+                                                            </Box>
+                                                            <Stack direction='row'>
+                                                                {data.searchfor.map(
+                                                                    (
+                                                                        searchdata,
+                                                                        indexes
+                                                                    ) => {
+                                                                        return (
+                                                                            <Box
+                                                                                className='filterText'
+                                                                                key={
+                                                                                    indexes
+                                                                                }>
+                                                                                {
+                                                                                    searchdata
+                                                                                }
+                                                                            </Box>
+                                                                        )
+                                                                    }
+                                                                )}
+                                                            </Stack>
+                                                        </Stack>
+                                                    </FilterInfoStack>
+                                                )
+                                            })}
+                                        </Stack>
+                                    )}
                                 </Stack>
-                            </Stack>
-                        </FilterInfoStack>
+                            </Box>
+                        </Stack>
+                    </Stack>
+
+                    {/** Table */}
+                    <Stack direction='column' pt='30px'>
+                        {selectedTable === 'Student Table' && (
+                            <Box>
+                                <AdvStudentTable
+                                    tableLists={TableLists}
+                                    allItems={allprojects}
+                                    searchActive={searchActive}
+                                    allTagData={tagsData.allTagItems.items}
+                                    filterInfo={filterInfo}
+                                />
+                            </Box>
+                        )}
+                        {selectedTable === 'Examiner Reports Table' && (
+                            <Box>
+                                <AdvReportTable tableLists={TableLists} />
+                            </Box>
+                        )}
+                        {selectedTable === 'Examiners Table' && (
+                            <Box>
+                                <AdvExaminerTable tableLists={TableLists} />
+                            </Box>
+                        )}
                     </Stack>
                 </Stack>
             </Stack>
@@ -244,137 +791,67 @@ const AdvSearch = () => {
                 <ModalContent p='0'>
                     <ModalBody p='0'>
                         <PopupForm p='0px' justifyContent='space-between'>
-                            <Stack
-                                p='10px 20px 0 20px'
-                                direction='row'
-                                spacing={'20px'}
-                                h='70%'>
-                                {dataModels.map((data, index) => {
-                                    return (
-                                        <ModelStack direction='column'>
-                                            <Box title='pop_title'>
-                                                {data.title}
-                                            </Box>
+                            <Box p='10px 20px 0 20px' className='popup_title'>
+                                Select One(1) Table
+                            </Box>
+                            <RadioGroup
+                                onChange={onSelectTable}
+                                value={selectingTable}>
+                                <Stack
+                                    p='10px 20px 0 20px'
+                                    direction='column'
+                                    spacing={'20px'}
+                                    h='70%'>
+                                    {dataModels.map((data, index) => {
+                                        return (
+                                            <ModelStack
+                                                direction='column'
+                                                key={index}>
+                                                <Stack direction='row'>
+                                                    <Radio
+                                                        colorScheme='red'
+                                                        value={
+                                                            data.title
+                                                        }></Radio>
+                                                    <label>{data.title}</label>
+                                                </Stack>
+                                            </ModelStack>
+                                        )
+                                    })}
+                                </Stack>
+                            </RadioGroup>
 
-                                            <Stack direction='column'>
-                                                {data.models.length > 0 &&
-                                                    data.models.map(
-                                                        (modelData, index1) => {
-                                                            if (
-                                                                modelData.subModel &&
-                                                                modelData
-                                                                    .subModel
-                                                                    .length > 0
-                                                            ) {
-                                                                return (
-                                                                    <Stack
-                                                                        direction='column'
-                                                                        key={
-                                                                            index1
-                                                                        }>
-                                                                        <Stack
-                                                                            onClick={() =>
-                                                                                setDropDownActive(
-                                                                                    !dropDownActive
-                                                                                )
-                                                                            }
-                                                                            direction='row'
-                                                                            alignItems={
-                                                                                'center'
-                                                                            }>
-                                                                            <Box
-                                                                                style={{
-                                                                                    fontSize:
-                                                                                        '21px',
-                                                                                }}>
-                                                                                {dropDownActive ? (
-                                                                                    <RiArrowDownSLine />
-                                                                                ) : (
-                                                                                    <RiArrowRightSLine />
-                                                                                )}
-                                                                            </Box>
-                                                                            <label>
-                                                                                {
-                                                                                    modelData.modelTitle
-                                                                                }
-                                                                            </label>
-                                                                        </Stack>
-
-                                                                        {dropDownActive && (
-                                                                            <Stack
-                                                                                direction='column'
-                                                                                padding='0px 30px'>
-                                                                                {modelData.subModel.map(
-                                                                                    (
-                                                                                        subdata,
-                                                                                        index2
-                                                                                    ) => {
-                                                                                        return (
-                                                                                            <Stack
-                                                                                                direction='row'
-                                                                                                key={
-                                                                                                    index2
-                                                                                                }>
-                                                                                                <Checkbox colorScheme='red'>
-                                                                                                    {' '}
-                                                                                                </Checkbox>
-                                                                                                <label>
-                                                                                                    {
-                                                                                                        subdata.modelTitle
-                                                                                                    }
-                                                                                                </label>
-                                                                                            </Stack>
-                                                                                        )
-                                                                                    }
-                                                                                )}
-                                                                            </Stack>
-                                                                        )}
-                                                                    </Stack>
-                                                                )
-                                                            } else {
-                                                                return (
-                                                                    <Stack
-                                                                        direction='row'
-                                                                        key={
-                                                                            index1
-                                                                        }>
-                                                                        <Checkbox colorScheme='red'>
-                                                                            {' '}
-                                                                        </Checkbox>
-                                                                        <label>
-                                                                            {
-                                                                                modelData.modelTitle
-                                                                            }
-                                                                        </label>
-                                                                    </Stack>
-                                                                )
-                                                            }
-                                                        }
-                                                    )}
-                                            </Stack>
-                                        </ModelStack>
-                                    )
-                                })}
-                            </Stack>
                             <Stack
                                 p='0px 20px'
-                                h='48px'
-                                bg='#ffffff'
                                 direction='row'
-                                borderRadius='0 0 8px 8px'
-                                justifyContent='flex-end'
-                                alignItems='center'>
+                                alignItems='center'
+                                justifyContent='space-between'>
                                 <Box
                                     className='cancel_button'
-                                    onClick={() => onClose()}>
+                                    onClick={() => onResetTable()}>
                                     Reset
                                 </Box>
-                                <Box>
-                                    <Box className='apply_button'>
-                                        {' '}
-                                        Apply Filter
+
+                                <Stack
+                                    h='48px'
+                                    direction='row'
+                                    borderRadius='0 0 8px 8px'
+                                    justifyContent='flex-end'
+                                    spacing='20px'
+                                    alignItems='center'>
+                                    <Box
+                                        className='cancel_button'
+                                        onClick={() => onCancelTable()}>
+                                        Cancel
                                     </Box>
-                                </Box>
+                                    <Box>
+                                        <Box
+                                            className='apply_button'
+                                            onClick={() => onAddTable()}>
+                                            Select Table
+                                        </Box>
+                                    </Box>
+                                </Stack>
                             </Stack>
                         </PopupForm>
                     </ModalBody>
@@ -387,12 +864,30 @@ const AdvSearch = () => {
 export default AdvSearch
 
 const Container = styled(Stack)`
+    .table_title {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 17px;
+        line-height: 32px;
+        color: #222834;
+    }
+
+    .option_text {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+        color: #464f60;
+        letter-spacing: 0.02em;
+    }
     .add_button {
         height: 32px;
         color: #ffffff;
         background: #f4797f;
         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         letter-spacing: 0.02em;
@@ -453,7 +948,17 @@ const Container = styled(Stack)`
         input {
             border: 0px solid transparent;
         }
-
+        select {
+            border: 0px solid transparent;
+            min-width: 261px;
+            font-family: 'Inter', sans-serif;
+            font-style: normal;
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 20px;
+            color: #464f60;
+            letter-spacing: 0.02em;
+        }
         background: #ffffff;
     }
 
@@ -461,12 +966,39 @@ const Container = styled(Stack)`
         height: 32px;
         min-width: 103px;
     }
+    .filter_query {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 20px;
+        color: #3a3a43;
+    }
+
+    .filter_num {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 20px;
+        color: #3a3a43;
+    }
+
+    .clear_button {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 18px;
+        color: #838389;
+    }
 `
 
 const TableButton = styled(Box)`
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-style: normal;
-    font-weight: 300 !important;
+    font-weight: 500;
+
     font-size: 14px;
     line-height: 20px;
     .btn_table {
@@ -476,6 +1008,8 @@ const TableButton = styled(Box)`
             0px 0px 0px 1px rgba(70, 79, 96, 0.16);
         border-radius: 6px;
         background: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
     }
 
     .btn__print {
@@ -486,6 +1020,8 @@ const TableButton = styled(Box)`
 
         letter-spacing: 0.02em;
         color: #868fa0;
+        font-size: 14px;
+        line-height: 20px;
     }
 
     .btn__rule {
@@ -494,13 +1030,15 @@ const TableButton = styled(Box)`
         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #33333c;
         border-radius: 6px;
         color: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
     }
 `
 
 const FilterInfoStack = styled(Stack)`
     h1 {
         color: #f14c54;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 12px;
@@ -509,7 +1047,7 @@ const FilterInfoStack = styled(Stack)`
 
     p {
         color: #15151d;
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 12px;
@@ -517,20 +1055,20 @@ const FilterInfoStack = styled(Stack)`
     }
 
     .close_icon {
-        color: #838389;
-        font-size: 12px;
+        color: #abaaaf !important;
+        font-size: 22px;
     }
     .filterTitle {
         min-width: 152px;
     }
 
     .filterOperation {
-        background: #fceded;
+        background: #eeeeef;
         border-radius: 4px;
         padding: 2px 8px;
         gap: 4px;
 
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -544,7 +1082,7 @@ const FilterInfoStack = styled(Stack)`
         border-radius: 4px;
         padding: 2px 8px;
 
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -554,7 +1092,9 @@ const FilterInfoStack = styled(Stack)`
     }
 `
 const FilterKey = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     min-width: 152px;
+    height: 32px;
 
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
         0px 0px 0px 1px rgba(134, 143, 160, 0.16);
@@ -563,7 +1103,7 @@ const FilterKey = styled(Stack)`
 
     .filterKey__text {
         color: #464f60;
-        font-family: 'Inter';
+        letter-spacing: 0.02em;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;
@@ -579,6 +1119,16 @@ const PopupForm = styled(Stack)`
 
     span {
         color: #ed1f29;
+    }
+
+    .popup_title {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+        color: #464f60;
+        letter-spacing: 0.02em;
     }
 
     input {
@@ -622,13 +1172,11 @@ const PopupForm = styled(Stack)`
 `
 
 const ModelStack = styled(Stack)`
-    .pop_title {
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        color: #464f60;
-        letter-spacing: 0.02em;
-    }
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #464f60;
+    letter-spacing: 0.02em;
 `
