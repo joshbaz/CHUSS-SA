@@ -48,6 +48,14 @@ import {
     reset,
 } from '../../../store/features/project/projectSlice'
 import {
+    allExaminers,
+    reset as eReset,
+} from '../../../store/features/Examiner/examinerSlice'
+import {
+    getAllExaminerReports,
+    reset as rpReset,
+} from '../../../store/features/reports/reportSlice'
+import {
     reset as treset,
     tagGetAll,
 } from '../../../store/features/tags/tagSlice'
@@ -143,6 +151,25 @@ const QuerySets = [
     },
 ]
 
+const studentHeaders = [
+    {
+        label: 'Student Name',
+        key: 'studentName',
+    },
+    {
+        label: 'Student Contacts',
+        key: 'studentContacts',
+    },
+    {
+        label: 'topic',
+        key: 'topic',
+    },
+    {
+        label: 'status',
+        key: 'status',
+    },
+]
+
 const AdvSearch = () => {
     const [selectedTable, setSelectedTable] = React.useState('')
     const [selectingTable, setSelectingTable] = React.useState('')
@@ -152,6 +179,7 @@ const AdvSearch = () => {
     const [searchStatus, setSearchStatus] = React.useState('')
     const [searchActive, setSearchActive] = React.useState(false)
     const [filterInfo, setFilterInfo] = React.useState([])
+    const [exportData, setExportData] = React.useState([])
 
     const [dropDownActive, setDropDownActive] = React.useState(false)
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -160,6 +188,8 @@ const AdvSearch = () => {
     let toast = useToast()
     React.useEffect(() => {
         dispatch(getAllProjects())
+        dispatch(allExaminers())
+        dispatch(getAllExaminerReports())
         dispatch(tagGetAll())
     }, [])
 
@@ -167,6 +197,8 @@ const AdvSearch = () => {
         (state) => state.project
     )
 
+    let examinerCollectedDatas = useSelector((state) => state.examiner)
+    let reportCollectedDatas = useSelector((state) => state.report)
     const tagsData = useSelector((state) => state.tag)
 
     useEffect(() => {
@@ -194,6 +226,7 @@ const AdvSearch = () => {
         if (selectingTable) {
             setSearchActive(false)
             setSelectedTable(selectingTable)
+            setExportData([])
             onClose()
         }
     }
@@ -203,6 +236,7 @@ const AdvSearch = () => {
     const onResetTable = () => {
         setSelectedTable('')
         setSelectingTable('')
+        setExportData([])
         setSearchActive(false)
     }
 
@@ -235,6 +269,12 @@ const AdvSearch = () => {
             if (selectedTable === 'Student Table') {
                 let allInfoData = tagsData.allTagItems.items.filter(
                     (data, index) => data.table === 'project'
+                )
+
+                return allInfoData
+            } else if (selectedTable === 'Examiner Reports Table') {
+                let allInfoData = tagsData.allTagItems.items.filter(
+                    (data, index) => data.table === 'examinerReport'
                 )
 
                 return allInfoData
@@ -459,6 +499,7 @@ const AdvSearch = () => {
     /** function to clear all filter functions */
     const clearAllFilters = () => {
         setFilterInfo([])
+        setExportData([])
         setSearchWord('')
         setSearchStatus('')
         setSearchWordOption('')
@@ -469,6 +510,32 @@ const AdvSearch = () => {
     const handleSearchActive = () => {
         if (filterInfo.length > 0) {
             setSearchActive(true)
+            setExportData([])
+        }
+    }
+
+    /** memo for headers of csv */
+    const headerSetting = React.useMemo(() => {
+        if (selectedTable) {
+            if (selectedTable === 'Student Table') {
+                return studentHeaders
+            } else {
+                return []
+            }
+        } else {
+            return []
+        }
+    }, [selectedTable])
+
+    /** function to handle data exportation */
+    const handleExportation = async () => {
+        if (exportData.length > 0) {
+            let values = {
+                tableName: selectedTable,
+                data: exportData,
+                headers: studentHeaders,
+            }
+            await window.electronAPI.exportCSV(values)
         }
     }
 
@@ -520,13 +587,25 @@ const AdvSearch = () => {
                                      * 
                                      */}
 
-                                <TableButton>
-                                    <Button
-                                        leftIcon={<MdPrint />}
-                                        className='btn__print'>
-                                        Print Report
-                                    </Button>
-                                </TableButton>
+                                {exportData.length > 0 ? (
+                                    <TableButton>
+                                        <Button
+                                            onClick={handleExportation}
+                                            leftIcon={<MdPrint />}
+                                            className='btn__print'>
+                                            Export Report
+                                        </Button>
+                                    </TableButton>
+                                ) : (
+                                    <TableButton>
+                                        <Button
+                                            disabled={true}
+                                            leftIcon={<MdPrint />}
+                                            className='btn__print'>
+                                            Export Report
+                                        </Button>
+                                    </TableButton>
+                                )}
                             </Stack>
                         </Stack>
 
@@ -764,6 +843,8 @@ const AdvSearch = () => {
                         {selectedTable === 'Student Table' && (
                             <Box>
                                 <AdvStudentTable
+                                    setExportData={setExportData}
+                                    exportData={exportData}
                                     tableLists={TableLists}
                                     allItems={allprojects}
                                     searchActive={searchActive}
@@ -774,12 +855,30 @@ const AdvSearch = () => {
                         )}
                         {selectedTable === 'Examiner Reports Table' && (
                             <Box>
-                                <AdvReportTable tableLists={TableLists} />
+                                <AdvReportTable
+                                    setExportData={setExportData}
+                                    exportData={exportData}
+                                    tableLists={TableLists}
+                                    allItems={reportCollectedDatas.allreports}
+                                    searchActive={searchActive}
+                                    allTagData={tagsData.allTagItems.items}
+                                    filterInfo={filterInfo}
+                                />
                             </Box>
                         )}
                         {selectedTable === 'Examiners Table' && (
                             <Box>
-                                <AdvExaminerTable tableLists={TableLists} />
+                                <AdvExaminerTable
+                                    setExportData={setExportData}
+                                    exportData={exportData}
+                                    tableLists={TableLists}
+                                    allItems={
+                                        examinerCollectedDatas.allExaminerItems
+                                    }
+                                    searchActive={searchActive}
+                                    allTagData={tagsData.allTagItems.items}
+                                    filterInfo={filterInfo}
+                                />
                             </Box>
                         )}
                     </Stack>

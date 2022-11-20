@@ -97,3 +97,21 @@ exports.getExaminerReport = async (event, id) => {
     return errorResult;
   }
 };
+
+/** get all examiner reports */
+exports.getAllExaminerReports = async (event, id) => {
+    try {
+        let responseData = await axios.get(
+            `${BASE_API_}/reports/v1/allexaminerReports`
+        )
+
+        let data = {
+            ...responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}

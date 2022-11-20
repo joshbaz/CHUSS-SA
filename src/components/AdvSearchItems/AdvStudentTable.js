@@ -41,7 +41,6 @@ import { RiPencilFill } from 'react-icons/ri'
 import { CgNotes } from 'react-icons/cg'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { CSVLink } from 'react-csv'
 import AdvPagination from './AdvPagination'
 import AdvPagination2 from './AdvPagination2'
 
@@ -71,8 +70,19 @@ const AdvStudentTable = ({
     searchActive,
     allTagData,
     filterInfo,
+    exportData,
+    setExportData,
 }) => {
     const [allDisplayItems, setAllDisplayItems] = React.useState([])
+    const [allDisplayData, setAllDisplayData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allSearchItems: [],
+        totalItemsDisplayed: 0,
+        totalSearchedItems: 0,
+        totalPages: 0,
+    })
     const [projectTagData, setProjectTagData] = React.useState([])
     const [perPage, setPerPage] = React.useState(10)
     const [searchData, setSearchData] = React.useState({
@@ -85,20 +95,48 @@ const AdvStudentTable = ({
         totalPages: 0,
     })
 
-    const [exportData, setExportData] = React.useState([])
+    //const [exportData, setExportData] = React.useState([])
     React.useEffect(() => {
         setAllDisplayItems(allItems.items)
-        /** export trial */
-        const newExports = allItems.items.map((data, index) => {
-            return {
-                studentName: data.student.studentName,
-                studentContacts: data.student.phoneNumber,
-                topic: data.topic,
-                status: data.activeStatus,
-            }
+
+        /** initial items  */
+        //items collected
+        const allItemsCollected = allItems.items
+        //total all items
+        const totalItems = allItems.items.length
+        let itemsPerPage = perPage
+        const currentPage = 1
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+        const currentItems = allItemsCollected.slice(
+            indexOfFirstItem,
+            indexOfLastItem
+        )
+
+        const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+        setAllDisplayData({
+            currentPage: currentPage,
+            itemsPerPage: itemsPerPage,
+            items: currentItems,
+            allSearchItems: allItems.items,
+            totalItemsDisplayed: currentItems.length,
+            totalSearchedItems: totalItems,
+            totalPages: pageLength,
         })
-        console.log('newExports', newExports)
-        setExportData(newExports)
+        /** export trial */
+        // const newExports = allItems.items.map((data, index) => {
+        //     return {
+        //         _id: data._id,
+        //         studentName: data.student.studentName,
+        //         studentContacts: data.student.phoneNumber,
+        //         topic: data.topic,
+        //         status: data.activeStatus,
+        //     }
+        // })
+        // // console.log('newExports', newExports)
+        // setExportData(newExports)
     }, [allItems])
 
     useEffect(() => {
@@ -116,7 +154,7 @@ const AdvStudentTable = ({
             if (filterInfo[0].title === 'Student Name') {
                 if (filterInfo[0].queryfunction === 'is') {
                     let name = data1.student.studentName.toLowerCase()
-                    console.log('name', name)
+                    //console.log('name', name)
                     let check = filterInfo[0].searchfor.some((details) =>
                         name.includes(details)
                     )
@@ -127,7 +165,7 @@ const AdvStudentTable = ({
                     //         return true
                     //     }
                     // })
-                    console.log('check', check)
+                    // console.log('check', check)
 
                     return check
                 }
@@ -202,32 +240,224 @@ const AdvStudentTable = ({
             return null
         })
 
-        /** set the records */
-        //items collected
-        const allItemsCollected = searchResults
-        //total all items
-        const totalItems = searchResults.length
-        let itemsPerPage = perPage
-        const currentPage = 1
-        const indexOfLastItem = currentPage * itemsPerPage
-        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+        /** filters to add to the first */
+        if (searchResults.length > 0 && filterInfo.length > 1) {
+            let newFilterArray = [...filterInfo]
+            newFilterArray.splice(0, 1)
+            //console.log('new arrayS', newFilterArray)
+            //stopped here
 
-        const currentItems = allItemsCollected.slice(
-            indexOfFirstItem,
-            indexOfLastItem
-        )
+            //make a new copy of the searched Data
+            let newSearchedData = [...searchResults]
 
-        const pageLength = Math.ceil(totalItems / itemsPerPage)
+            //iterate through the queries
+            for (
+                let iteration = 0;
+                iteration < newFilterArray.length;
+                iteration++
+            ) {
+                if (newSearchedData.length > 0) {
+                    /** filter the data */
+                    const newResults = newSearchedData.filter(
+                        (data1, index) => {
+                            /** student name */
+                            if (
+                                newFilterArray[iteration].title ===
+                                'Student Name'
+                            ) {
+                                if (
+                                    newFilterArray[iteration].queryfunction ===
+                                    'is'
+                                ) {
+                                    let name =
+                                        data1.student.studentName.toLowerCase()
 
-        setSearchData({
-            currentPage: currentPage,
-            itemsPerPage: itemsPerPage,
-            items: currentItems,
-            allSearchItems: searchResults,
-            totalItemsDisplayed: currentItems.length,
-            totalSearchedItems: totalItems,
-            totalPages: pageLength,
-        })
+                                    let check = newFilterArray[
+                                        iteration
+                                    ].searchfor.some((details) =>
+                                        name.includes(details)
+                                    )
+
+                                    console.log('check', check)
+
+                                    return check
+                                }
+                            }
+                            /** contacts */
+                            if (
+                                newFilterArray[iteration].title ===
+                                'Student Contacts'
+                            ) {
+                                if (
+                                    newFilterArray[iteration].queryfunction ===
+                                    'is'
+                                ) {
+                                    let phone =
+                                        data1.student.phoneNumber.toLowerCase()
+                                    let email =
+                                        data1.student.email.toLowerCase()
+                                    let checkphone = filterInfo[
+                                        iteration
+                                    ].searchfor.some((details) =>
+                                        phone.includes(details)
+                                    )
+
+                                    let checkemail = filterInfo[
+                                        iteration
+                                    ].searchfor.some((details) =>
+                                        email.includes(details)
+                                    )
+
+                                    if (checkphone || checkemail) {
+                                        return true
+                                    }
+                                }
+                            }
+                            /** topic */
+                            if (newFilterArray[iteration].title === 'topic') {
+                                if (
+                                    newFilterArray[iteration].queryfunction ===
+                                    'is'
+                                ) {
+                                    let topic = data1.topic.toLowerCase()
+
+                                    let check = newFilterArray[
+                                        iteration
+                                    ].searchfor.some((details) =>
+                                        topic.includes(details)
+                                    )
+
+                                    return check
+                                }
+                            }
+                            /** status */
+                            if (newFilterArray[iteration].title === 'status') {
+                                if (
+                                    newFilterArray[iteration].queryfunction ===
+                                    'is'
+                                ) {
+                                    let status =
+                                        data1.activeStatus.toLowerCase()
+
+                                    let check = newFilterArray[
+                                        iteration
+                                    ].searchfor.some((details) =>
+                                        status.includes(details)
+                                    )
+
+                                    return check
+                                }
+                            }
+                            /** registration */
+                            if (
+                                newFilterArray[iteration].title ===
+                                'Registration'
+                            ) {
+                                if (
+                                    newFilterArray[iteration].queryfunction ===
+                                    'is'
+                                ) {
+                                    let status =
+                                        data1.activeStatus.toLowerCase()
+
+                                    let check = newFilterArray[
+                                        iteration
+                                    ].searchfor.some((details) =>
+                                        status.includes(details)
+                                    )
+
+                                    return check
+                                }
+                            }
+                            /** resubmission */
+                            if (
+                                newFilterArray[iteration].title ===
+                                'Resubmission'
+                            ) {
+                                if (
+                                    newFilterArray[iteration].queryfunction ===
+                                    'is'
+                                ) {
+                                    let status =
+                                        data1.activeStatus.toLowerCase()
+
+                                    let check = newFilterArray[
+                                        iteration
+                                    ].searchfor.some(({ details }) =>
+                                        status.includes(details)
+                                    )
+
+                                    return check
+                                }
+                            }
+
+                            return null
+                        }
+                    )
+
+                    /** assign the new results */
+
+                    newSearchedData = [...newResults]
+                } else {
+                    return
+                }
+            }
+            // perform state update of the results
+
+            //items collected
+            const allItemsCollected = newSearchedData
+            //total all items
+            const totalItems = newSearchedData.length
+            let itemsPerPage = perPage
+            const currentPage = 1
+            const indexOfLastItem = currentPage * itemsPerPage
+            const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+            const currentItems = allItemsCollected.slice(
+                indexOfFirstItem,
+                indexOfLastItem
+            )
+
+            const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+            setSearchData({
+                currentPage: currentPage,
+                itemsPerPage: itemsPerPage,
+                items: currentItems,
+                allSearchItems: newSearchedData,
+                totalItemsDisplayed: currentItems.length,
+                totalSearchedItems: totalItems,
+                totalPages: pageLength,
+            })
+        } else {
+            /** filter info less than 2 and no searched data */
+            /** set the records */
+            //items collected
+            const allItemsCollected = searchResults
+            //total all items
+            const totalItems = searchResults.length
+            let itemsPerPage = perPage
+            const currentPage = 1
+            const indexOfLastItem = currentPage * itemsPerPage
+            const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+            const currentItems = allItemsCollected.slice(
+                indexOfFirstItem,
+                indexOfLastItem
+            )
+
+            const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+            setSearchData({
+                currentPage: currentPage,
+                itemsPerPage: itemsPerPage,
+                items: currentItems,
+                allSearchItems: searchResults,
+                totalItemsDisplayed: currentItems.length,
+                totalSearchedItems: totalItems,
+                totalPages: pageLength,
+            })
+        }
     }
 
     useEffect(() => {
@@ -239,29 +469,222 @@ const AdvStudentTable = ({
     console.log(allDisplayItems, 'allDisplayItems')
 
     /** function to handle next on pagination */
-    const handleNext = () => {}
-    /** function to handle prev on pagination */
-    const handlePrev = () => {}
+    const handleNext = () => {
+        if (searchActive) {
+            if (searchData.currentPage + 1 <= searchData.totalPages) {
+                let page = searchData.currentPage + 1
+                const indexOfLastItem = page * searchData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - searchData.itemsPerPage
 
+                const currentItems = searchData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setSearchData({
+                    ...searchData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        } else {
+            if (allDisplayData.currentPage + 1 <= allDisplayData.totalPages) {
+                let page = allDisplayData.currentPage + 1
+                const indexOfLastItem = page * allDisplayData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allDisplayData.itemsPerPage
+
+                const currentItems = allDisplayData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setAllDisplayData({
+                    ...allDisplayData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        }
+    }
+    /** function to handle prev on pagination */
+    const handlePrev = () => {
+        if (searchActive) {
+            if (searchData.currentPage - 1 >= 1) {
+                let page = searchData.currentPage - 1
+                const indexOfLastItem = page * searchData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - searchData.itemsPerPage
+
+                const currentItems = searchData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setSearchData({
+                    ...searchData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        } else {
+            if (allDisplayData.currentPage - 1 >= 1) {
+                let page = allDisplayData.currentPage - 1
+                const indexOfLastItem = page * allDisplayData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allDisplayData.itemsPerPage
+
+                const currentItems = allDisplayData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setAllDisplayData({
+                    ...allDisplayData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        }
+    }
+
+    /** initial pagination */
     let PaginationFirstNumber =
+        allDisplayData.currentPage * allDisplayData.itemsPerPage -
+        allDisplayData.itemsPerPage +
+        1
+    let PaginationLastNumber =
+        PaginationFirstNumber + allDisplayData.totalItemsDisplayed - 1
+
+    /** searched Pagination */
+    let PaginationSFirstNumber =
         searchData.currentPage * searchData.itemsPerPage -
         searchData.itemsPerPage +
         1
-    let PaginationLastNumber =
-        PaginationFirstNumber + searchData.totalItemsDisplayed - 1
+    let PaginationSLastNumber =
+        PaginationSFirstNumber + searchData.totalItemsDisplayed - 1
+
+    /** function to handle checkbox on each item */
+    const handleIndivCheckbox = (e, data) => {
+        console.log('checking0', e.target.checked, data)
+        if (exportData.length > 0) {
+            let checkData = exportData.some(
+                (datacheck, index) => data._id === datacheck._id
+            )
+
+            if (checkData) {
+                let newChecksData = [...exportData]
+                for (
+                    let iteration = 0;
+                    iteration < newChecksData.length;
+                    iteration++
+                ) {
+                    if (newChecksData[iteration]._id === data._id) {
+                        newChecksData.splice(iteration, 1)
+                        setExportData([...newChecksData])
+
+                        return
+                    }
+                }
+            } else {
+                setExportData([
+                    ...exportData,
+                    {
+                        _id: data._id,
+                        studentName: data.student.studentName,
+                        studentContacts: data.student.phoneNumber,
+                        topic: data.topic,
+                        status: data.activeStatus,
+                    },
+                ])
+            }
+        } else {
+            setExportData([
+                {
+                    _id: data._id,
+                    studentName: data.student.studentName,
+                    studentContacts: data.student.phoneNumber,
+                    topic: data.topic,
+                    status: data.activeStatus,
+                },
+            ])
+        }
+    }
+
+    /** function to handle general checkbox */
+    const handleGeneralCheckbox = (e) => {
+        if (e.target.checked) {
+            if (searchActive) {
+                if (searchData.allSearchItems.length > 0) {
+                    let newDataToSave = searchData.allSearchItems.map(
+                        (data) => {
+                            return {
+                                _id: data._id,
+                                studentName: data.student.studentName,
+                                studentContacts: data.student.phoneNumber,
+                                topic: data.topic,
+                                status: data.activeStatus,
+                            }
+                        }
+                    )
+
+                    console.log('generalss', newDataToSave)
+
+                    setExportData(newDataToSave)
+                }
+            } else {
+                if (allDisplayData.allSearchItems.length > 0) {
+                    let newDataToSave = allDisplayData.allSearchItems.map(
+                        (data) => {
+                            console.log('allDisplayData', data.activeStatus)
+                            return {
+                                _id: data._id,
+                                studentName: data.student.studentName,
+                                studentContacts: data.student.phoneNumber,
+                                topic: data.topic,
+                                status: data.activeStatus,
+                            }
+                        }
+                    )
+
+                    console.log('generalstts', newDataToSave)
+                    setExportData(newDataToSave)
+                }
+            }
+        } else {
+            setExportData([])
+        }
+    }
 
     return (
         <Container>
             {/** table */}
-            <CSVLink data={exportData} headers={headers}>
-                <Button>Export</Button>
-            </CSVLink>
 
             <Box minH='48vh'>
                 <Table size='sm'>
                     <Thead>
                         {tableLists.length > 0 && (
                             <Tr>
+                                <Th w='46px'>
+                                    <Checkbox
+                                        isChecked={
+                                            exportData.length > 0 ? true : false
+                                        }
+                                        onChange={handleGeneralCheckbox}
+                                        bg='#ffffff'
+                                        icon={<AiOutlineMinus />}
+                                        colorScheme='pink'
+                                    />
+                                </Th>
                                 {tableLists.map((data, index) => {
                                     return <Th key={index}>{data.mtitle}</Th>
                                 })}
@@ -275,6 +698,7 @@ const AdvStudentTable = ({
                                     {searchData.items.map((data, index) => {
                                         let activeStatus
                                         let activeElementSet
+                                        let includedInExport
 
                                         if (
                                             data.projectStatus &&
@@ -299,10 +723,39 @@ const AdvStudentTable = ({
                                             }
                                         } else {
                                         }
+
+                                        if (exportData.length > 0) {
+                                            let checkData = exportData.some(
+                                                (datacheck, index) =>
+                                                    data._id === datacheck._id
+                                            )
+
+                                            includedInExport = checkData
+                                        } else {
+                                            includedInExport = false
+                                        }
                                         return (
                                             <Tr
                                                 key={data._id}
-                                                className='table_row'>
+                                                className={`table_row ${
+                                                    includedInExport
+                                                        ? 'row_selected'
+                                                        : ''
+                                                }`}>
+                                                <Td w='46px'>
+                                                    <Checkbox
+                                                        isChecked={
+                                                            includedInExport
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleIndivCheckbox(
+                                                                e,
+                                                                data
+                                                            )
+                                                        }
+                                                        colorScheme='pink'
+                                                    />
+                                                </Td>
                                                 <Td
                                                     maxW='250px'
                                                     className='studentName'>
@@ -393,6 +846,7 @@ const AdvStudentTable = ({
                                     {allDisplayItems.map((data, index) => {
                                         let activeStatus
                                         let activeElementSet
+                                        let includedInExport
 
                                         if (
                                             data.projectStatus &&
@@ -417,10 +871,39 @@ const AdvStudentTable = ({
                                             }
                                         } else {
                                         }
+
+                                        if (exportData.length > 0) {
+                                            let checkData = exportData.some(
+                                                (datacheck, index) =>
+                                                    data._id === datacheck._id
+                                            )
+
+                                            includedInExport = checkData
+                                        } else {
+                                            includedInExport = false
+                                        }
                                         return (
                                             <Tr
                                                 key={data._id}
-                                                className='table_row'>
+                                                className={`table_row ${
+                                                    includedInExport
+                                                        ? 'row_selected'
+                                                        : ''
+                                                }`}>
+                                                <Td w='46px'>
+                                                    <Checkbox
+                                                        isChecked={
+                                                            includedInExport
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleIndivCheckbox(
+                                                                e,
+                                                                data
+                                                            )
+                                                        }
+                                                        colorScheme='pink'
+                                                    />
+                                                </Td>
                                                 <Td
                                                     maxW='250px'
                                                     className='studentName'>
@@ -508,15 +991,23 @@ const AdvStudentTable = ({
             {/** pagination */}
             {searchActive ? (
                 <AdvPagination2
-                    paginationFirstNumber={PaginationFirstNumber}
-                    paginationLastNumber={PaginationLastNumber}
+                    paginationFirstNumber={PaginationSFirstNumber}
+                    paginationLastNumber={PaginationSLastNumber}
                     overalltotal={searchData.totalSearchedItems}
                     perPages={perPage}
+                    currentPage={searchData.currentPage}
+                    totalPages={searchData.totalPages}
                     handleNext={handleNext}
                     handlePrev={handlePrev}
                 />
             ) : (
                 <AdvPagination
+                    paginationFirstNumber={PaginationFirstNumber}
+                    paginationLastNumber={PaginationLastNumber}
+                    overalltotal={allDisplayData.totalSearchedItems}
+                    perPages={perPage}
+                    currentPage={allDisplayData.currentPage}
+                    totalPages={allDisplayData.totalPages}
                     handleNext={handleNext}
                     handlePrev={handlePrev}
                 />
@@ -670,6 +1161,9 @@ const Container = styled(Stack)`
         :hover {
             background: #fef9ef;
         }
+    }
+    .row_selected {
+        background: #fef9ef !important;
     }
 `
 

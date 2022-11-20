@@ -1,6 +1,7 @@
 const { BrowserWindow, app, dialog, ipcMain } = require('electron')
 const fs = require('fs')
 const path = require('path')
+const XLSX = require('xlsx')
 
 const isDev = require('electron-is-dev')
 const os = require('os')
@@ -375,7 +376,7 @@ ipcMain.handle('update-examiner', examinerController.updateExaminer)
  */
 ipcMain.handle('update-examiner-report', reportController.updateExaminerReport)
 ipcMain.handle('get-examiner-report', reportController.getExaminerReport)
-
+ipcMain.handle('get-all-examiner-reports', reportController.getAllExaminerReports)
 /** opponent reports */
 /**
  * 1.handle update opponent reports
@@ -491,5 +492,68 @@ ipcMain.handle('download-file', async (event, values) => {
                 dialog.showMessageBox(null, newoptions)
             }
         )
+    }
+})
+
+/** handler for export csv */
+
+ipcMain.handle('export-csv', async (event, values) => {
+    const options = {
+        defaultPath: app.getPath('documents') + `/${values.tableName}.${'csv'}`,
+        filters: [
+            {
+                name: 'Custom File Type',
+                extensions: ['xls', 'xlsx', 'xlsb', 'csv', 'ods'],
+            },
+        ],
+    }
+    const dialogSaves = await dialog.showSaveDialog(mainWindow, options)
+    console.log('dialogSaves', dialogSaves)
+
+    if (dialogSaves.canceled) {
+        return
+    } else {
+        //console.log("my values", values);
+        // fs.writeFile(
+        //     dialogSaves.filePath,
+        //     values.data,
+        //     { encoding: 'base64' },
+        //     function (err) {
+        //         if (err) {
+        //             console.log('file failed')
+        //         }
+        //         //return;
+        //         const newoptions = {
+        //             message: `File Saved - ${dialogSaves.filePath}`,
+        //         }
+        //         dialog.showMessageBox(null, newoptions)
+        //     }
+        // )
+
+        const rowData = await values.data.map((data2, index) => {
+            return {
+                studentName: data2.studentName,
+                studentContacts: data2.studentContacts,
+                Topic: data2.topic,
+                Status: data2.status,
+            }
+        })
+
+        console.log('rows  data', rowData, rowData)
+
+        const worksheet = XLSX.utils.json_to_sheet(rowData)
+        worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
+            return { wch: 10 }
+        })
+        const workbook = XLSX.utils.book_new()
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, `${values.tableName}`)
+
+        await XLSX.writeFile(workbook, dialogSaves.filePath)
+
+        const newoptions = {
+            message: `Export Successfully Saved - ${dialogSaves.filePath}`,
+        }
+        dialog.showMessageBox(mainWindow, newoptions)
     }
 })

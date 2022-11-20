@@ -3,6 +3,10 @@ import reportService from './reportService'
 
 let initialState = {
     individualReport: null,
+    allreports: {
+        items: [],
+        overall_total: 0,
+    },
     isSuccess: false,
     isError: false,
     isLoading: false,
@@ -28,6 +32,20 @@ export const getExaminerReport = createAsyncThunk(
     'reports/view',
     async (values, thunkAPI) => {
         const getAttempt = await reportService.getExaminerReport(values)
+
+        if (getAttempt.type === 'success') {
+            return getAttempt
+        } else {
+            return thunkAPI.rejectWithValue(getAttempt.message)
+        }
+    }
+)
+
+/** all reports */
+export const getAllExaminerReports = createAsyncThunk(
+    'reports/getall',
+    async (values, thunkAPI) => {
+        const getAttempt = await reportService.getAllExaminerReports(values)
 
         if (getAttempt.type === 'success') {
             return getAttempt
@@ -72,6 +90,20 @@ export const reportSlice = createSlice({
                 state.individualReport = action.payload
             })
             .addCase(getExaminerReport.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            //all examiner reports
+            .addCase(getAllExaminerReports.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getAllExaminerReports.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.allreports = action.payload
+            })
+            .addCase(getAllExaminerReports.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

@@ -10,6 +10,8 @@ const AdvPagination2 = ({
     perPages,
     handlePrev,
     handleNext,
+    totalPages,
+    currentPage,
 }) => {
     return (
         <PaginationStack
@@ -39,7 +41,10 @@ const AdvPagination2 = ({
                     <Box className='left' onClick={handlePrev}>
                         <MdKeyboardArrowLeft />
                     </Box>
-                    <Box>1</Box>
+                    <Box>
+                        {' '}
+                        {currentPage}/{totalPages}
+                    </Box>
                     <Box className='right' onClick={handleNext}>
                         <MdKeyboardArrowRight />
                     </Box>
@@ -52,6 +57,7 @@ const AdvPagination2 = ({
 export default AdvPagination2
 
 const PaginationStack = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     .pagination {
         color: #6b7280;
         align-items: center;
@@ -60,7 +66,6 @@ const PaginationStack = styled(Stack)`
         background: #ffffff;
     }
     .pages {
-        font-family: Inter;
         font-style: normal;
         font-weight: normal;
         font-size: 12px;
@@ -72,7 +77,6 @@ const PaginationStack = styled(Stack)`
         display: flex;
         align-items: center;
         h1 {
-            font-family: Inter;
             font-style: normal;
             font-weight: normal;
             font-size: 12px;
@@ -80,7 +84,7 @@ const PaginationStack = styled(Stack)`
         }
         span {
             margin-left: 2px;
-            font-family: Inter;
+
             font-style: normal;
             font-weight: normal;
             font-size: 12px;
@@ -92,7 +96,6 @@ const PaginationStack = styled(Stack)`
     }
 
     .arrows {
-        width: 88px;
         display: flex;
         justify-content: space-between;
 

@@ -12,6 +12,7 @@ const initialState = {
     },
     allExaminerItems: {
         items: [],
+        overall_total: 0,
     },
     individualExaminer: null,
     studentData: {

@@ -4,7 +4,11 @@ import { Box, Stack } from '@chakra-ui/react'
 import Logo from '../../../logo.svg'
 import { NavLink, useLocation } from 'react-router-dom'
 import { RiDashboardLine, RiFoldersFill } from 'react-icons/ri'
-import { MdOutlineAccountBalanceWallet, MdManageSearch } from 'react-icons/md'
+import {
+    MdOutlineAccountBalanceWallet,
+    MdManageSearch,
+    MdOutlineBusinessCenter,
+} from 'react-icons/md'
 import { AiOutlineSetting } from 'react-icons/ai'
 import { FaChalkboardTeacher } from 'react-icons/fa'
 const Navigation = () => {
@@ -16,7 +20,12 @@ const Navigation = () => {
             link: '/',
         },
         {
-            title: 'projects',
+            title: 'mst',
+            icon: <RiFoldersFill />,
+            link: '/projects',
+        },
+        {
+            title: 'phd',
             icon: <RiFoldersFill />,
             link: '/projects',
         },
@@ -29,6 +38,11 @@ const Navigation = () => {
             title: 'examiners',
             icon: <FaChalkboardTeacher />,
             link: '/examiners',
+        },
+        {
+            title: 'Schools',
+            icon: <MdOutlineBusinessCenter />,
+            link: '/schools',
         },
         {
             title: 'advanced search',
@@ -56,7 +70,12 @@ const Navigation = () => {
                         className={({ isActive }) =>
                             isActive ? 'menu_wrap activeItem' : 'menu_wrap'
                         }>
-                        <Box className='menu_icon'>{data.icon}</Box>
+                        <Stack direction='column' spacing='0px'>
+                            <Box className='menu_icon'>{data.icon}</Box>
+                            {data.title === 'mst' || data.title === 'phd' ? (
+                                <Box className='menu_title'>{data.title}</Box>
+                            ) : null}
+                        </Stack>
                     </NavLink>
                 ))}
             </Stack>
@@ -67,6 +86,7 @@ const Navigation = () => {
 export default Navigation
 
 const Container = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     background: #1a1a24;
     position: fixed;
     align-items: center;
@@ -98,5 +118,13 @@ const Container = styled(Stack)`
         background: #15151d !important;
         border: 1px solid #22222c;
         color: #ffffff;
+    }
+
+    .menu_title {
+        font-weight: 600;
+        font-size: 9px;
+        line-height: 11px;
+        color: #d4d4d6;
+        text-transform: uppercase;
     }
 `

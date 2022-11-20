@@ -37,6 +37,7 @@ import AssignDoctoralMember from '../views/DesktopViews/Projects/DoctoralMembers
 import CreateProjectDMember from '../views/DesktopViews/Projects/DoctoralMembers/CreateProjectDMember'
 import ViewOpponentReport from '../views/DesktopViews/Projects/OpponentReports/ViewOpponentReport'
 import EditOpponentReport from '../views/DesktopViews/Projects/OpponentReports/EditOpponentReport'
+import AllSchools from '../views/DesktopViews/Schools&Depts/AllSchools'
 const AllRoutes = () => {
     return (
         <HashRouter>
@@ -204,6 +205,8 @@ const AllRoutes = () => {
                         path='/payments/edit/:id'
                         element={<UpdatePayment />}
                     />
+                    {/** schools and depts */}
+                    <Route exact path='/schools' element={<AllSchools />} />
                     {/** Advanced search */}
                     <Route exact path='/advsearch' element={<AdvSearch />} />
 

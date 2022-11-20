@@ -8,9 +8,15 @@ const getExaminerReport = async (id) => {
     return response
 }
 
+const getAllExaminerReports = async (values) => {
+    const response = await window.electronAPI.getAllExaminerReports(values)
+    return response
+}
+
 let reportService = {
     updateExaminerReport,
     getExaminerReport,
+    getAllExaminerReports,
 }
 
 export default reportService

@@ -1,9 +1,11 @@
-const { contextBridge, ipcRenderer } = require("electron");
+const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI', {
     openFile: () => ipcRenderer.send('dialog-openFile'),
     oppDetail: () => ipcRenderer.invoke('get/file'),
     loginValidation: (values) => ipcRenderer.invoke('login-validation', values),
+    /** bridge for csv exportation */
+    exportCSV: (values) => ipcRenderer.invoke('export-csv', values),
     /** projects */
     projectCreation: (values) => ipcRenderer.invoke('create-project', values),
     projectUpdate: (values) => ipcRenderer.invoke('update-project', values),
@@ -77,6 +79,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     updateExaminerReport: (values) =>
         ipcRenderer.invoke('update-examiner-report', values),
     getExaminerReport: (id) => ipcRenderer.invoke('get-examiner-report', id),
+    getAllExaminerReports: (values) =>
+        ipcRenderer.invoke('get-all-examiner-reports', values),
     /** tags */
     createTags: (values) => ipcRenderer.invoke('create-tags', values),
     getAllTags: (values) => ipcRenderer.invoke('get-tags', values),
