@@ -72,6 +72,7 @@ const AdvReportTable = ({
 
     //const [exportData, setExportData] = React.useState([])
     React.useEffect(() => {
+        console.log('items here', allItems.items)
         setAllDisplayItems(allItems.items)
 
         /** initial items  */
@@ -688,46 +689,44 @@ const AdvReportTable = ({
                             {allDisplayData.items.length > 0 ? (
                                 <>
                                     {allDisplayData.items.map((data, index) => {
-                                           let activeStatus
-                                           let activeElementSet
-                                           let includedInExport
+                                        let activeStatus
+                                        let activeElementSet
+                                        let includedInExport
 
-                                           if (
-                                               data.projectStatus &&
-                                               data.projectStatus.length > 0 &&
-                                               projectTagData.length > 0
-                                           ) {
-                                               activeStatus =
-                                                   data.projectStatus.find(
-                                                       (element) =>
-                                                           element.active
-                                                   )
-                                               if (activeStatus) {
-                                                   activeElementSet =
-                                                       projectTagData.find(
-                                                           (element) =>
-                                                               element.tagName ===
-                                                               activeStatus.status
-                                                       )
-                                                   console.log(
-                                                       activeElementSet,
-                                                       'eeel'
-                                                   )
-                                               }
-                                           } else {
-                                           }
+                                        if (
+                                            data.projectStatus &&
+                                            data.projectStatus.length > 0 &&
+                                            projectTagData.length > 0
+                                        ) {
+                                            activeStatus =
+                                                data.projectStatus.find(
+                                                    (element) => element.active
+                                                )
+                                            if (activeStatus) {
+                                                activeElementSet =
+                                                    projectTagData.find(
+                                                        (element) =>
+                                                            element.tagName ===
+                                                            activeStatus.status
+                                                    )
+                                                console.log(
+                                                    activeElementSet,
+                                                    'eeel'
+                                                )
+                                            }
+                                        } else {
+                                        }
 
-                                           if (exportData.length > 0) {
-                                               let checkData = exportData.some(
-                                                   (datacheck, index) =>
-                                                       data._id ===
-                                                       datacheck._id
-                                               )
+                                        if (exportData.length > 0) {
+                                            let checkData = exportData.some(
+                                                (datacheck, index) =>
+                                                    data._id === datacheck._id
+                                            )
 
-                                               includedInExport = checkData
-                                           } else {
-                                               includedInExport = false
-                                           }
+                                            includedInExport = checkData
+                                        } else {
+                                            includedInExport = false
+                                        }
                                         return (
                                             <Tr
                                                 key={data._id}
@@ -753,7 +752,7 @@ const AdvReportTable = ({
                                                 <Td
                                                     maxW='250px'
                                                     className='studentName'>
-                                                    {data.student.studentName}{' '}
+                                                    {'data.student.studentName'}{' '}
                                                 </Td>
                                                 <Td maxW='250px'>
                                                     <ContactLists direction='column'>
@@ -761,18 +760,15 @@ const AdvReportTable = ({
                                                             <Box>phone:</Box>
                                                             <Box>
                                                                 {
-                                                                    data.student
-                                                                        .phoneNumber
+                                                                    ' data.student.phoneNumber'
                                                                 }
                                                             </Box>
                                                         </Stack>
                                                         <Stack direction='row'>
                                                             <Box>email:</Box>
                                                             <Box>
-                                                                {
-                                                                    data.student
-                                                                        .email
-                                                                }
+                                                                {`data.student
+                                                                        .email`}
                                                             </Box>
                                                         </Stack>
                                                     </ContactLists>
@@ -784,7 +780,7 @@ const AdvReportTable = ({
                                                         color: '#15151D',
                                                     }}>
                                                     {' '}
-                                                    {data.topic}
+                                                    {`data.topic`}
                                                 </Td>
                                                 <Td>
                                                     <StatusItem
@@ -806,16 +802,44 @@ const AdvReportTable = ({
                                                         <div />
                                                         <Text>
                                                             {' '}
-                                                            {activeElementSet &&
-                                                            activeElementSet.tagName !==
-                                                                undefined
-                                                                ? activeElementSet.tagName
-                                                                : ''}
+                                                            {data.reportStatus}
                                                         </Text>
                                                     </StatusItem>
                                                 </Td>
-                                                <Td maxW='250px'> </Td>
-                                                <Td maxW='250px'></Td>
+                                                <Td maxW='250px'>
+                                                    {' '}
+                                                    {
+                                                        data.examiner.jobtitle
+                                                    }{' '}
+                                                    {data.examiner.name}
+                                                </Td>
+                                                <Td maxW='250px'>
+                                                    <ContactLists direction='column'>
+                                                        <Stack direction='row'>
+                                                            <Box>phone:</Box>
+                                                            <Box>
+                                                                {
+                                                                    data
+                                                                        .examiner
+                                                                        .phoneNumber
+                                                                }
+                                                            </Box>
+                                                        </Stack>
+                                                        <Stack direction='row'>
+                                                            <Box>email:</Box>
+                                                            <Box>
+                                                                {
+                                                                    data
+                                                                        .examiner
+                                                                        .email
+                                                                }
+                                                            </Box>
+                                                        </Stack>
+                                                    </ContactLists>
+                                                </Td>
+                                                <Td maxW='250px'>
+                                                    {data.reportStatus}
+                                                </Td>
                                             </Tr>
                                         )
                                     })}
@@ -835,6 +859,29 @@ const AdvReportTable = ({
                 </Table>
             </Box>
             {/** pagination */}
+            {searchActive ? (
+                <AdvPagination2
+                    paginationFirstNumber={PaginationSFirstNumber}
+                    paginationLastNumber={PaginationSLastNumber}
+                    overalltotal={searchData.totalSearchedItems}
+                    perPages={perPage}
+                    currentPage={searchData.currentPage}
+                    totalPages={searchData.totalPages}
+                    handleNext={handleNext}
+                    handlePrev={handlePrev}
+                />
+            ) : (
+                <AdvPagination
+                    paginationFirstNumber={PaginationFirstNumber}
+                    paginationLastNumber={PaginationLastNumber}
+                    overalltotal={allDisplayData.totalSearchedItems}
+                    perPages={perPage}
+                    currentPage={allDisplayData.currentPage}
+                    totalPages={allDisplayData.totalPages}
+                    handleNext={handleNext}
+                    handlePrev={handlePrev}
+                />
+            )}
         </Container>
     )
 }

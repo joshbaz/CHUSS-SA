@@ -22,7 +22,7 @@ import {
     Tab,
     TabPanel,
 } from '@chakra-ui/react'
-import { AiOutlinePlus } from 'react-icons/ai'
+import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 import {
     IoIosArrowDropright,
@@ -44,98 +44,107 @@ const TableHead = [
         filter: true,
     },
     {
-        title: 'Type',
+        title: 'School Name',
         filter: true,
     },
     {
-        title: 'Examiner Name',
+        title: 'Dean',
+    },
+    {
+        title: 'Designation',
+    },
+    {
+        title: 'Office Number',
     },
     {
         title: 'Email',
     },
     {
-        title: 'Phone Number',
-    },
-    {
-        title: 'Verified',
-        maxW: '100px',
-    },
-    {
-        title: 'Students',
-        maxW: '100px',
+        title: 'Departments',
     },
 ]
 
-const ExaminerTable = ({
-    allExaminerItems,
-    paginatedExaminers,
-    setSelectedExaminers,
-    selectedExaminers,
+const SchoolTable = ({
+    paginatedItems,
+    selectedItems,
+    setSelectedItems,
+    setExportData,
+    exportData = [],
 }) => {
-    const filterTabData = [
-        {
-            title: 'All',
-            dataCount: 27,
-        },
-        {
-            title: 'Verified',
-            dataCount: 7,
-        },
-        {
-            title: 'Unverified',
-            dataCount: 4,
-        },
-    ]
-    const [pexaminers, setPExaminers] = React.useState({
-        currentPage: 0, 
+    const [pitems, setPItems] = React.useState({
+        currentPage: 0,
         perPage: 8,
         current_total: 0,
         overall_total: 0,
         items: [],
         allItems: [],
     })
-    const [examinerLists, setExaminerLists] = React.useState([])
 
     let routeNavigate = useNavigate()
     /** pagination */
     let PaginationFirstNumber =
-        pexaminers.currentPage * pexaminers.perPage - pexaminers.perPage + 1
+        pitems.currentPage * pitems.perPage - pitems.perPage + 1
 
-    let PaginationLastNumber =
-        PaginationFirstNumber + pexaminers.current_total - 1
+    let PaginationLastNumber = PaginationFirstNumber + pitems.current_total - 1
 
     const handlePrev = () => {}
 
     const handleNext = () => {}
+
+    /** function to handle checkbox on each item */
+    const handleIndivCheckbox = (e, data) => {
+        console.log('checking0', e.target.checked, data)
+        if (exportData.length > 0) {
+            let checkData = exportData.some(
+                (datacheck, index) => data._id === datacheck._id
+            )
+
+            if (checkData) {
+                let newChecksData = [...exportData]
+                for (
+                    let iteration = 0;
+                    iteration < newChecksData.length;
+                    iteration++
+                ) {
+                    if (newChecksData[iteration]._id === data._id) {
+                        newChecksData.splice(iteration, 1)
+                        setExportData([...newChecksData])
+
+                        return
+                    }
+                }
+            } else {
+                setExportData([
+                    ...exportData,
+                    {
+                        _id: data._id,
+                        studentName: data.student.studentName,
+                        studentContacts: data.student.phoneNumber,
+                        topic: data.topic,
+                        status: data.activeStatus,
+                    },
+                ])
+            }
+        } else {
+            setExportData([
+                {
+                    _id: data._id,
+                    studentName: data.student.studentName,
+                    studentContacts: data.student.phoneNumber,
+                    topic: data.topic,
+                    status: data.activeStatus,
+                },
+            ])
+        }
+    }
+
+    /** function to handle general checkbox */
+    const handleGeneralCheckbox = (e) => {}
+
     return (
         <Container>
+            {' '}
             <Box className='form_container'>
-                {/** tab data */}
-                <Box>
-                    <Tabs variant='unstyled'>
-                        <TabList>
-                            {filterTabData.map((data, index) => {
-                                return (
-                                    <Tab
-                                        key={index}
-                                        _selected={{
-                                            color: '#F14C54',
-                                            fontWeight: '700',
-                                            borderBottom: '2px solid #DB5A5A',
-                                        }}
-                                        className='tab'>
-                                        <Stack
-                                            direction='row'
-                                            alignItems={'center'}>
-                                            <h2>{data.title}</h2>
-                                            <Text>{data.dataCount}</Text>
-                                        </Stack>
-                                    </Tab>
-                                )
-                            })}
-                        </TabList>
-                    </Tabs>
-                </Box>
                 {/** details */}
                 <Stack
                     direction='column'
@@ -148,6 +157,19 @@ const ExaminerTable = ({
                         <Table size='sm'>
                             <Thead>
                                 <Tr>
+                                    <Th w='46px'>
+                                        <Checkbox
+                                            isChecked={
+                                                exportData.length > 0
+                                                    ? true
+                                                    : false
+                                            }
+                                            onChange={handleGeneralCheckbox}
+                                            bg='#ffffff'
+                                            icon={<AiOutlineMinus />}
+                                            colorScheme='pink'
+                                        />
+                                    </Th>
                                     {TableHead.map((data, index) => {
                                         return (
                                             <Th
@@ -197,12 +219,12 @@ const ExaminerTable = ({
                             </Thead>
 
                             <Tbody>
-                                {allExaminerItems.items.length > 0 ? (
+                                {paginatedItems.items.length > 0 ? (
                                     <>
-                                        {allExaminerItems.items.map(
+                                        {paginatedItems.items.map(
                                             (data, index) => {
                                                 let checkData =
-                                                    selectedExaminers.find(
+                                                    selectedItems.find(
                                                         (element) =>
                                                             element._id ===
                                                             data._id
@@ -218,58 +240,41 @@ const ExaminerTable = ({
                                                     <Tr
                                                         className='table_row'
                                                         bg={selectionColor}
-                                                        key={index}>
-                                                        <Td>1</Td>
-                                                        <Td>
-                                                            <Box className='type_examiner'>
-                                                                {
-                                                                    data.typeOfExaminer
+                                                        key={data._id}>
+                                                        <Td w='46px'>
+                                                            <Checkbox
+                                                                isChecked={
+                                                                    checkedStatus
                                                                 }
-                                                            </Box>
+                                                                onChange={(e) =>
+                                                                    handleIndivCheckbox(
+                                                                        e,
+                                                                        data
+                                                                    )
+                                                                }
+                                                                colorScheme='pink'
+                                                            />
+                                                        </Td>
+                                                        <Td>1</Td>
+
+                                                        <Td>
+                                                            {data.schoolName}{' '}
+                                                        </Td>
+                                                        <Td>{data.deanName}</Td>
+                                                        <Td>
+                                                            {
+                                                                data.deanDesignation
+                                                            }
                                                         </Td>
                                                         <Td>
-                                                            {data.jobtitle}{' '}
-                                                            {data.name}
+                                                            {data.officeNumber}
                                                         </Td>
                                                         <Td>{data.email}</Td>
                                                         <Td>
-                                                            {data.phoneNumber}
-                                                        </Td>
-                                                        <Td width='100px'>
-                                                            <Box
-                                                                style={{
-                                                                    color:
-                                                                        data
-                                                                            .generalAppointmentLetters
-                                                                            .length >
-                                                                        0
-                                                                            ? '#293AD1'
-                                                                            : '#D4D4D6',
-                                                                    fontSize:
-                                                                        '15px',
-                                                                    width: '100%',
-                                                                    display:
-                                                                        'flex',
-                                                                    justifyContent:
-                                                                        'center',
-                                                                }}>
-                                                                <MdVerified />
-                                                            </Box>
-                                                        </Td>
-
-                                                        <Td m='auto'>
-                                                            <Box
-                                                                w='100%'
-                                                                display='flex'
-                                                                justifyContent={
-                                                                    'center'
-                                                                }>
-                                                                <Box className='examiner_item'>
-                                                                    {
-                                                                        data.studentsNo
-                                                                    }
-                                                                </Box>
-                                                            </Box>
+                                                            {
+                                                                data.departments
+                                                                    .length
+                                                            }
                                                         </Td>
 
                                                         <Td>
@@ -286,21 +291,20 @@ const ExaminerTable = ({
                                                                     <MenuItem
                                                                         onClick={() =>
                                                                             routeNavigate(
-                                                                                `/examiners/edit/${data._id}`
+                                                                                `/schools/view/${data._id}`
                                                                             )
                                                                         }>
                                                                         Edit
+                                                                        School
                                                                     </MenuItem>
                                                                     <MenuItem
                                                                         onClick={() =>
                                                                             routeNavigate(
-                                                                                `/examiners/view/${data._id}`
+                                                                                `/schools/view/${data._id}`
                                                                             )
                                                                         }>
                                                                         View
-                                                                    </MenuItem>
-                                                                    <MenuItem>
-                                                                        Delete
+                                                                        School
                                                                     </MenuItem>
                                                                 </MenuList>
                                                             </Menu>
@@ -325,7 +329,7 @@ const ExaminerTable = ({
                     </Box>
 
                     {/** Pagination */}
-                    {allExaminerItems.items.length > 0 && (
+                    {paginatedItems.items.length > 0 && (
                         <PaginationStack
                             direction='row'
                             height='56px'
@@ -335,7 +339,7 @@ const ExaminerTable = ({
                                 <span>
                                     {`${PaginationFirstNumber}`} -{' '}
                                     {`${PaginationLastNumber}`} of{' '}
-                                    {`${pexaminers.overall_total}`}
+                                    {`${pitems.overall_total}`}
                                 </span>
                             </Box>
                             <Stack
@@ -346,7 +350,7 @@ const ExaminerTable = ({
                                 className='pagination'>
                                 <Box className='rows'>
                                     <h1>Rows per page:</h1>
-                                    <span>{pexaminers.perPage}</span>
+                                    <span>{pitems.perPage}</span>
                                 </Box>
 
                                 {/** pagination arrows */}
@@ -357,7 +361,7 @@ const ExaminerTable = ({
                                     <Box className='left' onClick={handlePrev}>
                                         <MdKeyboardArrowLeft />
                                     </Box>
-                                    <Box>{pexaminers.currentPage}</Box>
+                                    <Box>{pitems.currentPage}</Box>
                                     <Box className='right' onClick={handleNext}>
                                         <MdKeyboardArrowRight />
                                     </Box>
@@ -371,10 +375,10 @@ const ExaminerTable = ({
     )
 }
 
-export default ExaminerTable
+export default SchoolTable
 
 const Container = styled(Box)`
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -416,7 +420,7 @@ const Container = styled(Box)`
 
     .table_head {
         color: #5e5c60 !important;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px !important;
@@ -433,7 +437,7 @@ const Container = styled(Box)`
     }
 
     td {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 400;
         font-size: 14px;
@@ -469,7 +473,7 @@ const NoItems = styled(Box)`
     justify-content: center;
     align-items: center;
 
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;

@@ -15,14 +15,8 @@ import {
     MenuList,
     MenuItem,
     Checkbox,
-    Flex,
-    Tabs,
-    TabList,
-    TabPanels,
-    Tab,
-    TabPanel,
 } from '@chakra-ui/react'
-import { AiOutlinePlus } from 'react-icons/ai'
+import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 import {
     IoIosArrowDropright,
@@ -38,104 +32,108 @@ import {
     MdKeyboardArrowRight,
     MdVerified,
 } from 'react-icons/md'
+
 const TableHead = [
     {
         title: '#',
         filter: true,
     },
     {
-        title: 'Type',
+        title: 'Department Name',
         filter: true,
     },
     {
-        title: 'Examiner Name',
+        title: 'Dept Head',
+    },
+    {
+        title: 'Number',
     },
     {
         title: 'Email',
     },
     {
-        title: 'Phone Number',
-    },
-    {
-        title: 'Verified',
-        maxW: '100px',
-    },
-    {
-        title: 'Students',
-        maxW: '100px',
+        title: 'Date Added',
     },
 ]
 
-const ExaminerTable = ({
-    allExaminerItems,
-    paginatedExaminers,
-    setSelectedExaminers,
-    selectedExaminers,
+const DepartmentTable = ({
+    allDisplayData,
+    setExportData,
+    exportData,
+    activateEdit,
+    activateView,
 }) => {
-    const filterTabData = [
-        {
-            title: 'All',
-            dataCount: 27,
-        },
-        {
-            title: 'Verified',
-            dataCount: 7,
-        },
-        {
-            title: 'Unverified',
-            dataCount: 4,
-        },
-    ]
-    const [pexaminers, setPExaminers] = React.useState({
-        currentPage: 0, 
-        perPage: 8,
-        current_total: 0,
-        overall_total: 0,
-        items: [],
-        allItems: [],
-    })
-    const [examinerLists, setExaminerLists] = React.useState([])
-
     let routeNavigate = useNavigate()
     /** pagination */
     let PaginationFirstNumber =
-        pexaminers.currentPage * pexaminers.perPage - pexaminers.perPage + 1
+        allDisplayData.currentPage * allDisplayData.itemsPerPage -
+        allDisplayData.itemsPerPage +
+        1
 
     let PaginationLastNumber =
-        PaginationFirstNumber + pexaminers.current_total - 1
+        PaginationFirstNumber + allDisplayData.current_total - 1
 
     const handlePrev = () => {}
 
     const handleNext = () => {}
+
+    /** function to handle checkbox on each item */
+    const handleIndivCheckbox = (e, data) => {
+        console.log('checking0', e.target.checked, data)
+        if (exportData.length > 0) {
+            let checkData = exportData.some(
+                (datacheck, index) => data.departmentId._id === datacheck._id
+            )
+
+            if (checkData) {
+                let newChecksData = [...exportData]
+                for (
+                    let iteration = 0;
+                    iteration < newChecksData.length;
+                    iteration++
+                ) {
+                    if (
+                        newChecksData[iteration]._id === data.departmentId._id
+                    ) {
+                        newChecksData.splice(iteration, 1)
+                        setExportData([...newChecksData])
+
+                        return
+                    }
+                }
+            } else {
+                setExportData([
+                    ...exportData,
+                    {
+                        _id: data.departmentId._id,
+                        deptName: data.departmentId.deptName,
+                        deptHead: data.departmentId.deptHead,
+                        email: data.departmentId.email,
+                        officeNumber: data.departmentId.officeNumber,
+                    },
+                ])
+            }
+        } else {
+            setExportData([
+                {
+                    _id: data.departmentId._id,
+                    deptName: data.departmentId.deptName,
+                    deptHead: data.departmentId.deptHead,
+                    email: data.departmentId.email,
+                    officeNumber: data.departmentId.officeNumber,
+                },
+            ])
+        }
+    }
+
+    /** function to handle general checkbox */
+    const handleGeneralCheckbox = (e) => {
+        e.preventDefault()
+    }
     return (
         <Container>
+            {' '}
             <Box className='form_container'>
-                {/** tab data */}
-                <Box>
-                    <Tabs variant='unstyled'>
-                        <TabList>
-                            {filterTabData.map((data, index) => {
-                                return (
-                                    <Tab
-                                        key={index}
-                                        _selected={{
-                                            color: '#F14C54',
-                                            fontWeight: '700',
-                                            borderBottom: '2px solid #DB5A5A',
-                                        }}
-                                        className='tab'>
-                                        <Stack
-                                            direction='row'
-                                            alignItems={'center'}>
-                                            <h2>{data.title}</h2>
-                                            <Text>{data.dataCount}</Text>
-                                        </Stack>
-                                    </Tab>
-                                )
-                            })}
-                        </TabList>
-                    </Tabs>
-                </Box>
                 {/** details */}
                 <Stack
                     direction='column'
@@ -148,6 +146,19 @@ const ExaminerTable = ({
                         <Table size='sm'>
                             <Thead>
                                 <Tr>
+                                    <Th w='46px'>
+                                        <Checkbox
+                                            isChecked={
+                                                exportData.length > 0
+                                                    ? true
+                                                    : false
+                                            }
+                                            onChange={handleGeneralCheckbox}
+                                            bg='#ffffff'
+                                            icon={<AiOutlineMinus />}
+                                            colorScheme='pink'
+                                        />
+                                    </Th>
                                     {TableHead.map((data, index) => {
                                         return (
                                             <Th
@@ -197,16 +208,15 @@ const ExaminerTable = ({
                             </Thead>
 
                             <Tbody>
-                                {allExaminerItems.items.length > 0 ? (
+                                {allDisplayData.items.length > 0 ? (
                                     <>
-                                        {allExaminerItems.items.map(
+                                        {allDisplayData.items.map(
                                             (data, index) => {
-                                                let checkData =
-                                                    selectedExaminers.find(
-                                                        (element) =>
-                                                            element._id ===
-                                                            data._id
-                                                    )
+                                                let checkData = exportData.find(
+                                                    (element) =>
+                                                        element._id ===
+                                                        data.departmentId._id
+                                                )
                                                 let selectionColor = checkData
                                                     ? '#fef9ef'
                                                     : ''
@@ -218,58 +228,61 @@ const ExaminerTable = ({
                                                     <Tr
                                                         className='table_row'
                                                         bg={selectionColor}
-                                                        key={index}>
-                                                        <Td>1</Td>
-                                                        <Td>
-                                                            <Box className='type_examiner'>
-                                                                {
-                                                                    data.typeOfExaminer
+                                                        key={
+                                                            data.departmentId
+                                                                ._id
+                                                        }>
+                                                        <Td w='46px'>
+                                                            <Checkbox
+                                                                isChecked={
+                                                                    checkedStatus
                                                                 }
-                                                            </Box>
-                                                        </Td>
-                                                        <Td>
-                                                            {data.jobtitle}{' '}
-                                                            {data.name}
-                                                        </Td>
-                                                        <Td>{data.email}</Td>
-                                                        <Td>
-                                                            {data.phoneNumber}
-                                                        </Td>
-                                                        <Td width='100px'>
-                                                            <Box
-                                                                style={{
-                                                                    color:
+                                                                onChange={(e) =>
+                                                                    handleIndivCheckbox(
+                                                                        e,
                                                                         data
-                                                                            .generalAppointmentLetters
-                                                                            .length >
-                                                                        0
-                                                                            ? '#293AD1'
-                                                                            : '#D4D4D6',
-                                                                    fontSize:
-                                                                        '15px',
-                                                                    width: '100%',
-                                                                    display:
-                                                                        'flex',
-                                                                    justifyContent:
-                                                                        'center',
-                                                                }}>
-                                                                <MdVerified />
-                                                            </Box>
+                                                                    )
+                                                                }
+                                                                colorScheme='pink'
+                                                            />
+                                                        </Td>
+                                                        <Td>1</Td>
+
+                                                        <Td>
+                                                            {
+                                                                data
+                                                                    .departmentId
+                                                                    .deptName
+                                                            }{' '}
+                                                        </Td>
+                                                        <Td>
+                                                            {
+                                                                data
+                                                                    .departmentId
+                                                                    .deptHead
+                                                            }
                                                         </Td>
 
-                                                        <Td m='auto'>
-                                                            <Box
-                                                                w='100%'
-                                                                display='flex'
-                                                                justifyContent={
-                                                                    'center'
-                                                                }>
-                                                                <Box className='examiner_item'>
-                                                                    {
-                                                                        data.studentsNo
-                                                                    }
-                                                                </Box>
-                                                            </Box>
+                                                        <Td>
+                                                            {
+                                                                data
+                                                                    .departmentId
+                                                                    .officeNumber
+                                                            }
+                                                        </Td>
+                                                        <Td>
+                                                            {
+                                                                data
+                                                                    .departmentId
+                                                                    .email
+                                                            }
+                                                        </Td>
+                                                        <Td>
+                                                            {
+                                                                data
+                                                                    .departmentId
+                                                                    .email
+                                                            }
                                                         </Td>
 
                                                         <Td>
@@ -285,22 +298,21 @@ const ExaminerTable = ({
                                                                     }>
                                                                     <MenuItem
                                                                         onClick={() =>
-                                                                            routeNavigate(
-                                                                                `/examiners/edit/${data._id}`
+                                                                            activateEdit(
+                                                                                data
                                                                             )
                                                                         }>
                                                                         Edit
+                                                                        Department
                                                                     </MenuItem>
                                                                     <MenuItem
                                                                         onClick={() =>
-                                                                            routeNavigate(
-                                                                                `/examiners/view/${data._id}`
+                                                                            activateView(
+                                                                                data
                                                                             )
                                                                         }>
                                                                         View
-                                                                    </MenuItem>
-                                                                    <MenuItem>
-                                                                        Delete
+                                                                        Department
                                                                     </MenuItem>
                                                                 </MenuList>
                                                             </Menu>
@@ -325,7 +337,7 @@ const ExaminerTable = ({
                     </Box>
 
                     {/** Pagination */}
-                    {allExaminerItems.items.length > 0 && (
+                    {allDisplayData.items.length > 0 && (
                         <PaginationStack
                             direction='row'
                             height='56px'
@@ -335,7 +347,7 @@ const ExaminerTable = ({
                                 <span>
                                     {`${PaginationFirstNumber}`} -{' '}
                                     {`${PaginationLastNumber}`} of{' '}
-                                    {`${pexaminers.overall_total}`}
+                                    {`${allDisplayData.overall_total}`}
                                 </span>
                             </Box>
                             <Stack
@@ -346,7 +358,7 @@ const ExaminerTable = ({
                                 className='pagination'>
                                 <Box className='rows'>
                                     <h1>Rows per page:</h1>
-                                    <span>{pexaminers.perPage}</span>
+                                    <span>{allDisplayData.perPage}</span>
                                 </Box>
 
                                 {/** pagination arrows */}
@@ -357,7 +369,7 @@ const ExaminerTable = ({
                                     <Box className='left' onClick={handlePrev}>
                                         <MdKeyboardArrowLeft />
                                     </Box>
-                                    <Box>{pexaminers.currentPage}</Box>
+                                    <Box>{allDisplayData.currentPage}</Box>
                                     <Box className='right' onClick={handleNext}>
                                         <MdKeyboardArrowRight />
                                     </Box>
@@ -371,10 +383,10 @@ const ExaminerTable = ({
     )
 }
 
-export default ExaminerTable
+export default DepartmentTable
 
 const Container = styled(Box)`
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -416,7 +428,7 @@ const Container = styled(Box)`
 
     .table_head {
         color: #5e5c60 !important;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px !important;
@@ -433,7 +445,7 @@ const Container = styled(Box)`
     }
 
     td {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 400;
         font-size: 14px;
@@ -469,7 +481,7 @@ const NoItems = styled(Box)`
     justify-content: center;
     align-items: center;
 
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;

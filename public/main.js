@@ -1,4 +1,4 @@
-const { BrowserWindow, app, dialog, ipcMain } = require('electron')
+const { BrowserWindow, app, dialog, ipcMain,screen } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const XLSX = require('xlsx')
@@ -19,17 +19,19 @@ const reportController = require('./controllers/reports')
 const opponentReportController = require('./controllers/opponentReport')
 const paymentController = require('./controllers/payments')
 const fileController = require('./controllers/files')
+const schoolController = require('./controllers/schools')
 
 let mainWindow = null
 require('@electron/remote/main').initialize()
 
 function createWindow() {
+    const { width, height } = screen.getPrimaryDisplay().workAreaSize
     mainWindow = new BrowserWindow({
         icon: path.join(__dirname, '/chuss512.ico'),
-        width: 800,
-        height: 600,
-        minHeight: 600,
-        minWidth: 800,
+        width: width,
+        height: height,
+        minHeight: height,
+        minWidth: width,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
@@ -37,6 +39,8 @@ function createWindow() {
             devTools: true,
         },
     })
+
+    //mainWindow.maximize()
 
     mainWindow.loadURL(
         isDev
@@ -376,7 +380,10 @@ ipcMain.handle('update-examiner', examinerController.updateExaminer)
  */
 ipcMain.handle('update-examiner-report', reportController.updateExaminerReport)
 ipcMain.handle('get-examiner-report', reportController.getExaminerReport)
-ipcMain.handle('get-all-examiner-reports', reportController.getAllExaminerReports)
+ipcMain.handle(
+    'get-all-examiner-reports',
+    reportController.getAllExaminerReports
+)
 /** opponent reports */
 /**
  * 1.handle update opponent reports
@@ -423,6 +430,21 @@ ipcMain.handle('single-payment', paymentController.getSinglePayment)
 ipcMain.handle('paginated-payments', paymentController.getPaginatedPayment)
 //handle update payments
 ipcMain.handle('update-payment', paymentController.updatePayment)
+
+/*
+ * Schools
+ *
+ */
+//handle paginated schools
+ipcMain.handle('paginated-schools', schoolController.paginatedSchools)
+ipcMain.handle('all-schools', schoolController.allSchools)
+ipcMain.handle('individual-school', schoolController.getIndividualSchool)
+ipcMain.handle('create-school', schoolController.createSchool)
+/** update examiner */
+ipcMain.handle('update-school', schoolController.updateSchool)
+/** create department */
+ipcMain.handle('create-department', schoolController.createDepartment)
+ipcMain.handle('update-department', schoolController.updateDepartment)
 
 /** files */
 //handle

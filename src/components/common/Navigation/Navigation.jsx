@@ -37,7 +37,7 @@ const Navigation = () => {
         {
             title: 'examiners',
             icon: <FaChalkboardTeacher />,
-            link: '/examiners',
+            link: '/m-examiners',
         },
         {
             title: 'Schools',

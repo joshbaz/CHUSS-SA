@@ -38,6 +38,9 @@ import CreateProjectDMember from '../views/DesktopViews/Projects/DoctoralMembers
 import ViewOpponentReport from '../views/DesktopViews/Projects/OpponentReports/ViewOpponentReport'
 import EditOpponentReport from '../views/DesktopViews/Projects/OpponentReports/EditOpponentReport'
 import AllSchools from '../views/DesktopViews/Schools&Depts/AllSchools'
+import CreateNewSchool from '../views/DesktopViews/Schools&Depts/CreateNewSchool'
+import ViewSchool from '../views/DesktopViews/Schools&Depts/ViewSchool'
+import ManageExaminers from '../views/DesktopViews/ExaminersView/ManageExaminers'
 const AllRoutes = () => {
     return (
         <HashRouter>
@@ -170,23 +173,83 @@ const AllRoutes = () => {
                     />
 
                     {/** Examiner page routes */}
-                    <Route exact path='/examiners' element={<AllExaminers />} />
+                    <Route
+                        exact
+                        path='/m-examiners'
+                        element={<ManageExaminers />}
+                    />
+
+                    {/** all Examiner page routes */}
+                    <Route
+                        exact
+                        path='/m-examiners/examiners'
+                        element={<AllExaminers />}
+                    />
 
                     <Route
                         exact
-                        path='/examiners/create'
+                        path='/m-examiners/examiners/create'
                         element={<CreateNewExaminer />}
                     />
 
                     <Route
                         exact
-                        path='/examiners/view/:id'
+                        path='/m-examiners/examiners/view/:id'
                         element={<ViewExaminer />}
                     />
 
                     <Route
                         exact
-                        path='/examiners/edit/:id'
+                        path='/m-examiners/examiners/edit/:id'
+                        element={<EditExaminer />}
+                    />
+                    {/** all Opponents page routes */}
+                    <Route
+                        exact
+                        path='/m-examiners/opponents'
+                        element={<AllExaminers />}
+                    />
+
+                    <Route
+                        exact
+                        path='/m-examiners/opponents/create'
+                        element={<CreateNewExaminer />}
+                    />
+
+                    <Route
+                        exact
+                        path='/m-examiners/opponents/view/:id'
+                        element={<ViewExaminer />}
+                    />
+
+                    <Route
+                        exact
+                        path='/m-examiners/opponents/edit/:id'
+                        element={<EditExaminer />}
+                    />
+
+                    {/** all supervisors page routes */}
+                    <Route
+                        exact
+                        path='/m-examiners/supervisors'
+                        element={<AllExaminers />}
+                    />
+
+                    <Route
+                        exact
+                        path='/m-examiners/supervisors/create'
+                        element={<CreateNewExaminer />}
+                    />
+
+                    <Route
+                        exact
+                        path='/m-examiners/supervisors/view/:id'
+                        element={<ViewExaminer />}
+                    />
+
+                    <Route
+                        exact
+                        path='/m-examiners/supervisors/edit/:id'
                         element={<EditExaminer />}
                     />
 
@@ -207,6 +270,16 @@ const AllRoutes = () => {
                     />
                     {/** schools and depts */}
                     <Route exact path='/schools' element={<AllSchools />} />
+                    <Route
+                        exact
+                        path='/schools/create'
+                        element={<CreateNewSchool />}
+                    />
+                    <Route
+                        exact
+                        path='/schools/view/:id'
+                        element={<ViewSchool />}
+                    />
                     {/** Advanced search */}
                     <Route exact path='/advsearch' element={<AdvSearch />} />
 

@@ -500,6 +500,7 @@ const AllExaminerss = () => {
                         <Box>
                             <ExaminerTable
                                 allExaminerItems={paginatedExaminers}
+                                paginatedExaminers={paginatedExaminers}
                                 selectedExaminers={selectedExaminers}
                                 setSelectedExaminers={setSelectedExaminers}
                             />

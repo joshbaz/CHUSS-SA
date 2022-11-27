@@ -2,13 +2,13 @@ import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
 
-const ExaminerADetailForm = ({ values, handleChange }) => {
+const SchoolDetailForm = ({ values, handleChange }) => {
     return (
         <FormContainer>
             <Box className='form_container'>
                 {/** form title */}
                 <Box className='formtitle'>
-                    <h1>Details of Examiner</h1>
+                    <h1>Details of School</h1>
                 </Box>
 
                 <Stack
@@ -21,52 +21,35 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
                     <Box className='formfields__Sfieldset'>
                         <Stack spacing='8px' className='form_wrap'>
                             <label>
-                                Current Job Title (if retired details of last
-                                Job title) <span>*</span>
+                                School Name <span>*</span>
                             </label>
                             <fieldset>
                                 <Input
                                     type='text'
-                                    value={values.jobtitle}
-                                    name='jobtitle'
+                                    value={values.schoolName}
+                                    name='schoolName'
                                     onChange={handleChange}
-                                    placeholder={'i.e Prof. or Assoc.Prof.'}
+                                    placeholder={'school name'}
                                 />
                             </fieldset>
                         </Stack>
                     </Box>
 
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Name <span>*</span>
-                            </label>
-                            <fieldset>
-                                <Input
-                                    type='text'
-                                    value={values.name}
-                                    name='name'
-                                    onChange={handleChange}
-                                    placeholder={'i.e Apollo Kimani'}
-                                />
-                            </fieldset>
-                        </Stack>
-                    </Box>
                     <Stack direction='row' className=''>
                         <Stack
                             direction='column'
                             spacing='8px'
                             className='form_wrap formfields__Dfieldset'>
                             <label>
-                                Email <span>*</span>
+                                Dean Name <span>*</span>
                             </label>
                             <fieldset>
                                 <Input
                                     type='text'
-                                    value={values.email}
-                                    name='email'
+                                    value={values.deanName}
+                                    name='deanName'
                                     onChange={handleChange}
-                                    placeholder={'email i.e apollo@yahoo.com'}
+                                    placeholder={'dean name'}
                                 />
                             </fieldset>
                         </Stack>
@@ -74,15 +57,15 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
                             spacing='8px'
                             className='form_wrap formfields__Dfieldset'>
                             <label>
-                                Phone Number <span>*</span>
+                                Designation <span>*</span>
                             </label>
                             <fieldset>
                                 <Input
                                     type='text'
-                                    value={values.phoneNumber}
-                                    name='phoneNumber'
+                                    value={values.deanDesignation}
+                                    name='deanDesignation'
                                     onChange={handleChange}
-                                    placeholder={'e.g 256787785114'}
+                                    placeholder={'Dean Designation'}
                                 />
                             </fieldset>
                         </Stack>
@@ -91,15 +74,15 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
                     <Box className='formfields__Sfieldset'>
                         <Stack spacing='8px' className='form_wrap'>
                             <label>
-                                Postal address <span>*</span>
+                                Email <span>*</span>
                             </label>
                             <fieldset>
                                 <Input
-                                    type='text'
-                                    value={values.postalAddress}
-                                    name='postalAddress'
+                                    type='email'
+                                    value={values.email}
+                                    name='email'
                                     onChange={handleChange}
-                                    placeholder={'postalAddress'}
+                                    placeholder={'email'}
                                 />
                             </fieldset>
                         </Stack>
@@ -107,51 +90,15 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
                     <Box className='formfields__Sfieldset'>
                         <Stack spacing='8px' className='form_wrap'>
                             <label>
-                                Country of Residence <span>*</span>
+                                Office Number <span>*</span>
                             </label>
                             <fieldset>
                                 <Input
                                     type='text'
-                                    value={values.countryOfResidence}
-                                    name='countryOfResidence'
+                                    value={values.officeNumber}
+                                    name='officeNumber'
                                     onChange={handleChange}
-                                    placeholder={'i.e Uganda'}
-                                />
-                            </fieldset>
-                        </Stack>
-                    </Box>
-
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Higer Education Institution (or detailed
-                                information of examinars place of work){' '}
-                                <span>*</span>
-                            </label>
-                            <fieldset>
-                                <Input
-                                    type='text'
-                                    value={values.placeOfWork}
-                                    name='placeOfWork'
-                                    onChange={handleChange}
-                                    placeholder={'i.e Makerere University'}
-                                />
-                            </fieldset>
-                        </Stack>
-                    </Box>
-
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Other Academic and/or Professional Titles{' '}
-                            </label>
-                            <fieldset>
-                                <Input
-                                    type='text'
-                                    value={values.otherTitles}
-                                    name='otherTitles'
-                                    onChange={handleChange}
-                                    placeholder={'i.e Ph.D, Dr.'}
+                                    placeholder={'office number'}
                                 />
                             </fieldset>
                         </Stack>
@@ -162,7 +109,7 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
     )
 }
 
-export default ExaminerADetailForm
+export default SchoolDetailForm
 
 const FormContainer = styled(Box)`
     font-family: 'Inter', sans-serif;

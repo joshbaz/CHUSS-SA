@@ -108,4 +108,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getdownloadFile: (values) =>
         ipcRenderer.invoke('get-download-file', values),
     downloadFile: (values) => ipcRenderer.invoke('download-file', values),
+    /** schools */
+    paginatedSchools: (values) =>
+        ipcRenderer.invoke('paginated-schools', values),
+    allSchools: (values) => ipcRenderer.invoke('all-schools', values),
+    getIndividualSchool: (id) => ipcRenderer.invoke('individual-school', id),
+    createSchool: (values) => ipcRenderer.invoke('create-school', values),
+    updateSchool: (values) => ipcRenderer.invoke('update-school', values),
+    createDepartment: (values) =>
+        ipcRenderer.invoke('create-department', values),
+    updateDepartment: (values) =>
+        ipcRenderer.invoke('update-department', values),
 })

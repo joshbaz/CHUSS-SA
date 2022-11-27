@@ -859,6 +859,7 @@ const AdvSearch = () => {
                                     setExportData={setExportData}
                                     exportData={exportData}
                                     tableLists={TableLists}
+                                    allProjects={allprojects}
                                     allItems={reportCollectedDatas.allreports}
                                     searchActive={searchActive}
                                     allTagData={tagsData.allTagItems.items}

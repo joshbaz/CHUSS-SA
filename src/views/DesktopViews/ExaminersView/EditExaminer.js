@@ -213,26 +213,16 @@ const EditExaminer = (props) => {
 
     useEffect(() => {
         console.log('errors', errors)
-        if (
-            Object.keys(errors).length === 0 &&
-            setIsSubmittingp &&
-            changeMade
-        ) {
+        if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
             console.log(Object.keys(errors).length, 'No errors', errors)
             dispatch(examinerUpdate(initials))
-        } else if (
-            Object.keys(errors).length > 0 &&
-            setIsSubmittingp &&
-            changeMade
-        ) {
+        } else if (Object.keys(errors).length > 0 && isSubmittingp && changeMade) {
             setIsSubmittingp(false)
             setChnageMade(false)
         }
     }, [errors, isSubmittingp])
 
-    if (loadingComponent) {
-        return <h1>Loading</h1>
-    }
+   
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
