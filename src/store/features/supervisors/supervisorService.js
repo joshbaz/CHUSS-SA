@@ -39,6 +39,13 @@ const supervisorUpdate = async (values) => {
 
     return response
 }
+
+/** service to remove supervisor from project */
+const supervisorRemove = async (values) => {
+    const response = await window.electronAPI.removeSupervisor(values)
+
+    return response
+}
 let supervisorService = {
     projectSupervisorCreate,
     assignSupervisor,
@@ -47,6 +54,7 @@ let supervisorService = {
     getIndividualSupervisor,
 
     supervisorUpdate,
+    supervisorRemove,
 }
 
 export default supervisorService

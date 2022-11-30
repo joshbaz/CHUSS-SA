@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
 
-const SupervisorADetailForm = ({ values, handleChange, errors }) => {
+const ViewSupervisorADetailForm = ({ values }) => {
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -26,22 +26,16 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                             </label>
                             <fieldset>
                                 <Input
-                                    className={
-                                        errors && errors.jobtitle
-                                            ? 'input_error'
+                                    type='text'
+                                    value={
+                                        values !== null && values.jobtitle
+                                            ? values.jobtitle
                                             : ''
                                     }
-                                    type='text'
-                                    value={values.jobtitle}
                                     name='jobtitle'
-                                    onChange={handleChange}
+                                    readOnly
                                     placeholder={'i.e Prof. or Assoc.Prof.'}
                                 />
-                                {errors && errors.jobtitle ? (
-                                    <ErrorMsg className='filesError'>
-                                        {errors.jobtitle}
-                                    </ErrorMsg>
-                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -53,22 +47,16 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                             </label>
                             <fieldset>
                                 <Input
-                                    className={
-                                        errors && errors.name
-                                            ? 'input_error'
+                                    type='text'
+                                    value={
+                                        values !== null && values.name
+                                            ? values.name
                                             : ''
                                     }
-                                    type='text'
-                                    value={values.name}
                                     name='name'
-                                    onChange={handleChange}
+                                    readOnly
                                     placeholder={'i.e Apollo Kimani'}
                                 />
-                                {errors && errors.name ? (
-                                    <ErrorMsg className='filesError'>
-                                        {errors.name}
-                                    </ErrorMsg>
-                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -82,22 +70,16 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                             </label>
                             <fieldset>
                                 <Input
-                                    className={
-                                        errors && errors.email
-                                            ? 'input_error'
-                                            : ''
-                                    }
                                     type='text'
-                                    value={values.email}
+                                    value={
+                                        values !== null && values.email
+                                            ? values.email
+                                            : null
+                                    }
                                     name='email'
-                                    onChange={handleChange}
+                                    readOnly
                                     placeholder={'email i.e apollo@yahoo.com'}
                                 />
-                                {errors && errors.email ? (
-                                    <ErrorMsg className='filesError'>
-                                        {errors.email}
-                                    </ErrorMsg>
-                                ) : null}
                             </fieldset>
                         </Stack>
                         <Stack
@@ -108,22 +90,16 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                             </label>
                             <fieldset>
                                 <Input
-                                    className={
-                                        errors && errors.phoneNumber
-                                            ? 'input_error'
+                                    type='text'
+                                    value={
+                                        values !== null && values.phoneNumber
+                                            ? values.phoneNumber
                                             : ''
                                     }
-                                    type='text'
-                                    value={values.phoneNumber}
                                     name='phoneNumber'
-                                    onChange={handleChange}
+                                    readOnly
                                     placeholder={'e.g 256787785114'}
                                 />
-                                {errors && errors.phoneNumber ? (
-                                    <ErrorMsg className='filesError'>
-                                        {errors.phoneNumber}
-                                    </ErrorMsg>
-                                ) : null}
                             </fieldset>
                         </Stack>
                     </Stack>
@@ -134,9 +110,13 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                             <fieldset>
                                 <Input
                                     type='text'
-                                    value={values.postalAddress}
+                                    value={
+                                        values !== null && values.postalAddress
+                                            ? values.postalAddress
+                                            : ''
+                                    }
                                     name='postalAddress'
-                                    onChange={handleChange}
+                                    readOnly
                                     placeholder={'postalAddress'}
                                 />
                             </fieldset>
@@ -149,22 +129,17 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                             </label>
                             <fieldset>
                                 <Input
-                                    className={
-                                        errors && errors.countryOfResidence
-                                            ? 'input_error'
+                                    type='text'
+                                    value={
+                                        values !== null &&
+                                        values.countryOfResidence
+                                            ? values.countryOfResidence
                                             : ''
                                     }
-                                    type='text'
-                                    value={values.countryOfResidence}
                                     name='countryOfResidence'
-                                    onChange={handleChange}
+                                    readOnly
                                     placeholder={'i.e Uganda'}
                                 />
-                                {errors && errors.countryOfResidence ? (
-                                    <ErrorMsg className='filesError'>
-                                        {errors.countryOfResidence}
-                                    </ErrorMsg>
-                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -178,22 +153,16 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                             </label>
                             <fieldset>
                                 <Input
-                                    className={
-                                        errors && errors.placeOfWork
-                                            ? 'input_error'
+                                    type='text'
+                                    value={
+                                        values !== null && values.placeOfWork
+                                            ? values.placeOfWork
                                             : ''
                                     }
-                                    type='text'
-                                    value={values.placeOfWork}
                                     name='placeOfWork'
-                                    onChange={handleChange}
+                                    readOnly
                                     placeholder={'i.e Makerere University'}
                                 />
-                                {errors && errors.placeOfWork ? (
-                                    <ErrorMsg className='filesError'>
-                                        {errors.placeOfWork}
-                                    </ErrorMsg>
-                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -203,7 +172,7 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
     )
 }
 
-export default SupervisorADetailForm
+export default ViewSupervisorADetailForm
 
 const FormContainer = styled(Box)`
     font-family: 'Inter', sans-serif;
@@ -249,7 +218,8 @@ const FormContainer = styled(Box)`
 
     input {
         background: #ffffff;
-        border-color: transparent;
+       
+        border: 1px solid gray.200;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
             0px 0px 0px 1px rgba(134, 143, 160, 0.16);
         border-radius: 6px;
@@ -259,10 +229,6 @@ const FormContainer = styled(Box)`
         font-weight: 500;
         font-size: 14px;
         line-height: 20px;
-    }
-    .input_error {
-        border-color: red !important;
-        box-shadow: none;
     }
 
     .formfields__Dfieldset {

@@ -41,8 +41,27 @@ import { CgNotes } from 'react-icons/cg'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
-const ProjectTable = ({ allTagData }) => {
+const ProjectTable = ({ allTagData, studentType,rpath }) => {
     const [projectTagData, setProjectTagData] = React.useState([])
+    const [perPage, setPerPage] = React.useState(10)
+    const [allDisplayData, setAllDisplayData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allItems: [],
+        totalItemsDisplayed: 0,
+        totalAllItems: 0,
+        totalPages: 0,
+    })
+    const [searchData, setSearchData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allSearchItems: [],
+        totalItemsDisplayed: 0,
+        totalSearchedItems: 0,
+        totalPages: 0,
+    })
     const filterTabData = [
         {
             title: 'All',
@@ -94,14 +113,14 @@ const ProjectTable = ({ allTagData }) => {
             title: 'EXAMINERS',
         },
         {
-            title: 'Semester',
+            title: 'Registration',
         },
         {
-            title: 'SUPERVISORS',
+            title: 'Re-Submission',
         },
     ]
 
-    let { pprojects } = useSelector((state) => state.project)
+    let { pprojects, allprojects } = useSelector((state) => state.project)
 
     const [activityDrpdown, setActivityDropDown] = React.useState(false)
     let activeDrop = React.useRef(null)
@@ -109,12 +128,6 @@ const ProjectTable = ({ allTagData }) => {
     const handleDropDown = () => {
         setActivityDropDown(!activityDrpdown)
     }
-
-    let PaginationFirstNumber =
-        pprojects.currentPage * pprojects.perPage - pprojects.perPage + 1
-
-    let PaginationLastNumber =
-        PaginationFirstNumber + pprojects.current_total - 1
 
     const handlePrev = () => {}
 
@@ -129,6 +142,56 @@ const ProjectTable = ({ allTagData }) => {
 
         setProjectTagData(allInfoData)
     }, [allTagData])
+
+    useEffect(() => {
+        let allQueriedItems = allprojects.items.filter((datas) => {
+            if (studentType === 'phd') {
+                if (datas.student.graduate_program_type === 'phd') {
+                    return datas
+                }
+            } else if (studentType === 'masters') {
+                if (datas.student.graduate_program_type === 'Masters') {
+                    return datas
+                }
+            } else {
+                return null
+            }
+        })
+        /** initial items  */
+        //items collected
+        const allItemsCollected = allQueriedItems
+        //total all items
+        const totalItems = allQueriedItems.length
+        let itemsPerPage = perPage
+        const currentPage = 1
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+        const currentItems = allItemsCollected.slice(
+            indexOfFirstItem,
+            indexOfLastItem
+        )
+
+        const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+        setAllDisplayData({
+            currentPage: currentPage,
+            itemsPerPage: itemsPerPage,
+            items: currentItems,
+            allSearchItems: allQueriedItems,
+            totalItemsDisplayed: currentItems.length,
+            totalSearchedItems: totalItems,
+            totalPages: pageLength,
+        })
+    }, [studentType, allprojects.items])
+
+    let PaginationFirstNumber =
+        allDisplayData.currentPage * allDisplayData.itemsPerPage -
+        allDisplayData.itemsPerPage +
+        1
+
+    let PaginationLastNumber =
+        PaginationFirstNumber + allDisplayData.totalItemsDisplayed - 1
 
     return (
         <Container>
@@ -214,9 +277,9 @@ const ProjectTable = ({ allTagData }) => {
                     </Thead>
 
                     <Tbody>
-                        {pprojects.items.length > 0 ? (
+                        {allDisplayData.items.length > 0 ? (
                             <>
-                                {pprojects.items.map((data, index) => {
+                                {allDisplayData.items.map((data, index) => {
                                     let activeStatus
                                     let activeElementSet
                                     if (
@@ -410,12 +473,8 @@ const ProjectTable = ({ allTagData }) => {
                                                     </Box>
                                                 </Td>
                                                 <Td>
-                                                    <Box className='semester'>
-                                                        {data.student.semester}{' '}
-                                                        {
-                                                            data.student
-                                                                .academicYear
-                                                        }
+                                                    <Box className='registration'>
+                                                        {'Provisional'}{' '}
                                                     </Box>
                                                 </Td>
                                                 <Td>
@@ -426,12 +485,14 @@ const ProjectTable = ({ allTagData }) => {
                                                         justifyContent={
                                                             'center'
                                                         }>
-                                                        <Box className='supervisor'>
-                                                            {
-                                                                data.supervisor
-                                                                    .length
+                                                        <Checkbox
+                                                            colorScheme={'red'}
+                                                            isChecked={
+                                                                data.resubmission
+                                                                    ? true
+                                                                    : false
                                                             }
-                                                        </Box>
+                                                        />
                                                     </Box>
                                                 </Td>
                                                 <Td>
@@ -445,7 +506,7 @@ const ProjectTable = ({ allTagData }) => {
                                                             <MenuItem
                                                                 onClick={() =>
                                                                     routeNavigate(
-                                                                        `/projects/edit/${data._id}`
+                                                                        `${rpath}/edit/${data._id}`
                                                                     )
                                                                 }>
                                                                 Edit
@@ -453,7 +514,7 @@ const ProjectTable = ({ allTagData }) => {
                                                             <MenuItem
                                                                 onClick={() =>
                                                                     routeNavigate(
-                                                                        `/projects/projectreport/${data._id}`
+                                                                        `${rpath}/projectreport/${data._id}`
                                                                     )
                                                                 }>
                                                                 View
@@ -663,44 +724,46 @@ const ProjectTable = ({ allTagData }) => {
 
             {/** Pagination */}
 
-            <PaginationStack
-                direction='row'
-                height='56px'
-                alignItems='center'
-                justifyContent={'space-between'}>
-                <Box className='pages'>
-                    <span>
-                        {`${PaginationFirstNumber}`} -{' '}
-                        {`${PaginationLastNumber}`} of{' '}
-                        {`${pprojects.overall_total}`}
-                    </span>
-                </Box>
-                <Stack
-                    h='90%'
+            {allDisplayData.items.length > 0 && (
+                <PaginationStack
                     direction='row'
-                    spacing='20px'
+                    height='56px'
                     alignItems='center'
-                    className='pagination'>
-                    <Box className='rows'>
-                        <h1>Rows per page:</h1>
-                        <span>{pprojects.perPage}</span>
+                    justifyContent={'space-between'}>
+                    <Box className='pages'>
+                        <span>
+                            {`${PaginationFirstNumber}`} -{' '}
+                            {`${PaginationLastNumber}`} of{' '}
+                            {`${pprojects.overall_total}`}
+                        </span>
                     </Box>
-
-                    {/** pagination arrows */}
                     <Stack
+                        h='90%'
                         direction='row'
+                        spacing='20px'
                         alignItems='center'
-                        className='arrows'>
-                        <Box className='left' onClick={handlePrev}>
-                            <MdKeyboardArrowLeft />
+                        className='pagination'>
+                        <Box className='rows'>
+                            <h1>Rows per page:</h1>
+                            <span>{pprojects.perPage}</span>
                         </Box>
-                        <Box>1</Box>
-                        <Box className='right' onClick={handleNext}>
-                            <MdKeyboardArrowRight />
-                        </Box>
+
+                        {/** pagination arrows */}
+                        <Stack
+                            direction='row'
+                            alignItems='center'
+                            className='arrows'>
+                            <Box className='left' onClick={handlePrev}>
+                                <MdKeyboardArrowLeft />
+                            </Box>
+                            <Box>1</Box>
+                            <Box className='right' onClick={handleNext}>
+                                <MdKeyboardArrowRight />
+                            </Box>
+                        </Stack>
                     </Stack>
-                </Stack>
-            </PaginationStack>
+                </PaginationStack>
+            )}
         </Container>
     )
 }
@@ -708,8 +771,9 @@ const ProjectTable = ({ allTagData }) => {
 export default ProjectTable
 
 const Container = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     .tab {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         h2 {
@@ -771,7 +835,7 @@ const Container = styled(Stack)`
 
     .table_head {
         color: #5e5c60 !important;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px !important;
@@ -779,7 +843,7 @@ const Container = styled(Stack)`
     }
 
     td {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 400;
         font-size: 13px;
@@ -813,7 +877,7 @@ const Container = styled(Stack)`
         cursor: pointer;
     }
 
-    .semester {
+    .registration {
         min-width: 140px;
         width: 100%;
         color: #3a3a43;
@@ -823,10 +887,11 @@ const Container = styled(Stack)`
         align-items: center;
         background: #eeeeef;
         border-radius: 4px;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
+        text-transform: uppercase;
     }
 
     .supervisor {
@@ -880,7 +945,7 @@ const TableDropDown = styled(Stack)`
     }
 
     .activities {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;
@@ -951,7 +1016,7 @@ const StatusItem = styled(Stack)`
     }
 
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -970,7 +1035,7 @@ const NoItems = styled(Box)`
     justify-content: center;
     align-items: center;
 
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
@@ -985,7 +1050,7 @@ const PaginationStack = styled(Stack)`
         background: #ffffff;
     }
     .pages {
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: normal;
         font-size: 12px;
@@ -997,7 +1062,7 @@ const PaginationStack = styled(Stack)`
         display: flex;
         align-items: center;
         h1 {
-            font-family: Inter;
+            font-family: 'Inter', sans-serif;
             font-style: normal;
             font-weight: normal;
             font-size: 12px;
@@ -1005,7 +1070,7 @@ const PaginationStack = styled(Stack)`
         }
         span {
             margin-left: 2px;
-            font-family: Inter;
+            font-family: 'Inter', sans-serif;
             font-style: normal;
             font-weight: normal;
             font-size: 12px;

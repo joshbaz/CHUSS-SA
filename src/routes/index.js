@@ -15,7 +15,7 @@ import UpdateExaminer from '../views/DesktopViews/Projects/UpdateExaminer'
 import AssignExaminer from '../views/DesktopViews/Projects/Examiners/AssignExaminer'
 import CreateProjectExaminer from '../views/DesktopViews/Projects/Examiners/CreateProjectExaminer'
 import ViewProjectExaminer from '../views/DesktopViews/Projects/ViewProjectExaminer'
-import CreateExaminerReport from '../views/DesktopViews/Projects/ExaminerReports/CreateExaminerReport'
+
 import ViewExaminerReport from '../views/DesktopViews/Projects/ExaminerReports/ViewExaminerReport'
 import EditExaminerReport from '../views/DesktopViews/Projects/ExaminerReports/EditExaminerReport'
 import AllExaminers from '../views/DesktopViews/ExaminersView/AllExaminers'
@@ -41,6 +41,14 @@ import AllSchools from '../views/DesktopViews/Schools&Depts/AllSchools'
 import CreateNewSchool from '../views/DesktopViews/Schools&Depts/CreateNewSchool'
 import ViewSchool from '../views/DesktopViews/Schools&Depts/ViewSchool'
 import ManageExaminers from '../views/DesktopViews/ExaminersView/ManageExaminers'
+import AllMastersProjects from '../views/DesktopViews/ProjectMasters/AllMastersProjects'
+import CreateMastersProject from '../views/DesktopViews/ProjectMasters/CreateMastersProject'
+import EditMastersProject from '../views/DesktopViews/ProjectMasters/EditMastersProject'
+import MastersProjectReport from '../views/DesktopViews/ProjectMasters/MastersProjectReport'
+import MaAssignSupervisors from '../views/DesktopViews/ProjectMasters/MastersSupervisors/MaAssignSupervisors'
+import MaCreateProjectSupervisor from '../views/DesktopViews/ProjectMasters/MastersSupervisors/MaCreateProjectSupervisor'
+import MaViewProjectSupervisor from '../views/DesktopViews/ProjectMasters/MastersSupervisors/MaViewProjectSupervisor'
+import MaEditProjectSupervisor from '../views/DesktopViews/ProjectMasters/MastersSupervisors/MaEditProjectSupervisor'
 const AllRoutes = () => {
     return (
         <HashRouter>
@@ -49,126 +57,229 @@ const AllRoutes = () => {
                 <Route exact path='/auth/signin' element={<Login />} />
                 <Route element={<ProtectedRoute />}>
                     <Route exact path='/' element={<Dashboard />} />
-                    <Route exact path='/projects' element={<AllProjects />} />
+                    {/** masters student projects */}
+                    {/** All Master student projects */}
                     <Route
                         exact
-                        path='/projects/create'
-                        element={<CreateProject />}
+                        path='/masters/projects'
+                        element={<AllMastersProjects />}
                     />
+                    {/** masters create projects */}
+                    <Route
+                        exact
+                        path='/masters/projects/create'
+                        element={<CreateMastersProject />}
+                    />
+                    {/** masters edit project */}
 
                     <Route
                         exact
-                        path='/projects/edit/:id'
-                        element={<EditProject />}
-                    />
-                    <Route
-                        exact
-                        path='/projects/projectreport/:id'
-                        element={<ProjectReport />}
+                        path='/masters/projects/edit/:id'
+                        element={<EditMastersProject />}
                     />
 
-                    {/** route for assign supervisor */}
-                    <Route
-                        exact
-                        path='/projects/supervisors/assign/:pid'
-                        element={<AssignSupervisor />}
-                    />
-                    {/** create supervisors if not found in assign inside project*/}
-                    <Route
-                        exact
-                        path='/projects/supervisors/p_create/:pid'
-                        element={<CreateProjectSupervisor />}
-                    />
-
-                    {/** route for assign doctoral comm member */}
-                    <Route
-                        exact
-                        path='/projects/doctoralmember/assign/:pid'
-                        element={<AssignDoctoralMember />}
-                    />
-                    {/** create doctoral comm member if not found in assign inside project*/}
-                    <Route
-                        exact
-                        path='/projects/doctoralmember/p_create/:pid'
-                        element={<CreateProjectDMember />}
-                    />
-                    {/** route for assign opponents */}
-                    <Route
-                        exact
-                        path='/projects/opponents/assign/:pid'
-                        element={<AssignOpponent />}
-                    />
-                    {/** create opponents if not found in assign inside project*/}
-                    <Route
-                        exact
-                        path='/projects/opponents/p_create/:pid'
-                        element={<CreateProjectOpponent />}
-                    />
-
-                    {/** opponent reports */}
-                    <Route
-                        exact
-                        path='/projects/opponents/viewreport/:p_id/:rp_id'
-                        element={<ViewOpponentReport />}
-                    />
+                    {/** masters  project report */}
 
                     <Route
                         exact
-                        path='/projects/opponents/updatereport/:p_id/:rp_id'
-                        element={<EditOpponentReport />}
+                        path='/masters/projects/projectreport/:id'
+                        element={<MastersProjectReport />}
                     />
 
-                    {/** route for assign examiners */}
+                    {/** route for assign supervisor for masters */}
                     <Route
                         exact
-                        path='/projects/examiners/assign/:pid'
+                        path='/masters/projects/supervisors/assign/:pid'
+                        element={<MaAssignSupervisors />}
+                    />
+                    {/** create supervisors if not found in assign inside masters project */}
+                    <Route
+                        exact
+                        path='/masters/projects/supervisors/p_create/:pid'
+                        element={<MaCreateProjectSupervisor />}
+                    />
+
+                    {/** view supervisors from project tab/page */}
+                    <Route
+                        exact
+                        path='/masters/projects/supervisors/view/:p_id/:s_id'
+                        element={<MaViewProjectSupervisor />}
+                    />
+
+                    {/** Masters - update supervisors from project tab/page */}
+                    <Route
+                        exact
+                        path='/masters/projects/supervisors/update/:p_id/:s_id'
+                        element={<MaEditProjectSupervisor />}
+                    />
+
+                    {/** route for assign examiners for phd students */}
+                    <Route
+                        exact
+                        path='/masters/projects/examiners/assign/:pid'
                         element={<AssignExaminer />}
                     />
 
                     {/** create examiner if not found in assign inside project*/}
                     <Route
                         exact
-                        path='/projects/examiners/p_create/:pid'
+                        path='/masters/projects/examiners/p_create/:pid'
                         element={<CreateProjectExaminer />}
                     />
 
                     {/** create examiner from project tab/page */}
                     <Route
                         exact
-                        path='/projects/examiners/create/:id'
+                        path='/masters/projects/examiners/create/:id'
                         element={<AddExaminers />}
                     />
 
                     {/** view examiner from project tab/page */}
                     <Route
                         exact
-                        path='/projects/examiners/view/:p_id/:e_id'
+                        path='/masters/projects/examiners/view/:p_id/:e_id'
+                        element={<ViewProjectExaminer />}
+                    />
+
+                    {/** Masters - update examiner from project tab/page */}
+                    <Route
+                        exact
+                        path='/masters/projects/examiners/update/:s_id/:e_id'
+                        element={<UpdateExaminer />}
+                    />
+
+                    {/** Masters- view examiner report on masters */}
+                    <Route
+                        exact
+                        path='/masters/projects/examiners/viewreport/:p_id/:rp_id'
+                        element={<ViewExaminerReport />}
+                    />
+                    {/** Masters- edit examiner report on masters */}
+                    <Route
+                        exact
+                        path='/masters/projects/examiners/updatereport/:p_id/:rp_id'
+                        element={<EditExaminerReport />}
+                    />
+
+                    {/** phd student projects */}
+                    <Route
+                        exact
+                        path='/phd/projects'
+                        element={<AllProjects />}
+                    />
+                    <Route
+                        exact
+                        path='/phd/projects/create'
+                        element={<CreateProject />}
+                    />
+
+                    <Route
+                        exact
+                        path='/phd/projects/edit/:id'
+                        element={<EditProject />}
+                    />
+                    <Route
+                        exact
+                        path='/phd/projects/projectreport/:id'
+                        element={<ProjectReport />}
+                    />
+
+                    {/** route for assign supervisor for phd */}
+                    <Route
+                        exact
+                        path='/phd/projects/supervisors/assign/:pid'
+                        element={<AssignSupervisor />}
+                    />
+                    {/** create supervisors if not found in assign inside phd project */}
+                    <Route
+                        exact
+                        path='/phd/projects/supervisors/p_create/:pid'
+                        element={<CreateProjectSupervisor />}
+                    />
+
+                    {/** route for assign doctoral comm member phd */}
+                    <Route
+                        exact
+                        path='/phd/projects/doctoralmember/assign/:pid'
+                        element={<AssignDoctoralMember />}
+                    />
+                    {/** create doctoral comm member if not found in assign inside project*/}
+                    <Route
+                        exact
+                        path='/phd/projects/doctoralmember/p_create/:pid'
+                        element={<CreateProjectDMember />}
+                    />
+                    {/** route for assign opponents */}
+                    <Route
+                        exact
+                        path='/phd/projects/opponents/assign/:pid'
+                        element={<AssignOpponent />}
+                    />
+                    {/** create opponents if not found in assign inside project*/}
+                    <Route
+                        exact
+                        path='/phd/projects/opponents/p_create/:pid'
+                        element={<CreateProjectOpponent />}
+                    />
+
+                    {/** opponent reports */}
+                    <Route
+                        exact
+                        path='/phd/projects/opponents/viewreport/:p_id/:rp_id'
+                        element={<ViewOpponentReport />}
+                    />
+
+                    <Route
+                        exact
+                        path='/phd/projects/opponents/updatereport/:p_id/:rp_id'
+                        element={<EditOpponentReport />}
+                    />
+
+                    {/** route for assign examiners for phd students */}
+                    <Route
+                        exact
+                        path='/phd/projects/examiners/assign/:pid'
+                        element={<AssignExaminer />}
+                    />
+
+                    {/** create examiner if not found in assign inside project*/}
+                    <Route
+                        exact
+                        path='/phd/projects/examiners/p_create/:pid'
+                        element={<CreateProjectExaminer />}
+                    />
+
+                    {/** create examiner from project tab/page */}
+                    <Route
+                        exact
+                        path='/phd/projects/examiners/create/:id'
+                        element={<AddExaminers />}
+                    />
+
+                    {/** view examiner from project tab/page */}
+                    <Route
+                        exact
+                        path='/phd/projects/examiners/view/:p_id/:e_id'
                         element={<ViewProjectExaminer />}
                     />
 
                     {/** update examiner from project tab/page */}
                     <Route
                         exact
-                        path='/projects/examiners/update/:s_id/:e_id'
+                        path='/phd/projects/examiners/update/:s_id/:e_id'
                         element={<UpdateExaminer />}
                     />
 
-                    {/** route to be removed */}
+                    {/** view examiner report */}
                     <Route
                         exact
-                        path='/projects/examiners/createreport/:s_id/:e_id'
-                        element={<CreateExaminerReport />}
-                    />
-
-                    <Route
-                        exact
-                        path='/projects/examiners/viewreport/:p_id/:rp_id'
+                        path='/phd/projects/examiners/viewreport/:p_id/:rp_id'
                         element={<ViewExaminerReport />}
                     />
 
                     <Route
                         exact
-                        path='/projects/examiners/updatereport/:p_id/:rp_id'
+                        path='/phd/projects/examiners/updatereport/:p_id/:rp_id'
                         element={<EditExaminerReport />}
                     />
 

@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
 
-const SupervisorADetailForm = ({ values, handleChange, errors }) => {
+const EditSupervisorADetailForm = ({ values, handleChange, errors }) => {
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -32,11 +32,16 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                                             : ''
                                     }
                                     type='text'
-                                    value={values.jobtitle}
+                                    value={
+                                        values !== null && values.jobtitle
+                                            ? values.jobtitle
+                                            : ''
+                                    }
                                     name='jobtitle'
                                     onChange={handleChange}
                                     placeholder={'i.e Prof. or Assoc.Prof.'}
                                 />
+
                                 {errors && errors.jobtitle ? (
                                     <ErrorMsg className='filesError'>
                                         {errors.jobtitle}
@@ -59,7 +64,11 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                                             : ''
                                     }
                                     type='text'
-                                    value={values.name}
+                                    value={
+                                        values !== null && values.name
+                                            ? values.name
+                                            : ''
+                                    }
                                     name='name'
                                     onChange={handleChange}
                                     placeholder={'i.e Apollo Kimani'}
@@ -88,11 +97,16 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                                             : ''
                                     }
                                     type='text'
-                                    value={values.email}
+                                    value={
+                                        values !== null && values.email
+                                            ? values.email
+                                            : null
+                                    }
                                     name='email'
                                     onChange={handleChange}
                                     placeholder={'email i.e apollo@yahoo.com'}
                                 />
+
                                 {errors && errors.email ? (
                                     <ErrorMsg className='filesError'>
                                         {errors.email}
@@ -114,7 +128,11 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                                             : ''
                                     }
                                     type='text'
-                                    value={values.phoneNumber}
+                                    value={
+                                        values !== null && values.phoneNumber
+                                            ? values.phoneNumber
+                                            : ''
+                                    }
                                     name='phoneNumber'
                                     onChange={handleChange}
                                     placeholder={'e.g 256787785114'}
@@ -134,7 +152,11 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                             <fieldset>
                                 <Input
                                     type='text'
-                                    value={values.postalAddress}
+                                    value={
+                                        values !== null && values.postalAddress
+                                            ? values.postalAddress
+                                            : ''
+                                    }
                                     name='postalAddress'
                                     onChange={handleChange}
                                     placeholder={'postalAddress'}
@@ -155,11 +177,17 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                                             : ''
                                     }
                                     type='text'
-                                    value={values.countryOfResidence}
+                                    value={
+                                        values !== null &&
+                                        values.countryOfResidence
+                                            ? values.countryOfResidence
+                                            : ''
+                                    }
                                     name='countryOfResidence'
                                     onChange={handleChange}
                                     placeholder={'i.e Uganda'}
                                 />
+
                                 {errors && errors.countryOfResidence ? (
                                     <ErrorMsg className='filesError'>
                                         {errors.countryOfResidence}
@@ -184,7 +212,11 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                                             : ''
                                     }
                                     type='text'
-                                    value={values.placeOfWork}
+                                    value={
+                                        values !== null && values.placeOfWork
+                                            ? values.placeOfWork
+                                            : ''
+                                    }
                                     name='placeOfWork'
                                     onChange={handleChange}
                                     placeholder={'i.e Makerere University'}
@@ -203,7 +235,7 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
     )
 }
 
-export default SupervisorADetailForm
+export default EditSupervisorADetailForm
 
 const FormContainer = styled(Box)`
     font-family: 'Inter', sans-serif;
@@ -249,7 +281,8 @@ const FormContainer = styled(Box)`
 
     input {
         background: #ffffff;
-        border-color: transparent;
+
+        border: 1px solid gray.200;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
             0px 0px 0px 1px rgba(134, 143, 160, 0.16);
         border-radius: 6px;
@@ -259,10 +292,6 @@ const FormContainer = styled(Box)`
         font-weight: 500;
         font-size: 14px;
         line-height: 20px;
-    }
-    .input_error {
-        border-color: red !important;
-        box-shadow: none;
     }
 
     .formfields__Dfieldset {
@@ -281,3 +310,4 @@ const ErrorMsg = styled(Box)`
         padding: 0;
     }
 `
+

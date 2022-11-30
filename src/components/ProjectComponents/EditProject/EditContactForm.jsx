@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
 
-const EditContactForm = ({ values, handleChange }) => {
+const EditContactForm = ({ values, handleChange, errors }) => {
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -25,6 +25,11 @@ const EditContactForm = ({ values, handleChange }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.phoneNumber
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='text'
                                     name='phoneNumber'
                                     value={
@@ -35,6 +40,12 @@ const EditContactForm = ({ values, handleChange }) => {
                                     onChange={handleChange}
                                     placeholder='i.e 0787785114'
                                 />
+
+                                {errors && errors.phoneNumber ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.phoneNumber}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -49,6 +60,11 @@ const EditContactForm = ({ values, handleChange }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.email
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='email'
                                     name='email'
                                     value={
@@ -59,14 +75,18 @@ const EditContactForm = ({ values, handleChange }) => {
                                     onChange={handleChange}
                                     placeholder={'i.e apollo@gmail.com'}
                                 />
+
+                                {errors && errors.email ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.email}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                         <Stack
                             spacing='8px'
                             className='form_wrap formfields__Dfieldset'>
-                            <label>
-                                Alternative Email <span>*</span>
-                            </label>
+                            <label>Alternative Email</label>
                             <fieldset>
                                 <Input
                                     type='email'
@@ -92,7 +112,7 @@ const EditContactForm = ({ values, handleChange }) => {
 export default EditContactForm
 
 const FormContainer = styled(Box)`
-    font-family: Inter;
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -114,14 +134,14 @@ const FormContainer = styled(Box)`
 
             font-style: normal;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 17px;
             line-height: 137.5%;
             color: #111827;
         }
     }
 
     label {
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-weight: 500;
         font-size: 14px;
         line-height: 20px;
@@ -135,14 +155,37 @@ const FormContainer = styled(Box)`
 
     input {
         background: #ffffff;
+        border-color: transparent;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
             0px 0px 0px 1px rgba(134, 143, 160, 0.16);
         border-radius: 6px;
+
         height: 32px;
         width: 100%;
+        color: #20202a;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .input_error {
+        border-color: red !important;
+        box-shadow: none;
     }
 
     .formfields__Dfieldset {
         width: 100%;
+    }
+`
+
+const ErrorMsg = styled(Box)`
+    font-size: 13px;
+    line-height: 20px;
+    padding: 5px 10px;
+    color: #f14c54;
+    font-family: 'Inter', sans-serif;
+
+    .filesError {
+        padding: 0;
     }
 `

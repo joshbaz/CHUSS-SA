@@ -245,7 +245,7 @@ const InputStack = styled(Stack)`
         background: #f4797f;
         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
         border-radius: 6px;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;
@@ -271,7 +271,7 @@ const AdStack = styled(Stack)`
 
 const LinksStack = styled(Stack)`
     h1 {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 17px;
@@ -291,7 +291,7 @@ const LinksStack = styled(Stack)`
     }
 
     .link_text {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 17.4375px;

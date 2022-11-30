@@ -30,19 +30,17 @@ import { GrClose } from 'react-icons/gr'
 import ProjectTable from '../../../components/ProjectComponents/AllProjects/ProjectTable'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
+
+import ExaminerTable from '../../../components/ExaminerComponents/AllExaminers/ExaminerTable'
+
 import {
-    getPProjects,
-    getAllProjects,
     reset,
-} from '../../../store/features/project/projectSlice'
+    allExaminers,
+    paginatedExaminer,
+} from '../../../store/features/Examiner/examinerSlice'
 
-import {
-    reset as treset,
-    tagGetAll,
-} from '../../../store/features/tags/tagSlice'
-
-const AllProjects = () => {
-    const tagsData = useSelector((state) => state.tag)
+const AllOpponents = () => {
+    const [selectedExaminers, setSelectedExaminers] = React.useState([])
     const [filterSearchOption, setFilterSearchOption] = React.useState('All')
     const [searchWord, setSearchWord] = React.useState('')
     const filterItems = [
@@ -212,9 +210,9 @@ const AllProjects = () => {
 
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let { pprojects, isError, isSuccess, message } = useSelector(
-        (state) => state.project
-    )
+
+    let { paginatedExaminers, allExaminerItems, isSuccess, isError, message } =
+        useSelector((state) => state.examiner)
 
     let Location = useLocation()
     let toast = useToast()
@@ -225,28 +223,8 @@ const AllProjects = () => {
             page: page,
         }
         console.log(page)
-        dispatch(getPProjects(values))
+        dispatch(paginatedExaminer(values))
     }, [Location])
-
-    useEffect(() => {
-        dispatch(tagGetAll())
-        dispatch(getAllProjects())
-    }, [])
-
-    useEffect(() => {
-        if (tagsData.isError) {
-            toast({
-                position: 'top',
-                title: tagsData.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
-            dispatch(treset())
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
 
     useEffect(() => {
         if (isError) {
@@ -272,6 +250,7 @@ const AllProjects = () => {
         // }
     }, [isSuccess, isError, message])
 
+    console.log('all examinerttt', paginatedExaminers)
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -279,7 +258,7 @@ const AllProjects = () => {
             </Box>
 
             <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar topbarData={{ title: 'Phd Students', count: null }} />
+                <TopBar topbarData={{ title: 'Examiners ', count: null }} />
 
                 <Stack direction='column' padding={'0 20px'}>
                     {/** filter inputs && button */}
@@ -292,7 +271,7 @@ const AllProjects = () => {
                         <Stack direction='row'>
                             <Stack
                                 direction='row'
-                                spacing={'5px'}
+                                spacing={'0px'}
                                 alignItems='center'>
                                 <Box>
                                     <Menu closeOnSelect={false}>
@@ -411,10 +390,9 @@ const AllProjects = () => {
                                             <Button
                                                 p='0'
                                                 m='0'
-                                                onClick={handleSubmitFilter}
                                                 h='100%'
                                                 w='100%'
-                                                borderRadius='0px'
+                                                bg='transparent'
                                                 size='28px'>
                                                 <BiSearch />
                                             </Button>
@@ -427,44 +405,30 @@ const AllProjects = () => {
                                             value={searchWord}
                                             style={{ textIndent: '5px' }}
                                         />
-                                        <InputRightElement h='32px'>
-                                            <Button
-                                                h='100%'
-                                                w='100%'
-                                                size='28px'>
-                                                <CgFormatSlash />
-                                            </Button>
-                                        </InputRightElement>
                                     </InputGroup>
                                 </Box>
                             </Stack>
-                            {/**
 
-                          <Box>
+                            <Box>
                                 <Button
-                                    className='add_button'
-                                    leftIcon={<AiOutlinePlus />}
-                                    colorScheme='red'
+                                    className='search_button'
                                     variant='solid'>
-                                    Create report
+                                    Search
                                 </Button>
                             </Box>
-                        
-                        
-                        */}
                         </Stack>
 
                         {/**  button */}
                         <Box>
                             <Button
                                 onClick={() =>
-                                    routeNavigate('/phd/projects/create')
+                                    routeNavigate(`/examiners/create`)
                                 }
                                 className='add_button'
                                 leftIcon={<AiOutlinePlus />}
                                 colorScheme='red'
                                 variant='solid'>
-                                New Student
+                                Add New Examiner
                             </Button>
                         </Box>
                     </Stack>
@@ -535,10 +499,11 @@ const AllProjects = () => {
                         {/** table & tabs */}
 
                         <Box>
-                            <ProjectTable
-                                allTagData={tagsData.allTagItems.items}
-                                studentType={'phd'}
-                                rpath={'/phd/projects'}
+                            <ExaminerTable
+                                allExaminerItems={paginatedExaminers}
+                                paginatedExaminers={paginatedExaminers}
+                                selectedExaminers={selectedExaminers}
+                                setSelectedExaminers={setSelectedExaminers}
                             />
                         </Box>
                     </Stack>
@@ -548,7 +513,7 @@ const AllProjects = () => {
     )
 }
 
-export default AllProjects
+export default AllOpponents
 
 const Container = styled(Stack)`
     .add_button {
@@ -637,6 +602,18 @@ const Container = styled(Stack)`
         font-size: 12px;
         line-height: 18px;
         color: #838389;
+    }
+
+    .search_button {
+        height: 32px;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: 0.02em;
+
+        background: #f7f9fc;
+        box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+        border-radius: 6px;
+        color: #868fa0;
     }
 `
 

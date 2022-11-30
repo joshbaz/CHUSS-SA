@@ -41,7 +41,7 @@ import {
     tagGetAll,
 } from '../../../store/features/tags/tagSlice'
 
-const AllProjects = () => {
+const AllMastersProjects = () => {
     const tagsData = useSelector((state) => state.tag)
     const [filterSearchOption, setFilterSearchOption] = React.useState('All')
     const [searchWord, setSearchWord] = React.useState('')
@@ -271,7 +271,6 @@ const AllProjects = () => {
         //     })
         // }
     }, [isSuccess, isError, message])
-
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -279,7 +278,9 @@ const AllProjects = () => {
             </Box>
 
             <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar topbarData={{ title: 'Phd Students', count: null }} />
+                <TopBar
+                    topbarData={{ title: 'Master Students', count: null }}
+                />
 
                 <Stack direction='column' padding={'0 20px'}>
                     {/** filter inputs && button */}
@@ -458,7 +459,7 @@ const AllProjects = () => {
                         <Box>
                             <Button
                                 onClick={() =>
-                                    routeNavigate('/phd/projects/create')
+                                    routeNavigate('/masters/projects/create')
                                 }
                                 className='add_button'
                                 leftIcon={<AiOutlinePlus />}
@@ -537,8 +538,8 @@ const AllProjects = () => {
                         <Box>
                             <ProjectTable
                                 allTagData={tagsData.allTagItems.items}
-                                studentType={'phd'}
-                                rpath={'/phd/projects'}
+                                studentType={'masters'}
+                                rpath={'/masters/projects'}
                             />
                         </Box>
                     </Stack>
@@ -548,15 +549,16 @@ const AllProjects = () => {
     )
 }
 
-export default AllProjects
+export default AllMastersProjects
 
 const Container = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     .add_button {
         height: 32px;
         color: #ffffff;
         background: #f4797f;
         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         letter-spacing: 0.02em;
@@ -622,7 +624,7 @@ const Container = styled(Stack)`
     }
 
     .filter_num {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 14px;
@@ -631,7 +633,7 @@ const Container = styled(Stack)`
     }
 
     .clear_button {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -649,7 +651,7 @@ const FilterInfoStack = styled(Stack)`
     border-radius: 4px;
     h1 {
         color: #f14c54;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 12px;
@@ -658,7 +660,7 @@ const FilterInfoStack = styled(Stack)`
 
     p {
         color: #15151d;
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 12px;

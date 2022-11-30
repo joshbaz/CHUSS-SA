@@ -4,7 +4,7 @@ import { Box, Stack, Text, Input } from '@chakra-ui/react'
 import { BsInfoCircleFill } from 'react-icons/bs'
 import { useNavigate } from 'react-router-dom'
 
-const CandidateProfile = ({ values }) => {
+const CandidateProfile = ({ values, rlink }) => {
     let routeNavigate = useNavigate()
     return (
         <Container>
@@ -23,9 +23,11 @@ const CandidateProfile = ({ values }) => {
                     <SubmitButton
                         as='button'
                         onClick={() =>
-                            routeNavigate(`/projects/edit/${values._id}`)
+                            routeNavigate(
+                                `${rlink}/projects/edit/${values._id}`
+                            )
                         }>
-                        Edit project
+                        Edit Student
                     </SubmitButton>
                 </Stack>
 
@@ -276,11 +278,12 @@ const Container = styled(Box)`
 
     .s_name {
         color: #20202a;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 21px;
         line-height: 20px;
+        text-transform: capitalize;
     }
 
     label {
@@ -301,7 +304,7 @@ const Container = styled(Box)`
 
     #SRN {
         height: 40px;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 700;
         font-size: 16px;
@@ -310,7 +313,7 @@ const Container = styled(Box)`
     }
 
     .form_subtitle {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 700;
         font-size: 14px;
@@ -324,12 +327,13 @@ const Container = styled(Box)`
         border-radius: 6px;
 
         height: 32px;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 13px;
         line-height: 20px;
         border: 0px;
+        color: #20202a;
     }
 `
 
@@ -342,7 +346,7 @@ const SubmitButton = styled(Box)`
 
     color: #ffffff;
     letter-spacing: 0.02em;
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;

@@ -2,15 +2,14 @@ import React from 'react'
 import { Box, Stack, Text } from '@chakra-ui/react'
 import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
-import Navigation from '../../../../components/common/Navigation/Navigation'
-import TopBar from '../../../../components/common/Navigation/TopBar'
-import PercentageScoreForm from '../../../../components/ProjectComponents/CreateExaminerReport/PercentageScoreForm'
-import Files from '../../../../components/ProjectComponents/CreateExaminerReport/Files'
-import UploadReportForm from '../../../../components/ProjectComponents/CreateExaminerReport/UploadReportForm'
-import OverallScores from '../../../../components/ProjectComponents/CreateExaminerReport/OverallScores'
-import ExaminerReportDetailForm from '../../../../components/ProjectComponents/CreateExaminerReport/ExaminerReportDetailForm'
+import Navigation from '../../../components/common/Navigation/Navigation'
+import TopBar from '../../../components/common/Navigation/TopBar'
+import UpdateExaminerDetail from '../../../components/ProjectComponents/UpdateExaminer/UpdateExaminerDetail'
+import UpdateExamineInfo from '../../../components/ProjectComponents/UpdateExaminer/UpdateExamineInfo'
+import UpdatePaymentInfo from '../../../components/ProjectComponents/UpdateExaminer/UpdatePaymentInfo'
 import { useNavigate } from 'react-router-dom'
-const CreateExaminerReport = () => {
+
+const MastersUpdateExaminer = () => {
     let routeNavigate = useNavigate()
     return (
         <Container direction='row' w='100vw'>
@@ -27,7 +26,7 @@ const CreateExaminerReport = () => {
                         bg='#FBFBFB'
                         spacing={'20px'}
                         padding={'20px 20px 30px 20px'}>
-                        {/** back & submit button*/}
+                        {/** title head */}
                         <Stack
                             direction='row'
                             alignItems='center'
@@ -41,44 +40,51 @@ const CreateExaminerReport = () => {
                                     onClick={() => routeNavigate(-1)}>
                                     <MdArrowBack />
                                 </Box>
-                                <Text>Examiner New Report</Text>
+                                <Text>Update Examiner</Text>
                             </BackButtonStack>
 
                             <SubmitButton as='button'>
-                                Submit report
+                                Submit project
                             </SubmitButton>
                         </Stack>
+
                         {/** forms */}
-                        <Stack direction='row' w='100%'>
-                            {/** student and contact forms */}
-                            <Stack direction='column' w='70%' spacing='20px'>
-                                <PercentageScoreForm />
-                                <Files />
-                            </Stack>
-                            {/** supervisior && date of submission & scanned form */}
-                            <Stack direction='column' w='30%' spacing='20px'>
-                                <ExaminerReportDetailForm />
+                        <Stack direction='column' w='100%'>
+                            {/** first set */}
+                            <Stack direction='row'>
+                                {/** candidate details & Project details */}
+                                <Stack
+                                    direction='column'
+                                    w='70%'
+                                    spacing='20px'>
+                                    <UpdateExaminerDetail />
+                                </Stack>
 
-                                <OverallScores />
-
-                                <UploadReportForm />
+                                {/** Grading Progress & Assigned Examiners */}
+                                <Stack
+                                    direction='column'
+                                    w='30%'
+                                    spacing='20px'>
+                                    <UpdateExamineInfo />
+                                    <UpdatePaymentInfo />
+                                </Stack>
                             </Stack>
                         </Stack>
                     </Stack>
-                    {/** footer */}
                 </Stack>
             </Stack>
         </Container>
     )
 }
 
-export default CreateExaminerReport
+export default MastersUpdateExaminer
 
 const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 17px;
@@ -94,7 +100,7 @@ const SubmitButton = styled(Box)`
     border-radius: 6px;
 
     color: #868fa0;
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;

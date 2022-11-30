@@ -24,7 +24,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import EditUploadThesis from '../../../components/ProjectComponents/EditProject/EditUploadThesis'
 import EditRegistrationForm from '../../../components/ProjectComponents/EditProject/EditRegistrationForm'
 
-const EditProject = (props) => {
+const EditMastersProject = (props) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [changeMade, setChnageMade] = React.useState(false)
     const [initials, setInitials] = React.useState(null)
@@ -136,6 +136,7 @@ const EditProject = (props) => {
                         individual !== null && individual.student.academicYear
                             ? individual.student.academicYear
                             : '',
+
                     studentId:
                         individual !== null && individual.student._id
                             ? individual.student._id
@@ -164,6 +165,11 @@ const EditProject = (props) => {
         }))
     }
 
+    /**
+     * Custom function
+     * handles school and department change
+     *
+     */
     const setFieldValue2 = (sname, vdata) => {
         setIsSubmittingp(() => false)
         setErrors({})
@@ -196,34 +202,34 @@ const EditProject = (props) => {
     //     }
     // }
 
-      let validate = (values) => {
-          const errors = {}
-          if (!values.registrationNumber) {
-              errors.registrationNumber = 'Registration Number required'
-          }
+    let validate = (values) => {
+        const errors = {}
+        if (!values.registrationNumber) {
+            errors.registrationNumber = 'Registration Number required'
+        }
 
-          if (!values.studentName) {
-              errors.studentName = 'Student Name required'
-          }
+        if (!values.studentName) {
+            errors.studentName = 'Student Name required'
+        }
 
-          if (!values.degreeProgram) {
-              errors.degreeProgram = 'Degree Program required'
-          }
+        if (!values.degreeProgram) {
+            errors.degreeProgram = 'Degree Program required'
+        }
 
-          if (!values.schoolName) {
-              errors.schoolName = 'School Name required'
-          }
+        if (!values.schoolName) {
+            errors.schoolName = 'School Name required'
+        }
 
-          if (!values.email) {
-              errors.email = 'Email required'
-          }
+        if (!values.email) {
+            errors.email = 'Email required'
+        }
 
-          if (!values.phoneNumber) {
-              errors.phoneNumber = 'Phone Number required'
-          }
+        if (!values.phoneNumber) {
+            errors.phoneNumber = 'Phone Number required'
+        }
 
-          return errors
-      }
+        return errors
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -244,7 +250,6 @@ const EditProject = (props) => {
             setChnageMade(false)
         }
     }, [isSubmittingp])
-
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -252,9 +257,7 @@ const EditProject = (props) => {
             </Box>
 
             <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{ title: 'Update Student', count: null }}
-                />
+                <TopBar topbarData={{ title: 'Update Student', count: null }} />
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={handleSubmit}>
@@ -277,7 +280,7 @@ const EditProject = (props) => {
                                         onClick={() => routeNavigate(-1)}>
                                         <MdArrowBack />
                                     </Box>
-                                    <Text>Update PHD Student</Text>
+                                    <Text>Update Masters Student</Text>
                                 </BackButtonStack>
 
                                 <SubmitButton
@@ -334,7 +337,7 @@ const EditProject = (props) => {
     )
 }
 
-export default EditProject
+export default EditMastersProject
 
 const Container = styled(Stack)``
 

@@ -160,3 +160,22 @@ exports.updateSupervisor = async (event, values) => {
         return errorResult
     }
 }
+
+/** remove supervisor */
+exports.removeSupervisor = async (event, values) => {
+    try {
+        let responseData = await axios.patch(
+            `${BASE_API_}/supervisor/v1/project/remove/${values.projectId}/${values.supId}`,
+            values
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}

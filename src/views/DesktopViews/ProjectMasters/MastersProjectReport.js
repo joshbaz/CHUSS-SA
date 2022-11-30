@@ -20,13 +20,42 @@ import {
     reset as treset,
     tagGetAll,
 } from '../../../store/features/tags/tagSlice'
+import {
+    academicYearGetAll,
+    reset as acreset,
+} from '../../../store/features/preferences/preferenceSlice'
 import ProgressStatus from '../../../components/ProjectComponents/ProjectReport/ProgressStatus'
 import VivaReport from '../../../components/ProjectComponents/ProjectReport/VivaReport'
 import FinalSubmission from '../../../components/ProjectComponents/ProjectReport/FinalSubmission'
 import AdmissionStatus from '../../../components/ProjectComponents/ProjectReport/AdmissionStatus'
 import RegistrationReports from '../../../components/ProjectComponents/ProjectReport/RegistrationReports'
+import MastersProjectDetails from '../../../components/ProjectComponents/ProjectReport/MastersProjectDetails'
+import MastersVivaReport from '../../../components/ProjectComponents/ProjectReport/MastersVivaReport'
 
-const ProjectReport = ({ ...props }) => {
+const PageLinks = [
+    {
+        title: 'Registration',
+        id: 'registration',
+    },
+    {
+        title: 'Candidate Files',
+        id: 'candidatefiles',
+    },
+    {
+        title: 'Examiner reports',
+        id: 'examinerreport',
+    },
+    {
+        title: 'Viva Report',
+        id: 'vivareport',
+    },
+    {
+        title: 'Final Submission',
+        id: 'finalsubmissionss',
+    },
+]
+
+const MastersProjectReport = () => {
     let routeNavigate = useNavigate()
     //let location = useLocation()
     let params = useParams()
@@ -38,11 +67,14 @@ const ProjectReport = ({ ...props }) => {
     )
     const tagsData = useSelector((state) => state.tag)
 
+    const preferenceData = useSelector((state) => state.preference)
+
     useEffect(() => {
         let id = params.id
         console.log(id)
         dispatch(getIndividualProject(id))
         dispatch(tagGetAll())
+         dispatch(academicYearGetAll())
     }, [params.id, dispatch])
 
     useEffect(() => {
@@ -76,6 +108,44 @@ const ProjectReport = ({ ...props }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
 
+    useEffect(() => {
+        if (preferenceData.isError) {
+            toast({
+                position: 'top',
+                title: preferenceData.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            dispatch(acreset())
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        preferenceData.isError,
+        preferenceData.isSuccess,
+        preferenceData.message,
+        dispatch,
+    ])
+
+    /** scroll function */
+    const handleScroll = (linkid) => {
+        // document.getElementById(linkid).scrollIntoView({
+        //     behavior: 'smooth',
+        // })
+
+        const element = document.getElementById(linkid)
+        const offset = 15
+        const bodyRect = document.body.getBoundingClientRect().top
+        const elementRect = element.getBoundingClientRect().top
+        const elementPosition = elementRect - bodyRect
+        const offsetPosition = elementPosition - offset
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth',
+        })
+    }
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -102,25 +172,43 @@ const ProjectReport = ({ ...props }) => {
                         spacing={'20px'}
                         padding={'20px 20px 30px 20px'}>
                         {/** title head */}
-                        <Stack
-                            direction='row'
-                            alignItems='center'
-                            justifyContent='space-between'>
-                            <BackButtonStack
-                                className='back_button'
+                        <Stack direction='column' spacing='35px'>
+                            <Stack
                                 direction='row'
-                                alignItems='center'>
-                                <Box
-                                    fontSize='25px'
-                                    onClick={() => routeNavigate(-1)}>
-                                    <MdArrowBack />
-                                </Box>
-                                <Text>PhD Project Report</Text>
-                            </BackButtonStack>
+                                alignItems='center'
+                                justifyContent='space-between'>
+                                <BackButtonStack
+                                    className='back_button'
+                                    direction='row'
+                                    alignItems='center'>
+                                    <Box
+                                        fontSize='25px'
+                                        onClick={() => routeNavigate(-1)}>
+                                        <MdArrowBack />
+                                    </Box>
+                                    <Text>Masters Project Report</Text>
+                                </BackButtonStack>
+                            </Stack>
+
+                            <Stack direction='row' spacing='11px'>
+                                {PageLinks.map((data, index) => {
+                                    return (
+                                        <Box>
+                                            <LinksPage
+                                                key={index}
+                                                onClick={() =>
+                                                    handleScroll(data.id)
+                                                }>
+                                                {data.title}
+                                            </LinksPage>
+                                        </Box>
+                                    )
+                                })}
+                            </Stack>
                         </Stack>
 
                         {/** forms */}
-                        <Stack direction='column' w='100%'>
+                        <Stack direction='column' w='100%' spacing='30px'>
                             {/** first set */}
                             <Stack h='100%'>
                                 <ProgressStatus
@@ -130,20 +218,21 @@ const ProjectReport = ({ ...props }) => {
                             </Stack>
 
                             {/** second set */}
-                            <Stack direction='row'>
+                            <Stack direction='row' spacing='20px'>
                                 {/** candidate details & Project details */}
                                 <Stack
                                     direction='column'
                                     w='70%'
                                     spacing='20px'>
+                                    {/** reusable component */}
                                     <CandidateProfile
                                         values={individual}
-                                        rlink='/phd'
+                                        rlink='/masters'
                                     />
 
-                                    <ProjectDetails
+                                    <MastersProjectDetails
+                                        rlink={'/masters'}
                                         values={individual}
-                                        rlink={'/phd'}
                                     />
                                 </Stack>
 
@@ -157,24 +246,41 @@ const ProjectReport = ({ ...props }) => {
 
                                     <AssignedExaminers
                                         values={individual}
-                                        rlink={'/phd'}
+                                        rlink={'/masters'}
                                     />
                                 </Stack>
                             </Stack>
 
                             {/** third set */}
-                            <Stack>
-                                <RegistrationReports values={individual} />
-                                <CandidatesFiles values={individual} />
+                            <Stack spacing='24px'>
+                                <Box id='registration'>
+                                    <RegistrationReports
+                                        values={individual}
+                                        yearData={
+                                            preferenceData.allYearItems.items
+                                        }
+                                    />
+                                </Box>
+
+                                <Box id='candidatefiles'>
+                                    <CandidatesFiles values={individual} />
+                                </Box>
+
                                 {/** table */}
-                                <ExaminersReports values={individual} />
+                                <Box id='examinerreport'>
+                                    <ExaminersReports values={individual} />
+                                </Box>
 
-                                <VivaReport
-                                    values={individual}
-                                    allTagData={tagsData.allTagItems.items}
-                                />
+                                <Box id='vivareport'>
+                                    <MastersVivaReport
+                                        values={individual}
+                                        allTagData={tagsData.allTagItems.items}
+                                    />
+                                </Box>
 
-                                <FinalSubmission values={individual} />
+                                <Box id='finalsubmissionss'>
+                                    <FinalSubmission values={individual} />
+                                </Box>
                             </Stack>
                         </Stack>
                     </Stack>
@@ -184,7 +290,8 @@ const ProjectReport = ({ ...props }) => {
     )
 }
 
-export default ProjectReport
+export default MastersProjectReport
+
 const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
@@ -195,4 +302,18 @@ const BackButtonStack = styled(Stack)`
         font-size: 17px;
         line-height: 20px;
     }
+`
+
+const LinksPage = styled(Box)`
+    background: #ffffff;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+        0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: #464f60;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
 `

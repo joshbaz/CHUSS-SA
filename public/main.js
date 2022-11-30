@@ -324,7 +324,8 @@ ipcMain.handle(
 
 /** update Supervisors */
 ipcMain.handle('update-supervisor', supervisorController.updateSupervisor)
-
+/** remove Supervisors */
+ipcMain.handle('remove-supervisor', supervisorController.removeSupervisor)
 /*
  * Doctoral Members
  *

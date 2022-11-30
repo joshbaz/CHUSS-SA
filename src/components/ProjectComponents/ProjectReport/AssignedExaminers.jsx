@@ -13,7 +13,7 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 
-const AssignedExaminers = ({ values }) => {
+const AssignedExaminers = ({ values, rlink }) => {
     let routeNavigate = useNavigate()
 
     return (

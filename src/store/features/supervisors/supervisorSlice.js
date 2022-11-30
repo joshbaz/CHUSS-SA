@@ -14,7 +14,7 @@ const initialState = {
         items: [],
     },
     individualSupervisor: null,
-  
+
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -75,9 +75,8 @@ export const allSupervisors = createAsyncThunk(
 export const getIndividualSupervisor = createAsyncThunk(
     'supervisor/individual',
     async (id, thunkAPI) => {
-        const individualAttempt = await supervisorService.getIndividualSupervisor(
-            id
-        )
+        const individualAttempt =
+            await supervisorService.getIndividualSupervisor(id)
         if (individualAttempt.type === 'success') {
             return individualAttempt
         } else {
@@ -86,11 +85,24 @@ export const getIndividualSupervisor = createAsyncThunk(
     }
 )
 
-/** examiner create */
+/** supervisor update */
 export const supervisorUpdate = createAsyncThunk(
     'supervisor/update',
     async (values, thunkAPI) => {
         const creationAttempt = await supervisorService.supervisorUpdate(values)
+        if (creationAttempt.type === 'success') {
+            return creationAttempt
+        } else {
+            return thunkAPI.rejectWithValue(creationAttempt.message)
+        }
+    }
+)
+
+/** supervisor remove */
+export const supervisorRemove = createAsyncThunk(
+    'supervisor/remove',
+    async (values, thunkAPI) => {
+        const creationAttempt = await supervisorService.supervisorRemove(values)
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
@@ -177,7 +189,7 @@ export const supervisorSlice = createSlice({
                 state.message = action.payload
             })
 
-            //update Examiner
+            //update Supervisor
             .addCase(supervisorUpdate.pending, (state) => {
                 state.isLoading = true
             })
@@ -191,6 +203,22 @@ export const supervisorSlice = createSlice({
                 state.isError = true
                 state.message = action.payload
             })
+
+            //remove Supervisor
+            .addCase(supervisorRemove.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(supervisorRemove.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(supervisorRemove.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
     },
 })
 

@@ -1,8 +1,68 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input, Select } from '@chakra-ui/react'
+import {
+    allSchools,
+    reset,
+} from '../../../../store/features/schools/schoolSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
-const StudentDetailForm = ({ values, handleChange, programData }) => {
+const StudentDetailForm = ({
+    values,
+    handleChange,
+    programData,
+    setFieldValue,
+}) => {
+    const [departments, setDepartments] = React.useState([])
+    let dispatch = useDispatch()
+    useEffect(() => {
+        dispatch(allSchools())
+    }, [])
+
+    let { allSchoolItems } = useSelector((state) => state.school)
+
+    const handleSchoolChange = (e) => {
+        e.preventDefault()
+
+        if (e.target.value) {
+            let findSchool = allSchoolItems.items.find(
+                (element) => element._id === e.target.value
+            )
+
+            //console.log('finding', findSchool)
+            if (findSchool) {
+                setFieldValue('schoolName', findSchool.schoolName)
+                setFieldValue('departmentName', '')
+                setDepartments(findSchool.departments)
+            }
+        } else {
+            // console.log('looking at perspective')
+            setFieldValue('schoolName', '')
+            setFieldValue('departmentName', '')
+        }
+    }
+
+    console.log('finding', values.schoolName)
+
+    const handleDepartmentChange = (e) => {
+        e.preventDefault()
+
+        if (e.target.value) {
+            let findDepartment = departments.find(
+                (element) => element.departmentId.deptName === e.target.value
+            )
+
+            if (findDepartment) {
+                setFieldValue(
+                    'departmentName',
+                    findDepartment.departmentId.deptName
+                )
+            }
+        } else {
+            setFieldValue('departmentName', '')
+        }
+    }
+
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -62,11 +122,10 @@ const StudentDetailForm = ({ values, handleChange, programData }) => {
                             </label>
                             <fieldset>
                                 <Select
+                                    readOnly
                                     placeholder='select option'
                                     name='programType'
-                                    onChange={handleChange}
                                     value={values.programType}>
-                                    
                                     {programData !== null ? (
                                         <>
                                             {programData.map((data, index) => {
@@ -112,13 +171,22 @@ const StudentDetailForm = ({ values, handleChange, programData }) => {
                                 School Name <span>*</span>
                             </label>
                             <fieldset>
-                                <Input
-                                    type='text'
-                                    value={values.schoolName}
-                                    name='schoolName'
-                                    onChange={handleChange}
-                                    placeholder='i.e School of Social Sciences'
-                                />
+                                <Select
+                                    color={
+                                        values.schoolName ? 'black' : 'gray.400'
+                                    }
+                                    placeholder='i.e Select School '
+                                    onChange={handleSchoolChange}>
+                                    {allSchoolItems.items.map((data) => {
+                                        return (
+                                            <option
+                                                key={data._id}
+                                                value={data._id}>
+                                                {data.schoolName}
+                                            </option>
+                                        )
+                                    })}
+                                </Select>
                             </fieldset>
                         </Stack>
                         <Stack
@@ -128,22 +196,34 @@ const StudentDetailForm = ({ values, handleChange, programData }) => {
                                 Department Name <span>*</span>
                             </label>
                             <fieldset>
-                                <Input
-                                    type='text'
-                                    value={values.departmentName}
-                                    name='departmentName'
-                                    onChange={handleChange}
-                                    placeholder='i.e Ma in Public Admin'
-                                />
+                                <Select
+                                    color={
+                                        values.departmentName
+                                            ? 'black'
+                                            : 'gray.400'
+                                    }
+                                    placeholder='i.e Select Department '
+                                    onChange={handleDepartmentChange}
+                                    value={values.departmentName}>
+                                    {departments.map((data, index) => {
+                                        return (
+                                            <option
+                                                key={data._id}
+                                                value={
+                                                    data.departmentId.deptName
+                                                }>
+                                                {data.departmentId.deptName}
+                                            </option>
+                                        )
+                                    })}
+                                </Select>
                             </fieldset>
                         </Stack>
                     </Stack>
 
                     <Box className='formfields__Sfieldset'>
                         <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Topic <span>*</span>
-                            </label>
+                            <label>Topic</label>
                             <fieldset>
                                 <Input
                                     type='text'
@@ -204,8 +284,6 @@ const FormContainer = styled(Box)`
             color: #ed1f29;
         }
     }
-
-   
 
     input {
         background: #ffffff;

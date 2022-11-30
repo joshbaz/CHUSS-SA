@@ -6,6 +6,11 @@ import TopBar from '../../../components/common/Navigation/TopBar'
 import { MdArrowBack } from 'react-icons/md'
 import StudentDetailForm from '../../../components/ProjectComponents/CreateProject/CreateForms/StudentDetailForm'
 import ContactForm from '../../../components/ProjectComponents/CreateProject/CreateForms/ContactForm'
+import SupervisorForm from '../../../components/ProjectComponents/CreateProject/CreateForms/SupervisorForm'
+import SubmissionDateForm from '../../../components/ProjectComponents/CreateProject/CreateForms/SubmissionDateForm'
+import UploadFileForm from '../../../components/ProjectComponents/CreateProject/CreateForms/UploadFileForm'
+import UploadThesisFile from '../../../components/ProjectComponents/CreateProject/CreateForms/UploadThesisFile'
+import RegistrationForm from '../../../components/ProjectComponents/CreateProject/CreateForms/RegistrationForm'
 import { useNavigate } from 'react-router-dom'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
@@ -19,7 +24,8 @@ import {
     programTypeGetAll,
     academicYearGetAll,
 } from '../../../store/features/preferences/preferenceSlice'
-const CreateProject = () => {
+
+const CreateMastersProject = () => {
     const [helperFunctions, setHelperFunctions] = React.useState(null)
     let routeNavigate = useNavigate()
 
@@ -105,7 +111,7 @@ const CreateProject = () => {
     const initialValues = {
         registrationNumber: '',
         studentName: '',
-        programType: 'PhD',
+        programType: 'Masters',
         degreeProgram: '',
         schoolName: '',
         departmentName: '',
@@ -125,7 +131,7 @@ const CreateProject = () => {
 
             <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
                 <TopBar
-                    topbarData={{ title: 'New PHD Student', count: null }}
+                    topbarData={{ title: 'New Masters Student', count: null }}
                 />
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
@@ -168,7 +174,7 @@ const CreateProject = () => {
                                                 }>
                                                 <MdArrowBack />
                                             </Box>
-                                            <Text>Add New Project</Text>
+                                            <Text>Add New Student</Text>
                                         </BackButtonStack>
                                         <SubmitButton
                                             disabledb={!(isValid && dirty)}>
@@ -225,22 +231,21 @@ const CreateProject = () => {
                                         */}
 
                                             {/**
-                                             * <UploadFileForm
+                                     <UploadFileForm
                                                 values={values}
                                                 errors={errors}
                                                 setFieldValue={setFieldValue}
                                             />
-                                             * 
-                                             */}
+                                    */}
 
-                                            {/**
-                                             *  <UploadThesisFile
+                                            {/** 
+                                         * 
+                                         *  <UploadThesisFile
                                                 values={values}
                                                 errors={errors}
                                                 setFieldValue={setFieldValue}
                                             />
-                                             * 
-                                             */}
+                                         */}
                                         </Stack>
                                     </Stack>
                                 </Stack>
@@ -255,12 +260,14 @@ const CreateProject = () => {
     )
 }
 
-export default CreateProject
+export default CreateMastersProject
+
 const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 17px;
@@ -277,7 +284,7 @@ const SubmitButton = styled(Box)`
         border-radius: 6px;
 
         color: ${({ disabledb }) => (disabledb ? '#868fa0' : '#ffffff')};
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;

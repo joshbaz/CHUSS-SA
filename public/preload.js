@@ -39,6 +39,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('individual-supervisor', id),
     updateSupervisor: (values) =>
         ipcRenderer.invoke('update-supervisor', values),
+    removeSupervisor: (values) =>
+        ipcRenderer.invoke('remove-supervisor', values),
     /** doctoral committee members */
     createProjectDCMember: (values) =>
         ipcRenderer.invoke('create-dcmember-project', values),

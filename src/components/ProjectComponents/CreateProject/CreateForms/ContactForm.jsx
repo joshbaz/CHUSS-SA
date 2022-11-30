@@ -55,9 +55,7 @@ const ContactForm = ({ values, handleChange }) => {
                         <Stack
                             spacing='8px'
                             className='form_wrap formfields__Dfieldset'>
-                            <label>
-                                Alternative Email <span>*</span>
-                            </label>
+                            <label>Alternative Email</label>
                             <fieldset>
                                 <Input
                                     type='email'
@@ -78,7 +76,7 @@ const ContactForm = ({ values, handleChange }) => {
 export default ContactForm
 
 const FormContainer = styled(Box)`
-    font-family: Inter;
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -100,14 +98,14 @@ const FormContainer = styled(Box)`
 
             font-style: normal;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 17px;
             line-height: 137.5%;
             color: #111827;
         }
     }
 
     label {
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-weight: 500;
         font-size: 14px;
         line-height: 20px;

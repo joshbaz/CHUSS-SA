@@ -7,22 +7,6 @@ exports.createProject = async (event, values) => {
   try {
     const fd = new FormData();
 
-    if (values.scannedForm !== null) {
-      fd.append(
-        "projectFiles",
-        fs.createReadStream(values.scannedForm.url),
-        `Intent${values.scannedForm.ext}`
-      );
-    } else {
-    }
-    if (values.thesisfile !== null) {
-      fd.append(
-        "projectFiles",
-        fs.createReadStream(values.thesisfile.url),
-        `thesis${values.thesisfile.ext}`
-      );
-    } else {
-    }
 
     fd.append("registrationNumber", values.registrationNumber);
     fd.append("studentName", values.studentName);
@@ -34,8 +18,6 @@ exports.createProject = async (event, values) => {
     fd.append("email", values.email);
     fd.append("phoneNumber", values.phoneNumber);
     fd.append("alternativeEmail", values.alternativeEmail);
-    fd.append("supervisor1", values.supervisor1);
-    fd.append("supervisor2", values.supervisor2);
     fd.append("semesterRegistration", values.semesterRegistration);
     fd.append("academicYear", values.academicYear);
 
@@ -69,23 +51,6 @@ exports.updateProject = async (event, values) => {
   try {
     const fd = new FormData();
 
-    if (values.scannedForm !== null) {
-      fd.append(
-        "projectFiles",
-        fs.createReadStream(values.scannedForm.url),
-        `Intent${values.scannedForm.ext}`
-      );
-    } else {
-    }
-    if (values.thesisfile !== null) {
-      fd.append(
-        "projectFiles",
-        fs.createReadStream(values.thesisfile.url),
-        `thesis${values.thesisfile.ext}`
-      );
-    } else {
-    }
-
     fd.append("registrationNumber", values.registrationNumber);
     fd.append("studentId", values.studentId);
     fd.append("studentName", values.studentName);
@@ -97,8 +62,6 @@ exports.updateProject = async (event, values) => {
     fd.append("email", values.email);
     fd.append("phoneNumber", values.phoneNumber);
     fd.append("alternativeEmail", values.alternativeEmail);
-    fd.append("supervisor1", values.supervisor1);
-    fd.append("supervisor2", values.supervisor2);
     fd.append("semesterRegistration", values.semesterRegistration);
     fd.append("academicYear", values.academicYear);
 

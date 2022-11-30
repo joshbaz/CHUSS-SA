@@ -22,12 +22,12 @@ const Navigation = () => {
         {
             title: 'mst',
             icon: <RiFoldersFill />,
-            link: '/projects',
+            link: '/masters/projects',
         },
         {
             title: 'phd',
             icon: <RiFoldersFill />,
-            link: '/projects',
+            link: '/phd/projects',
         },
         {
             title: 'payments',

@@ -26,6 +26,9 @@ import { TbDotsVertical } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
 import { RiPencilFill } from 'react-icons/ri'
 import { CgNotes } from 'react-icons/cg'
+import RegistrationRpCreatePopup from './RegistrationRpCreatePopup'
+import RegistrationRpEditPopup from './RegistrationRpEditPopup'
+import RegistrationRpViewPopup from './RegistrationRpViewPopup'
 const TableHead = [
     {
         title: '#',
@@ -33,32 +36,29 @@ const TableHead = [
     },
     { title: '' },
     {
-        title: 'Type',
+        title: 'Registration Type',
         filter: true,
     },
     {
-        title: 'Name',
+        title: 'Date',
     },
     {
-        title: 'email',
+        title: 'Semester',
     },
     {
-        title: 'Grade',
+        title: 'Academic Year',
     },
-    {
-        title: 'Report Status',
-    },
-    {
-        title: 'submission Date',
-    },
+
     {
         title: 'files',
     },
     { title: '' },
 ]
-const RegistrationReports = ({ values }) => {
+const RegistrationReports = ({ values, yearData }) => {
     const [activityDrpdown, setActivityDropDown] = React.useState(false)
     const [reportLists, setReportLists] = React.useState([])
+    const [projectId, setProjectId] = React.useState(null)
+    const [createRegister, setCreateRegister] = React.useState(false)
     let activeDrop = React.useRef(null)
     const handleDropDown = () => {
         setActivityDropDown(!activityDrpdown)
@@ -85,6 +85,30 @@ const RegistrationReports = ({ values }) => {
             setReportLists([])
         }
     }, [values])
+
+    useEffect(() => {
+        if (values !== null && values._id) {
+            setProjectId(values._id)
+        } else {
+            setProjectId(null)
+        }
+    }, [values])
+
+    /** function to activate add register */
+    const activateAddRegister = () => {
+        if (projectId !== null ) {
+             setCreateRegister(true)
+        }
+        
+    }
+
+    /** function to cancel create submission */
+    const cancelCreateUpload = () => {
+        // setIsSubmittingp(false)
+        setCreateRegister(false)
+
+        // onClose()
+    }
     return (
         <Container>
             <Box className='form_container'>
@@ -99,7 +123,11 @@ const RegistrationReports = ({ values }) => {
                         <h1>Registration</h1>
                     </Box>
 
-                    <Box className={`registrationBtn`}>Add registration</Box>
+                    <Box
+                        className={`registrationBtn`}
+                        onClick={activateAddRegister}>
+                        Add registration
+                    </Box>
                 </Stack>
 
                 {/** details */}
@@ -501,6 +529,19 @@ const RegistrationReports = ({ values }) => {
                     </Box>
                 </Stack>
             </Box>
+
+            {/** registration create */}
+            <RegistrationRpCreatePopup
+                cancelSubmissionUpload={cancelCreateUpload}
+                createRegister={createRegister}
+                setCreateRegister={setCreateRegister}
+                yearData={yearData}
+                projectId={projectId}
+            />
+            {/** registration Edit */}
+            <RegistrationRpEditPopup />
+            {/** registration view */}
+            <RegistrationRpViewPopup />
         </Container>
     )
 }

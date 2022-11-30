@@ -397,15 +397,7 @@ const DashTable = () => {
                                                             display='flex'
                                                             justifyContent={
                                                                 'center'
-                                                            }>
-                                                            <Box className='supervisor'>
-                                                                {
-                                                                    data
-                                                                        .supervisors
-                                                                        .length
-                                                                }
-                                                            </Box>
-                                                        </Box>
+                                                            }></Box>
                                                     </Td>
                                                     <Td>
                                                         <Menu>
