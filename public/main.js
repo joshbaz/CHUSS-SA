@@ -1,4 +1,4 @@
-const { BrowserWindow, app, dialog, ipcMain,screen } = require('electron')
+const { BrowserWindow, app, dialog, ipcMain, screen } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const XLSX = require('xlsx')
@@ -20,6 +20,7 @@ const opponentReportController = require('./controllers/opponentReport')
 const paymentController = require('./controllers/payments')
 const fileController = require('./controllers/files')
 const schoolController = require('./controllers/schools')
+const registrationController = require('./controllers/registration')
 
 let mainWindow = null
 require('@electron/remote/main').initialize()
@@ -229,6 +230,11 @@ ipcMain.handle('login-validation', async (event, values) => {
         return response
     }
 })
+
+/** registration */
+ipcMain.handle('create-registration', registrationController.createRegistration)
+ipcMain.handle('update-registration', registrationController.updateRegistration)
+ipcMain.handle('remove-registration', registrationController.removeRegistration)
 
 /**
  * Projects

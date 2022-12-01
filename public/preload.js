@@ -27,6 +27,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('update-final-submissionDate', values),
     updateGraduationDate: (values) =>
         ipcRenderer.invoke('update-graduationdate', values),
+    /** registration */
+    createRegistration: (values) =>
+        ipcRenderer.invoke('create-registration', values),
+    updateRegistration: (values) =>
+        ipcRenderer.invoke('update-registration', values),
+    removeRegistration: (values) =>
+        ipcRenderer.invoke('remove-registration', values),
     /** supervisors */
     createProjectSupervisor: (values) =>
         ipcRenderer.invoke('create-supervisor-project', values),

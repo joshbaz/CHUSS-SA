@@ -38,6 +38,7 @@ export const getOpponentReport = createAsyncThunk(
         }
     }
 )
+
 export const opponentReportSlice = createSlice({
     name: 'opponentreport',
     initialState,

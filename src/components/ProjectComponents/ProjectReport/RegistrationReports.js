@@ -14,6 +14,11 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
+    useDisclosure,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalBody,
 } from '@chakra-ui/react'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
@@ -26,15 +31,20 @@ import { TbDotsVertical } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
 import { RiPencilFill } from 'react-icons/ri'
 import { CgNotes } from 'react-icons/cg'
+import { ImBin2 } from 'react-icons/im'
+import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
 import RegistrationRpCreatePopup from './RegistrationRpCreatePopup'
 import RegistrationRpEditPopup from './RegistrationRpEditPopup'
 import RegistrationRpViewPopup from './RegistrationRpViewPopup'
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
+
+import { removeRegistration } from '../../../store/features/registration/registrationSlice'
 const TableHead = [
     {
         title: '#',
         filter: true,
     },
-    { title: '' },
+
     {
         title: 'Registration Type',
         filter: true,
@@ -54,33 +64,21 @@ const TableHead = [
     },
     { title: '' },
 ]
-const RegistrationReports = ({ values, yearData }) => {
-    const [activityDrpdown, setActivityDropDown] = React.useState(false)
+const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
     const [reportLists, setReportLists] = React.useState([])
     const [projectId, setProjectId] = React.useState(null)
     const [createRegister, setCreateRegister] = React.useState(false)
-    let activeDrop = React.useRef(null)
-    const handleDropDown = () => {
-        setActivityDropDown(!activityDrpdown)
-    }
+    //const [editRegister, setEditRegister] = React.useState(false)
+    const [viewRegister, setViewRegister] = React.useState(false)
+    const [viewData, setViewData] = React.useState(null)
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [selectedFile, setSelectedFile] = React.useState(null)
+
     let routeNavigate = useNavigate()
 
     useEffect(() => {
-        if (values !== null && values.examinerReports.length > 0) {
-            let arrayData = []
-            values.examinerReports.filter((data, index) => {
-                let newData = { ...data }
-
-                let examinerData2 = values.examiners.find(
-                    (element) =>
-                        element.examinerId._id === data.reportId.examiner
-                )
-                newData.examinerDetails = examinerData2
-
-                arrayData.push(newData)
-            })
-
-            setReportLists(arrayData)
+        if (values !== null && values.registration.length > 0) {
+            setReportLists(values.registration)
         } else {
             setReportLists([])
         }
@@ -96,19 +94,108 @@ const RegistrationReports = ({ values, yearData }) => {
 
     /** function to activate add register */
     const activateAddRegister = () => {
-        if (projectId !== null ) {
-             setCreateRegister(true)
+        if (projectId !== null) {
+            setCreateRegister(true)
         }
-        
     }
 
     /** function to cancel create submission */
     const cancelCreateUpload = () => {
-        // setIsSubmittingp(false)
         setCreateRegister(false)
 
         // onClose()
     }
+
+    /** function to activate add register */
+    const activateViewRegister = (data) => {
+        if (projectId !== null) {
+            console.log(data, 'trying')
+            setViewData(() => data)
+            setViewRegister(true)
+        }
+    }
+
+    /** function to cancel create submission */
+    const cancelViewUpload = () => {
+        setViewRegister(false)
+
+        // onClose()
+    }
+
+    /** function to handle delete of registration */
+    const handleDeleteRegister = () => {
+        setViewRegister(false)
+
+        // onClose()
+    }
+
+    const handleCancelDeleteRegister = () => {
+        setViewRegister(false)
+
+        // onClose()
+    }
+
+    //size format
+    const formatSize = (size) => {
+        var i = Math.floor(Math.log(size) / Math.log(1024))
+        return (
+            (size / Math.pow(1024, i)).toFixed(2) * 1 +
+            ' ' +
+            ['B', 'KB', 'MB', 'GB', 'TB'][i]
+        )
+    }
+
+    /** function to download file */
+    const handleDownloadFile = async (data) => {
+        const dataGiven = await window.electronAPI.getdownloadFile(data.fileId)
+        console.log(dataGiven, 'testing')
+
+        if (!dataGiven.message) {
+            let newData = {
+                ...dataGiven,
+            }
+            if (nameValues !== null) {
+                console.log(nameValues, 'nameValues')
+                let newNameValue = nameValues.toString().split(' ')[0]
+
+                newData = {
+                    ...newData,
+                    name: newNameValue,
+                    filename: data.fileName ? data.fileName : 'registration',
+                }
+            } else {
+            }
+
+            const performDowload = await window.electronAPI.downloadFile(
+                newData
+            )
+
+            console.log('messahe', performDowload)
+            if (performDowload.message) {
+                alert(performDowload.message)
+            }
+        }
+    }
+
+    /** function to handle viewing file */
+    const handleFileView = async (data) => {
+        // const dataGiven = await window.electronAPI.getViewFile(
+        //     data.files.fileId
+        // )
+
+        const dataGiven = 'herer'
+
+        console.log(dataGiven, 'given', data.fileId)
+        setSelectedFile([
+            {
+                uri: `https://chuss-test.herokuapp.com/docs/files/${data.fileId}`,
+                fileType: data.fileType,
+                fileData: new ArrayBuffer(dataGiven),
+            },
+        ])
+        onOpen()
+    }
+
     return (
         <Container>
             <Box className='form_container'>
@@ -214,98 +301,168 @@ const RegistrationReports = ({ values, yearData }) => {
                                 {reportLists.length > 0 ? (
                                     <>
                                         {reportLists.map((data, index) => {
+                                            let size
+
+                                            if (
+                                                data.registrationId
+                                                    .registrationfile
+                                            ) {
+                                                size = formatSize(
+                                                    parseInt(
+                                                        data.registrationId
+                                                            .registrationfile
+                                                            .fileSize
+                                                    )
+                                                )
+                                            }
+
                                             return (
                                                 <>
                                                     {' '}
                                                     <Tr className='table_row'>
                                                         <Td>1</Td>
-                                                        <Td w='36px'>
-                                                            <Box
-                                                                onClick={
-                                                                    handleDropDown
-                                                                }
-                                                                ref={activeDrop}
-                                                                style={{
-                                                                    color: '#5E5C60',
-                                                                    fontSize:
-                                                                        '16px',
-                                                                }}>
-                                                                {activityDrpdown ? (
-                                                                    <IoIosArrowDropdown />
-                                                                ) : (
-                                                                    <IoIosArrowDropright />
-                                                                )}
-                                                            </Box>
-                                                        </Td>
+
                                                         <Td className='type_examiner'>
                                                             {
                                                                 data
-                                                                    .examinerDetails
-                                                                    .examinerId
-                                                                    .typeOfExaminer
+                                                                    .registrationId
+                                                                    .registrationtype
                                                             }
                                                         </Td>
                                                         <Td>
                                                             {
                                                                 data
-                                                                    .examinerDetails
-                                                                    .examinerId
-                                                                    .jobtitle
-                                                            }{' '}
-                                                            {
-                                                                data
-                                                                    .examinerDetails
-                                                                    .examinerId
-                                                                    .name
+                                                                    .registrationId
+                                                                    .date
                                                             }
                                                         </Td>
-                                                        <Td>
-                                                            {
-                                                                data
-                                                                    .examinerDetails
-                                                                    .examinerId
-                                                                    .email
-                                                            }
-                                                        </Td>
-                                                        <Td>
-                                                            {
-                                                                data.reportId
-                                                                    .score
-                                                            }
-                                                            %
-                                                        </Td>
-                                                        <Td>
-                                                            {' '}
-                                                            <StatusItem
-                                                                width='90px'
-                                                                className='pending'
-                                                                direction='row'
-                                                                alignItems='center'>
-                                                                <div />
-                                                                <Text>
-                                                                    {
-                                                                        data
-                                                                            .reportId
-                                                                            .reportStatus
-                                                                    }
-                                                                </Text>
-                                                            </StatusItem>
-                                                        </Td>
-
                                                         <Td>
                                                             <Box className='sub_date'>
-                                                                15 May 2021
+                                                                {
+                                                                    data
+                                                                        .registrationId
+                                                                        .semester
+                                                                }
                                                             </Box>
                                                         </Td>
                                                         <Td>
-                                                            <Box className='files'>
+                                                            <Box className='sub_date'>
                                                                 {
                                                                     data
-                                                                        .reportId
-                                                                        .reportFiles
-                                                                        .length
+                                                                        .registrationId
+                                                                        .academicYear
                                                                 }
                                                             </Box>
+                                                        </Td>
+                                                        <Td>
+                                                            {data.registrationId
+                                                                .registrationfile ? (
+                                                                <FileStack className='fileview'>
+                                                                    <Stack
+                                                                        direction='row'
+                                                                        justifyContent='space-between'
+                                                                        alignItems='center'
+                                                                        h='100%'>
+                                                                        <Stack
+                                                                            spacing='10px'
+                                                                            direction='row'
+                                                                            justifyContent={
+                                                                                'center'
+                                                                            }
+                                                                            alignItems='center'>
+                                                                            <Box className='icon_wrap '>
+                                                                                <Stack
+                                                                                    w='50px'
+                                                                                    h='50px'
+                                                                                    spacing='50x'
+                                                                                    direction='column'
+                                                                                    justifyContent='center'
+                                                                                    alignItems={
+                                                                                        'center'
+                                                                                    }
+                                                                                    className={`icon_stack ${data.registrationId.registrationfile.fileExtension}`}>
+                                                                                    <Box className='icon_stack_icon'>
+                                                                                        <BsFileEarmark />
+                                                                                    </Box>
+                                                                                    <Box className='icon_stack_text'>
+                                                                                        {
+                                                                                            data
+                                                                                                .registrationId
+                                                                                                .registrationfile
+                                                                                                .fileExtension
+                                                                                        }
+                                                                                    </Box>
+                                                                                </Stack>
+                                                                            </Box>
+                                                                            <Stack
+                                                                                direction='column'
+                                                                                spacing='2px'>
+                                                                                <Box
+                                                                                    className='filename'
+                                                                                    maxW='170px'>
+                                                                                    {
+                                                                                        data
+                                                                                            .registrationId
+                                                                                            .registrationfile
+                                                                                            .fileName
+                                                                                    }
+                                                                                </Box>
+
+                                                                                <Box className='filesize'>
+                                                                                    {
+                                                                                        size
+                                                                                    }
+                                                                                </Box>
+                                                                            </Stack>
+                                                                        </Stack>
+
+                                                                        <Box>
+                                                                            <Menu>
+                                                                                <MenuButton>
+                                                                                    <Box color='#838389'>
+                                                                                        <BsThreeDots />
+                                                                                    </Box>
+                                                                                </MenuButton>
+
+                                                                                <MenuList>
+                                                                                    <MenuItem
+                                                                                        onClick={() =>
+                                                                                            handleFileView(
+                                                                                                data
+                                                                                                    .registrationId
+                                                                                                    .registrationfile
+                                                                                            )
+                                                                                        }
+                                                                                        fontSize={
+                                                                                            '14px'
+                                                                                        }>
+                                                                                        View
+                                                                                        File
+                                                                                    </MenuItem>
+                                                                                    <MenuItem
+                                                                                        onClick={() =>
+                                                                                            handleDownloadFile(
+                                                                                                data
+                                                                                                    .registrationId
+                                                                                                    .registrationfile
+                                                                                            )
+                                                                                        }
+                                                                                        fontSize={
+                                                                                            '14px'
+                                                                                        }>
+                                                                                        Download
+                                                                                        File
+                                                                                    </MenuItem>
+                                                                                </MenuList>
+                                                                            </Menu>
+                                                                        </Box>
+                                                                    </Stack>
+                                                                </FileStack>
+                                                            ) : (
+                                                                <Box className='sub_date'>
+                                                                    No file
+                                                                </Box>
+                                                            )}
                                                         </Td>
 
                                                         <Td>
@@ -318,198 +475,26 @@ const RegistrationReports = ({ values, yearData }) => {
                                                                 <MenuList>
                                                                     <MenuItem
                                                                         onClick={() =>
-                                                                            routeNavigate(
-                                                                                `/projects/examiners/updatereport/${values._id}/${data.reportId._id}`
-                                                                            )
-                                                                        }>
-                                                                        Edit
-                                                                    </MenuItem>
-                                                                    <MenuItem
-                                                                        onClick={() =>
-                                                                            routeNavigate(
-                                                                                `/projects/examiners/viewreport/${values._id}/${data.reportId._id}`
+                                                                            activateViewRegister(
+                                                                                data
                                                                             )
                                                                         }>
                                                                         View
+                                                                        Registration
                                                                     </MenuItem>
-                                                                    <MenuItem>
+                                                                    <MenuItem
+                                                                        onClick={() =>
+                                                                            activateViewRegister(
+                                                                                data
+                                                                            )
+                                                                        }>
                                                                         Delete
+                                                                        Registration
                                                                     </MenuItem>
                                                                 </MenuList>
                                                             </Menu>
                                                         </Td>
                                                     </Tr>
-                                                    {activityDrpdown && (
-                                                        <Tr
-                                                            position='relative'
-                                                            h='200px'>
-                                                            <Box h='100%'>
-                                                                <TableDropDown
-                                                                    w='100vw'
-                                                                    bg='#ffffff'
-                                                                    position='absolute'>
-                                                                    <ListStack spacing='36px'>
-                                                                        <Stack
-                                                                            className='list-item'
-                                                                            direction='row'
-                                                                            w='100%'
-                                                                            alignItems={
-                                                                                'center'
-                                                                            }>
-                                                                            <Box className='icon_add'>
-                                                                                <RiPencilFill />
-                                                                            </Box>
-
-                                                                            <Box className='activities'>
-                                                                                <Text>
-                                                                                    <span className='activity_identity'>{`{name}`}</span>{' '}
-                                                                                    updated{' '}
-                                                                                    <span className='activity_type'>
-                                                                                        payment
-                                                                                        reciept
-                                                                                    </span>{' '}
-                                                                                    from{' '}
-                                                                                    <span className='activity_text'>
-                                                                                        150000
-                                                                                    </span>{' '}
-                                                                                    to{' '}
-                                                                                    <span className='activity_text'>
-                                                                                        520,000
-                                                                                        Ugx
-                                                                                    </span>{' '}
-                                                                                    on{' '}
-                                                                                    {`{Date}`}{' '}
-                                                                                    @{' '}
-                                                                                    {`{time}`}
-                                                                                </Text>
-                                                                            </Box>
-                                                                        </Stack>
-
-                                                                        <Stack
-                                                                            direction='row'
-                                                                            w='100%'
-                                                                            className='list-item'
-                                                                            alignItems={
-                                                                                'flex-start'
-                                                                            }>
-                                                                            <Box className='icon_stat'>
-                                                                                <IoIosStats />
-                                                                            </Box>
-
-                                                                            <Stack className='activities'>
-                                                                                <Box>
-                                                                                    <Stack
-                                                                                        spacing='5px'
-                                                                                        direction='row'
-                                                                                        className='activities_texts'>
-                                                                                        <Text className='activity_identity'>{`{name}`}</Text>{' '}
-                                                                                        <Text>
-                                                                                            updated
-                                                                                        </Text>
-                                                                                        <span className='activity_type'>
-                                                                                            status
-                                                                                        </span>
-                                                                                        <Text>
-                                                                                            from
-                                                                                        </Text>
-                                                                                        <StatusItem
-                                                                                            className='reviews'
-                                                                                            direction='row'
-                                                                                            alignItems='center'>
-                                                                                            <div />
-                                                                                            <Text>
-                                                                                                {' '}
-                                                                                                In
-                                                                                                Review
-                                                                                            </Text>
-                                                                                        </StatusItem>
-                                                                                        <Text>
-                                                                                            to
-                                                                                        </Text>
-                                                                                        <StatusItem
-                                                                                            className='approved'
-                                                                                            direction='row'
-                                                                                            alignItems='center'>
-                                                                                            <div />
-                                                                                            <Text>
-                                                                                                Approved
-                                                                                                Viva
-                                                                                            </Text>
-                                                                                        </StatusItem>
-                                                                                        <Text>
-                                                                                            on{' '}
-                                                                                            {`{Date}`}{' '}
-                                                                                            @{' '}
-                                                                                            {`{time}`}
-                                                                                        </Text>
-                                                                                    </Stack>
-                                                                                </Box>
-
-                                                                                <Stack
-                                                                                    className='status_update'
-                                                                                    direction='row'
-                                                                                    alignItems={
-                                                                                        'center'
-                                                                                    }>
-                                                                                    <Box>
-                                                                                        <CgNotes />
-                                                                                    </Box>
-
-                                                                                    <Box>
-                                                                                        <Text>
-                                                                                            This
-                                                                                            is
-                                                                                            a
-                                                                                            note,
-                                                                                            user
-                                                                                            fills
-                                                                                            in
-                                                                                            while
-                                                                                            changing
-                                                                                            the
-                                                                                            status,
-                                                                                            which
-                                                                                            explains
-                                                                                            the
-                                                                                            current
-                                                                                            project
-                                                                                            status.
-                                                                                        </Text>
-                                                                                    </Box>
-                                                                                </Stack>
-                                                                            </Stack>
-                                                                        </Stack>
-
-                                                                        <Stack
-                                                                            direction='row'
-                                                                            w='100%'
-                                                                            alignItems={
-                                                                                'center'
-                                                                            }
-                                                                            className='list-item'>
-                                                                            <Box className='icon_create'>
-                                                                                <AiOutlinePlus />
-                                                                            </Box>
-
-                                                                            <Box className='activities'>
-                                                                                <Text>
-                                                                                    <span className='activity_identity'>{`{name}`}</span>{' '}
-                                                                                    created{' '}
-                                                                                    <span className='activity_type'>
-                                                                                        project
-                                                                                    </span>{' '}
-                                                                                    on{' '}
-                                                                                    {`{Date}`}{' '}
-                                                                                    @{' '}
-                                                                                    {`{time}`}
-                                                                                </Text>
-                                                                            </Box>
-                                                                        </Stack>
-                                                                    </ListStack>
-                                                                </TableDropDown>
-                                                            </Box>
-                                                        </Tr>
-                                                    )}
                                                 </>
                                             )
                                         })}
@@ -539,9 +524,51 @@ const RegistrationReports = ({ values, yearData }) => {
                 projectId={projectId}
             />
             {/** registration Edit */}
-            <RegistrationRpEditPopup />
+            {/** 
+         <RegistrationRpEditPopup
+                cancelSubmissionUpload={cancelCreateUpload}
+                createRegister={editRegister}
+                setCreateRegister={setCreateRegister}
+                yearData={yearData}
+                projectId={projectId}
+            />
+        
+        */}
+
             {/** registration view */}
-            <RegistrationRpViewPopup />
+            <RegistrationRpViewPopup
+                cancelSubmissionUpload={cancelViewUpload}
+                createRegister={viewRegister}
+                setCreateRegister={setViewRegister}
+                yearData={yearData}
+                projectId={projectId}
+                viewData={viewData}
+            />
+
+            {/** modal for viewing file */}
+            <Modal w='100vw' isOpen={isOpen} p='0' onClose={onClose} size=''>
+                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
+                <ModalContent p='0' style={{ width: '60vw', height: '80vh' }}>
+                    <ModalBody p='0' style={{ width: '100%', height: '80vh' }}>
+                        <Box style={{ width: '100%', height: '80vh' }}>
+                            <DocViewer
+                                className='documentViewer'
+                                prefetchMethod='GET'
+                                documents={selectedFile}
+                                pluginRenderers={DocViewerRenderers}
+                                config={{
+                                    header: {
+                                        disableHeader: true,
+                                        disableFileName: true,
+                                        retainURLParams: false,
+                                    },
+                                }}
+                                style={{ width: '100%', height: '80vh' }}
+                            />
+                        </Box>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </Container>
     )
 }
@@ -728,95 +755,80 @@ const StatusItem = styled(Stack)`
     }
 `
 
-const TableDropDown = styled(Stack)`
-    padding: 10px 0 0 52px;
-    .icon_add,
-    .icon_stat,
-    .icon_create {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: gray;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 15px;
-        z-index: 10;
-        border: 6px solid #ffffff;
-    }
+const FileStack = styled(Box)`
+    font-family: 'Inter', sans-serif;
+    background: #ffffff;
 
-    .icon_add {
-        background: #fbd2d4;
-        color: #f14c54;
-    }
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06);
 
-    .icon_stat {
-        background: #ccddff;
-        color: #2264e6;
-    }
-
-    .icon_create {
-        background: #d4d4d6;
-        color: #5e5c60;
-    }
-
-    .activities {
+    min-height: 50px;
+    width: 100%;
+    border: 1px solid #eeeeef;
+    border-radius: 8px;
+    padding: 10px 12px;
+    .filename {
         font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
-        font-size: 14px;
+        font-size: 13px;
         line-height: 20px;
-        color: #5e5c60;
+        color: #20202a;
+        text-transform: capitalize;
     }
 
-    .activity_identity {
-        color: #171c26;
+    .filesize {
+        color: #838389;
+
+        font-style: normal;
+        font-weight: 400;
+        font-size: 13px;
+        line-height: 20px;
     }
-    .activity_type {
+
+    .icon_stack {
+        border-radius: 8px;
+
+        justify-content: center;
+        align-items: center;
+
+        .icon_stack_text {
+            font-family: 'Inter', sans-serif;
+            font-style: normal;
+            font-weight: 700;
+            font-size: 8px;
+            text-transform: capitalize;
+        }
+
+        .icon_stack_icon {
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+        }
+    }
+
+    .pdf,
+    .PDF {
+        background: #fceded;
         color: #f14c54;
     }
-    .activity_text {
-        color: #171c26;
+
+    .doc,
+    .docx {
+        color: #faa723;
+        background: #feecd0;
     }
 `
 
-const ListStack = styled(Stack)`
-    position: relative;
-    height: 100%;
-    list-style-type: none;
-    z-index:10;
-  .list-item {
-        display: flex;
-        padding: 0px 0px;
-        flex-basis: 0;
-        -webkit-box-flex: 0
-        -ms-flex-positive: 0;
-        flex-grow: 0;
-        width: 100%;
-        min-width: 170px;
-        padding-bottom: 0px;
-
-    }
-    .list-item + .list-item:after {
-        content: '';
-        position: absolute;
-        left: 19px;
-        top: 0;
-        background: #D5DBE5;
-        width: 2px;
-        height: 100%;
-        transform: translateY(0%);
-        z-index:-2;
-       
-    }
-
-    .status_update {
-        border-left: 1px solid  #D5DBE5;
-        padding-left: 10px;
-    }
-
-  
-
+const EditIcon = styled(Box)`
+    width: 24px;
+    height: 24px;
+    background: #eeeeef;
+    border: 1px dashed #f4797f;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #464f60;
+    font-size: 14px;
 `
 
 const NoItems = styled(Box)`
