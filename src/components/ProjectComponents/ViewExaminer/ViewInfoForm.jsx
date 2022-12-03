@@ -8,7 +8,7 @@ import {
     MdVerified,
 } from 'react-icons/md'
 
-const ViewInfoForm = ({ values }) => {
+const ViewInfoForm = ({ values, projectValues }) => {
     return (
         <Container>
             <Box className='form_container'>
@@ -64,29 +64,35 @@ const ViewInfoForm = ({ values }) => {
                         </Box>
                     </Stack>
 
-                    {values !== null && values.typeOfExaminer === 'External' && (
-                        <Stack
-                            direction='row'
-                            alignItems='center'
-                            spacing='15px'>
-                            <label htmlFor='phone'>
-                                <Stack
-                                    direction={'row'}
-                                    alignItems='flex-start'
-                                    spacing='8px'>
-                                    <Text>Proposed Fee</Text>
-                                </Stack>
-                            </label>
+                    {values !== null &&
+                        values.typeOfExaminer === 'External' && (
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>Proposed Fee</Text>
+                                    </Stack>
+                                </label>
 
-                            <Box className='form_input'>
-                                <Input
-                                    readOnly
-                                    value='UGX 250,000'
-                                    id='phone'
-                                />
-                            </Box>
-                        </Stack>
-                    )}
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            projectValues !== null &&
+                                            projectValues.proposedFee
+                                                ? projectValues.proposedFee
+                                                : 'a'
+                                        }
+                                        id='phone'
+                                    />
+                                </Box>
+                            </Stack>
+                        )}
                 </Stack>
             </Box>
         </Container>

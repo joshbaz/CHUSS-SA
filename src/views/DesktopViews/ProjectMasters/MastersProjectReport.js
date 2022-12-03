@@ -74,7 +74,7 @@ const MastersProjectReport = () => {
         console.log(id)
         dispatch(getIndividualProject(id))
         dispatch(tagGetAll())
-         dispatch(academicYearGetAll())
+        dispatch(academicYearGetAll())
     }, [params.id, dispatch])
 
     useEffect(() => {
@@ -105,6 +105,7 @@ const MastersProjectReport = () => {
 
             dispatch(treset())
         }
+        dispatch(treset())
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
 
@@ -120,6 +121,7 @@ const MastersProjectReport = () => {
 
             dispatch(acreset())
         }
+        dispatch(acreset())
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         preferenceData.isError,
@@ -268,7 +270,10 @@ const MastersProjectReport = () => {
 
                                 {/** table */}
                                 <Box id='examinerreport'>
-                                    <ExaminersReports values={individual} />
+                                    <ExaminersReports
+                                        values={individual}
+                                        rlink={'/masters'}
+                                    />
                                 </Box>
 
                                 <Box id='vivareport'>

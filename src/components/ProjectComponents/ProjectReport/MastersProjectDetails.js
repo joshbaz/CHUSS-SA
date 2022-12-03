@@ -18,6 +18,7 @@ import { BsInfoCircleFill } from 'react-icons/bs'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { HiPencil } from 'react-icons/hi'
 import { ImBin2 } from 'react-icons/im'
+import { RiDeleteBin6Line } from 'react-icons/ri'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -30,6 +31,10 @@ const MastersProjectDetails = ({ values, rlink }) => {
     const [removeActive, setRemoveActive] = React.useState(false)
     const [removeDetails, setRemoveDetails] = React.useState(null)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+
+    const [provisionalAdm, setProvisionalAdm] = React.useState(null)
+
+    const [fullAdm, setFullAdm] = React.useState(null)
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
@@ -78,6 +83,42 @@ const MastersProjectDetails = ({ values, rlink }) => {
 
         dispatch(reset())
     }, [isSuccess, message])
+
+    React.useEffect(() => {
+        if (values !== null && values.registration.length > 0) {
+            let dataArray = values.registration
+
+            /** look for Provisional Admission */
+            let foundPData = dataArray.find(
+                (element) =>
+                    element.registrationId.registrationtype.toLowerCase() ===
+                    'provisional admission'
+            )
+
+            /** look for  Full Admission */
+            let foundFullData = dataArray.find(
+                (element) =>
+                    element.registrationId.registrationtype.toLowerCase() ===
+                    'full admission'
+            )
+            console.log('all Provisonal d', foundPData)
+
+            if (foundPData) {
+                setProvisionalAdm(foundPData)
+            } else {
+                setProvisionalAdm(null)
+            }
+
+            if (foundFullData) {
+                setFullAdm(foundFullData)
+            } else {
+                setFullAdm(null)
+            }
+        } else {
+            setProvisionalAdm(null)
+            setFullAdm(null)
+        }
+    }, [values])
     return (
         <Container>
             <Box className='form_container'>
@@ -215,12 +256,16 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                                                         }
                                                                     />
                                                                     <InputRightElement
-                                                                        h='100%'
+                                                                        h='32px'
                                                                         pr='20px'>
                                                                         <Stack
                                                                             direction='row'
                                                                             alignItems='center'>
-                                                                            <EditIcon
+                                                                            <Button
+                                                                                bg='transparent'
+                                                                                h='100%'
+                                                                                w='100%'
+                                                                                size='28px'
                                                                                 onClick={() =>
                                                                                     handleRemove(
                                                                                         data
@@ -234,16 +279,20 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                                                                             .jobtitle
                                                                                     )
                                                                                 }>
-                                                                                <ImBin2 />
-                                                                            </EditIcon>
-                                                                            <EditIcon
+                                                                                <RiDeleteBin6Line />
+                                                                            </Button>
+                                                                            <Button
+                                                                                bg='transparent'
+                                                                                h='100%'
+                                                                                w='100%'
+                                                                                size='28px'
                                                                                 onClick={() =>
                                                                                     routeNavigate(
                                                                                         `${rlink}/projects/supervisors/view/${values._id}/${data.supervisorId._id}`
                                                                                     )
                                                                                 }>
                                                                                 <BiLinkExternal />
-                                                                            </EditIcon>
+                                                                            </Button>
                                                                         </Stack>
                                                                     </InputRightElement>
                                                                 </InputGroup>
@@ -320,10 +369,13 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                             <input
                                                 readOnly
                                                 value={
-                                                    values !== null &&
-                                                    values.student.semester
-                                                        ? values.student
-                                                              .semester
+                                                    provisionalAdm !== null &&
+                                                    provisionalAdm
+                                                        .registrationId
+                                                        .registrationtype
+                                                        ? provisionalAdm
+                                                              .registrationId
+                                                              .registrationtype
                                                         : ''
                                                 }
                                                 id='phone'
@@ -348,10 +400,12 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                             <input
                                                 readOnly
                                                 value={
-                                                    values !== null &&
-                                                    values.student.academicYear
-                                                        ? values.student
-                                                              .academicYear
+                                                    provisionalAdm !== null &&
+                                                    provisionalAdm
+                                                        .registrationId.date
+                                                        ? provisionalAdm
+                                                              .registrationId
+                                                              .date
                                                         : ''
                                                 }
                                                 id='email'
@@ -376,10 +430,12 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                             <input
                                                 readOnly
                                                 value={
-                                                    values !== null &&
-                                                    values.student.academicYear
-                                                        ? values.student
-                                                              .academicYear
+                                                    provisionalAdm !== null &&
+                                                    provisionalAdm
+                                                        .registrationId.semester
+                                                        ? provisionalAdm
+                                                              .registrationId
+                                                              .semester
                                                         : ''
                                                 }
                                                 id='email'
@@ -406,10 +462,11 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                             <input
                                                 readOnly
                                                 value={
-                                                    values !== null &&
-                                                    values.student.semester
-                                                        ? values.student
-                                                              .semester
+                                                    fullAdm !== null &&
+                                                    fullAdm.registrationId
+                                                        .registrationtype
+                                                        ? fullAdm.registrationId
+                                                              .registrationtype
                                                         : ''
                                                 }
                                                 id='phone'
@@ -434,10 +491,10 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                             <input
                                                 readOnly
                                                 value={
-                                                    values !== null &&
-                                                    values.student.academicYear
-                                                        ? values.student
-                                                              .academicYear
+                                                    fullAdm !== null &&
+                                                    fullAdm.registrationId.date
+                                                        ? fullAdm.registrationId
+                                                              .date
                                                         : ''
                                                 }
                                                 id='email'
@@ -462,10 +519,11 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                             <input
                                                 readOnly
                                                 value={
-                                                    values !== null &&
-                                                    values.student.academicYear
-                                                        ? values.student
-                                                              .academicYear
+                                                    fullAdm !== null &&
+                                                    fullAdm.registrationId
+                                                        .semester
+                                                        ? fullAdm.registrationId
+                                                              .semester
                                                         : ''
                                                 }
                                                 id='email'
@@ -665,7 +723,7 @@ const Container = styled(Box)`
     }
 `
 
-const EditIcon = styled(Box)`
+const EditIcon = styled(Button)`
     width: 24px;
     height: 24px;
     background: transparent;

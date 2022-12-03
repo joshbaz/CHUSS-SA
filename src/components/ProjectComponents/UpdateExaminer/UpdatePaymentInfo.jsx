@@ -1,16 +1,42 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { Box, Stack } from '@chakra-ui/react'
+import { Box, Stack, Text, Input } from '@chakra-ui/react'
+import { BsInfoCircleFill } from 'react-icons/bs'
 
-const UpdatePaymentInfo = () => {
+const UpdatePaymentInfo = ({ values, projectValues }) => {
+    const [payInfo, setPayInfo] = React.useState(null)
+    useEffect(() => {
+        if (values !== null && values.paymentInfo.length > 0) {
+            projectValues.examiners.find((element) => {
+                if (element.examinerId._id === values._id) {
+                    values.paymentInfo.find((element2) => {
+                        if (
+                            element2.preferredPayment ===
+                            element.preferredPayment
+                        ) {
+                            setPayInfo(element2)
+                        }
+                    })
+                }
+            })
+        }
+    }, [values])
     return (
-        <FormContainer>
+        <Container>
             <Box className='form_container'>
                 {/** form title */}
-                <Box className='formtitle'>
-                    <h1>Payment Information</h1>
-                </Box>
+                <Stack
+                    className='formtitle'
+                    direction='row'
+                    w='100%'
+                    alignItems='center'
+                    justifyContent='space-between'>
+                    <Box>
+                        <h1>Payment Information</h1>
+                    </Box>
+                </Stack>
 
+                {/** details */}
                 <Stack
                     p='25px 20px'
                     direction='column'
@@ -18,63 +44,332 @@ const UpdatePaymentInfo = () => {
                     alignItems='space-between'
                     spacing='15px'
                     h='100%'>
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Thesis/Dissertation Title <span>*</span>
-                            </label>
-                            <fieldset>
-                                <input type='text' />
-                            </fieldset>
-                        </Stack>
-                    </Box>
+                    <Stack direction='row' alignItems='center' spacing='15px'>
+                        <label htmlFor='phone'>
+                            <Stack
+                                direction={'row'}
+                                alignItems='flex-start'
+                                spacing='8px'>
+                                <Text>Prefereed payment </Text>
+                            </Stack>
+                        </label>
 
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Thesis/Dissertation Title <span>*</span>
-                            </label>
-                            <fieldset>
-                                <input type='text' />
-                            </fieldset>
-                        </Stack>
-                    </Box>
+                        <Box className='form_input'>
+                            <Input
+                                readOnly
+                                value={
+                                    payInfo !== null && payInfo.preferredPayment
+                                }
+                            />
+                        </Box>
+                    </Stack>
 
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Thesis/Dissertation Title <span>*</span>
-                            </label>
-                            <fieldset>
-                                <input type='text' />
-                            </fieldset>
-                        </Stack>
-                    </Box>
+                    {payInfo !== null &&
+                    payInfo.preferredPayment === 'mobileMoney' ? (
+                        <>
+                            {' '}
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>Mobile Network Operator</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            payInfo !== null &&
+                                            payInfo.mobileOperator
+                                                ? payInfo.mobileOperator
+                                                : ''
+                                        }
+                                    />
+                                </Box>
+                            </Stack>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>Mobile Subscriber's Name</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            payInfo !== null &&
+                                            payInfo.mobileSubscriberName
+                                                ? payInfo.mobileSubscriberName
+                                                : ''
+                                        }
+                                    />
+                                </Box>
+                            </Stack>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>Mobile Number</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            payInfo !== null &&
+                                            payInfo.mobileNumber
+                                                ? payInfo.mobileNumber
+                                                : ''
+                                        }
+                                    />
+                                </Box>
+                            </Stack>
+                        </>
+                    ) : (
+                        <>
+                            {' '}
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>Bank</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            payInfo !== null && payInfo.bank
+                                                ? payInfo.bank
+                                                : ''
+                                        }
+                                    />
+                                </Box>
+                            </Stack>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>A/C Holder Name</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            payInfo !== null &&
+                                            payInfo.AccountName
+                                                ? payInfo.AccountName
+                                                : ''
+                                        }
+                                    />
+                                </Box>
+                            </Stack>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>A/C Number</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            payInfo !== null &&
+                                            payInfo.AccountNumber
+                                                ? payInfo.AccountNumber
+                                                : ''
+                                        }
+                                    />
+                                </Box>
+                            </Stack>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>SWIFT/BIC Code</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            payInfo !== null &&
+                                            payInfo.swift_bicCode
+                                                ? payInfo.swift_bicCode
+                                                : ''
+                                        }
+                                    />
+                                </Box>
+                            </Stack>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>Bank Code</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            payInfo !== null && payInfo.bankCode
+                                                ? payInfo.bankCode
+                                                : ''
+                                        }
+                                    />
+                                </Box>
+                            </Stack>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>Branch Code</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            payInfo !== null &&
+                                            payInfo.branchCode
+                                                ? payInfo.branchCode
+                                                : ''
+                                        }
+                                    />
+                                </Box>
+                            </Stack>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>Bank Address</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            payInfo !== null &&
+                                            payInfo.bankAddress
+                                                ? payInfo.bankAddress
+                                                : ''
+                                        }
+                                    />
+                                </Box>
+                            </Stack>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>Bank City</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            payInfo !== null && payInfo.bankCity
+                                                ? payInfo.bankCity
+                                                : ''
+                                        }
+                                    />
+                                </Box>
+                            </Stack>
+                        </>
+                    )}
                 </Stack>
             </Box>
-        </FormContainer>
+        </Container>
     )
 }
 
 export default UpdatePaymentInfo
 
-const FormContainer = styled(Box)`
-    font-family: Inter;
+const Container = styled(Box)`
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
-        min-height: 325px;
+        min-height: 275px;
         height: 100%;
         background: #ffffff;
         border-radius: 9px;
     }
+
     .formtitle {
         height: 54px;
         width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-bottom: 1px solid #d1d5db;
+
+        border-bottom: 1px solid #ebeefa;
         padding: 0 30px;
         h1 {
             width: 100%;
@@ -87,30 +382,69 @@ const FormContainer = styled(Box)`
         }
     }
 
-    label {
-        font-family: Inter;
+    .s_name {
+        color: #20202a;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
         font-weight: 500;
-        font-size: 14px;
+        font-size: 21px;
         line-height: 20px;
-        color: #464f60;
-        letter-spacing: 0.02em;
+    }
 
-        span {
-            color: #ed1f29;
+    label {
+        width: 91px;
+        p {
+            color: #838389;
+            font-weight: 500;
+            font-size: 10px;
         }
     }
 
-    input {
-        background: #ffffff;
-        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
-            0px 0px 0px 1px rgba(134, 143, 160, 0.16);
+    textarea {
+        background: #fefaf2;
         border-radius: 6px;
-        height: 32px;
         width: 100%;
+        height: 79px;
+        padding: 7px 15px;
+
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+        color: #171c26;
     }
 
-    .formfields__Dfieldset {
+    .form_input {
         width: 100%;
+        input {
+            width: 100%;
+        }
+    }
+
+    #SRN {
+        height: 40px;
+    }
+
+    .form_subtitle {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 20px;
+        color: #f14c54;
+        letter-spacing: 0.02em;
+    }
+
+    input {
+        background: #fefaf2;
+        border-radius: 6px;
+
+        height: 32px;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 20px;
     }
 `
-

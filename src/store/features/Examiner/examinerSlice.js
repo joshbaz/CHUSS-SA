@@ -129,6 +129,8 @@ export const examinerUpdate = createAsyncThunk(
         }
     }
 )
+
+
 export const examinerSlice = createSlice({
     name: 'examiner',
     initialState,

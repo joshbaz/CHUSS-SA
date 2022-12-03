@@ -66,6 +66,29 @@ const updateGraduationDate = async (values) => {
     return response
 }
 
+const updateResubmission = async (values) => {
+    const response = await window.electronAPI.updateResubmission(values)
+    return response
+}
+
+//final graduation date
+const deleteFileExaminer = async (values) => {
+    const response = await window.electronAPI.deleteFileExaminer(values)
+    return response
+}
+
+//final graduation date
+const addFileExaminer = async (values) => {
+    const response = await window.electronAPI.addFileExaminer(values)
+    return response
+}
+
+//remove Examiner
+const removeProjectExaminer = async (values) => {
+    const response = await window.electronAPI.removeProjectExaminer(values)
+    return response
+}
+
 const projectService = {
     projectCreate,
     getPProjects,
@@ -79,6 +102,10 @@ const projectService = {
     updateFinalSubmission,
     updateSubmissionDate,
     updateGraduationDate,
+    deleteFileExaminer,
+    addFileExaminer,
+    removeProjectExaminer,
+    updateResubmission,
 }
 
 export default projectService

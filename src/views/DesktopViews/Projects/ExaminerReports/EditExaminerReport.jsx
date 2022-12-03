@@ -65,7 +65,7 @@ const EditExaminerReport = (props) => {
             dispatch(reset())
         }
         dispatch(reset())
-    }, [isError, isSuccess, message, dispatch])
+    }, [isError, isSuccess, message, dispatch, isSubmittingp])
 
     useEffect(() => {
         if (initials === null && individualReport !== null) {

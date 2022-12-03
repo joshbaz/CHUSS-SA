@@ -27,6 +27,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('update-final-submissionDate', values),
     updateGraduationDate: (values) =>
         ipcRenderer.invoke('update-graduationdate', values),
+    updateResubmission: (values) =>
+        ipcRenderer.invoke('update-resubmission', values),
+    deleteFileExaminer: (values) =>
+        ipcRenderer.invoke('delete-fileproject-Examiner', values),
+    addFileExaminer: (values) =>
+        ipcRenderer.invoke('add-fileproject-Examiner', values),
+    removeProjectExaminer: (values) =>
+        ipcRenderer.invoke('remove-project-Examiner', values),
     /** registration */
     createRegistration: (values) =>
         ipcRenderer.invoke('create-registration', values),

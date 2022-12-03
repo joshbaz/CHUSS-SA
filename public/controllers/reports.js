@@ -23,33 +23,19 @@ let errorFunction = (error) => {
 /** update Examiner Report */
 exports.updateExaminerReport = async (event, values) => {
   try {
-    if (values.reportFile.url) {
+    if (values.reportFile !== null) {
+      n
+      console.log('report values values', values)
       const FormData = require("form-data");
      // const { Blob } = require("buffer");
       const fd = new FormData();
+      console.log('before report values values', values.reportFile)
       fd.append("reportssFiles", fs.createReadStream(values.reportFile.url));
-      // for (const key in values) {
-      //   console.log("keys", key, values[key]);
-      //   if (
-      //     key !== "_id" &&
-      //     key !== "reportFile" &&
-      //     key !== "reportFiles" &&
-      //     key !== "examiner" &&
-      //     key !== "generalAppointmentLetters"
-      //   ) {
-      //     fd.append(`${key}`, values[key]);
-      //   }
-      // }
-      // fd.append(
-      //   "data",
-      //   new Blob([JSON.stringify(values)], {
-      //     type: "application/json",
-      //   })
-      // );
+     console.log('after report values values', values.reportFile)
        fd.append("score", values.score);
        fd.append("ungraded", values.ungraded);
        fd.append("remarks", values.remarks);
-
+     console.log('great pp', values.reportFile)
       console.log(fd, "fd");
 
       let responseData = await axios.patch(

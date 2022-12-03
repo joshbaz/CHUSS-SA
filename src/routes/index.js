@@ -49,6 +49,11 @@ import MaAssignSupervisors from '../views/DesktopViews/ProjectMasters/MastersSup
 import MaCreateProjectSupervisor from '../views/DesktopViews/ProjectMasters/MastersSupervisors/MaCreateProjectSupervisor'
 import MaViewProjectSupervisor from '../views/DesktopViews/ProjectMasters/MastersSupervisors/MaViewProjectSupervisor'
 import MaEditProjectSupervisor from '../views/DesktopViews/ProjectMasters/MastersSupervisors/MaEditProjectSupervisor'
+import MaAssignExaminer from '../views/DesktopViews/ProjectMasters/MastersExaminers/MaAssignExaminer'
+import MaCreateProjectExaminer from '../views/DesktopViews/ProjectMasters/MastersExaminers/MaCreateProjectExaminer'
+import MaViewProjectExaminer from '../views/DesktopViews/ProjectMasters/MastersExaminers/MaViewProjectExaminer'
+import MaEditProjectExaminer from '../views/DesktopViews/ProjectMasters/MastersExaminers/MaEditProjectExaminer'
+import MaViewExaminerReport from '../views/DesktopViews/ProjectMasters/MastersExaminerReports/MaViewExaminerReport'
 const AllRoutes = () => {
     return (
         <HashRouter>
@@ -113,18 +118,18 @@ const AllRoutes = () => {
                         element={<MaEditProjectSupervisor />}
                     />
 
-                    {/** route for assign examiners for phd students */}
+                    {/** route for assign examiners for master students */}
                     <Route
                         exact
                         path='/masters/projects/examiners/assign/:pid'
-                        element={<AssignExaminer />}
+                        element={<MaAssignExaminer />}
                     />
 
-                    {/** create examiner if not found in assign inside project*/}
+                    {/** Masters create examiner if not found in assign inside project*/}
                     <Route
                         exact
                         path='/masters/projects/examiners/p_create/:pid'
-                        element={<CreateProjectExaminer />}
+                        element={<MaCreateProjectExaminer />}
                     />
 
                     {/** create examiner from project tab/page */}
@@ -138,21 +143,21 @@ const AllRoutes = () => {
                     <Route
                         exact
                         path='/masters/projects/examiners/view/:p_id/:e_id'
-                        element={<ViewProjectExaminer />}
+                        element={<MaViewProjectExaminer />}
                     />
 
                     {/** Masters - update examiner from project tab/page */}
                     <Route
                         exact
-                        path='/masters/projects/examiners/update/:s_id/:e_id'
-                        element={<UpdateExaminer />}
+                        path='/masters/projects/examiners/update/:p_id/:e_id'
+                        element={<MaEditProjectExaminer />}
                     />
 
                     {/** Masters- view examiner report on masters */}
                     <Route
                         exact
                         path='/masters/projects/examiners/viewreport/:p_id/:rp_id'
-                        element={<ViewExaminerReport />}
+                        element={<MaViewExaminerReport />}
                     />
                     {/** Masters- edit examiner report on masters */}
                     <Route

@@ -56,9 +56,11 @@ const TableHead = [
     },
     { title: '' },
 ]
-const ExaminersReports = ({ values }) => {
+const ExaminersReports = ({ values, rlink }) => {
     const [activityDrpdown, setActivityDropDown] = React.useState(false)
     const [reportLists, setReportLists] = React.useState([])
+    const [normalReports, setNormalReports] = React.useState([])
+    const [resubmissionReports, setResubmissionReports] = React.useState([])
     let activeDrop = React.useRef(null)
     const handleDropDown = () => {
         setActivityDropDown(!activityDrpdown)
@@ -79,6 +81,17 @@ const ExaminersReports = ({ values }) => {
 
                 arrayData.push(newData)
             })
+
+            const filterNormal = arrayData.filter(
+                (data) => data.submissionType === 'normal'
+            )
+
+            const filterResubmission = arrayData.filter(
+                (data) => data.submissionType === 'resubmission'
+            )
+
+            setNormalReports(filterNormal)
+            setResubmissionReports(filterResubmission)
 
             setReportLists(arrayData)
         } else {
@@ -130,7 +143,7 @@ const ExaminersReports = ({ values }) => {
                 */}
 
                     {/** table */}
-                    <Box>
+                    <Stack direction='column' spacing='40px'>
                         <Table size='sm'>
                             <Thead>
                                 <Tr>
@@ -181,306 +194,119 @@ const ExaminersReports = ({ values }) => {
                             </Thead>
 
                             <Tbody>
-                                {reportLists.length > 0 ? (
+                                {normalReports.length > 0 ? (
                                     <>
-                                        {reportLists.map((data, index) => {
+                                        {normalReports.map((data, index) => {
                                             return (
-                                                <>
-                                                    {' '}
-                                                    <Tr className='table_row'>
-                                                        <Td>1</Td>
-                                                        <Td w='36px'>
-                                                            <Box
-                                                                onClick={
-                                                                    handleDropDown
-                                                                }
-                                                                ref={activeDrop}
-                                                                style={{
-                                                                    color: '#5E5C60',
-                                                                    fontSize:
-                                                                        '16px',
-                                                                }}>
-                                                                {activityDrpdown ? (
-                                                                    <IoIosArrowDropdown />
-                                                                ) : (
-                                                                    <IoIosArrowDropright />
-                                                                )}
-                                                            </Box>
-                                                        </Td>
-                                                        <Td className='type_examiner'>
-                                                            {
-                                                                data
-                                                                    .examinerDetails
-                                                                    .examinerId
-                                                                    .typeOfExaminer
+                                                <Tr className='table_row'>
+                                                    <Td>1</Td>
+                                                    <Td w='36px'>
+                                                        <Box
+                                                            onClick={
+                                                                handleDropDown
                                                             }
-                                                        </Td>
-                                                        <Td>
-                                                            {
-                                                                data
-                                                                    .examinerDetails
-                                                                    .examinerId
-                                                                    .jobtitle
-                                                            }{' '}
-                                                            {
-                                                                data
-                                                                    .examinerDetails
-                                                                    .examinerId
-                                                                    .name
-                                                            }
-                                                        </Td>
-                                                        <Td>
-                                                            {
-                                                                data
-                                                                    .examinerDetails
-                                                                    .examinerId
-                                                                    .email
-                                                            }
-                                                        </Td>
-                                                        <Td>
-                                                            {
-                                                                data.reportId
-                                                                    .score
-                                                            }
-                                                            %
-                                                        </Td>
-                                                        <Td>
-                                                            {' '}
-                                                            <StatusItem
-                                                                width='90px'
-                                                                className='pending'
-                                                                direction='row'
-                                                                alignItems='center'>
-                                                                <div />
-                                                                <Text>
-                                                                    {
-                                                                        data
-                                                                            .reportId
-                                                                            .reportStatus
-                                                                    }
-                                                                </Text>
-                                                            </StatusItem>
-                                                        </Td>
-
-                                                        <Td>
-                                                            <Box className='sub_date'>
-                                                                15 May 2021
-                                                            </Box>
-                                                        </Td>
-                                                        <Td>
-                                                            <Box className='files'>
+                                                            ref={activeDrop}
+                                                            style={{
+                                                                color: '#5E5C60',
+                                                                fontSize:
+                                                                    '16px',
+                                                            }}>
+                                                            {activityDrpdown ? (
+                                                                <IoIosArrowDropdown />
+                                                            ) : (
+                                                                <IoIosArrowDropright />
+                                                            )}
+                                                        </Box>
+                                                    </Td>
+                                                    <Td className='type_examiner'>
+                                                        {
+                                                            data.examinerDetails
+                                                                .examinerId
+                                                                .typeOfExaminer
+                                                        }
+                                                    </Td>
+                                                    <Td>
+                                                        {
+                                                            data.examinerDetails
+                                                                .examinerId
+                                                                .jobtitle
+                                                        }{' '}
+                                                        {
+                                                            data.examinerDetails
+                                                                .examinerId.name
+                                                        }
+                                                    </Td>
+                                                    <Td>
+                                                        {
+                                                            data.examinerDetails
+                                                                .examinerId
+                                                                .email
+                                                        }
+                                                    </Td>
+                                                    <Td>
+                                                        {data.reportId.score}%
+                                                    </Td>
+                                                    <Td>
+                                                        {' '}
+                                                        <StatusItem
+                                                            width='90px'
+                                                            className='pending'
+                                                            direction='row'
+                                                            alignItems='center'>
+                                                            <div />
+                                                            <Text>
                                                                 {
                                                                     data
                                                                         .reportId
-                                                                        .reportFiles
-                                                                        .length
+                                                                        .reportStatus
                                                                 }
-                                                            </Box>
-                                                        </Td>
+                                                            </Text>
+                                                        </StatusItem>
+                                                    </Td>
 
-                                                        <Td>
-                                                            <Menu>
-                                                                <MenuButton>
-                                                                    <Box fontSize='20px'>
-                                                                        <TbDotsVertical />
-                                                                    </Box>
-                                                                </MenuButton>
-                                                                <MenuList>
-                                                                    <MenuItem
-                                                                        onClick={() =>
-                                                                            routeNavigate(
-                                                                                `/projects/examiners/updatereport/${values._id}/${data.reportId._id}`
-                                                                            )
-                                                                        }>
-                                                                        Edit
-                                                                    </MenuItem>
-                                                                    <MenuItem
-                                                                        onClick={() =>
-                                                                            routeNavigate(
-                                                                                `/projects/examiners/viewreport/${values._id}/${data.reportId._id}`
-                                                                            )
-                                                                        }>
-                                                                        View
-                                                                    </MenuItem>
-                                                                    <MenuItem>
-                                                                        Delete
-                                                                    </MenuItem>
-                                                                </MenuList>
-                                                            </Menu>
-                                                        </Td>
-                                                    </Tr>
-                                                    {activityDrpdown && (
-                                                        <Tr
-                                                            position='relative'
-                                                            h='200px'>
-                                                            <Box h='100%'>
-                                                                <TableDropDown
-                                                                    w='100vw'
-                                                                    bg='#ffffff'
-                                                                    position='absolute'>
-                                                                    <ListStack spacing='36px'>
-                                                                        <Stack
-                                                                            className='list-item'
-                                                                            direction='row'
-                                                                            w='100%'
-                                                                            alignItems={
-                                                                                'center'
-                                                                            }>
-                                                                            <Box className='icon_add'>
-                                                                                <RiPencilFill />
-                                                                            </Box>
+                                                    <Td>
+                                                        <Box className='sub_date'>
+                                                            15 May 2021
+                                                        </Box>
+                                                    </Td>
+                                                    <Td>
+                                                        <Box className='files'>
+                                                            {
+                                                                data.reportId
+                                                                    .reportFiles
+                                                                    .length
+                                                            }
+                                                        </Box>
+                                                    </Td>
 
-                                                                            <Box className='activities'>
-                                                                                <Text>
-                                                                                    <span className='activity_identity'>{`{name}`}</span>{' '}
-                                                                                    updated{' '}
-                                                                                    <span className='activity_type'>
-                                                                                        payment
-                                                                                        reciept
-                                                                                    </span>{' '}
-                                                                                    from{' '}
-                                                                                    <span className='activity_text'>
-                                                                                        150000
-                                                                                    </span>{' '}
-                                                                                    to{' '}
-                                                                                    <span className='activity_text'>
-                                                                                        520,000
-                                                                                        Ugx
-                                                                                    </span>{' '}
-                                                                                    on{' '}
-                                                                                    {`{Date}`}{' '}
-                                                                                    @{' '}
-                                                                                    {`{time}`}
-                                                                                </Text>
-                                                                            </Box>
-                                                                        </Stack>
-
-                                                                        <Stack
-                                                                            direction='row'
-                                                                            w='100%'
-                                                                            className='list-item'
-                                                                            alignItems={
-                                                                                'flex-start'
-                                                                            }>
-                                                                            <Box className='icon_stat'>
-                                                                                <IoIosStats />
-                                                                            </Box>
-
-                                                                            <Stack className='activities'>
-                                                                                <Box>
-                                                                                    <Stack
-                                                                                        spacing='5px'
-                                                                                        direction='row'
-                                                                                        className='activities_texts'>
-                                                                                        <Text className='activity_identity'>{`{name}`}</Text>{' '}
-                                                                                        <Text>
-                                                                                            updated
-                                                                                        </Text>
-                                                                                        <span className='activity_type'>
-                                                                                            status
-                                                                                        </span>
-                                                                                        <Text>
-                                                                                            from
-                                                                                        </Text>
-                                                                                        <StatusItem
-                                                                                            className='reviews'
-                                                                                            direction='row'
-                                                                                            alignItems='center'>
-                                                                                            <div />
-                                                                                            <Text>
-                                                                                                {' '}
-                                                                                                In
-                                                                                                Review
-                                                                                            </Text>
-                                                                                        </StatusItem>
-                                                                                        <Text>
-                                                                                            to
-                                                                                        </Text>
-                                                                                        <StatusItem
-                                                                                            className='approved'
-                                                                                            direction='row'
-                                                                                            alignItems='center'>
-                                                                                            <div />
-                                                                                            <Text>
-                                                                                                Approved
-                                                                                                Viva
-                                                                                            </Text>
-                                                                                        </StatusItem>
-                                                                                        <Text>
-                                                                                            on{' '}
-                                                                                            {`{Date}`}{' '}
-                                                                                            @{' '}
-                                                                                            {`{time}`}
-                                                                                        </Text>
-                                                                                    </Stack>
-                                                                                </Box>
-
-                                                                                <Stack
-                                                                                    className='status_update'
-                                                                                    direction='row'
-                                                                                    alignItems={
-                                                                                        'center'
-                                                                                    }>
-                                                                                    <Box>
-                                                                                        <CgNotes />
-                                                                                    </Box>
-
-                                                                                    <Box>
-                                                                                        <Text>
-                                                                                            This
-                                                                                            is
-                                                                                            a
-                                                                                            note,
-                                                                                            user
-                                                                                            fills
-                                                                                            in
-                                                                                            while
-                                                                                            changing
-                                                                                            the
-                                                                                            status,
-                                                                                            which
-                                                                                            explains
-                                                                                            the
-                                                                                            current
-                                                                                            project
-                                                                                            status.
-                                                                                        </Text>
-                                                                                    </Box>
-                                                                                </Stack>
-                                                                            </Stack>
-                                                                        </Stack>
-
-                                                                        <Stack
-                                                                            direction='row'
-                                                                            w='100%'
-                                                                            alignItems={
-                                                                                'center'
-                                                                            }
-                                                                            className='list-item'>
-                                                                            <Box className='icon_create'>
-                                                                                <AiOutlinePlus />
-                                                                            </Box>
-
-                                                                            <Box className='activities'>
-                                                                                <Text>
-                                                                                    <span className='activity_identity'>{`{name}`}</span>{' '}
-                                                                                    created{' '}
-                                                                                    <span className='activity_type'>
-                                                                                        project
-                                                                                    </span>{' '}
-                                                                                    on{' '}
-                                                                                    {`{Date}`}{' '}
-                                                                                    @{' '}
-                                                                                    {`{time}`}
-                                                                                </Text>
-                                                                            </Box>
-                                                                        </Stack>
-                                                                    </ListStack>
-                                                                </TableDropDown>
-                                                            </Box>
-                                                        </Tr>
-                                                    )}
-                                                </>
+                                                    <Td>
+                                                        <Menu>
+                                                            <MenuButton>
+                                                                <Box fontSize='20px'>
+                                                                    <TbDotsVertical />
+                                                                </Box>
+                                                            </MenuButton>
+                                                            <MenuList>
+                                                                <MenuItem
+                                                                    onClick={() =>
+                                                                        routeNavigate(
+                                                                            `${rlink}/projects/examiners/updatereport/${values._id}/${data.reportId._id}`
+                                                                        )
+                                                                    }>
+                                                                    Edit Report
+                                                                </MenuItem>
+                                                                <MenuItem
+                                                                    onClick={() =>
+                                                                        routeNavigate(
+                                                                            `${rlink}/projects/examiners/viewreport/${values._id}/${data.reportId._id}`
+                                                                        )
+                                                                    }>
+                                                                    View Report
+                                                                </MenuItem>
+                                                            </MenuList>
+                                                        </Menu>
+                                                    </Td>
+                                                </Tr>
                                             )
                                         })}
                                     </>
@@ -496,7 +322,220 @@ const ExaminersReports = ({ values }) => {
                                 )}
                             </Tbody>
                         </Table>
-                    </Box>
+
+                        {resubmissionReports.length > 0 && (
+                            <Stack direction='column' spacing='10px'>
+                                <Box className='rreports_title'>
+                                    {' '}
+                                    Examiner Reports For Resubmission
+                                </Box>
+                                <Table size='sm'>
+                                    <Thead>
+                                        <Tr>
+                                            {TableHead.map((data, index) => {
+                                                return (
+                                                    <Th
+                                                        key={index}
+                                                        className='table_head'>
+                                                        <Stack
+                                                            direction='row'
+                                                            alignItems={
+                                                                'center'
+                                                            }>
+                                                            <Text>
+                                                                {data.title}
+                                                            </Text>
+
+                                                            {data.filter && (
+                                                                <Stack
+                                                                    h='13px'
+                                                                    direction='column'
+                                                                    justifyContent={
+                                                                        'center'
+                                                                    }
+                                                                    spacing='2px'
+                                                                    padding='0'
+                                                                    m='0'>
+                                                                    <Box
+                                                                        h='30%'
+                                                                        color='#464F60'
+                                                                        style={{
+                                                                            fontSize:
+                                                                                '12px',
+                                                                        }}>
+                                                                        <TiArrowSortedUp />
+                                                                    </Box>
+                                                                    <Box
+                                                                        color='#ABAAAF'
+                                                                        style={{
+                                                                            fontSize:
+                                                                                '12px',
+                                                                        }}>
+                                                                        <TiArrowSortedDown />
+                                                                    </Box>
+                                                                </Stack>
+                                                            )}
+                                                        </Stack>
+                                                    </Th>
+                                                )
+                                            })}
+                                        </Tr>
+                                    </Thead>
+
+                                    <Tbody>
+                                        {resubmissionReports.length > 0 ? (
+                                            <>
+                                                {resubmissionReports.map(
+                                                    (data, index) => {
+                                                        return (
+                                                            <Tr className='table_row'>
+                                                                <Td>1</Td>
+                                                                <Td w='36px'>
+                                                                    <Box
+                                                                        onClick={
+                                                                            handleDropDown
+                                                                        }
+                                                                        ref={
+                                                                            activeDrop
+                                                                        }
+                                                                        style={{
+                                                                            color: '#5E5C60',
+                                                                            fontSize:
+                                                                                '16px',
+                                                                        }}>
+                                                                        {activityDrpdown ? (
+                                                                            <IoIosArrowDropdown />
+                                                                        ) : (
+                                                                            <IoIosArrowDropright />
+                                                                        )}
+                                                                    </Box>
+                                                                </Td>
+                                                                <Td className='type_examiner'>
+                                                                    {
+                                                                        data
+                                                                            .examinerDetails
+                                                                            .examinerId
+                                                                            .typeOfExaminer
+                                                                    }
+                                                                </Td>
+                                                                <Td>
+                                                                    {
+                                                                        data
+                                                                            .examinerDetails
+                                                                            .examinerId
+                                                                            .jobtitle
+                                                                    }{' '}
+                                                                    {
+                                                                        data
+                                                                            .examinerDetails
+                                                                            .examinerId
+                                                                            .name
+                                                                    }
+                                                                </Td>
+                                                                <Td>
+                                                                    {
+                                                                        data
+                                                                            .examinerDetails
+                                                                            .examinerId
+                                                                            .email
+                                                                    }
+                                                                </Td>
+                                                                <Td>
+                                                                    {
+                                                                        data
+                                                                            .reportId
+                                                                            .score
+                                                                    }
+                                                                    %
+                                                                </Td>
+                                                                <Td>
+                                                                    {' '}
+                                                                    <StatusItem
+                                                                        width='90px'
+                                                                        className='pending'
+                                                                        direction='row'
+                                                                        alignItems='center'>
+                                                                        <div />
+                                                                        <Text>
+                                                                            {
+                                                                                data
+                                                                                    .reportId
+                                                                                    .reportStatus
+                                                                            }
+                                                                        </Text>
+                                                                    </StatusItem>
+                                                                </Td>
+
+                                                                <Td>
+                                                                    <Box className='sub_date'>
+                                                                        15 May
+                                                                        2021
+                                                                    </Box>
+                                                                </Td>
+                                                                <Td>
+                                                                    <Box className='files'>
+                                                                        {
+                                                                            data
+                                                                                .reportId
+                                                                                .reportFiles
+                                                                                .length
+                                                                        }
+                                                                    </Box>
+                                                                </Td>
+
+                                                                <Td>
+                                                                    <Menu>
+                                                                        <MenuButton>
+                                                                            <Box fontSize='20px'>
+                                                                                <TbDotsVertical />
+                                                                            </Box>
+                                                                        </MenuButton>
+                                                                        <MenuList>
+                                                                            <MenuItem
+                                                                                onClick={() =>
+                                                                                    routeNavigate(
+                                                                                        `/projects/examiners/updatereport/${values._id}/${data.reportId._id}`
+                                                                                    )
+                                                                                }>
+                                                                                Edit
+                                                                                Report
+                                                                            </MenuItem>
+                                                                            <MenuItem
+                                                                                onClick={() =>
+                                                                                    routeNavigate(
+                                                                                        `/projects/examiners/viewreport/${values._id}/${data.reportId._id}`
+                                                                                    )
+                                                                                }>
+                                                                                View
+                                                                                Report
+                                                                            </MenuItem>
+                                                                        </MenuList>
+                                                                    </Menu>
+                                                                </Td>
+                                                            </Tr>
+                                                        )
+                                                    }
+                                                )}
+                                            </>
+                                        ) : (
+                                            <Tr
+                                                position='relative'
+                                                h='48px'
+                                                borderBottom={
+                                                    '1px solid #E1FCEF'
+                                                }>
+                                                <Box>
+                                                    <NoItems>
+                                                        No Records Found
+                                                    </NoItems>
+                                                </Box>
+                                            </Tr>
+                                        )}
+                                    </Tbody>
+                                </Table>
+                            </Stack>
+                        )}
+                    </Stack>
                 </Stack>
             </Box>
         </Container>
@@ -548,7 +587,7 @@ const Container = styled(Box)`
 
     .s_name {
         color: #5e5c60;
-        
+
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -556,7 +595,6 @@ const Container = styled(Box)`
         letter-spacing: 0.02em;
     }
     .form_subtitle {
-       
         font-style: normal;
         font-weight: 700;
         font-size: 14px;
@@ -567,7 +605,7 @@ const Container = styled(Box)`
 
     .table_head {
         color: #5e5c60 !important;
-        
+
         font-style: normal;
         font-weight: 500;
         font-size: 12px !important;
@@ -622,7 +660,7 @@ const Container = styled(Box)`
     .sub_date {
         height: 20px;
         color: #3a3a43;
-    
+
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -652,6 +690,14 @@ const Container = styled(Box)`
         letter-spacing: 0.02em;
         text-transform: uppercase;
     }
+
+    .rreports_title {
+        font-style: normal;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 20px;
+        color: #f14c54;
+    }
 `
 
 const StatusItem = styled(Stack)`
@@ -665,7 +711,6 @@ const StatusItem = styled(Stack)`
         height: 6px;
     }
     p {
-        
         font-style: normal;
         font-weight: 500;
         font-size: 12px;

@@ -178,6 +178,58 @@ export const updateGraduationDate = createAsyncThunk(
     }
 )
 
+/** examiner project App letter delete */
+export const deleteFileExaminer = createAsyncThunk(
+    'projects/projectExaminerApp/delete',
+    async (Info, thunkAPI) => {
+        const deleteAttempt = await projectService.deleteFileExaminer(Info)
+        if (deleteAttempt.type === 'success') {
+            return deleteAttempt
+        } else {
+            return thunkAPI.rejectWithValue(deleteAttempt.message)
+        }
+    }
+)
+
+/** examiner project App letter delete */
+export const addFileExaminer = createAsyncThunk(
+    'projects/projectExaminerApp/add',
+    async (Info, thunkAPI) => {
+        const addAttempt = await projectService.addFileExaminer(Info)
+        if (addAttempt.type === 'success') {
+            return addAttempt
+        } else {
+            return thunkAPI.rejectWithValue(addAttempt.message)
+        }
+    }
+)
+
+/** project remove examiner  */
+export const removeProjectExaminer = createAsyncThunk(
+    'projects/removeExaminer',
+    async (Info, thunkAPI) => {
+        const removeAttempt = await projectService.removeProjectExaminer(Info)
+        if (removeAttempt.type === 'success') {
+            return removeAttempt
+        } else {
+            return thunkAPI.rejectWithValue(removeAttempt.message)
+        }
+    }
+)
+
+/** project remove examiner  */
+export const updateResubmission = createAsyncThunk(
+    'projects/updates/resubmissions',
+    async (Info, thunkAPI) => {
+        const updateAttempt = await projectService.updateResubmission(Info)
+        if (updateAttempt.type === 'success') {
+            return updateAttempt
+        } else {
+            return thunkAPI.rejectWithValue(updateAttempt.message)
+        }
+    }
+)
+
 export const projectSlice = createSlice({
     name: 'project',
     initialState,
@@ -359,6 +411,63 @@ export const projectSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(updateGraduationDate.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            //project  delete project app letter
+            .addCase(deleteFileExaminer.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(deleteFileExaminer.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(deleteFileExaminer.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            //project add project app letter
+            .addCase(addFileExaminer.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(addFileExaminer.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(addFileExaminer.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            //remove projectExaminer
+            .addCase(removeProjectExaminer.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(removeProjectExaminer.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(removeProjectExaminer.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            //update resubmission
+            .addCase(updateResubmission.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(updateResubmission.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(updateResubmission.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

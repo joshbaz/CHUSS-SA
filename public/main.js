@@ -286,6 +286,20 @@ ipcMain.handle(
 //handle final submission date
 ipcMain.handle('update-graduationdate', projectController.updateGraduationDate)
 
+ipcMain.handle(
+    'delete-fileproject-Examiner',
+    projectController.removeProjectFileExaminer
+)
+ipcMain.handle(
+    'add-fileproject-Examiner',
+    projectController.addProjectFileExaminer
+)
+ipcMain.handle(
+    'remove-project-Examiner',
+    projectController.removeProjectExaminersR
+)
+ipcMain.handle('update-resubmission', projectController.updateResubmission)
+
 /**
  *
  * Opponents

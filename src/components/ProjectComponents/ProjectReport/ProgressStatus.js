@@ -52,48 +52,54 @@ const ProgressStatus = ({ values, allTagData }) => {
             completeA: false,
             step: 1,
         },
-       
+
         {
-            title: 'Create Project',
-            completed: false,
-            completeA: false,
-            step: 1,
-        },
-        {
-            title: 'Looking For Examinar',
+            title: 'Thesis / dessertation Approval',
             completed: false,
             completeA: false,
             step: 2,
         },
         {
-            title: 'Marking In Progress',
+            title: 'Looking For Examinar',
             completed: false,
             completeA: false,
             step: 3,
         },
         {
-            title: 'Waiting For viva approval',
+            title: 'Marking In Progress',
             completed: false,
             completeA: false,
             step: 4,
         },
         {
-            title: 'waiting for viva minutes',
+            title: 'Waiting For viva approval',
             completed: false,
             completeA: false,
             step: 5,
         },
         {
-            title: 'waiting for final submission',
+            title: 'waiting for viva minutes',
             completed: false,
             completeA: false,
             step: 6,
         },
         {
-            title: 'Graduated',
+            title: 'final submission',
             completed: false,
             completeA: false,
             step: 7,
+        },
+        {
+            title: 'Waiting for graduation',
+            completed: false,
+            completeA: false,
+            step: 8,
+        },
+        {
+            title: 'Graduated',
+            completed: false,
+            completeA: false,
+            step: 9,
         },
     ])
     // const ref = useElementSize((size, prevSize, elem) => {})
@@ -124,7 +130,7 @@ const ProgressStatus = ({ values, allTagData }) => {
                         newList[iteration].active = data.active
                         let checkStep =
                             newList[iteration].step === 1 ||
-                            newList[iteration].step === 7
+                            newList[iteration].step === 9
                                 ? false
                                 : true
 
@@ -584,7 +590,7 @@ const Container = styled(Box)`
 
 const StatusContainer = styled(Stack)`
     padding: 10px 20px;
-
+    font-family: 'Inter', sans-serif;
     list-style-type: none;
     position: relative;
     display: flex;
@@ -614,12 +620,14 @@ const StatusContainer = styled(Stack)`
         width: 100px;
         height: 100px;
         height: 7.4vw;
+        height: 100px;
         background: #fef4e3;
         border-radius: 3.7vw;
+        border-radius: 50%;
         position: relative;
         font-family: 'Inter', sans-serif;
         font-style: normal;
-        font-weight: 600;
+        font-weight: 500;
         font-size: 11px;
         line-height: 12px;
 
@@ -634,6 +642,7 @@ const StatusContainer = styled(Stack)`
 
         width: 100px;
         width: 7.4vw;
+        width: 100px;
     }
 
     li:after {

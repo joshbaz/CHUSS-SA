@@ -1,16 +1,30 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Box, Stack } from '@chakra-ui/react'
+import { Box, Stack, Text, Input } from '@chakra-ui/react'
+import { BsInfoCircleFill } from 'react-icons/bs'
+import {
+    MdKeyboardArrowLeft,
+    MdKeyboardArrowRight,
+    MdVerified,
+} from 'react-icons/md'
 
-const UpdateExamineInfo = () => {
+const UpdateExamineInfo = ({ values, projectValues }) => {
     return (
-        <FormContainer>
+        <Container>
             <Box className='form_container'>
                 {/** form title */}
-                <Box className='formtitle'>
-                    <h1>External Examiner</h1>
-                </Box>
+                <Stack
+                    className='formtitle'
+                    direction='row'
+                    w='100%'
+                    alignItems='center'
+                    justifyContent='space-between'>
+                    <Box>
+                        <h1>Verification & Payment</h1>
+                    </Box>
+                </Stack>
 
+                {/** details */}
                 <Stack
                     p='25px 20px'
                     direction='column'
@@ -18,63 +32,91 @@ const UpdateExamineInfo = () => {
                     alignItems='space-between'
                     spacing='15px'
                     h='100%'>
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Thesis/Dissertation Title <span>*</span>
-                            </label>
-                            <fieldset>
-                                <input type='text' />
-                            </fieldset>
-                        </Stack>
-                    </Box>
+                    <Stack
+                        w='100px'
+                        direction='row'
+                        alignItems='center'
+                        spacing='2px'>
+                        <Box
+                            style={{
+                                width: '100%',
+                                color: '#838389',
+                                letterSpacing: '0.02em',
+                                fontSize: '9px',
+                            }}>
+                            {' '}
+                            <Text>Verified Examiner</Text>
+                        </Box>
 
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Thesis/Dissertation Title <span>*</span>
-                            </label>
-                            <fieldset>
-                                <input type='text' />
-                            </fieldset>
-                        </Stack>
-                    </Box>
+                        <Box
+                            style={{
+                                color:
+                                    values !== null &&
+                                    values.generalAppointmentLetters.length > 0
+                                        ? '#293AD1'
+                                        : '#D4D4D6',
+                                fontSize: '15px',
 
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Thesis/Dissertation Title <span>*</span>
-                            </label>
-                            <fieldset>
-                                <input type='text' />
-                            </fieldset>
-                        </Stack>
-                    </Box>
+                                display: 'flex',
+                                justifyContent: 'center',
+                            }}>
+                            <MdVerified />
+                        </Box>
+                    </Stack>
+
+                    {values !== null &&
+                        values.typeOfExaminer === 'External' && (
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing='15px'>
+                                <label htmlFor='phone'>
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems='flex-start'
+                                        spacing='8px'>
+                                        <Text>Proposed Fee</Text>
+                                    </Stack>
+                                </label>
+
+                                <Box className='form_input'>
+                                    <Input
+                                        readOnly
+                                        value={
+                                            projectValues !== null &&
+                                            projectValues.proposedFee
+                                                ? projectValues.proposedFee
+                                                : 'a'
+                                        }
+                                        id='phone'
+                                    />
+                                </Box>
+                            </Stack>
+                        )}
                 </Stack>
             </Box>
-        </FormContainer>
+        </Container>
     )
 }
 
 export default UpdateExamineInfo
 
-const FormContainer = styled(Box)`
-    font-family: Inter;
+const Container = styled(Box)`
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
-        min-height: 325px;
+        min-height: 126px;
         height: 100%;
         background: #ffffff;
         border-radius: 9px;
     }
+
     .formtitle {
         height: 54px;
         width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-bottom: 1px solid #d1d5db;
+
+        border-bottom: 1px solid #ebeefa;
         padding: 0 30px;
         h1 {
             width: 100%;
@@ -87,31 +129,70 @@ const FormContainer = styled(Box)`
         }
     }
 
-    label {
-        font-family: Inter;
+    .s_name {
+        color: #20202a;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
         font-weight: 500;
-        font-size: 14px;
+        font-size: 21px;
         line-height: 20px;
-        color: #464f60;
-        letter-spacing: 0.02em;
+    }
 
-        span {
-            color: #ed1f29;
+    label {
+        width: 70px;
+        p {
+            color: #838389;
+            font-weight: 500;
+            font-size: 10px;
+            line-height: 20px;
         }
     }
 
-    input {
-        background: #ffffff;
-        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
-            0px 0px 0px 1px rgba(134, 143, 160, 0.16);
+    textarea {
+        background: #fefaf2;
         border-radius: 6px;
-        height: 32px;
         width: 100%;
+        height: 79px;
+        padding: 7px 15px;
+
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+        color: #171c26;
     }
 
-    .formfields__Dfieldset {
+    .form_input {
         width: 100%;
+        input {
+            width: 100%;
+        }
+    }
+
+    #SRN {
+        height: 40px;
+    }
+
+    .form_subtitle {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 20px;
+        color: #f14c54;
+        letter-spacing: 0.02em;
+    }
+
+    input {
+        background: #fefaf2;
+        border-radius: 6px;
+
+        height: 32px;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 20px;
     }
 `
-
-

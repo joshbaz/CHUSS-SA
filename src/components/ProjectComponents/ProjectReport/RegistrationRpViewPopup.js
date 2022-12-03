@@ -26,8 +26,8 @@ import { BsFileEarmark } from 'react-icons/bs'
 
 const typeArray = [
     {
-        type: 'Provisonal Admission',
-        value: 'Provisonal Admission',
+        type: 'Provisional Admission',
+        value: 'Provisional Admission',
     },
     {
         type: 'Normal registration',

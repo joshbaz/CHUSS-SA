@@ -1,454 +1,582 @@
-const axios = require("axios");
-const { BASE_API_ } = require("../../base_url.config");
-const FormData = require("form-data");
-const fs = require("fs");
+const axios = require('axios')
+const { BASE_API_ } = require('../../base_url.config')
+const FormData = require('form-data')
+const fs = require('fs')
 //create Project
 exports.createProject = async (event, values) => {
-  try {
-    const fd = new FormData();
+    try {
+        const fd = new FormData()
 
+        fd.append('registrationNumber', values.registrationNumber)
+        fd.append('studentName', values.studentName)
+        fd.append('programType', values.programType)
+        fd.append('degreeProgram', values.degreeProgram)
+        fd.append('schoolName', values.schoolName)
+        fd.append('departmentName', values.departmentName)
+        fd.append('Topic', values.Topic)
+        fd.append('email', values.email)
+        fd.append('phoneNumber', values.phoneNumber)
+        fd.append('alternativeEmail', values.alternativeEmail)
+        fd.append('semesterRegistration', values.semesterRegistration)
+        fd.append('academicYear', values.academicYear)
 
-    fd.append("registrationNumber", values.registrationNumber);
-    fd.append("studentName", values.studentName);
-    fd.append("programType", values.programType);
-    fd.append("degreeProgram", values.degreeProgram);
-    fd.append("schoolName", values.schoolName);
-    fd.append("departmentName", values.departmentName);
-    fd.append("Topic", values.Topic);
-    fd.append("email", values.email);
-    fd.append("phoneNumber", values.phoneNumber);
-    fd.append("alternativeEmail", values.alternativeEmail);
-    fd.append("semesterRegistration", values.semesterRegistration);
-    fd.append("academicYear", values.academicYear);
+        let responseData = await axios.post(
+            `${BASE_API_}/project/v1/create`,
+            fd
+        )
+        console.log('values', responseData.data)
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
 
-    let responseData = await axios.post(`${BASE_API_}/project/v1/create`, fd);
-    console.log("values", responseData.data);
-    let data = {
-      message: responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
 
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
+        return response
     }
-
-    return response;
-  }
-};
+}
 
 //update Project
 exports.updateProject = async (event, values) => {
-  try {
-    const fd = new FormData();
+    try {
+        const fd = new FormData()
 
-    fd.append("registrationNumber", values.registrationNumber);
-    fd.append("studentId", values.studentId);
-    fd.append("studentName", values.studentName);
-    fd.append("programType", values.programType);
-    fd.append("degreeProgram", values.degreeProgram);
-    fd.append("schoolName", values.schoolName);
-    fd.append("departmentName", values.departmentName);
-    fd.append("Topic", values.Topic);
-    fd.append("email", values.email);
-    fd.append("phoneNumber", values.phoneNumber);
-    fd.append("alternativeEmail", values.alternativeEmail);
-    fd.append("semesterRegistration", values.semesterRegistration);
-    fd.append("academicYear", values.academicYear);
+        fd.append('registrationNumber', values.registrationNumber)
+        fd.append('studentId', values.studentId)
+        fd.append('studentName', values.studentName)
+        fd.append('programType', values.programType)
+        fd.append('degreeProgram', values.degreeProgram)
+        fd.append('schoolName', values.schoolName)
+        fd.append('departmentName', values.departmentName)
+        fd.append('Topic', values.Topic)
+        fd.append('email', values.email)
+        fd.append('phoneNumber', values.phoneNumber)
+        fd.append('alternativeEmail', values.alternativeEmail)
+        fd.append('semesterRegistration', values.semesterRegistration)
+        fd.append('academicYear', values.academicYear)
 
-    let responseData = await axios.patch(
-      `${BASE_API_}/project/v1/update/${values.id}`,
-      fd
-    );
+        let responseData = await axios.patch(
+            `${BASE_API_}/project/v1/update/${values.id}`,
+            fd
+        )
 
-    let data = {
-      message: responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
 
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
-
-    return response;
-  }
-};
+}
 
 //get paginated Project
 exports.getProjects = async (event, values) => {
-  try {
-    let responseData = await axios.get(
-      `${BASE_API_}/project/vl/pprojects?page=${values.page}`,
-      values
-    );
-    console.log("values", responseData.data);
-    let data = {
-      ...responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
+    try {
+        let responseData = await axios.get(
+            `${BASE_API_}/project/vl/pprojects?page=${values.page}`,
+            values
+        )
+        console.log('values', responseData.data)
+        let data = {
+            ...responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
 
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
-
-    return response;
-  }
-};
+}
 
 //get all Projects
 exports.getAllProjects = async (event, values) => {
-  try {
-    let responseData = await axios.get(
-        `${BASE_API_}/project/v1/allprojects`,
-        values
-    )
-    console.log("values", responseData.data);
-    let data = {
-      ...responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
+    try {
+        let responseData = await axios.get(
+            `${BASE_API_}/project/v1/allprojects`,
+            values
+        )
+        console.log('values', responseData.data)
+        let data = {
+            ...responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
 
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
-
-    return response;
-  }
-};
+}
 
 /** get individual project */
 
 exports.getIndividualProjects = async (event, id) => {
-  try {
-    let responseData = await axios.get(
-      `${BASE_API_}/project/v1/projects/${id}`
-    );
-    console.log("values", responseData.data);
-    let data = {
-      ...responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
+    try {
+        let responseData = await axios.get(
+            `${BASE_API_}/project/v1/projects/${id}`
+        )
+        console.log('values', responseData.data)
+        let data = {
+            ...responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
 
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
-
-    return response;
-  }
-};
+}
 
 /** update project status */
 exports.updateProjectStatuses = async (event, values) => {
-  try {
-    let responseData = await axios.put(
-      `${BASE_API_}/project/vl/status/update/${values.projectId}`,
-      values
-    );
-    console.log("values", responseData.data);
-    let data = {
-      message: responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
+    try {
+        let responseData = await axios.put(
+            `${BASE_API_}/project/vl/status/update/${values.projectId}`,
+            values
+        )
+        console.log('values', responseData.data)
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
 
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
-
-    return response;
-  }
-};
+}
 
 /** update candidate files */
 exports.updateCandidateFiles = async (event, values) => {
-  try {
-    const fd = new FormData();
+    try {
+        const fd = new FormData()
 
-    if (values.candidatefiles !== null) {
+        if (values.candidatefiles !== null) {
+            let filename =
+                values.filetypename === 'others'
+                    ? values.othername
+                    : values.filetypename
+            fd.append(
+                'projectFiles',
+                fs.createReadStream(values.candidatefiles.url),
+                `${filename}${values.candidatefiles.ext}`
+            )
+        } else {
+        }
 
-      let filename =
-          values.filetypename === 'others'
-              ? values.othername
-              : values.filetypename
-        fd.append(
-            'projectFiles',
-            fs.createReadStream(values.candidatefiles.url),
-            `${filename}${values.candidatefiles.ext}`
+        let responseData = await axios.put(
+            `${BASE_API_}/project/v1/candidatefiles/update/${values.projectId}`,
+            fd
         )
-    } else {
+        //console.log("values", responseData.data);
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
-   
-
-    let responseData = await axios.put(
-        `${BASE_API_}/project/v1/candidatefiles/update/${values.projectId}`,
-        fd
-    )
-    //console.log("values", responseData.data);
-    let data = {
-      message: responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
-
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
-    }
-
-    return response;
-  }
-};
+}
 
 /** update viva files */
 exports.updateVivaFiles = async (event, values) => {
-  try {
-    const fd = new FormData();
+    try {
+        const fd = new FormData()
 
-    if (values.vivafiles !== null) {
+        if (values.vivafiles !== null) {
+            let filename =
+                values.filetypename === 'others'
+                    ? values.othername
+                    : values.filetypename
+            fd.append(
+                'projectFiles',
+                fs.createReadStream(values.vivafiles.url),
+                `${filename}${values.vivafiles.ext}`
+            )
+        } else {
+        }
 
-      let filename =
-          values.filetypename === 'others'
-              ? values.othername
-              : values.filetypename
-        fd.append(
-            'projectFiles',
-            fs.createReadStream(values.vivafiles.url),
-            `${filename}${values.vivafiles.ext}`
+        let responseData = await axios.put(
+            `${BASE_API_}/project/v1/vivafiles/update/${values.projectId}`,
+            fd
         )
-    } else {
+        console.log('values', responseData.data)
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
-   
-
-    let responseData = await axios.put(
-      `${BASE_API_}/project/v1/vivafiles/update/${values.projectId}`,
-      fd
-    );
-    console.log("values", responseData.data);
-    let data = {
-      message: responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
-
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
-    }
-
-    return response;
-  }
-};
+}
 
 /** update viva defense */
 exports.updateVivaDefenseDate = async (event, values) => {
-  try {
-    let responseData = await axios.put(
-      `${BASE_API_}/project/v1/vivadefense/update/${values.projectId}`,
-      values
-    );
-    console.log("values", responseData.data);
-    let data = {
-      message: responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
+    try {
+        let responseData = await axios.put(
+            `${BASE_API_}/project/v1/vivadefense/update/${values.projectId}`,
+            values
+        )
+        console.log('values', responseData.data)
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
 
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
-
-    return response;
-  }
-};
+}
 
 /** update final submission */
 
 exports.updateFinalSubmission = async (event, values) => {
-  try {
-    const fd = new FormData();
+    try {
+        const fd = new FormData()
 
-    if (values.finalsubmitfiles !== null) {
-       let filename =
-           values.filetypename === 'others'
-               ? values.othername
-               : values.filetypename
-        fd.append(
-            'projectFiles',
-            fs.createReadStream(values.finalsubmitfiles.url),
-            `${filename}${values.finalsubmitfiles.ext}`
+        if (values.finalsubmitfiles !== null) {
+            let filename =
+                values.filetypename === 'others'
+                    ? values.othername
+                    : values.filetypename
+            fd.append(
+                'projectFiles',
+                fs.createReadStream(values.finalsubmitfiles.url),
+                `${filename}${values.finalsubmitfiles.ext}`
+            )
+        } else {
+        }
+
+        let responseData = await axios.put(
+            `${BASE_API_}/project/v1/finalsubmission/update/${values.projectId}`,
+            fd
         )
-    } else {
+        console.log('values', responseData.data)
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
-
-    let responseData = await axios.put(
-      `${BASE_API_}/project/v1/finalsubmission/update/${values.projectId}`,
-      fd
-    );
-    console.log("values", responseData.data);
-    let data = {
-      message: responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
-
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
-    }
-
-    return response;
-  }
-};
+}
 
 /** update dateofsubmission */
 exports.updateSubmissionDate = async (event, values) => {
-  try {
-    let responseData = await axios.put(
-      `${BASE_API_}/project/v1/dateofsubmission/update/${values.projectId}`,
-      values
-    );
-    console.log("values", responseData.data);
-    let data = {
-      message: responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
+    try {
+        let responseData = await axios.put(
+            `${BASE_API_}/project/v1/dateofsubmission/update/${values.projectId}`,
+            values
+        )
+        console.log('values', responseData.data)
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
 
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
-
-    return response;
-  }
-};
+}
 
 /** update graduation */
 exports.updateGraduationDate = async (event, values) => {
-  try {
-    let responseData = await axios.put(
-      `${BASE_API_}/project/v1/graduation/update/${values.projectId}`,
-      values
-    );
-    console.log("values", responseData.data);
-    let data = {
-      message: responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorArray = [];
-    errorArray.push(error);
+    try {
+        let responseData = await axios.put(
+            `${BASE_API_}/project/v1/graduation/update/${values.projectId}`,
+            values
+        )
+        console.log('values', responseData.data)
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
 
-    let response = {
-      message: "",
-      type: "error",
-    };
-    if (errorArray.length !== 0 && errorArray[0].response) {
-      response.message = errorArray[0].response.data;
-    } else if (errorArray.length !== 0 && !errorArray[0].response) {
-      response.message = errorArray[0].message;
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
+}
 
-    return response;
-  }
-};
+exports.removeProjectFileExaminer = async (event, values) => {
+    try {
+        let responseData = await axios.patch(
+            `${BASE_API_}/examiner/v1/letter/projectexaminer/delete/${values.projectId}/${values.fileId}`
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
+    }
+}
+
+exports.addProjectFileExaminer = async (event, values) => {
+    try {
+        const fd = new FormData()
+        if (values.projectAppLetter !== null) {
+            fd.append(
+                'projectFiles',
+                fs.createReadStream(values.projectAppLetter.url),
+                `projectAppLetter${values.projectAppLetter.ext}`
+            )
+        } else {
+        }
+        let responseData = await axios.patch(
+            `${BASE_API_}/examiner/v1/letter/projectexaminer/add/${values.projectId}/${values.examinerId}`,
+            fd
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
+    }
+}
+
+/** remove examiners from project */
+exports.removeProjectExaminersR = async (event, values) => {
+    try {
+        let responseData = await axios.patch(
+            `${BASE_API_}/examiner/v1/projectexaminers/remove/${values.projectId}/${values.exId}/${values.secId}`,
+            values
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
+    }
+}
+
+/** update graduation */
+exports.updateResubmission = async (event, values) => {
+    try {
+        let responseData = await axios.patch(
+            `${BASE_API_}/project/v1/resubmission/update/${values.projectId}`,
+            values
+        )
+     
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
+    }
+}

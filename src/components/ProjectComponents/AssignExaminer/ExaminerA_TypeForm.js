@@ -2,7 +2,12 @@ import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Select, Input } from '@chakra-ui/react'
 
-const ExaminerATypeForm = ({ values, handleChange, individualProject }) => {
+const ExaminerATypeForm = ({
+    values,
+    handleChange,
+    individualProject,
+    errors,
+}) => {
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -32,6 +37,11 @@ const ExaminerATypeForm = ({ values, handleChange, individualProject }) => {
                                     <option value='External'>Yes</option>
                                     <option value='Internal'>No</option>
                                 </Select>
+                                {errors && errors.typeOfExaminer ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.typeOfExaminer}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -78,7 +88,7 @@ const ExaminerATypeForm = ({ values, handleChange, individualProject }) => {
 export default ExaminerATypeForm
 
 const FormContainer = styled(Box)`
-    font-family: Inter;
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -107,7 +117,7 @@ const FormContainer = styled(Box)`
     }
 
     label {
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-weight: 500;
         font-size: 14px;
         line-height: 20px;
@@ -145,5 +155,17 @@ const FormContainer = styled(Box)`
 
     .formfields__Dfieldset {
         width: 100%;
+    }
+`
+
+const ErrorMsg = styled(Box)`
+    font-size: 13px;
+    line-height: 20px;
+    padding: 5px 10px;
+    color: #f14c54;
+    font-family: 'Inter', sans-serif;
+
+    .filesError {
+        padding: 0;
     }
 `

@@ -1,19 +1,120 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { Box, Stack, Text } from '@chakra-ui/react'
+import {
+    Box,
+    Stack,
+    Text,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    useDisclosure,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalBody,
+} from '@chakra-ui/react'
 import { BsListUl } from 'react-icons/bs'
 import { RiLayoutGridFill } from 'react-icons/ri'
 import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 
-const ViewExaminerFiles = ({ values }) => {
+const ViewExaminerFiles = ({ values, projectValues }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
     const [filesList, setFilesList] = React.useState([])
+    const [filesList2, setFilesList2] = React.useState([])
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [selectedFile, setSelectedFile] = React.useState(null)
+    const [nameValues, setNameValues] = React.useState('examiner')
 
     useEffect(() => {
         if (values !== null && values.generalAppointmentLetters.length > 0) {
+            console.log(values.generalAppointmentLetters, 'at again')
             setFilesList(values.generalAppointmentLetters)
+            setNameValues(values.name)
         }
     }, [values])
+
+    useEffect(() => {
+        if (projectValues !== null && values !== null) {
+            console.log('projectValues', projectValues)
+            console.log('values', values)
+            setNameValues(values.name)
+
+            let examinerToFind = values._id
+            let arrayToCheck = projectValues.examiners
+
+            let checks = arrayToCheck.find(
+                (data) => data.examinerId._id === examinerToFind
+            )
+
+            if (checks && checks.projectAppointmentLetter) {
+                setFilesList2([{ ...checks.projectAppointmentLetter }])
+            }
+            console.log('checks', checks)
+        }
+    }, [projectValues, values])
+
+    //size format
+    const formatSize = (size) => {
+        var i = Math.floor(Math.log(size) / Math.log(1024))
+        return (
+            (size / Math.pow(1024, i)).toFixed(2) * 1 +
+            ' ' +
+            ['B', 'KB', 'MB', 'GB', 'TB'][i]
+        )
+    }
+
+    /** function to download file */
+    const handleDownloadFile = async (data) => {
+        const dataGiven = await window.electronAPI.getdownloadFile(data.fileId)
+        console.log(dataGiven, 'testing')
+
+        if (!dataGiven.message) {
+            let newData = {
+                ...dataGiven,
+            }
+            if (nameValues !== null) {
+                console.log(nameValues, 'nameValues')
+                let newNameValue = nameValues.toString().split(' ')[0]
+
+                newData = {
+                    ...newData,
+                    name: newNameValue,
+                    filename: data.fileName ? data.fileName : 'examiner',
+                }
+            } else {
+            }
+
+            const performDowload = await window.electronAPI.downloadFile(
+                newData
+            )
+
+            console.log('messahe', performDowload)
+            // if (performDowload.message) {
+            //     alert(performDowload.message)
+            // }
+        }
+    }
+
+    /** function to handle viewing file */
+    const handleFileView = async (data) => {
+        // const dataGiven = await window.electronAPI.getViewFile(
+        //     data.files.fileId
+        // )
+
+        const dataGiven = 'herer'
+
+        console.log(dataGiven, 'given', data.fileId)
+        setSelectedFile([
+            {
+                uri: `https://chuss-test.herokuapp.com/docs/files/${data.fileId}`,
+                fileType: data.fileType,
+                fileData: new ArrayBuffer(dataGiven),
+            },
+        ])
+        onOpen()
+    }
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -52,134 +153,443 @@ const ViewExaminerFiles = ({ values }) => {
                     alignItems='space-between'
                     spacing='15px'
                     h='100%'>
-                    {filesList.length > 0 ? (
+                    {filesList.length > 0 || filesList2.length > 0 ? (
                         <Box>
                             {selectedView === 'grid' ? (
                                 <Stack direction='row'>
-                                    {filesList.map((data, index) => (
-                                        <FileStack
-                                            key={index}
-                                            w='202.6px'
-                                            h='168px'
-                                            direction='column'
-                                            alignitems='space-between'
-                                            className='filedoc'>
-                                            <Box
-                                                h='96px'
-                                                className='icon_wrap '>
-                                                <Stack
-                                                    spacing='0'
-                                                    direction='column'
-                                                    w='55px'
-                                                    h='55px'
-                                                    className='icon_stack doc'>
-                                                    <Box>
-                                                        <BsFileEarmark />
-                                                    </Box>
-                                                    <Text>
-                                                        {
-                                                            data.fileId
-                                                                .fileExtension
-                                                        }
-                                                    </Text>
-                                                </Stack>
-                                            </Box>
+                                    {filesList.length > 0 && (
+                                        <>
+                                            {' '}
+                                            {filesList.map((data, index) => {
+                                                let size
 
-                                            <Box>
-                                                <Stack
-                                                    direction='row'
-                                                    justifyContent={
-                                                        'space-between'
-                                                    }
-                                                    padding='0 20px'
-                                                    alignItems='center'>
-                                                    <Stack direction='column'>
-                                                        <Text className='filename'>
-                                                            {
-                                                                data.fileId
-                                                                    .fileName
-                                                            }
-                                                        </Text>
-                                                        <Text className='filesize'>
-                                                            {
-                                                                data.fileId
-                                                                    .fileSize
-                                                            }
-                                                        </Text>
-                                                    </Stack>
-                                                    <Box color='#838389'>
-                                                        <BsThreeDots />
-                                                    </Box>
-                                                </Stack>
-                                            </Box>
-                                        </FileStack>
-                                    ))}
+                                                if (data.fileId.fileSize) {
+                                                    size = formatSize(
+                                                        parseInt(
+                                                            data.fileId.fileSize
+                                                        )
+                                                    )
+                                                } else {
+                                                }
+                                                return (
+                                                    <FileStack
+                                                        key={index}
+                                                        w='202.6px'
+                                                        h='168px'
+                                                        direction='column'
+                                                        alignitems='space-between'
+                                                        className='filedoc'>
+                                                        <Box
+                                                            h='96px'
+                                                            className='icon_wrap '>
+                                                            <Stack
+                                                                spacing='0'
+                                                                direction='column'
+                                                                w='55px'
+                                                                h='55px'
+                                                                className='icon_stack doc'>
+                                                                <Box>
+                                                                    <BsFileEarmark />
+                                                                </Box>
+                                                                <Text>
+                                                                    {
+                                                                        data
+                                                                            .fileId
+                                                                            .fileExtension
+                                                                    }
+                                                                </Text>
+                                                            </Stack>
+                                                        </Box>
+
+                                                        <Box>
+                                                            <Stack
+                                                                direction='row'
+                                                                justifyContent={
+                                                                    'space-between'
+                                                                }
+                                                                padding='0 20px'
+                                                                alignItems='center'>
+                                                                <Stack direction='column'>
+                                                                    <Text className='filename'>
+                                                                        {
+                                                                            data
+                                                                                .fileId
+                                                                                .fileName
+                                                                        }
+                                                                    </Text>
+                                                                    <Text className='filesize'>
+                                                                        {size}
+                                                                    </Text>
+                                                                </Stack>
+                                                                <Box>
+                                                                    <Menu>
+                                                                        <MenuButton>
+                                                                            <Box color='#838389'>
+                                                                                <BsThreeDots />
+                                                                            </Box>
+                                                                        </MenuButton>
+
+                                                                        <MenuList>
+                                                                            <MenuItem
+                                                                                onClick={() =>
+                                                                                    handleFileView(
+                                                                                        data.fileId
+                                                                                    )
+                                                                                }
+                                                                                fontSize={
+                                                                                    '14px'
+                                                                                }>
+                                                                                View
+                                                                                File
+                                                                            </MenuItem>
+                                                                            <MenuItem
+                                                                                onClick={() =>
+                                                                                    handleDownloadFile(
+                                                                                        data.fileId
+                                                                                    )
+                                                                                }
+                                                                                fontSize={
+                                                                                    '14px'
+                                                                                }>
+                                                                                Download
+                                                                                File
+                                                                            </MenuItem>
+                                                                        </MenuList>
+                                                                    </Menu>
+                                                                </Box>
+                                                            </Stack>
+                                                        </Box>
+                                                    </FileStack>
+                                                )
+                                            })}
+                                        </>
+                                    )}
+
+                                    {filesList2.length > 0 && (
+                                        <>
+                                            {' '}
+                                            {filesList2.map((data, index) => {
+                                                let size
+
+                                                if (data.fileSize) {
+                                                    size = formatSize(
+                                                        parseInt(data.fileSize)
+                                                    )
+                                                } else {
+                                                }
+                                                return (
+                                                    <FileStack
+                                                        key={index}
+                                                        w='202.6px'
+                                                        h='168px'
+                                                        direction='column'
+                                                        alignitems='space-between'
+                                                        className='filedoc'>
+                                                        <Box
+                                                            h='96px'
+                                                            className='icon_wrap '>
+                                                            <Stack
+                                                                spacing='0'
+                                                                direction='column'
+                                                                w='55px'
+                                                                h='55px'
+                                                                className='icon_stack doc'>
+                                                                <Box>
+                                                                    <BsFileEarmark />
+                                                                </Box>
+                                                                <Text>
+                                                                    {
+                                                                        data.fileExtension
+                                                                    }
+                                                                </Text>
+                                                            </Stack>
+                                                        </Box>
+
+                                                        <Box>
+                                                            <Stack
+                                                                direction='row'
+                                                                justifyContent={
+                                                                    'space-between'
+                                                                }
+                                                                padding='0 20px'
+                                                                alignItems='center'>
+                                                                <Stack direction='column'>
+                                                                    <Text className='filename'>
+                                                                        {
+                                                                            data.fileName
+                                                                        }
+                                                                    </Text>
+                                                                    <Text className='filesize'>
+                                                                        {size}
+                                                                    </Text>
+                                                                </Stack>
+                                                                <Box>
+                                                                    <Menu>
+                                                                        <MenuButton>
+                                                                            <Box color='#838389'>
+                                                                                <BsThreeDots />
+                                                                            </Box>
+                                                                        </MenuButton>
+
+                                                                        <MenuList>
+                                                                            <MenuItem
+                                                                                onClick={() =>
+                                                                                    handleFileView(
+                                                                                        data
+                                                                                    )
+                                                                                }
+                                                                                fontSize={
+                                                                                    '14px'
+                                                                                }>
+                                                                                View
+                                                                                File
+                                                                            </MenuItem>
+                                                                            <MenuItem
+                                                                                onClick={() =>
+                                                                                    handleDownloadFile(
+                                                                                        data
+                                                                                    )
+                                                                                }
+                                                                                fontSize={
+                                                                                    '14px'
+                                                                                }>
+                                                                                Download
+                                                                                File
+                                                                            </MenuItem>
+                                                                        </MenuList>
+                                                                    </Menu>
+                                                                </Box>
+                                                            </Stack>
+                                                        </Box>
+                                                    </FileStack>
+                                                )
+                                            })}
+                                        </>
+                                    )}
                                 </Stack>
                             ) : (
                                 <Stack direction='row'>
-                                    {filesList.map((data, index) => (
-                                        <FileStack
-                                            key={index}
-                                            direction='row'
-                                            alignitems='center'
-                                            justifyContent='space-between'
-                                            w='293px'
-                                            h='64px'
-                                            padding='0 12px'
-                                            className='filedoc'>
-                                            <Stack
-                                                spacing='10px'
-                                                direction='row'
-                                                alignitems='center'>
-                                                <Box className='icon_wrap '>
-                                                    <Stack
-                                                        w='45px'
-                                                        h='45px'
-                                                        spacing='0'
-                                                        direction='column'
-                                                        className='icon_stack doc'>
-                                                        <Box>
-                                                            <BsFileEarmark />
-                                                        </Box>
-                                                        <Text>
-                                                            {
-                                                                data.fileId
-                                                                    .fileExtension
-                                                            }
-                                                        </Text>
-                                                    </Stack>
-                                                </Box>
+                                    {filesList.length > 0 && (
+                                        <>
+                                            {filesList.map((data, index) => {
+                                                let size
 
-                                                <Box>
-                                                    <Stack
-                                                        h='100%'
+                                                if (data.fileId.fileSize) {
+                                                    size = formatSize(
+                                                        parseInt(
+                                                            data.fileId.fileSize
+                                                        )
+                                                    )
+                                                } else {
+                                                }
+                                                return (
+                                                    <FileStack
+                                                        key={index}
                                                         direction='row'
-                                                        alignItems='center'>
-                                                        <Stack direction='column'>
-                                                            <Text className='filename'>
-                                                                {
-                                                                    data.fileId
-                                                                        .fileName
-                                                                }
-                                                            </Text>
-                                                            <Text className='filesize'>
-                                                                {
-                                                                    data.fileId
-                                                                        .fileSize
-                                                                }
-                                                            </Text>
-                                                        </Stack>
-                                                    </Stack>
-                                                </Box>
-                                            </Stack>
+                                                        alignitems='center'
+                                                        justifyContent='space-between'
+                                                        w='293px'
+                                                        h='64px'
+                                                        padding='0 12px'
+                                                        className='filedoc'>
+                                                        <Stack
+                                                            spacing='10px'
+                                                            direction='row'
+                                                            alignitems='center'>
+                                                            <Box className='icon_wrap '>
+                                                                <Stack
+                                                                    w='45px'
+                                                                    h='45px'
+                                                                    spacing='0'
+                                                                    direction='column'
+                                                                    className='icon_stack doc'>
+                                                                    <Box>
+                                                                        <BsFileEarmark />
+                                                                    </Box>
+                                                                    <Text>
+                                                                        {
+                                                                            data
+                                                                                .fileId
+                                                                                .fileExtension
+                                                                        }
+                                                                    </Text>
+                                                                </Stack>
+                                                            </Box>
 
-                                            <Stack justifyContent='center'>
-                                                <Box color='#838389'>
-                                                    <BsThreeDots />
-                                                </Box>
-                                            </Stack>
-                                        </FileStack>
-                                    ))}
+                                                            <Box>
+                                                                <Stack
+                                                                    h='100%'
+                                                                    direction='row'
+                                                                    alignItems='center'>
+                                                                    <Stack direction='column'>
+                                                                        <Text className='filename'>
+                                                                            {
+                                                                                data
+                                                                                    .fileId
+                                                                                    .fileName
+                                                                            }
+                                                                        </Text>
+                                                                        <Text className='filesize'>
+                                                                            {
+                                                                                size
+                                                                            }
+                                                                        </Text>
+                                                                    </Stack>
+                                                                </Stack>
+                                                            </Box>
+                                                        </Stack>
+
+                                                        <Stack justifyContent='center'>
+                                                            <Box>
+                                                                <Menu>
+                                                                    <MenuButton>
+                                                                        <Box color='#838389'>
+                                                                            <BsThreeDots />
+                                                                        </Box>
+                                                                    </MenuButton>
+
+                                                                    <MenuList>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                handleFileView(
+                                                                                    data.fileId
+                                                                                )
+                                                                            }
+                                                                            fontSize={
+                                                                                '14px'
+                                                                            }>
+                                                                            View
+                                                                            File
+                                                                        </MenuItem>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                handleDownloadFile(
+                                                                                    data.fileId
+                                                                                )
+                                                                            }
+                                                                            fontSize={
+                                                                                '14px'
+                                                                            }>
+                                                                            Download
+                                                                            File
+                                                                        </MenuItem>
+                                                                    </MenuList>
+                                                                </Menu>
+                                                            </Box>
+                                                        </Stack>
+                                                    </FileStack>
+                                                )
+                                            })}
+                                        </>
+                                    )}
+
+                                    {filesList2.length > 0 && (
+                                        <>
+                                            {filesList2.map((data, index) => {
+                                                let size
+
+                                                if (data.fileSize) {
+                                                    size = formatSize(
+                                                        parseInt(data.fileSize)
+                                                    )
+                                                } else {
+                                                }
+                                                return (
+                                                    <FileStack
+                                                        key={index}
+                                                        direction='row'
+                                                        alignitems='center'
+                                                        justifyContent='space-between'
+                                                        w='293px'
+                                                        h='64px'
+                                                        padding='0 12px'
+                                                        className='filedoc'>
+                                                        <Stack
+                                                            spacing='10px'
+                                                            direction='row'
+                                                            alignitems='center'>
+                                                            <Box className='icon_wrap '>
+                                                                <Stack
+                                                                    w='45px'
+                                                                    h='45px'
+                                                                    spacing='0'
+                                                                    direction='column'
+                                                                    className='icon_stack doc'>
+                                                                    <Box>
+                                                                        <BsFileEarmark />
+                                                                    </Box>
+                                                                    <Text>
+                                                                        {
+                                                                            data.fileExtension
+                                                                        }
+                                                                    </Text>
+                                                                </Stack>
+                                                            </Box>
+
+                                                            <Box>
+                                                                <Stack
+                                                                    h='100%'
+                                                                    direction='row'
+                                                                    alignItems='center'>
+                                                                    <Stack direction='column'>
+                                                                        <Text className='filename'>
+                                                                            {
+                                                                                data.fileName
+                                                                            }
+                                                                        </Text>
+                                                                        <Text className='filesize'>
+                                                                            {
+                                                                                size
+                                                                            }
+                                                                        </Text>
+                                                                    </Stack>
+                                                                </Stack>
+                                                            </Box>
+                                                        </Stack>
+
+                                                        <Stack justifyContent='center'>
+                                                            <Box>
+                                                                <Menu>
+                                                                    <MenuButton>
+                                                                        <Box color='#838389'>
+                                                                            <BsThreeDots />
+                                                                        </Box>
+                                                                    </MenuButton>
+
+                                                                    <MenuList>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                handleFileView(
+                                                                                    data
+                                                                                )
+                                                                            }
+                                                                            fontSize={
+                                                                                '14px'
+                                                                            }>
+                                                                            View
+                                                                            File
+                                                                        </MenuItem>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                handleDownloadFile(
+                                                                                    data
+                                                                                )
+                                                                            }
+                                                                            fontSize={
+                                                                                '14px'
+                                                                            }>
+                                                                            Download
+                                                                            File
+                                                                        </MenuItem>
+                                                                    </MenuList>
+                                                                </Menu>
+                                                            </Box>
+                                                        </Stack>
+                                                    </FileStack>
+                                                )
+                                            })}
+                                        </>
+                                    )}
                                 </Stack>
                             )}
                         </Box>
@@ -190,6 +600,31 @@ const ViewExaminerFiles = ({ values }) => {
                     )}
                 </Stack>
             </Box>
+
+            {/** modal for viewing file */}
+            <Modal w='100vw' isOpen={isOpen} p='0' onClose={onClose} size=''>
+                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
+                <ModalContent p='0' style={{ width: '60vw', height: '80vh' }}>
+                    <ModalBody p='0' style={{ width: '100%', height: '80vh' }}>
+                        <Box style={{ width: '100%', height: '80vh' }}>
+                            <DocViewer
+                                className='documentViewer'
+                                prefetchMethod='GET'
+                                documents={selectedFile}
+                                pluginRenderers={DocViewerRenderers}
+                                config={{
+                                    header: {
+                                        disableHeader: true,
+                                        disableFileName: true,
+                                        retainURLParams: false,
+                                    },
+                                }}
+                                style={{ width: '100%', height: '80vh' }}
+                            />
+                        </Box>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </FormContainer>
     )
 }

@@ -30,8 +30,8 @@ import {
 
 const typeArray = [
     {
-        type: 'Provisonal Admission',
-        value: 'Provisonal Admission',
+        type: 'Provisional Admission',
+        value: 'Provisional Admission',
     },
     {
         type: 'Normal registration',
@@ -60,10 +60,11 @@ const semArray = [
 
 const filetype = [
     {
-        type: 'viva_minutes',
+        type: 'provisional_admission',
     },
-    { type: 'viva_approval' },
-    { type: 'compliance' },
+    { type: 'full_admission' },
+    { type: 'normal' },
+    { type: 'de_registered' },
     {
         type: 'others',
     },
@@ -124,44 +125,44 @@ const RegistrationRpCreatePopup = ({
         setFieldValue('regfiles', null)
     }
 
-      React.useEffect(() => {
-          if (isError) {
-              if (helperFunctions !== null) {
-                  toast({
-                      position: 'top',
-                      title: message.message,
-                      status: 'error',
-                      duration: 10000,
-                      isClosable: true,
-                  })
-                  setIsSubmittingp(false)
-                  helperFunctions.setSubmitting(false)
-                  setIsSubmittingp(false)
-              }
+    React.useEffect(() => {
+        if (isError) {
+            if (helperFunctions !== null) {
+                toast({
+                    position: 'top',
+                    title: message.message,
+                    status: 'error',
+                    duration: 10000,
+                    isClosable: true,
+                })
+                setIsSubmittingp(false)
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
+            }
 
-              dispatch(reset())
-          }
+            dispatch(reset())
+        }
 
-          if (isSuccess && isSubmittingp) {
-              if (helperFunctions !== null) {
-                  toast({
-                      position: 'top',
-                      title: message.message,
-                      status: 'success',
-                      duration: 10000,
-                      isClosable: true,
-                  })
-                  helperFunctions.resetForm()
-                  helperFunctions.setSubmitting(false)
-                  setIsSubmittingp(false)
-                  setHelperFunctions(null)
+        if (isSuccess && isSubmittingp) {
+            if (helperFunctions !== null) {
+                toast({
+                    position: 'top',
+                    title: message.message,
+                    status: 'success',
+                    duration: 10000,
+                    isClosable: true,
+                })
+                helperFunctions.resetForm()
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
+                setHelperFunctions(null)
 
-                  // setFileUploadActive(false)
-                  dispatch(reset())
-              }
-          }
-          dispatch(reset())
-      }, [isError, isSuccess, message, dispatch])
+                // setFileUploadActive(false)
+                dispatch(reset())
+            }
+        }
+        dispatch(reset())
+    }, [isError, isSuccess, message, dispatch])
 
     return (
         <Modal

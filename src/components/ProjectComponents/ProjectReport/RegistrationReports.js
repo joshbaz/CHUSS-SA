@@ -83,6 +83,7 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
     const [removeActive, setRemoveActive] = React.useState(false)
     const [removeDetails, setRemoveDetails] = React.useState(null)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+   
 
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()

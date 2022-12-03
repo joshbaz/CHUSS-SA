@@ -18,22 +18,40 @@ import { HiPencil } from 'react-icons/hi'
 import { useDispatch, useSelector } from 'react-redux'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
+import {
+    updateResubmission,
+    reset,
+} from '../../../store/features/project/projectSlice'
 const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
     const [projectId, setProjectId] = React.useState('')
+    const [submissionType, setSubmissionType] = React.useState({
+        submissionStatus: '',
+        projectId: '',
+    })
+    const [editSubmissionType, setEditSubmissionType] = React.useState({
+        submissionStatus: '',
+        projectId: '',
+    })
     const [editStatusActive, setEditStatusActive] = React.useState(false)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+    const [changeMade, setChangeMade] = React.useState(false)
     const [helperFunctions, setHelperFunctions] = React.useState(null)
     let dispatch = useDispatch()
     let toast = useToast()
     let { isSuccess, isError, message } = useSelector((state) => state.project)
     React.useEffect(() => {
-        if (values !== null && values._id) {
+        if (values !== null && values._id && values.submissionStatus) {
             setProjectId(values._id)
+            let newValues = {
+                projectId: values._id,
+                submissionStatus: values.submissionStatus,
+            }
+            setSubmissionType(() => newValues)
         }
     }, [values])
     const openEditUpload = () => {
         setEditStatusActive(true)
-
+        setEditSubmissionType(() => submissionType)
         // onClose()
     }
 
@@ -43,6 +61,50 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
 
         // onClose()
     }
+
+    //handle statusChnage
+    const changeStatus = (val) => {
+        console.log('changes', val)
+        setChangeMade(() => false)
+        let newValues = {
+            projectId: projectId,
+            submissionStatus: val,
+        }
+        setEditSubmissionType(() => newValues)
+
+        if (val !== submissionType.submissionStatus) {
+            setChangeMade(() => true)
+        }
+    }
+
+    const onHandleSubmitting = () => {
+        dispatch(updateResubmission(editSubmissionType))
+        setIsSubmittingp(true)
+    }
+
+    React.useEffect(() => {
+        if (isError) {
+            setIsSubmittingp(() => false)
+            dispatch(reset())
+        }
+
+        if (isSuccess && isSubmittingp) {
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            setIsSubmittingp(() => false)
+            setChangeMade(() => false)
+            setEditStatusActive(false)
+            // setFileUploadActive(false)
+            dispatch(reset())
+        }
+        dispatch(reset())
+    }, [isError, isSuccess, message, dispatch, isSubmittingp])
     return (
         <Container
             direction='row'
@@ -51,19 +113,25 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
             p='0px 27px'>
             <Box className='st_title'>Submission Status</Box>
             <Stack direction='row' spacing='20px' alignItems={'flex-end'}>
-                <Box className='st_text'>Normal</Box>
+                {submissionType.submissionStatus === 'normal' ? (
+                    <Box className='st_text'>Normal</Box>
+                ) : (
+                    <Box className='st_text'>Re-submission</Box>
+                )}
+
                 <EditIcon onClick={openEditUpload}>
                     <HiPencil />
                 </EditIcon>
             </Stack>
 
             <Modal
-                w='100vw'
+                size=''
+                w=''
                 isOpen={editStatusActive}
                 p='0'
-                onClose={() => setEditStatusActive(!editStatusActive)}>
+                onClose={() => cancelSubmissionUpload()}>
                 <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
-                <ModalContent p='0'>
+                <ModalContent p='0' w=''>
                     <ModalBody p='0'>
                         <PopupForm
                             p='0px'
@@ -83,24 +151,34 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
                                 </Stack>
 
                                 <Stack
-                                    p='10px 20px 10px 20px'
+                                    p='10px 20px 10px 40px'
                                     spacing={'40px'}
                                     direction='row'
                                     w='100%'
+                                    minW='500px'
                                     className='list_text'>
                                     {/** submission type */}
                                     <Stack
                                         className='form_input'
                                         direction='column'
                                         w='100%'>
-                                        <Box>Submission Type</Box>
+                                        <Box className='content_title'>
+                                            Submission Status
+                                        </Box>
 
-                                        <RadioGroup>
+                                        <RadioGroup
+                                            size='md'
+                                            value={
+                                                editSubmissionType.submissionStatus
+                                            }
+                                            onChange={(val) =>
+                                                changeStatus(val)
+                                            }>
                                             <Stack direction='column'>
-                                                <Radio value='Normal'>
+                                                <Radio value={'normal'}>
                                                     Normal
                                                 </Radio>
-                                                <Radio value='Re-submission'>
+                                                <Radio value={'resubmission'}>
                                                     Re-submission
                                                 </Radio>
                                             </Stack>
@@ -108,7 +186,10 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
                                     </Stack>
 
                                     {/** Academic Year */}
-                                    <Stack
+                                    {/**
+                                         * 
+
+   <Stack
                                         className='form_input'
                                         direction='column'
                                         w='100%'>
@@ -126,8 +207,12 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
                                         </RadioGroup>
                                     </Stack>
 
+
+                                         */}
+
                                     {/** semester */}
-                                    <Stack
+                                    {/**
+                                         * <Stack
                                         className='form_input'
                                         direction='column'
                                         w='100%'>
@@ -144,6 +229,9 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
                                             </Stack>
                                         </RadioGroup>
                                     </Stack>
+                                         * 
+                                         * 
+                                         */}
                                 </Stack>
                             </Stack>
                             <Stack
@@ -162,10 +250,10 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
                                     Cancel
                                 </Button>
                                 <Button
-                                    disabled={false}
+                                    onClick={onHandleSubmitting}
+                                    disabled={changeMade ? false : true}
                                     isLoading={isSubmittingp ? true : false}
-                                    className='apply_button'
-                                    type='submit'>
+                                    className='apply_button'>
                                     Confirm
                                 </Button>
                             </Stack>
@@ -190,7 +278,7 @@ const Container = styled(Stack)`
         font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
-        font-size: 17px;
+        font-size: 15px;
         line-height: 21px;
         color: #1a2240;
     }
@@ -198,7 +286,7 @@ const Container = styled(Stack)`
     .st_text {
         font-style: normal;
         font-weight: 500;
-        font-size: 18px;
+        font-size: 14px;
         line-height: 24px;
         color: #1a2240;
         text-transform: uppercase;
@@ -269,6 +357,12 @@ const PopupForm = styled(Stack)`
             content: '';
             padding-right: 0px;
         }
+    }
+    .content_title {
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 20px;
+        color: #464f60;
     }
 
     input {

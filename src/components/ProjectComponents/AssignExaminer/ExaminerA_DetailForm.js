@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
 
-const ExaminerADetailForm = ({ values, handleChange }) => {
+const ExaminerADetailForm = ({ values, handleChange, errors }) => {
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -32,6 +32,12 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
                                     onChange={handleChange}
                                     placeholder={'i.e Prof. or Assoc.Prof.'}
                                 />
+
+                                {errors && errors.jobtitle ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.jobtitle}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -49,6 +55,12 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
                                     onChange={handleChange}
                                     placeholder={'i.e Apollo Kimani'}
                                 />
+
+                                {errors && errors.name ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.name}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -68,6 +80,12 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
                                     onChange={handleChange}
                                     placeholder={'email i.e apollo@yahoo.com'}
                                 />
+
+                                {errors && errors.email ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.email}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                         <Stack
@@ -84,6 +102,11 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
                                     onChange={handleChange}
                                     placeholder={'e.g 256787785114'}
                                 />
+                                {errors && errors.phoneNumber ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.phoneNumber}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Stack>
@@ -101,6 +124,12 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
                                     onChange={handleChange}
                                     placeholder={'postalAddress'}
                                 />
+
+                                {errors && errors.postalAddress ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.postalAddress}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -117,6 +146,12 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
                                     onChange={handleChange}
                                     placeholder={'i.e Uganda'}
                                 />
+
+                                {errors && errors.countryOfResidence ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.countryOfResidence}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -136,6 +171,12 @@ const ExaminerADetailForm = ({ values, handleChange }) => {
                                     onChange={handleChange}
                                     placeholder={'i.e Makerere University'}
                                 />
+
+                                {errors && errors.placeOfWork ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.placeOfWork}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -217,5 +258,17 @@ const FormContainer = styled(Box)`
 
     .formfields__Dfieldset {
         width: 100%;
+    }
+`
+
+const ErrorMsg = styled(Box)`
+    font-size: 13px;
+    line-height: 20px;
+    padding: 5px 10px;
+    color: #f14c54;
+    font-family: 'Inter', sans-serif;
+
+    .filesError {
+        padding: 0;
     }
 `
