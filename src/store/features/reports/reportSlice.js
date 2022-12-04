@@ -15,10 +15,11 @@ let initialState = {
 
 /** update report */
 export const updateExaminerReport = createAsyncThunk(
-    'reports/update',
+    'reports/f/update',
     async (values, thunkAPI) => {
+        console.log('are we even here et')
         const updateAttempt = await reportService.updateExaminerReport(values)
-
+        console.log('are we even here yet')
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
@@ -54,6 +55,21 @@ export const getAllExaminerReports = createAsyncThunk(
         }
     }
 )
+
+/** remove report file */
+export const removeExRpfiles = createAsyncThunk(
+    'reports/removeExfile',
+    async (values, thunkAPI) => {
+        const removeAttempt = await reportService.removeExRpfiles(values)
+
+        if (removeAttempt.type === 'success') {
+            return removeAttempt
+        } else {
+            return thunkAPI.rejectWithValue(removeAttempt.message)
+        }
+    }
+)
+
 export const reportSlice = createSlice({
     name: 'report',
     initialState,
@@ -104,6 +120,20 @@ export const reportSlice = createSlice({
                 state.allreports = action.payload
             })
             .addCase(getAllExaminerReports.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            //remove a report file
+            .addCase(removeExRpfiles.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(removeExRpfiles.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(removeExRpfiles.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

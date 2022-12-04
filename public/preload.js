@@ -29,12 +29,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('update-graduationdate', values),
     updateResubmission: (values) =>
         ipcRenderer.invoke('update-resubmission', values),
+    updatesAllRedone: (values) =>
+        ipcRenderer.invoke('updates-od-reportsss', values),
     deleteFileExaminer: (values) =>
         ipcRenderer.invoke('delete-fileproject-Examiner', values),
     addFileExaminer: (values) =>
         ipcRenderer.invoke('add-fileproject-Examiner', values),
     removeProjectExaminer: (values) =>
         ipcRenderer.invoke('remove-project-Examiner', values),
+    /** remove project files */
+    removeCaFiles: (values) => ipcRenderer.invoke('remove-cfiles', values),
+    removeViFiles: (values) => ipcRenderer.invoke('remove-vifiles', values),
+    removeFinalSFiles: (values) =>
+        ipcRenderer.invoke('remove-fiSfiles', values),
     /** registration */
     createRegistration: (values) =>
         ipcRenderer.invoke('create-registration', values),
@@ -93,11 +100,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('update-opponent-report', values),
     getOpponentReport: (id) => ipcRenderer.invoke('get-opponent-report', id),
     /**reports */
-    updateExaminerReport: (values) =>
-        ipcRenderer.invoke('update-examiner-report', values),
+    updateExamiiinerReport: (values) =>
+        ipcRenderer.invoke('update-examiner-reportsss', values),
     getExaminerReport: (id) => ipcRenderer.invoke('get-examiner-report', id),
     getAllExaminerReports: (values) =>
         ipcRenderer.invoke('get-all-examiner-reports', values),
+    /** remove examiner report files */
+    removeExRpfiles: (values) => ipcRenderer.invoke('remove-exrpfiles', values),
     /** tags */
     createTags: (values) => ipcRenderer.invoke('create-tags', values),
     getAllTags: (values) => ipcRenderer.invoke('get-tags', values),

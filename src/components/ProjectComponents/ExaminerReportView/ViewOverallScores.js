@@ -30,7 +30,7 @@ const ViewOverallScores = ({ values }) => {
                         pb='26px'
                         width='100%'
                         borderBottom={
-                            values !== null && values.ungraded
+                            values !== null && values.ungraded === 'true'
                                 ? '1px solid #EBEEFA'
                                 : null
                         }
@@ -53,8 +53,9 @@ const ViewOverallScores = ({ values }) => {
                                 <Checkbox
                                     id='ungraded'
                                     isChecked={
-                                        values !== null
-                                            ? values.ungraded
+                                        values !== null &&
+                                        values.ungraded === 'true'
+                                            ? true
                                             : false
                                     }
                                 />

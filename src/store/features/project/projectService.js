@@ -89,6 +89,25 @@ const removeProjectExaminer = async (values) => {
     return response
 }
 
+//remove Examiner
+const updateRrrport = async (values) => {
+    const response = await window.electronAPI.updatesAllRedone(values)
+    return response
+}
+
+const removeCaFiles = async (values) => {
+    const response = await window.electronAPI.removeCaFiles(values)
+    return response
+}
+const removeViFiles = async (values) => {
+    const response = await window.electronAPI.removeViFiles(values)
+    return response
+}
+const removeFinalSFiles = async (values) => {
+    const response = await window.electronAPI.removeFinalSFiles(values)
+    return response
+}
+
 const projectService = {
     projectCreate,
     getPProjects,
@@ -106,6 +125,10 @@ const projectService = {
     addFileExaminer,
     removeProjectExaminer,
     updateResubmission,
+    updateRrrport,
+    removeCaFiles,
+    removeViFiles,
+    removeFinalSFiles,
 }
 
 export default projectService

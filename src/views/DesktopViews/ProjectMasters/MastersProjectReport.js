@@ -31,7 +31,7 @@ import AdmissionStatus from '../../../components/ProjectComponents/ProjectReport
 import RegistrationReports from '../../../components/ProjectComponents/ProjectReport/RegistrationReports'
 import MastersProjectDetails from '../../../components/ProjectComponents/ProjectReport/MastersProjectDetails'
 import MastersVivaReport from '../../../components/ProjectComponents/ProjectReport/MastersVivaReport'
-
+import { initSocketConnection } from '../../../socketio.service.js'
 const PageLinks = [
     {
         title: 'Registration',
@@ -72,9 +72,18 @@ const MastersProjectReport = () => {
     useEffect(() => {
         let id = params.id
         console.log(id)
+        const io = initSocketConnection()
         dispatch(getIndividualProject(id))
         dispatch(tagGetAll())
         dispatch(academicYearGetAll())
+
+        io.on('updatestudent', (data) => {
+            if (data.actions === 'update-student' && data.data === params.id) {
+                dispatch(getIndividualProject(id))
+                dispatch(tagGetAll())
+                dispatch(academicYearGetAll())
+            }
+        })
     }, [params.id, dispatch])
 
     useEffect(() => {
@@ -89,7 +98,7 @@ const MastersProjectReport = () => {
 
             dispatch(reset())
         }
-        console.log(individual)
+
         dispatch(reset())
     }, [isSuccess, isError, message])
 

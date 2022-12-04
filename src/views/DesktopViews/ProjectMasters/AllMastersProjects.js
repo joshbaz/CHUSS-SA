@@ -17,6 +17,7 @@ import {
     Text,
     GridItem,
     useToast,
+    Select,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -43,34 +44,26 @@ import {
 
 const AllMastersProjects = () => {
     const tagsData = useSelector((state) => state.tag)
-    const [filterSearchOption, setFilterSearchOption] = React.useState('All')
+    const [filterSearchOption, setFilterSearchOption] =
+        React.useState('Student Name')
     const [searchWord, setSearchWord] = React.useState('')
     const filterItems = [
         {
-            title: 'Academic Year',
-            subItems: ['2017', '2018', '2019', '2020'],
+            title: 'Student Name',
         },
         {
-            title: 'Candidate Name',
+            title: 'Student (SRN)',
         },
         {
-            title: 'Last update',
+            title: 'Registration',
+        },
+        {
+            title: 'Submission',
         },
         {
             title: 'Status',
-            subItems: [
-                'All',
-                'In Review',
-                'Completed',
-                'Approved Viva',
-                'Graduated',
-                'on Hold',
-            ],
         },
-        {
-            title: 'Examiners',
-            subItems: ['Joshua', 'daisy', 'stephanie'],
-        },
+
         {
             title: 'Topic',
         },
@@ -78,6 +71,11 @@ const AllMastersProjects = () => {
 
     const [filterActive, setFilterActive] = React.useState(false)
     const [filterInfo, setFilterInfo] = React.useState([])
+
+    /** handle search option change */
+    const handleSearchOptionChange = (valuet) => {
+        setFilterSearchOption(valuet)
+    }
 
     const handleSearchInput = (e) => {
         e.preventDefault()
@@ -193,7 +191,7 @@ const AllMastersProjects = () => {
     const clearAllFilters = () => {
         setFilterInfo([])
         setSearchWord('')
-        setFilterSearchOption('All')
+        setFilterSearchOption('Student Name')
     }
 
     const handleRemoveFilter = (Info) => {
@@ -271,6 +269,49 @@ const AllMastersProjects = () => {
         //     })
         // }
     }, [isSuccess, isError, message])
+
+    /** function to select statuses */
+    const TableStatuses = React.useMemo(() => {
+        if (filterSearchOption) {
+            if (filterSearchOption === 'Status') {
+                let allInfoData = tagsData.allTagItems.items.filter(
+                    (data, index) => data.table === 'project'
+                )
+
+                return allInfoData
+            } else if (filterSearchOption === 'Registration') {
+                let allInfoData = [
+                    {
+                        tagName: 'Provisional Admission',
+                    },
+                    {
+                        tagName: 'Full Admission',
+                    },
+                    {
+                        tagName: 'De-regestered',
+                    },
+                ]
+
+                return allInfoData
+            } else if (filterSearchOption === 'Submission') {
+                let allInfoData = [
+                    {
+                        tagName: 'normal',
+                    },
+                    {
+                        tagName: 'resubmission',
+                    },
+                ]
+
+                return allInfoData
+            } else {
+                return []
+            }
+        } else {
+            return []
+        }
+    }, [tagsData.allTagItems.items, filterSearchOption])
+
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -387,7 +428,7 @@ const AllMastersProjects = () => {
                                                         <MenuItem
                                                             key={index}
                                                             onClick={() =>
-                                                                setFilterSearchOption(
+                                                                handleSearchOptionChange(
                                                                     data.title
                                                                 )
                                                             }>
@@ -402,42 +443,75 @@ const AllMastersProjects = () => {
 
                                 {/** input */}
                                 <Box h='32px'>
-                                    <InputGroup
-                                        h='32px'
-                                        pr='0'
-                                        p='0'
-                                        m='0'
-                                        className='input_group'>
-                                        <InputLeftElement h='32px' p='0' m='0'>
-                                            <Button
-                                                p='0'
-                                                m='0'
-                                                onClick={handleSubmitFilter}
-                                                h='100%'
-                                                w='100%'
-                                                borderRadius='0px'
-                                                size='28px'>
-                                                <BiSearch />
-                                            </Button>
-                                        </InputLeftElement>
-                                        <Input
+                                    {filterSearchOption === 'Registration' ||
+                                    filterSearchOption === 'Submission' ||
+                                    filterSearchOption === 'Status' ? (
+                                        <InputGroup
                                             h='32px'
-                                            type='text'
-                                            placeholder='Search'
-                                            onChange={handleSearchInput}
-                                            value={searchWord}
-                                            style={{ textIndent: '5px' }}
-                                        />
-                                        <InputRightElement h='32px'>
-                                            <Button
-                                                h='100%'
-                                                w='100%'
-                                                size='28px'>
-                                                <CgFormatSlash />
-                                            </Button>
-                                        </InputRightElement>
-                                    </InputGroup>
+                                            pr='0'
+                                            p='0'
+                                            m='0'
+                                            className='input_group'>
+                                            {TableStatuses.length > 0 ? (
+                                                <Select placeholder='select status'>
+                                                    {TableStatuses.map(
+                                                        (data, index) => {
+                                                            return (
+                                                                <option
+                                                                    key={index}>
+                                                                    {data.tagName.toLowerCase()}
+                                                                </option>
+                                                            )
+                                                        }
+                                                    )}
+                                                </Select>
+                                            ) : (
+                                                <Select placeholder='select status'></Select>
+                                            )}
+                                        </InputGroup>
+                                    ) : (
+                                        <InputGroup
+                                            h='32px'
+                                            pr='0'
+                                            p='0'
+                                            m='0'
+                                            className='input_group'>
+                                            <InputLeftElement
+                                                h='32px'
+                                                p='0'
+                                                m='0'>
+                                                <Button
+                                                    p='0'
+                                                    m='0'
+                                                    onClick={handleSubmitFilter}
+                                                    h='100%'
+                                                    w='100%'
+                                                    borderRadius='0px'
+                                                    size='28px'>
+                                                    <BiSearch />
+                                                </Button>
+                                            </InputLeftElement>
+                                            <Input
+                                                h='32px'
+                                                type='text'
+                                                placeholder='Search'
+                                                onChange={handleSearchInput}
+                                                value={searchWord}
+                                                style={{ textIndent: '5px' }}
+                                            />
+                                        </InputGroup>
+                                    )}
                                 </Box>
+
+                                <TableButton>
+                                    <Button
+                                        onClick={handleSubmitFilter}
+                                        disabled={searchWord ? false : true}
+                                        leftIcon={<AiOutlinePlus />}
+                                        className='btn__rule'>
+                                        Add Rule
+                                    </Button>
+                                </TableButton>
                             </Stack>
                             {/**
 
@@ -670,5 +744,46 @@ const FilterInfoStack = styled(Stack)`
     .close_icon {
         color: #838389;
         font-size: 12px;
+    }
+`
+
+const TableButton = styled(Box)`
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+
+    font-size: 14px;
+    line-height: 20px;
+    .btn_table {
+        height: 32px;
+        color: #464f60;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+        border-radius: 6px;
+        background: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__print {
+        height: 32px;
+        background: #f7f9fc;
+        box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+        border-radius: 6px;
+
+        letter-spacing: 0.02em;
+        color: #868fa0;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__rule {
+        height: 32px;
+        background: #20202a;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #33333c;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
     }
 `

@@ -15,6 +15,7 @@ import {
     Button,
 } from '@chakra-ui/react'
 import { BsInfoCircleFill } from 'react-icons/bs'
+import Moments from 'moment-timezone'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { HiPencil } from 'react-icons/hi'
 import { ImBin2 } from 'react-icons/im'
@@ -38,7 +39,9 @@ const MastersProjectDetails = ({ values, rlink }) => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
-    let { isSuccess, message } = useSelector((state) => state.supervisor)
+    let { isSuccess, message, isError } = useSelector(
+        (state) => state.supervisor
+    )
     const handleRemove = (supId, nam, title) => {
         if (values._id && supId) {
             let rvalues = {
@@ -66,7 +69,11 @@ const MastersProjectDetails = ({ values, rlink }) => {
     }
 
     React.useEffect(() => {
-        if (isSuccess && message) {
+        if (isError && isSubmittingp) {
+            setIsSubmittingp(false)
+            dispatch(reset())
+        }
+        if (isSuccess && isSubmittingp) {
             toast({
                 position: 'top',
                 title: message.message,
@@ -366,7 +373,7 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                         </label>
 
                                         <Box className='form_input'>
-                                            <input
+                                            <Input
                                                 readOnly
                                                 value={
                                                     provisionalAdm !== null &&
@@ -397,15 +404,23 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                         </label>
 
                                         <Box className='form_input'>
-                                            <input
+                                            <Input
                                                 readOnly
                                                 value={
                                                     provisionalAdm !== null &&
                                                     provisionalAdm
                                                         .registrationId.date
-                                                        ? provisionalAdm
-                                                              .registrationId
-                                                              .date
+                                                        ? Moments(
+                                                              provisionalAdm
+                                                                  .registrationId
+                                                                  .date
+                                                          )
+                                                              .tz(
+                                                                  'Africa/Kampala'
+                                                              )
+                                                              .format(
+                                                                  'DD MMM Y'
+                                                              )
                                                         : ''
                                                 }
                                                 id='email'
@@ -427,7 +442,7 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                         </label>
 
                                         <Box className='form_input'>
-                                            <input
+                                            <Input
                                                 readOnly
                                                 value={
                                                     provisionalAdm !== null &&
@@ -459,7 +474,7 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                         </label>
 
                                         <Box className='form_input'>
-                                            <input
+                                            <Input
                                                 readOnly
                                                 value={
                                                     fullAdm !== null &&
@@ -488,13 +503,22 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                         </label>
 
                                         <Box className='form_input'>
-                                            <input
+                                            <Input
                                                 readOnly
                                                 value={
                                                     fullAdm !== null &&
                                                     fullAdm.registrationId.date
-                                                        ? fullAdm.registrationId
-                                                              .date
+                                                        ? Moments(
+                                                              provisionalAdm
+                                                                  .registrationId
+                                                                  .date
+                                                          )
+                                                              .tz(
+                                                                  'Africa/Kampala'
+                                                              )
+                                                              .format(
+                                                                  'DD MMM Y'
+                                                              )
                                                         : ''
                                                 }
                                                 id='email'
@@ -516,7 +540,7 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                         </label>
 
                                         <Box className='form_input'>
-                                            <input
+                                            <Input
                                                 readOnly
                                                 value={
                                                     fullAdm !== null &&
@@ -698,6 +722,7 @@ const Container = styled(Box)`
         width: 100%;
         input {
             width: 100%;
+            border: 1px solid transparent;
         }
     }
 

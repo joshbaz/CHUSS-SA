@@ -64,8 +64,8 @@ const UpdateOverallScores = ({ values, errors, handleChange }) => {
                     <Stack direction='row'>
                         <Checkbox
                             isChecked={
-                                values !== null && values.ungraded
-                                    ? values.ungraded
+                                values !== null && values.ungraded === 'true'
+                                    ? true
                                     : false
                             }
                             name='ungraded'
@@ -82,7 +82,6 @@ const UpdateOverallScores = ({ values, errors, handleChange }) => {
                             <textarea
                                 type='text'
                                 name='remarks'
-                                readOnly
                                 value={
                                     values !== null && values.remarks
                                         ? values.remarks

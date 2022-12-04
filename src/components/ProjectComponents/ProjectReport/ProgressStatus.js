@@ -259,14 +259,14 @@ const ProgressStatus = ({ values, allTagData }) => {
     /** run after submission awaiting for response */
 
     React.useEffect(() => {
-        if (isError) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+        if (isError && isSubmittingp) {
+            // toast({
+            //     position: 'top',
+            //     title: message.message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
             setIsSubmittingp(false)
             setChangeMade(false)
 
@@ -291,11 +291,7 @@ const ProgressStatus = ({ values, allTagData }) => {
 
     /** submittion of the changes */
     React.useEffect(() => {
-        if (
-            Object.keys(errors).length === 0 &&
-            setIsSubmittingp &&
-            changeMade
-        ) {
+        if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
             dispatch(
                 updateProjectStatus({
                     ...newActiveStatus,
@@ -305,7 +301,7 @@ const ProgressStatus = ({ values, allTagData }) => {
             //setIsSubmittingp(false)
         }
 
-        if (Object.keys(errors).length > 0 && setIsSubmittingp && changeMade) {
+        if (Object.keys(errors).length > 0 && isSubmittingp && changeMade) {
             setIsSubmittingp(false)
             setChangeMade(false)
         }

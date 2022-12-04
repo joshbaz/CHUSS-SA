@@ -51,8 +51,9 @@ const CreateMastersProject = () => {
                 isClosable: true,
             })
 
-            dispatch(reset())
+            dispatch(preset())
         }
+         dispatch(preset())
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [

@@ -54,6 +54,7 @@ import MaCreateProjectExaminer from '../views/DesktopViews/ProjectMasters/Master
 import MaViewProjectExaminer from '../views/DesktopViews/ProjectMasters/MastersExaminers/MaViewProjectExaminer'
 import MaEditProjectExaminer from '../views/DesktopViews/ProjectMasters/MastersExaminers/MaEditProjectExaminer'
 import MaViewExaminerReport from '../views/DesktopViews/ProjectMasters/MastersExaminerReports/MaViewExaminerReport'
+import MaEditExaminerReport from '../views/DesktopViews/ProjectMasters/MastersExaminerReports/MaEditExaminerReport'
 const AllRoutes = () => {
     return (
         <HashRouter>
@@ -163,7 +164,7 @@ const AllRoutes = () => {
                     <Route
                         exact
                         path='/masters/projects/examiners/updatereport/:p_id/:rp_id'
-                        element={<EditExaminerReport />}
+                        element={<MaEditExaminerReport />}
                     />
 
                     {/** phd student projects */}

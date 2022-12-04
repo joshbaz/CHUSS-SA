@@ -236,6 +236,13 @@ ipcMain.handle('create-registration', registrationController.createRegistration)
 ipcMain.handle('update-registration', registrationController.updateRegistration)
 ipcMain.handle('remove-registration', registrationController.removeRegistration)
 
+/** remove project files */
+ipcMain.handle('remove-cfiles', projectController.removeCaFiles)
+ipcMain.handle('remove-vifiles', projectController.removeViFiles)
+ipcMain.handle('remove-fiSfiles', projectController.removeFinalSFiles)
+
+/** remove report files */
+ipcMain.handle('remove-exrpfiles', reportController.removeExRpFiles)
 /**
  * Projects
  */
@@ -299,6 +306,9 @@ ipcMain.handle(
     projectController.removeProjectExaminersR
 )
 ipcMain.handle('update-resubmission', projectController.updateResubmission)
+
+/**update a handle */
+ipcMain.handle('updates-od-reportsss', projectController.createNewExUpdate)
 
 /**
  *
@@ -399,7 +409,10 @@ ipcMain.handle('update-examiner', examinerController.updateExaminer)
  * 1.handle update reports
  * 2.get reports
  */
-ipcMain.handle('update-examiner-report', reportController.updateExaminerReport)
+ipcMain.handle(
+    'update-examiner-reportsss',
+    reportController.updateExaminerssReport
+)
 ipcMain.handle('get-examiner-report', reportController.getExaminerReport)
 ipcMain.handle(
     'get-all-examiner-reports',

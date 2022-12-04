@@ -557,7 +557,139 @@ exports.updateResubmission = async (event, values) => {
             `${BASE_API_}/project/v1/resubmission/update/${values.projectId}`,
             values
         )
-     
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
+    }
+}
+
+exports.createNewExUpdate = async (event, values) => {
+    try {
+        const fd = new FormData()
+        if (values.reportFile !== null) {
+            fd.append(
+                'reportssFiles',
+                fs.createReadStream(values.reportFile.url),
+                `examinerreport${values.reportFile.ext}`
+            )
+        } else {
+        }
+
+        fd.append('score', values.score)
+        fd.append('ungraded', values.ungraded)
+        fd.append('remarks', values.remarks)
+        let responseData = await axios.patch(
+            `${BASE_API_}/reports/v1/update/${values.reportId}`,
+            fd
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
+    }
+}
+
+/** remove candidateFiles files */
+exports.removeCaFiles = async (event, values) => {
+    try {
+        let responseData = await axios.delete(
+            `${BASE_API_}/project/v1/remove/cfiles/${values.projectId}/${values.fId}/${values.secId}`
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
+    }
+}
+/** remove viva files */
+
+exports.removeViFiles = async (event, values) => {
+    try {
+        let responseData = await axios.delete(
+            `${BASE_API_}/project/v1/remove/vfiles/${values.projectId}/${values.fId}/${values.secId}`
+        )
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
+    }
+}
+/** remove final submission files */
+
+exports.removeFinalSFiles = async (event, values) => {
+    try {
+        let responseData = await axios.delete(
+            `${BASE_API_}/project/v1/remove/sfiles/${values.projectId}/${values.fId}/${values.secId}`
+        )
+
         let data = {
             message: responseData.data,
             type: 'success',

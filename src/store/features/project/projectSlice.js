@@ -230,6 +230,57 @@ export const updateResubmission = createAsyncThunk(
     }
 )
 
+/** project remove examiner  */
+export const updateRRport = createAsyncThunk(
+    'projects/updates/doingbest',
+    async (Info, thunkAPI) => {
+        const updateAttempt = await projectService.updateRrrport(Info)
+        if (updateAttempt.type === 'success') {
+            return updateAttempt
+        } else {
+            return thunkAPI.rejectWithValue(updateAttempt.message)
+        }
+    }
+)
+
+/** project remove candidate files */
+export const removeCaFiles = createAsyncThunk(
+    'projects/removedfiles/candfiles',
+    async (Info, thunkAPI) => {
+        const removeAttempt = await projectService.removeCaFiles(Info)
+        if (removeAttempt.type === 'success') {
+            return removeAttempt
+        } else {
+            return thunkAPI.rejectWithValue(removeAttempt.message)
+        }
+    }
+)
+
+/** project remove examiner  */
+export const removeViFiles = createAsyncThunk(
+    'projects/removefiles/vivaFiles',
+    async (Info, thunkAPI) => {
+        const removeAttempt = await projectService.removeViFiles(Info)
+        if (removeAttempt.type === 'success') {
+            return removeAttempt
+        } else {
+            return thunkAPI.rejectWithValue(removeAttempt.message)
+        }
+    }
+)
+/** project remove examiner  */
+export const removeFinalSFiles = createAsyncThunk(
+    'projects/removeefiles/finalS',
+    async (Info, thunkAPI) => {
+        const removeAttempt = await projectService.removeFinalSFiles(Info)
+        if (removeAttempt.type === 'success') {
+            return removeAttempt
+        } else {
+            return thunkAPI.rejectWithValue(removeAttempt.message)
+        }
+    }
+)
+
 export const projectSlice = createSlice({
     name: 'project',
     initialState,
@@ -468,6 +519,62 @@ export const projectSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(updateResubmission.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            //project  submission date update
+            .addCase(updateRRport.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(updateRRport.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(updateRRport.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            //remove vandidates files
+            .addCase(removeCaFiles.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(removeCaFiles.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(removeCaFiles.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            //remove viva files
+            .addCase(removeViFiles.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(removeViFiles.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(removeViFiles.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            //remove final submission files
+            .addCase(removeFinalSFiles.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(removeFinalSFiles.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(removeFinalSFiles.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

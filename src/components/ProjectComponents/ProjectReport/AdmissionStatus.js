@@ -112,7 +112,7 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
             alignItems='center'
             p='0px 27px'>
             <Box className='st_title'>Submission Status</Box>
-            <Stack direction='row' spacing='20px' alignItems={'flex-end'}>
+            <Stack direction='row' spacing='20px' alignItems={'center'}>
                 {submissionType.submissionStatus === 'normal' ? (
                     <Box className='st_text'>Normal</Box>
                 ) : (
@@ -277,7 +277,7 @@ const Container = styled(Stack)`
     .st_title {
         font-family: 'Inter', sans-serif;
         font-style: normal;
-        font-weight: 500;
+        font-weight: 600;
         font-size: 15px;
         line-height: 21px;
         color: #1a2240;

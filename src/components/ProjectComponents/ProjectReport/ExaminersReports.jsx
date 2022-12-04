@@ -16,6 +16,7 @@ import {
     MenuItem,
 } from '@chakra-ui/react'
 import { AiOutlinePlus } from 'react-icons/ai'
+import Moments from 'moment-timezone'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 import {
     IoIosArrowDropright,
@@ -197,6 +198,24 @@ const ExaminersReports = ({ values, rlink }) => {
                                 {normalReports.length > 0 ? (
                                     <>
                                         {normalReports.map((data, index) => {
+                                            let submissionDate = data.reportId
+                                                .submissionDate
+                                                ? Moments(
+                                                      data.reportId
+                                                          .submissionDate
+                                                  )
+                                                      .tz('Africa/Kampala')
+                                                      .format('DD MMM Y')
+                                                : '-'
+
+                                            // let submissionDate 
+                                            // let datef= Moments('2022-10-4')
+                                            // let datey =
+                                            //     Moments().tz('Africa/Kampala')
+                                            // submissionDate = datey.diff(
+                                            //     datef,
+                                            //     'months'
+                                            // )
                                             return (
                                                 <Tr className='table_row'>
                                                     <Td>1</Td>
@@ -250,7 +269,7 @@ const ExaminersReports = ({ values, rlink }) => {
                                                         {' '}
                                                         <StatusItem
                                                             width='90px'
-                                                            className='pending'
+                                                            className={data.reportId.reportStatus.toLowerCase()}
                                                             direction='row'
                                                             alignItems='center'>
                                                             <div />
@@ -266,7 +285,7 @@ const ExaminersReports = ({ values, rlink }) => {
 
                                                     <Td>
                                                         <Box className='sub_date'>
-                                                            15 May 2021
+                                                            {submissionDate}
                                                         </Box>
                                                     </Td>
                                                     <Td>
@@ -387,6 +406,21 @@ const ExaminersReports = ({ values, rlink }) => {
                                             <>
                                                 {resubmissionReports.map(
                                                     (data, index) => {
+                                                        let submissionDate =
+                                                            data.reportId
+                                                                .submissionDate
+                                                                ? Moments(
+                                                                      data
+                                                                          .reportId
+                                                                          .submissionDate
+                                                                  )
+                                                                      .tz(
+                                                                          'Africa/Kampala'
+                                                                      )
+                                                                      .format(
+                                                                          'DD MMM Y'
+                                                                      )
+                                                                : '-'
                                                         return (
                                                             <Tr className='table_row'>
                                                                 <Td>1</Td>
@@ -452,7 +486,7 @@ const ExaminersReports = ({ values, rlink }) => {
                                                                     {' '}
                                                                     <StatusItem
                                                                         width='90px'
-                                                                        className='pending'
+                                                                        className={data.reportId.reportStatus.toLowerCase()}
                                                                         direction='row'
                                                                         alignItems='center'>
                                                                         <div />
@@ -468,8 +502,9 @@ const ExaminersReports = ({ values, rlink }) => {
 
                                                                 <Td>
                                                                     <Box className='sub_date'>
-                                                                        15 May
-                                                                        2021
+                                                                        {
+                                                                            submissionDate
+                                                                        }
                                                                     </Box>
                                                                 </Td>
                                                                 <Td>
@@ -494,7 +529,7 @@ const ExaminersReports = ({ values, rlink }) => {
                                                                             <MenuItem
                                                                                 onClick={() =>
                                                                                     routeNavigate(
-                                                                                        `/projects/examiners/updatereport/${values._id}/${data.reportId._id}`
+                                                                                        `${rlink}/projects/examiners/updatereport/${values._id}/${data.reportId._id}`
                                                                                     )
                                                                                 }>
                                                                                 Edit
@@ -503,7 +538,7 @@ const ExaminersReports = ({ values, rlink }) => {
                                                                             <MenuItem
                                                                                 onClick={() =>
                                                                                     routeNavigate(
-                                                                                        `/projects/examiners/viewreport/${values._id}/${data.reportId._id}`
+                                                                                        `${rlink}/projects/examiners/viewreport/${values._id}/${data.reportId._id}`
                                                                                     )
                                                                                 }>
                                                                                 View

@@ -1,88 +1,77 @@
-const axios = require("axios");
-const { BASE_API_ } = require("../base_url.config");
-const fs = require("fs");
+const axios = require('axios')
+const { BASE_API_ } = require('../base_url.config')
+const fs = require('fs')
 /** error handler */
 let errorFunction = (error) => {
-  let errorArray = [];
-  errorArray.push(error);
+    let errorArray = []
+    errorArray.push(error)
 
-  let response = {
-    message: "",
-    type: "error",
-  };
-  if (errorArray.length !== 0 && errorArray[0].response) {
-    response.message = errorArray[0].response.data;
-  } else if (errorArray.length !== 0 && !errorArray[0].response) {
-    response.message = errorArray[0].message;
-  }
+    let response = {
+        message: '',
+        type: 'error',
+    }
+    if (errorArray.length !== 0 && errorArray[0].response) {
+        response.message = errorArray[0].response.data
+    } else if (errorArray.length !== 0 && !errorArray[0].response) {
+        response.message = errorArray[0].message
+    }
 
-  return response;
-};
+    return response
+}
 
 /** Reports */
 /** update Examiner Report */
-exports.updateExaminerReport = async (event, values) => {
-  try {
-    if (values.reportFile !== null) {
-      n
-      console.log('report values values', values)
-      const FormData = require("form-data");
-     // const { Blob } = require("buffer");
-      const fd = new FormData();
-      console.log('before report values values', values.reportFile)
-      fd.append("reportssFiles", fs.createReadStream(values.reportFile.url));
-     console.log('after report values values', values.reportFile)
-       fd.append("score", values.score);
-       fd.append("ungraded", values.ungraded);
-       fd.append("remarks", values.remarks);
-     console.log('great pp', values.reportFile)
-      console.log(fd, "fd");
+exports.updateExaminerssReport = async (event, values) => {
+    try {
+        const FormData = require('form-data')
+        const fd = new FormData()
 
-      let responseData = await axios.patch(
-        `${BASE_API_}/reports/v1/update/${values._id}`,
-        fd
-      );
+        console.log('report values values', values)
 
-      let data = {
-        message: responseData.data,
-        type: "success",
-      };
-      return data;
-    } else {
-      let responseData = await axios.patch(
-        `${BASE_API_}/reports/v1/update/${values._id}`,
-        values
-      );
+        console.log('before report values values', values.reportFile)
+        // fd.append(
+        //     'reportssFiles',
+        //     fs.createReadStream(values.reportFile.url),
+        //     `${'reportfile'}${values.reportFile.ext}`
+        // )
+        console.log('after report values values', values.reportFile)
+        fd.append('score', values.score)
+        fd.append('ungraded', values.ungraded)
+        fd.append('remarks', values.remarks)
+        //console.log('great pp', values.reportFile)
 
-      let data = {
-        message: responseData.data,
-        type: "success",
-      };
-      return data;
+        let responseData = await axios.patch(
+            `${BASE_API_}/reporrts/v1/update/${values._id}`
+        )
+        console.log('after report values values', values._id)
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
     }
-  } catch (error) {
-    let errorResult = errorFunction(error);
-    return errorResult;
-  }
-};
+}
 
 /** get examiner reports */
 exports.getExaminerReport = async (event, id) => {
-  try {
-    let responseData = await axios.get(
-      `${BASE_API_}/reports/v1/getReport/${id}`
-    );
+    try {
+        let responseData = await axios.get(
+            `${BASE_API_}/reports/v1/getReport/${id}`
+        )
 
-    let data = {
-      ...responseData.data,
-      type: "success",
-    };
-    return data;
-  } catch (error) {
-    let errorResult = errorFunction(error);
-    return errorResult;
-  }
-};
+        let data = {
+            ...responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
 
 /** get all examiner reports */
 exports.getAllExaminerReports = async (event, id) => {
@@ -99,5 +88,36 @@ exports.getAllExaminerReports = async (event, id) => {
     } catch (error) {
         let errorResult = errorFunction(error)
         return errorResult
+    }
+}
+
+/** remove report files */
+
+exports.removeExRpFiles = async (event, values) => {
+    try {
+        let responseData = await axios.delete(
+            `${BASE_API_}/reports/v1/remove/ExFiles/${values.reportId}/${values.fId}/${values.secId}`
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
     }
 }

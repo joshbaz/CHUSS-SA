@@ -32,10 +32,8 @@ import * as yup from 'yup'
 
 const filetype = [
     {
-        type: 'viva_minutes',
+        type: 'final_submission',
     },
-    { type: 'viva_approval' },
-    { type: 'compliance' },
     {
         type: 'others',
     },
@@ -194,7 +192,8 @@ const FinalSubmitPopupUpload = ({
                                                     justifyContent='space-between'>
                                                     <Box>
                                                         <h1>
-                                                            Upload final submission files
+                                                            Upload final
+                                                            submission files
                                                         </h1>
                                                     </Box>
                                                 </Stack>
@@ -489,7 +488,6 @@ const FinalSubmitPopupUpload = ({
 
 export default FinalSubmitPopupUpload
 
-
 const PopupForm = styled(Stack)`
     width: 100%;
     min-height: 182px;
@@ -759,4 +757,3 @@ const FileStack = styled(Box)`
         line-height: 20px;
     }
 `
-

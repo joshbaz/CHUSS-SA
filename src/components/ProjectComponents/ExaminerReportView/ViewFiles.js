@@ -62,7 +62,7 @@ const ViewFiles = ({ values, nameValues }) => {
             if (nameValues !== null) {
                 console.log(nameValues, 'nameValues')
                 let newNameValue = nameValues.toString().split(' ')[0]
-               
+
                 newData = {
                     ...newData,
                     name: newNameValue,
@@ -220,12 +220,6 @@ const ViewFiles = ({ values, nameValues }) => {
                                                                     Download
                                                                     File
                                                                 </MenuItem>
-                                                                <MenuItem
-                                                                    fontSize={
-                                                                        '14px'
-                                                                    }>
-                                                                    Delete File
-                                                                </MenuItem>
                                                             </MenuList>
                                                         </Menu>
                                                     </Stack>
@@ -237,7 +231,9 @@ const ViewFiles = ({ values, nameValues }) => {
                             ) : (
                                 <Stack direction='row'>
                                     {filesList.map((data, index) => {
-                                        console.log('individual Data', data)
+                                        let size = formatSize(
+                                            parseInt(data.files.fileSize)
+                                        )
                                         return (
                                             <FileStack
                                                 key={index}
@@ -285,11 +281,7 @@ const ViewFiles = ({ values, nameValues }) => {
                                                                     }
                                                                 </Text>
                                                                 <Text className='filesize'>
-                                                                    {
-                                                                        data
-                                                                            .files
-                                                                            .fileSize
-                                                                    }
+                                                                    {size}
                                                                 </Text>
                                                             </Stack>
                                                         </Stack>
@@ -305,11 +297,27 @@ const ViewFiles = ({ values, nameValues }) => {
                                                         </MenuButton>
 
                                                         <MenuList>
-                                                            <MenuItem>
+                                                            <MenuItem
+                                                                onClick={() =>
+                                                                    handleFileView(
+                                                                        data
+                                                                    )
+                                                                }
+                                                                fontSize={
+                                                                    '14px'
+                                                                }>
                                                                 View File
                                                             </MenuItem>
-                                                            <MenuItem>
-                                                                Delete File
+                                                            <MenuItem
+                                                                onClick={() =>
+                                                                    handleDownloadFile(
+                                                                        data
+                                                                    )
+                                                                }
+                                                                fontSize={
+                                                                    '14px'
+                                                                }>
+                                                                Download File
                                                             </MenuItem>
                                                         </MenuList>
                                                     </Menu>

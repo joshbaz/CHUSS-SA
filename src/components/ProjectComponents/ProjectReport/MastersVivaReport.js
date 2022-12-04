@@ -31,6 +31,7 @@ import { useNavigate } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux'
 import {
+    removeViFiles,
     updateProjectStatus,
     reset,
 } from '../../../store/features/project/projectSlice'
@@ -38,6 +39,8 @@ import { FiCheck } from 'react-icons/fi'
 import VivaPopupFileUpload from './VivaPopupFileUpload'
 import VivaPopupDefense from './VivaPopupDefense'
 import VivaReportOpponent from './VivaReportOpponent'
+import Moments from 'moment-timezone'
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 
 const MastersVivaReport = ({
     values = null,
@@ -61,6 +64,10 @@ const MastersVivaReport = ({
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [projectId, setProjectId] = React.useState('')
     const [selectedFile, setSelectedFile] = React.useState(null)
+    const [removeActive, setRemoveActive] = React.useState(false)
+    const [removeDetails, setRemoveDetails] = React.useState(null)
+
+    const [isViewFile, setIsViewFile] = React.useState(false)
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
@@ -199,7 +206,7 @@ const MastersVivaReport = ({
     /** run after submission awaiting for response */
 
     React.useEffect(() => {
-        if (isError) {
+        if (isError && isSubmittingp) {
             toast({
                 position: 'top',
                 title: message.message,
@@ -225,17 +232,15 @@ const MastersVivaReport = ({
             setChangeMade(false)
             onClose()
             dispatch(reset())
+            setRemoveActive(false)
+            setRemoveDetails(null)
         }
         dispatch(reset())
     }, [isError, isSuccess, message, dispatch])
 
     /** submittion of the changes */
     React.useEffect(() => {
-        if (
-            Object.keys(errors).length === 0 &&
-            setIsSubmittingp &&
-            changeMade
-        ) {
+        if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
             dispatch(
                 updateProjectStatus({
                     ...newActiveStatus,
@@ -245,7 +250,7 @@ const MastersVivaReport = ({
             //setIsSubmittingp(false)
         }
 
-        if (Object.keys(errors).length > 0 && setIsSubmittingp && changeMade) {
+        if (Object.keys(errors).length > 0 && isSubmittingp && changeMade) {
             setIsSubmittingp(false)
             setChangeMade(false)
         }
@@ -268,7 +273,7 @@ const MastersVivaReport = ({
                 fileType: data.fileId.fileType,
             },
         ])
-        onOpen()
+        setIsViewFile(() => true)
     }
 
     const handleDownloadFile = async (data) => {
@@ -306,6 +311,34 @@ const MastersVivaReport = ({
         }
     }
 
+    const handleRemove = (fId, nam, secId) => {
+        console.log('gggdfd', fId, nam, secId)
+        if (values._id && fId) {
+            let rvalues = {
+                fId: fId,
+                name: nam,
+                secId: secId,
+                projectId: values._id,
+            }
+            setRemoveDetails(() => rvalues)
+            setRemoveActive(true)
+        }
+    }
+
+    const onRemoveUpload = () => {
+        if (removeDetails.projectId && removeDetails.fId) {
+            dispatch(removeViFiles(removeDetails))
+            setIsSubmittingp(true)
+        }
+    }
+
+    const cancelRemoveUpload = () => {
+        setRemoveActive(false)
+        setRemoveDetails(null)
+
+        // onClose()
+    }
+
     return (
         <Container>
             {' '}
@@ -323,13 +356,13 @@ const MastersVivaReport = ({
                     </Box>
 
                     <Stack direction='row' alignItems='center;'>
-                        <Box
-                            className={`uploadBtn`}
+                        <SubmitButton
+                            as='button'
                             onClick={() =>
                                 setFileUploadActive(!fileUploadActive)
                             }>
                             Upload file
-                        </Box>
+                        </SubmitButton>
                         <Box
                             onClick={() => setSelectedView('grid')}
                             className={`icon ${
@@ -439,7 +472,15 @@ const MastersVivaReport = ({
                                                     value={
                                                         values !== null &&
                                                         values.DateOfDefense
-                                                            ? values.DateOfDefense
+                                                            ? Moments(
+                                                                  values.DateOfDefense
+                                                              )
+                                                                  .tz(
+                                                                      'Africa/Kampala'
+                                                                  )
+                                                                  .format(
+                                                                      'DD MMM Y'
+                                                                  )
                                                             : ''
                                                     }
                                                 />
@@ -580,6 +621,17 @@ const MastersVivaReport = ({
                                                                                     File
                                                                                 </MenuItem>
                                                                                 <MenuItem
+                                                                                    onClick={() =>
+                                                                                        handleRemove(
+                                                                                            data
+                                                                                                .fileId
+                                                                                                .fileId,
+                                                                                            data
+                                                                                                .fileId
+                                                                                                .fileName,
+                                                                                            data._id
+                                                                                        )
+                                                                                    }
                                                                                     fontSize={
                                                                                         '14px'
                                                                                     }>
@@ -658,9 +710,58 @@ const MastersVivaReport = ({
                                                             </Stack>
 
                                                             <Stack justifyContent='center'>
-                                                                <Box color='#838389'>
-                                                                    <BsThreeDots />
-                                                                </Box>
+                                                                <Menu>
+                                                                    <MenuButton>
+                                                                        <Box color='#838389'>
+                                                                            <BsThreeDots />
+                                                                        </Box>
+                                                                    </MenuButton>
+
+                                                                    <MenuList>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                handleFileView(
+                                                                                    data
+                                                                                )
+                                                                            }
+                                                                            fontSize={
+                                                                                '14px'
+                                                                            }>
+                                                                            View
+                                                                            File
+                                                                        </MenuItem>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                handleDownloadFile(
+                                                                                    data
+                                                                                )
+                                                                            }
+                                                                            fontSize={
+                                                                                '14px'
+                                                                            }>
+                                                                            Download
+                                                                            File
+                                                                        </MenuItem>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                handleRemove(
+                                                                                    data
+                                                                                        .fileId
+                                                                                        .fileId,
+                                                                                    data
+                                                                                        .fileId
+                                                                                        .fileName,
+                                                                                    data._id
+                                                                                )
+                                                                            }
+                                                                            fontSize={
+                                                                                '14px'
+                                                                            }>
+                                                                            Delete
+                                                                            File
+                                                                        </MenuItem>
+                                                                    </MenuList>
+                                                                </Menu>
                                                             </Stack>
                                                         </FileStack>
                                                     )
@@ -678,6 +779,36 @@ const MastersVivaReport = ({
                     </Stack>
                 </Stack>
             </Box>
+            {/** vieing file */}
+            {/** modal for viewing file */}
+            <Modal
+                w='100vw'
+                isOpen={isViewFile}
+                p='0'
+                onClose={() => setIsViewFile(() => false)}
+                size=''>
+                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
+                <ModalContent p='0' style={{ width: '60vw', height: '80vh' }}>
+                    <ModalBody p='0' style={{ width: '100%', height: '80vh' }}>
+                        <Box style={{ width: '100%', height: '80vh' }}>
+                            <DocViewer
+                                className='documentViewer'
+                                prefetchMethod='GET'
+                                documents={selectedFile}
+                                pluginRenderers={DocViewerRenderers}
+                                config={{
+                                    header: {
+                                        disableHeader: true,
+                                        disableFileName: true,
+                                        retainURLParams: false,
+                                    },
+                                }}
+                                style={{ width: '100%', height: '80vh' }}
+                            />
+                        </Box>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
             {/** change project status */}
             <Modal w='100vw' isOpen={isOpen} p='0' onClose={onClose}>
                 <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
@@ -833,6 +964,75 @@ const MastersVivaReport = ({
                 setDefenseUploadActive={setDefenseUploadActive}
                 defenseUploadActive={defenseUploadActive}
             />
+            <Modal
+                w='100vw'
+                isOpen={removeActive}
+                p='0'
+                onClose={() => cancelRemoveUpload()}>
+                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
+                <ModalContent p='0'>
+                    <ModalBody p='0'>
+                        <PopupForm
+                            p='0px'
+                            direction='column'
+                            spacing='0'
+                            justifyContent='space-between'>
+                            <Stack direction='column' spacing={'10px'} h='50%'>
+                                <Stack
+                                    className='pop_titleRR'
+                                    direction='row'
+                                    w='100%'
+                                    alignItems='center'
+                                    justifyContent='space-between'>
+                                    <Box>
+                                        <h1>Remove Files</h1>
+                                    </Box>
+                                </Stack>
+
+                                <Stack
+                                    p='10px 20px 10px 20px'
+                                    spacing={'2px'}
+                                    direction='row'
+                                    className='list_text'>
+                                    <p>
+                                        Are you sure you want to remove
+                                        <span>
+                                            <li>
+                                                {removeDetails !== null &&
+                                                    removeDetails.name}
+                                            </li>
+                                        </span>
+                                        from this project.
+                                    </p>
+                                </Stack>
+                            </Stack>
+                            <Stack
+                                p='0px 20px'
+                                h='65px'
+                                bg='#ffffff'
+                                direction='row'
+                                borderTop='1px solid #E9EDF5'
+                                borderRadius='0 0 8px 8px'
+                                justifyContent='flex-end'
+                                alignItems='center'>
+                                <Button
+                                    variant='outline'
+                                    className='cancel_button'
+                                    onClick={() => cancelRemoveUpload()}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={onRemoveUpload}
+                                    disabled={false}
+                                    isLoading={isSubmittingp ? true : false}
+                                    className='apply_button'>
+                                    Confirm
+                                </Button>
+                            </Stack>
+                        </PopupForm>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </Container>
     )
 }
@@ -1101,6 +1301,22 @@ const PopupForm = styled(Stack)`
         letter-spacing: 0.02em;
     }
 
+    .pop_titleRR {
+        height: 45px;
+        width: 100%;
+
+        border-bottom: 1px solid #ebeefa;
+        padding: 0 30px;
+        h1 {
+            width: 100%;
+
+            font-style: normal;
+            font-weight: bold;
+            font-size: 17px;
+            line-height: 21px;
+            color: #111827;
+        }
+    }
     .list_text {
         font-family: 'Inter', sans-serif;
         font-style: normal;
@@ -1194,4 +1410,20 @@ const StatusChangeItem = styled(Stack)`
 
 const StatusNotesArea = styled(Textarea)`
     background: #ffffff !important;
+`
+
+const SubmitButton = styled(Box)`
+    width: 126px;
+    height: 32px;
+    background: #f4797f;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
+    border-radius: 6px;
+
+    color: #ffffff;
+    letter-spacing: 0.02em;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
 `

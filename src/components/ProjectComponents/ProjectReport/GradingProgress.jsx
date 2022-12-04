@@ -1,8 +1,17 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { Box, Stack, Text } from '@chakra-ui/react'
+import {
+    Box,
+    Stack,
+    Text,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+} from '@chakra-ui/react'
 import { Chart as ChartJS, ArcElement, Tooltip } from 'chart.js'
 import { Pie } from 'react-chartjs-2'
+import { MdKeyboardArrowDown } from 'react-icons/md'
 ChartJS.register(ArcElement, Tooltip)
 ChartJS.defaults.plugins.legend = false
 
@@ -31,6 +40,8 @@ const GradingProgress = ({ values }) => {
         '#38A06C',
         '#FAA723',
     ])
+    const [checkSubmissionStatus, setSubmissionStatus] =
+        React.useState('normal')
     const [examinerLabels, setExaminerLabels] = React.useState([])
     const piedata = {
         labels:
@@ -51,6 +62,12 @@ const GradingProgress = ({ values }) => {
     }
 
     useEffect(() => {
+        if (values !== null && values.submissionStatus) {
+            setSubmissionStatus(values.submissionStatus)
+        }
+    }, [values])
+
+    useEffect(() => {
         let arrayInfo = []
 
         if (values !== null && values.examiners.length > 0) {
@@ -66,23 +83,26 @@ const GradingProgress = ({ values }) => {
         let pieColor = []
         if (values !== null && values.examinerReports.length > 0) {
             let newArray = values.examinerReports.filter((data) => {
-                pieData.push(
-                    data.reportId.score === 0 && data.reportId.marked === false
-                        ? 33.3
-                        : data.reportId.score
-                )
-                console.log(data.reportId.reportStatus)
-                if (data.reportId.reportStatus === 'pending') {
-                    pieColor.push('#FAA723')
-                }
-                if (data.reportId.reportStatus === 'Passed') {
-                    pieColor.push('#38A06C')
-                }
-                if (data.reportId.reportStatus === 'failed') {
-                    pieColor.push('#EF5466')
-                }
-                if (data.reportId.reportStatus === 'ungraded') {
-                    pieColor.push('#E9EDF5')
+                if (data.submissionType === checkSubmissionStatus) {
+                    pieData.push(
+                        data.reportId.score === 0 &&
+                            data.reportId.marked === false
+                            ? 33.3
+                            : data.reportId.score
+                    )
+                    console.log(data.reportId.reportStatus)
+                    if (data.reportId.reportStatus === 'pending') {
+                        pieColor.push('#FAA723')
+                    }
+                    if (data.reportId.reportStatus === 'Passed') {
+                        pieColor.push('#38A06C')
+                    }
+                    if (data.reportId.reportStatus === 'failed') {
+                        pieColor.push('#EF5466')
+                    }
+                    if (data.reportId.reportStatus === 'ungraded') {
+                        pieColor.push('#E9EDF5')
+                    }
                 }
             })
             setPieColors(pieColor)
@@ -90,7 +110,8 @@ const GradingProgress = ({ values }) => {
         } else {
             setPieValues([33.3, 33.3, 33.3])
         }
-    }, [values])
+    }, [values, checkSubmissionStatus])
+
     return (
         <Container>
             <Box className='form_container'>
@@ -104,6 +125,40 @@ const GradingProgress = ({ values }) => {
                     <Box>
                         <h1>Grading Progress</h1>
                     </Box>
+
+                    <Stack direction='row' alignItems='center'>
+                        <Box className='type_text'>
+                            {checkSubmissionStatus === 'resubmission'
+                                ? 're-submission'
+                                : 'normal'}
+                        </Box>
+                        <Menu>
+                            <MenuButton>
+                                <Box color='#838389'>
+                                    <MdKeyboardArrowDown />
+                                </Box>
+                            </MenuButton>
+
+                            <MenuList>
+                                <MenuItem
+                                    onClick={() =>
+                                        setSubmissionStatus(() => 'normal')
+                                    }
+                                    fontSize={'14px'}>
+                                    Normal
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() =>
+                                        setSubmissionStatus(
+                                            () => 'resubmission'
+                                        )
+                                    }
+                                    fontSize={'14px'}>
+                                    Resubmission
+                                </MenuItem>
+                            </MenuList>
+                        </Menu>
+                    </Stack>
                 </Stack>
 
                 {/** details */}
@@ -150,7 +205,7 @@ const GradingProgress = ({ values }) => {
 export default GradingProgress
 
 const Container = styled(Box)`
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -171,10 +226,17 @@ const Container = styled(Box)`
 
             font-style: normal;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 16px;
             line-height: 137.5%;
             color: #111827;
         }
+    }
+
+    .type_text {
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        text-transform: capitalize;
     }
 
     .add_examiners {

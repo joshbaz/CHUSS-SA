@@ -69,7 +69,7 @@ const VivaPopupDefense = ({
     /** run after submission awaiting for response */
 
     React.useEffect(() => {
-        if (isError) {
+        if (isError && isSubmittingp) {
             if (helperFunctions !== null) {
                 toast({
                     position: 'top',

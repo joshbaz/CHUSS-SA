@@ -38,6 +38,7 @@ import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
 import RegistrationRpCreatePopup from './RegistrationRpCreatePopup'
 import RegistrationRpEditPopup from './RegistrationRpEditPopup'
 import RegistrationRpViewPopup from './RegistrationRpViewPopup'
+import Moments from 'moment-timezone'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 
 import {
@@ -83,7 +84,6 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
     const [removeActive, setRemoveActive] = React.useState(false)
     const [removeDetails, setRemoveDetails] = React.useState(null)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
-   
 
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
@@ -267,11 +267,9 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
                         <h1>Registration</h1>
                     </Box>
 
-                    <Box
-                        className={`registrationBtn`}
-                        onClick={activateAddRegister}>
-                        Add registration
-                    </Box>
+                    <SubmitButton as='button' onClick={activateAddRegister}>
+                        Add Registration
+                    </SubmitButton>
                 </Stack>
 
                 {/** details */}
@@ -387,11 +385,20 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
                                                             }
                                                         </Td>
                                                         <Td>
-                                                            {
-                                                                data
-                                                                    .registrationId
-                                                                    .date
-                                                            }
+                                                            {data.registrationId
+                                                                .date
+                                                                ? Moments(
+                                                                      data
+                                                                          .registrationId
+                                                                          .date
+                                                                  )
+                                                                      .tz(
+                                                                          'Africa/Kampala'
+                                                                      )
+                                                                      .format(
+                                                                          'DD MMM Y'
+                                                                      )
+                                                                : '-'}
                                                         </Td>
                                                         <Td>
                                                             <Box className='sub_date'>
@@ -1077,4 +1084,20 @@ const PopupForm = styled(Stack)`
             background: #f4797f;
         }
     }
+`
+
+const SubmitButton = styled(Box)`
+    width: 200px;
+    height: 32px;
+    background: #f4797f;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
+    border-radius: 6px;
+
+    color: #ffffff;
+    letter-spacing: 0.02em;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
 `
