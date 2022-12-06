@@ -39,9 +39,7 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let dispatch = useDispatch()
     let toast = useToast()
-      let { isSuccess, message, isError } = useSelector(
-          (state) => state.project
-      )
+    let { isSuccess, message, isError } = useSelector((state) => state.project)
     useEffect(() => {
         if (values !== null && values._id) {
             setProjectId(values._id)
@@ -49,6 +47,8 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
         if (values !== null && values.files.length > 0) {
             setFilesList(values.files)
             console.log(values.files, 'gill')
+        } else {
+            setFilesList([])
         }
     }, [values])
 
@@ -137,28 +137,28 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
         // onClose()
     }
 
-      React.useEffect(() => {
-          if (isError && isSubmittingp) {
-              setIsSubmittingp(false)
-              dispatch(reset())
-          }
-          if (isSuccess && isSubmittingp) {
-              toast({
-                  position: 'top',
-                  title: message.message,
-                  status: 'success',
-                  duration: 10000,
-                  isClosable: true,
-              })
-              setIsSubmittingp(false)
-              setRemoveActive(false)
-              setRemoveDetails(null)
+    React.useEffect(() => {
+        if (isError && isSubmittingp) {
+            setIsSubmittingp(false)
+            dispatch(reset())
+        }
+        if (isSuccess && isSubmittingp) {
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            setRemoveActive(false)
+            setRemoveDetails(null)
 
-              dispatch(reset())
-          }
+            dispatch(reset())
+        }
 
-          dispatch(reset())
-      }, [isSuccess, message, isError, isSubmittingp])
+        dispatch(reset())
+    }, [isSuccess, message, isError, isSubmittingp])
     return (
         <FormContainer>
             <Box className='form_container'>

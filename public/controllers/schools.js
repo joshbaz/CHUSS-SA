@@ -160,3 +160,37 @@ exports.updateDepartment = async (event, values) => {
         return errorResult
     }
 }
+
+exports.deleteDepartment = async (event, values) => {
+    try {
+        let responseData = await axios.delete(
+            `${BASE_API_}/department/v1/delete/${values.schoolId}/${values.deptId}`
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
+
+exports.deleteSchool = async (event, values) => {
+    try {
+        let responseData = await axios.delete(
+            `${BASE_API_}/school/v1/delete/${values.schoolId}`
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}

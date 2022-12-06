@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
+import Moments from 'moment-timezone'
 import {
     IoIosArrowDropright,
     IoIosArrowDropdown,
@@ -163,6 +164,15 @@ const VivaReportOpponent = ({ values }) => {
                                 {reportLists.length > 0 ? (
                                     <>
                                         {reportLists.map((data, index) => {
+                                            let submissionDate = data.reportId
+                                                .submissionDate
+                                                ? Moments(
+                                                      data.reportId
+                                                          .submissionDate
+                                                  )
+                                                      .tz('Africa/Kampala')
+                                                      .format('DD MMM Y')
+                                                : '-'
                                             return (
                                                 <>
                                                     {' '}
@@ -204,7 +214,7 @@ const VivaReportOpponent = ({ values }) => {
                                                             {' '}
                                                             <StatusItem
                                                                 width='90px'
-                                                                className='pending'
+                                                                className={data.reportId.reportStatus.toLowerCase()}
                                                                 direction='row'
                                                                 alignItems='center'>
                                                                 <div />
@@ -220,7 +230,7 @@ const VivaReportOpponent = ({ values }) => {
 
                                                         <Td>
                                                             <Box className='sub_date'>
-                                                                15 May 2021
+                                                                {submissionDate}
                                                             </Box>
                                                         </Td>
                                                         <Td>

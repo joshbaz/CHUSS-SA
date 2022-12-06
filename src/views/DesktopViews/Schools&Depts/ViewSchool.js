@@ -17,6 +17,10 @@ import {
     Text,
     GridItem,
     useToast,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalBody,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -33,13 +37,16 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
     reset,
     allSchools,
+    schoolUpdate,
     paginatedSchool,
 } from '../../../store/features/schools/schoolSlice'
 import SchoolTable from '../../../components/SchoolComponents/AllSchools/SchoolTable'
 import ViewSchoolDetails from '../../../components/SchoolComponents/ViewSchools/ViewSchoolDetails'
 import ViewDepartments from '../../../components/SchoolComponents/ViewSchools/ViewDepartments'
+import EditSchool from './EditSchool'
 
 const ViewSchool = (props) => {
+    const [schoolId, setSchoolId] = React.useState('')
     const [values, setValues] = React.useState({
         schoolName: '',
         deanName: '',
@@ -47,6 +54,17 @@ const ViewSchool = (props) => {
         email: '',
         officeNumber: '',
         departments: [],
+    })
+    const [isSubmittingedits, setIsSubmittingedits] = React.useState(false)
+    const [changeMade, setChnageMade] = React.useState(false)
+    const [editActive, setEditActive] = React.useState(false)
+    const [errors, setErrors] = React.useState({})
+    const [editValues, setEditValues] = React.useState({
+        schoolName: '',
+        deanName: '',
+        deanDesignation: '',
+        email: '',
+        officeNumber: '',
     })
 
     let dispatch = useDispatch()
@@ -77,11 +95,126 @@ const ViewSchool = (props) => {
 
             if (checkItem.length > 0) {
                 setValues(...checkItem)
+                setSchoolId(checkItem[0]._id)
 
                 console.log('location333', checkItem, params, ...checkItem)
             }
         }
     }, [params, allSchoolItems])
+
+    const activateEdit = (data) => {
+        if (schoolId) {
+            setEditValues({
+                ...editValues,
+                ...values,
+                schoolId: schoolId,
+            })
+            setEditActive(true)
+        }
+    }
+
+    /** function to de-activate create Departments  */
+    const closeEdit = () => {
+        setEditValues({
+            schoolName: '',
+            deanName: '',
+            deanDesignation: '',
+            email: '',
+            officeNumber: '',
+            schoolId: '',
+        })
+        setChnageMade(false)
+        setEditActive(false)
+    }
+
+    /** function to handleChange */
+
+    const handleEditChange = (e) => {
+        e.preventDefault()
+        setChnageMade(true)
+        setEditValues({
+            ...editValues,
+            [e.target.name]: e.target.value,
+        })
+    }
+
+    let validate = (values) => {
+        const errors = {}
+        if (!values.schoolName) {
+            errors.schoolName = 'Required'
+        }
+        if (!values.deanName) {
+            errors.deanName = 'Required'
+        }
+        if (!values.deanDesignation) {
+            errors.deanDesignation = 'Required'
+        }
+        if (!values.officeNumber) {
+            errors.officeNumber = 'Required'
+        }
+
+        if (!values.email) {
+            errors.email = 'Required'
+        } else if (
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
+        ) {
+            errors.email = 'Invalid email address'
+        }
+
+        return errors
+    }
+
+    const handleEditSubmit = () => {
+        setErrors(validate(editValues))
+        setIsSubmittingedits(true)
+    }
+
+    React.useEffect(() => {
+        if (isError) {
+            setIsSubmittingedits(false)
+            setChnageMade(false)
+            dispatch(reset())
+        }
+
+        if (isSuccess) {
+            if (isSubmittingedits) {
+                toast({
+                    position: 'top',
+                    title: message.message,
+                    status: 'success',
+                    duration: 10000,
+                    isClosable: true,
+                })
+
+                setIsSubmittingedits(false)
+                setChnageMade(false)
+            }
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message])
+
+    React.useEffect(() => {
+        console.log('errors', errors)
+        if (
+            Object.keys(errors).length === 0 &&
+            isSubmittingedits &&
+            changeMade
+        ) {
+            console.log(Object.keys(errors).length, 'No errors', errors)
+            let values2 = {
+                ...editValues,
+                schoolId: editValues._id,
+            }
+            dispatch(schoolUpdate(values2))
+        } else if (
+            Object.keys(errors).length > 0 &&
+            isSubmittingedits &&
+            changeMade
+        ) {
+            setIsSubmittingedits(false)
+            setChnageMade(false)
+        }
+    }, [errors, isSubmittingedits])
 
     return (
         <Container direction='row' w='100vw'>
@@ -117,7 +250,11 @@ const ViewSchool = (props) => {
                             </BackButtonStack>
 
                             <SubmitButton>
-                                <Button className='button'>Edit Details</Button>
+                                <Button
+                                    className='button'
+                                    onClick={() => activateEdit()}>
+                                    Edit Details
+                                </Button>
                             </SubmitButton>
                         </Stack>
 
@@ -144,6 +281,24 @@ const ViewSchool = (props) => {
                     </Stack>
                 </Stack>
             </Stack>
+
+            {/** edit school  */}
+            <Modal w='100vw' isOpen={editActive} p='0' onClose={closeEdit}>
+                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />{' '}
+                <ModalContent p='0'>
+                    {' '}
+                    <ModalBody p='0'>
+                        {' '}
+                        <EditSchool
+                            onClose={closeEdit}
+                            editValues={editValues}
+                            handleChange={handleEditChange}
+                            handleEditSubmit={handleEditSubmit}
+                            isSubmittingp={isSubmittingedits}
+                        />
+                    </ModalBody>{' '}
+                </ModalContent>{' '}
+            </Modal>
         </Container>
     )
 }

@@ -36,7 +36,10 @@ import {
     updateProjectStatus,
     reset,
 } from '../../../store/features/project/projectSlice'
-
+import {
+    removeProjectOpponent,
+    reset as rpreset,
+} from '../../../store/features/opponents/opponentSlice'
 
 import { FiCheck } from 'react-icons/fi'
 import VivaPopupFileUpload from './VivaPopupFileUpload'
@@ -66,6 +69,9 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
     const [removeActive, setRemoveActive] = React.useState(false)
     const [removeDetails, setRemoveDetails] = React.useState(null)
 
+    const [removeActive2, setRemoveActive2] = React.useState(false)
+    const [removeDetails2, setRemoveDetails2] = React.useState(null)
+
     const [isViewFile, setIsViewFile] = React.useState(false)
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
@@ -73,6 +79,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
     let { isLoading, isSuccess, isError, message } = useSelector(
         (state) => state.project
     )
+    let opponentCase = useSelector((state) => state.opponent)
 
     React.useEffect(() => {
         if (values !== null && values._id) {
@@ -80,6 +87,8 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
         }
         if (values !== null && values.vivaFiles.length > 0) {
             setFilesList(values.vivaFiles)
+        }else {
+            setFilesList([])
         }
     }, [values])
 
@@ -310,33 +319,100 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
         }
     }
 
-     const handleRemove = (fId, nam, secId) => {
-         console.log('gggdfd', fId, nam, secId)
-         if (values._id && fId) {
-             let rvalues = {
-                 fId: fId,
-                 name: nam,
-                 secId: secId,
-                 projectId: values._id,
-             }
-             setRemoveDetails(() => rvalues)
-             setRemoveActive(true)
-         }
-     }
-
-       const onRemoveUpload = () => {
-           if (removeDetails.projectId && removeDetails.fId) {
-               dispatch(removeViFiles(removeDetails))
-               setIsSubmittingp(true)
-           }
-       }
-
-        const cancelRemoveUpload = () => {
-            setRemoveActive(false)
-            setRemoveDetails(null)
-
-            // onClose()
+    const handleRemove = (fId, nam, secId) => {
+        console.log('gggdfd', fId, nam, secId)
+        if (values._id && fId) {
+            let rvalues = {
+                fId: fId,
+                name: nam,
+                secId: secId,
+                projectId: values._id,
+            }
+            setRemoveDetails(() => rvalues)
+            setRemoveActive(true)
         }
+    }
+
+    const onRemoveUpload = () => {
+        if (removeDetails.projectId && removeDetails.fId) {
+            dispatch(removeViFiles(removeDetails))
+            setIsSubmittingp(true)
+        }
+    }
+
+    const cancelRemoveUpload = () => {
+        setRemoveActive(false)
+        setRemoveDetails(null)
+
+        // onClose()
+    }
+
+    /** remove opponent */
+    const handleRemove2 = (supId, nam, title, secId) => {
+        if (values._id && supId && secId) {
+            let rvalues = {
+                exId: supId,
+                name: `${title + nam}`,
+                projectId: values._id,
+                secId: secId,
+            }
+            setRemoveDetails2(() => rvalues)
+            setRemoveActive2(true)
+        }
+    }
+
+    const onRemoveUpload2 = () => {
+        if (removeDetails2.projectId && removeDetails2.exId) {
+            dispatch(removeProjectOpponent(removeDetails2))
+            setIsSubmittingp(true)
+        }
+    }
+
+    const cancelRemoveUpload2 = () => {
+        setRemoveActive2(false)
+        setRemoveDetails2(null)
+
+        // onClose()
+    }
+
+    /** awaiting response after submission of delete opponent */
+       React.useEffect(() => {
+           if (opponentCase.isError && isSubmittingp) {
+               toast({
+                   position: 'top',
+                   title: opponentCase.message.message,
+                   status: 'error',
+                   duration: 10000,
+                   isClosable: true,
+               })
+               setIsSubmittingp(false)
+               setChangeMade(false)
+
+               dispatch(rpreset())
+           }
+
+           if (opponentCase.isSuccess && isSubmittingp) {
+               toast({
+                   position: 'top',
+                   title: opponentCase.message.message,
+                   status: 'success',
+                   duration: 10000,
+                   isClosable: true,
+               })
+               setIsSubmittingp(false)
+               setChangeMade(false)
+               onClose()
+               dispatch(rpreset())
+               setRemoveActive2(false)
+               setRemoveDetails2(null)
+           }
+           dispatch(rpreset())
+       }, [
+           opponentCase.isError,
+           opponentCase.isSuccess,
+           opponentCase.message,
+           dispatch,
+       ])
 
     return (
         <Container>
@@ -355,13 +431,14 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                     </Box>
 
                     <Stack direction='row' alignItems='center;'>
-                        <Box
+                        <SubmitButton
+                            as='button'
                             className={`uploadBtn`}
                             onClick={() =>
                                 setFileUploadActive(!fileUploadActive)
                             }>
                             Upload file
-                        </Box>
+                        </SubmitButton>
                         <Box
                             onClick={() => setSelectedView('grid')}
                             className={`icon ${
@@ -393,7 +470,8 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                             p='0px 20px'
                             direction='row'
                             w='100%'
-                            spacing='30px'>
+                            justifyContent={'space-between'}
+                            spacing='30%'>
                             <Stack direction='column' w='50%'>
                                 <Box className='form_subtitle'>
                                     <h1>Status</h1>
@@ -509,8 +587,11 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                             {/**oponents */}
                             <Stack direction='column' w='50%'>
                                 <Stack
+                                    w='98%'
                                     direction='row'
                                     spacing='20px'
+                                    alignItems='center'
+                                    justifyContent='space-between'
                                     className='form_subtitle'>
                                     <h1>Opponents</h1>
 
@@ -534,7 +615,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
 
                                 {values !== null &&
                                 values.opponents.length > 0 ? (
-                                    <Stack direction='column' w='100%'>
+                                    <Stack direction='column' w='98%'>
                                         <Stack spacing={'16px'}>
                                             {values.opponents.map(
                                                 (data, index) => (
@@ -562,7 +643,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
 
                                                         <Box className='form_input'>
                                                             <InputGroup>
-                                                                <input
+                                                                <Input
                                                                     readOnly
                                                                     value={
                                                                         data
@@ -577,7 +658,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                                                         pr='10px'>
                                                                         <Button
                                                                             onClick={() =>
-                                                                                handleRemove(
+                                                                                handleRemove2(
                                                                                     data
                                                                                         .opponentId
                                                                                         ._id,
@@ -1087,6 +1168,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                 setDefenseUploadActive={setDefenseUploadActive}
                 defenseUploadActive={defenseUploadActive}
             />
+            {/** remove files */}
             <Modal
                 w='100vw'
                 isOpen={removeActive}
@@ -1146,6 +1228,76 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                 </Button>
                                 <Button
                                     onClick={onRemoveUpload}
+                                    disabled={false}
+                                    isLoading={isSubmittingp ? true : false}
+                                    className='apply_button'>
+                                    Confirm
+                                </Button>
+                            </Stack>
+                        </PopupForm>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+            {/** remove project opponent */}
+            <Modal
+                w='100vw'
+                isOpen={removeActive2}
+                p='0'
+                onClose={() => cancelRemoveUpload2()}>
+                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
+                <ModalContent p='0'>
+                    <ModalBody p='0'>
+                        <PopupForm
+                            p='0px'
+                            direction='column'
+                            spacing='0'
+                            justifyContent='space-between'>
+                            <Stack direction='column' spacing={'10px'} h='50%'>
+                                <Stack
+                                    className='pop_titleRR'
+                                    direction='row'
+                                    w='100%'
+                                    alignItems='center'
+                                    justifyContent='space-between'>
+                                    <Box>
+                                        <h1>Remove Opponent</h1>
+                                    </Box>
+                                </Stack>
+
+                                <Stack
+                                    p='10px 20px 10px 20px'
+                                    spacing={'2px'}
+                                    direction='row'
+                                    className='list_text'>
+                                    <p>
+                                        Are you sure you want to remove
+                                        <span>
+                                            <li>
+                                                {removeDetails2 !== null &&
+                                                    removeDetails2.name}
+                                            </li>
+                                        </span>
+                                        from this project.
+                                    </p>
+                                </Stack>
+                            </Stack>
+                            <Stack
+                                p='0px 20px'
+                                h='65px'
+                                bg='#ffffff'
+                                direction='row'
+                                borderTop='1px solid #E9EDF5'
+                                borderRadius='0 0 8px 8px'
+                                justifyContent='flex-end'
+                                alignItems='center'>
+                                <Button
+                                    variant='outline'
+                                    className='cancel_button'
+                                    onClick={() => cancelRemoveUpload2()}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={onRemoveUpload2}
                                     disabled={false}
                                     isLoading={isSubmittingp ? true : false}
                                     className='apply_button'>
@@ -1424,6 +1576,23 @@ const PopupForm = styled(Stack)`
         letter-spacing: 0.02em;
     }
 
+    .pop_titleRR {
+        height: 45px;
+        width: 100%;
+
+        border-bottom: 1px solid #ebeefa;
+        padding: 0 30px;
+        h1 {
+            width: 100%;
+
+            font-style: normal;
+            font-weight: bold;
+            font-size: 17px;
+            line-height: 21px;
+            color: #111827;
+        }
+    }
+
     .list_text {
         font-family: 'Inter', sans-serif;
         font-style: normal;
@@ -1517,4 +1686,20 @@ const StatusChangeItem = styled(Stack)`
 
 const StatusNotesArea = styled(Textarea)`
     background: #ffffff !important;
+`
+
+const SubmitButton = styled(Box)`
+    width: 126px;
+    height: 32px;
+    background: #f4797f;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
+    border-radius: 6px;
+
+    color: #ffffff;
+    letter-spacing: 0.02em;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
 `

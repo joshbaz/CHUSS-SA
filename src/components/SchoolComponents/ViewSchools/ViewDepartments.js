@@ -28,19 +28,21 @@ const ViewDepartments = ({ indivdualValues }) => {
     const [helperFunctions, setHelperFunctions] = React.useState(null)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [isSubmittingedits, setIsSubmittingedits] = React.useState(false)
+
     const [exportData, setExportData] = React.useState([])
     const [changeMade, setChnageMade] = React.useState(false)
-    const [perPage, setPerPage] = React.useState(10)
+    const [perPage, setPerPage] = React.useState(3)
     const [errors, setErrors] = React.useState({})
     const [allDisplayData, setAllDisplayData] = React.useState({
         currentPage: 0,
         itemsPerPage: 8,
         items: [],
         allItems: [],
-        current_total: 0,
-        overall_total: 0,
+        totalItemsDisplayed: 0,
+        totalAllItems: 0,
         totalPages: 0,
     })
+
     const [createActive, setCreateActive] = React.useState(false)
     const [viewActive, setViewActive] = React.useState(false)
     const [editActive, setEditActive] = React.useState(false)
@@ -90,8 +92,8 @@ const ViewDepartments = ({ indivdualValues }) => {
             itemsPerPage: itemsPerPage,
             items: currentItems,
             allItems: indivdualValues.departments,
-            current_total: currentItems.length,
-            overall_total: totalItems,
+            totalItemsDisplayed: currentItems.length,
+            totalAllItems: totalItems,
             totalPages: pageLength,
         })
         /** export trial */
@@ -329,10 +331,22 @@ const ViewDepartments = ({ indivdualValues }) => {
                     <Box>
                         <DepartmentTable
                             allDisplayData={allDisplayData}
+                            setAllDisplayData={setAllDisplayData}
                             exportData={exportData}
                             setExportData={setExportData}
                             activateView={activateView}
                             activateEdit={activateEdit}
+                            schoolName={
+                                indivdualValues !== null &&
+                                indivdualValues.schoolName
+                                    ? indivdualValues.schoolName
+                                    : ''
+                            }
+                            schoolId={
+                                indivdualValues !== null && indivdualValues._id
+                                    ? indivdualValues._id
+                                    : ''
+                            }
                         />
                     </Box>
                 </Stack>
@@ -375,6 +389,7 @@ const ViewDepartments = ({ indivdualValues }) => {
                                         onClose={closeAddDepartment}
                                         values={values}
                                         handleChange={handleChange}
+                                        isSubmittingp={isSubmittingp}
                                     />
                                 </Form>
                             )}

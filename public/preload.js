@@ -8,6 +8,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     exportCSV: (values) => ipcRenderer.invoke('export-csv', values),
     exportStudentCSV: (values) =>
         ipcRenderer.invoke('export-student-csv', values),
+    exportSchoolCSV: (values) =>
+        ipcRenderer.invoke('export-school-csv', values),
+    exportDepartmentsCSV: (values) =>
+        ipcRenderer.invoke('export-departments-csv', values),
     /** projects */
     projectDeletion: (values) =>
         ipcRenderer.invoke('remove-student-project', values),
@@ -87,6 +91,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     allOpponents: (values) => ipcRenderer.invoke('all-opponents', values),
     getIndividualOpponent: (id) =>
         ipcRenderer.invoke('individual-opponent', id),
+    deleteFileOpponent: (values) =>
+        ipcRenderer.invoke('delete-fileproject-Opponent', values),
+    addFileOpponent: (values) =>
+        ipcRenderer.invoke('add-fileproject-Opponent', values),
+    removeProjectOpponent: (values) =>
+        ipcRenderer.invoke('remove-project-Opponent', values),
     /** examiners */
     createProjectExaminer: (values) =>
         ipcRenderer.invoke('create-examiner-project', values),
@@ -146,6 +156,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getIndividualSchool: (id) => ipcRenderer.invoke('individual-school', id),
     createSchool: (values) => ipcRenderer.invoke('create-school', values),
     updateSchool: (values) => ipcRenderer.invoke('update-school', values),
+    deleteSchool: (values) => ipcRenderer.invoke('delete-school', values),
+    deleteDepartment: (values) =>
+        ipcRenderer.invoke('delete-department', values),
     createDepartment: (values) =>
         ipcRenderer.invoke('create-department', values),
     updateDepartment: (values) =>

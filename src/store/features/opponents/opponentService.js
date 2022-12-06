@@ -39,6 +39,24 @@ const opponentUpdate = async (values) => {
 
     return response
 }
+
+//delete file opponent
+const deleteFileOpponent = async (values) => {
+    const response = await window.electronAPI.deleteFileOpponent(values)
+    return response
+}
+
+//add file opponent
+const addFileOpponent = async (values) => {
+    const response = await window.electronAPI.addFileOpponent(values)
+    return response
+}
+
+//remove project opponent
+const removeProjectOpponent = async (values) => {
+    const response = await window.electronAPI.removeProjectOpponent(values)
+    return response
+}
 let examinerService = {
     projectOpponentCreate,
     assignOpponent,
@@ -47,6 +65,9 @@ let examinerService = {
     getIndividualOpponent,
 
     opponentUpdate,
+    deleteFileOpponent,
+    addFileOpponent,
+    removeProjectOpponent,
 }
 
 export default examinerService

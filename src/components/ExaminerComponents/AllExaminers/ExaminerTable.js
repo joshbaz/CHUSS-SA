@@ -21,8 +21,11 @@ import {
     TabPanels,
     Tab,
     TabPanel,
+    useToast,
+    Button,
 } from '@chakra-ui/react'
-import { AiOutlinePlus } from 'react-icons/ai'
+import { BiDownload } from 'react-icons/bi'
+import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 import {
     IoIosArrowDropright,
@@ -38,6 +41,7 @@ import {
     MdKeyboardArrowRight,
     MdVerified,
 } from 'react-icons/md'
+import { useDispatch, useSelector } from 'react-redux'
 const TableHead = [
     {
         title: '#',
@@ -67,29 +71,43 @@ const TableHead = [
 ]
 
 const ExaminerTable = ({
-    allExaminerItems,
     paginatedExaminers,
     setSelectedExaminers,
     selectedExaminers,
+    searchActive,
+    filterInfo,
+    exportData,
+    setExportData,
 }) => {
-    const filterTabData = [
+    const [filterTabData, setfilterTabData] = React.useState([
         {
             title: 'All',
-            dataCount: 27,
+            dataCount: 0,
         },
-        {
-            title: 'Verified',
-            dataCount: 7,
-        },
-        {
-            title: 'Unverified',
-            dataCount: 4,
-        },
-    ]
+    ])
+    const [perPage, setPerPage] = React.useState(10)
+    const [allDisplayData, setAllDisplayData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allItems: [],
+        totalItemsDisplayed: 0,
+        totalAllItems: 0,
+        totalPages: 0,
+    })
 
-    
+    const [searchData, setSearchData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allSearchItems: [],
+        totalItemsDisplayed: 0,
+        totalSearchedItems: 0,
+        totalPages: 0,
+    })
+
     const [pexaminers, setPExaminers] = React.useState({
-        currentPage: 0, 
+        currentPage: 0,
         perPage: 8,
         current_total: 0,
         overall_total: 0,
@@ -99,21 +117,251 @@ const ExaminerTable = ({
     const [examinerLists, setExaminerLists] = React.useState([])
 
     let routeNavigate = useNavigate()
-    /** pagination */
+    let dispatch = useDispatch()
+    let toast = useToast()
+    let { allExaminerItems, message, isSuccess, isError } = useSelector(
+        (state) => state.examiner
+    )
+
+    /** changes all document tabs */
+    useEffect(() => {
+        if (searchActive) {
+            setfilterTabData([
+                {
+                    title: 'All',
+                    dataCount: searchData.totalSearchedItems,
+                },
+            ])
+        } else {
+            setfilterTabData([
+                {
+                    title: 'All',
+                    dataCount: allDisplayData.totalAllItems,
+                },
+            ])
+        }
+    }, [
+        searchActive,
+        allDisplayData.totalAllItems,
+        searchData.totalSearchedItems,
+    ])
+
+    useEffect(() => {
+        let allQueriedItems = allExaminerItems.items.filter((datas) => {
+            return datas
+        })
+        /** initial items  */
+        //items collected
+        const allItemsCollected = allQueriedItems
+        //total all items
+        const totalItems = allQueriedItems.length
+        let itemsPerPage = perPage
+        const currentPage = 1
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+        const currentItems = allItemsCollected.slice(
+            indexOfFirstItem,
+            indexOfLastItem
+        )
+
+        const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+        setAllDisplayData({
+            currentPage: currentPage,
+            itemsPerPage: itemsPerPage,
+            items: currentItems,
+            allItems: allQueriedItems,
+            totalItemsDisplayed: currentItems.length,
+            totalAllItems: totalItems,
+            totalPages: pageLength,
+        })
+    }, [allExaminerItems])
+
     let PaginationFirstNumber =
-        pexaminers.currentPage * pexaminers.perPage - pexaminers.perPage + 1
+        allDisplayData.currentPage * allDisplayData.itemsPerPage -
+        allDisplayData.itemsPerPage +
+        1
 
     let PaginationLastNumber =
-        PaginationFirstNumber + pexaminers.current_total - 1
+        PaginationFirstNumber + allDisplayData.totalItemsDisplayed - 1
 
-    const handlePrev = () => {}
+    /** searched Pagination */
+    let PaginationSFirstNumber =
+        searchData.currentPage * searchData.itemsPerPage -
+        searchData.itemsPerPage +
+        1
+    let PaginationSLastNumber =
+        PaginationSFirstNumber + searchData.totalItemsDisplayed - 1
 
-    const handleNext = () => {}
+    /** function to handle general checkbox */
+    const handleGeneralCheckbox = (e) => {
+        if (e.target.checked) {
+            if (searchActive) {
+                if (searchData.allSearchItems.length > 0) {
+                    let newDataToSave = searchData.allSearchItems.map(
+                        (data) => {
+                            return data
+                        }
+                    )
+
+                    console.log('generalss', newDataToSave)
+
+                    setExportData(newDataToSave)
+                }
+            } else {
+                if (allDisplayData.allItems.length > 0) {
+                    let newDataToSave = allDisplayData.allItems.map((data) => {
+                        console.log('allDisplayData', data.activeStatus)
+                        return data
+                    })
+
+                    console.log('generalstts', newDataToSave)
+                    setExportData(newDataToSave)
+                }
+            }
+        } else {
+            setExportData([])
+        }
+    }
+
+    /** function to handle checkbox on each item */
+    const handleIndivCheckbox = (e, data) => {
+        console.log('checking0', e.target.checked, data)
+        if (exportData.length > 0) {
+            let checkData = exportData.some(
+                (datacheck, index) => data._id === datacheck._id
+            )
+
+            if (checkData) {
+                let newChecksData = [...exportData]
+                for (
+                    let iteration = 0;
+                    iteration < newChecksData.length;
+                    iteration++
+                ) {
+                    if (newChecksData[iteration]._id === data._id) {
+                        newChecksData.splice(iteration, 1)
+                        setExportData([...newChecksData])
+
+                        return
+                    }
+                }
+            } else {
+                setExportData([...exportData, data])
+            }
+        } else {
+            setExportData([data])
+        }
+    }
+
+    const handlePrev = () => {
+        if (searchActive) {
+            if (searchData.currentPage - 1 >= 1) {
+                let page = searchData.currentPage - 1
+                const indexOfLastItem = page * searchData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - searchData.itemsPerPage
+
+                const currentItems = searchData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setSearchData(() => ({
+                    ...searchData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                }))
+            }
+        } else {
+            if (allDisplayData.currentPage - 1 >= 1) {
+                let page = allDisplayData.currentPage - 1
+                const indexOfLastItem = page * allDisplayData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allDisplayData.itemsPerPage
+
+                const currentItems = allDisplayData.allItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setAllDisplayData({
+                    ...allDisplayData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        }
+    }
+
+    const handleNext = () => {
+        if (searchActive) {
+            if (searchData.currentPage + 1 <= searchData.totalPages) {
+                let page = searchData.currentPage + 1
+                const indexOfLastItem = page * searchData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - searchData.itemsPerPage
+
+                const currentItems = searchData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setSearchData({
+                    ...searchData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        } else {
+            if (allDisplayData.currentPage + 1 <= allDisplayData.totalPages) {
+                let page = allDisplayData.currentPage + 1
+                const indexOfLastItem = page * allDisplayData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allDisplayData.itemsPerPage
+
+                const currentItems = allDisplayData.allItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setAllDisplayData(() => ({
+                    ...allDisplayData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                }))
+            }
+        }
+    }
+
+    /** function to handle data exportation */
+    const handleExportation = async () => {
+        if (exportData.length > 0) {
+            let values = {
+                tableName: 'Examiners',
+                data: exportData,
+            }
+            await window.electronAPI.exportStudentCSV(values)
+        }
+    }
+
     return (
         <Container>
             <Box className='form_container'>
                 {/** tab data */}
-                <Box>
+                <Stack
+                    direction='row'
+                    alignItems={'flex-end'}
+                    justifyContent={'space-between'}>
                     <Tabs variant='unstyled'>
                         <TabList>
                             {filterTabData.map((data, index) => {
@@ -137,7 +385,24 @@ const ExaminerTable = ({
                             })}
                         </TabList>
                     </Tabs>
-                </Box>
+
+                    <SearchActivity direction='row' alignItems='center'>
+                        <Box
+                            className='sactivity_indicator'
+                            bg={searchActive ? 'green' : 'red'}
+                        />
+                        <Box className='sactivity_text'>Search</Box>
+                        <TableButton>
+                            <Button
+                                onClick={handleExportation}
+                                leftIcon={<BiDownload />}
+                                disabled={exportData.length > 0 ? false : true}
+                                className='btn__print'>
+                                Export
+                            </Button>
+                        </TableButton>
+                    </SearchActivity>
+                </Stack>
                 {/** details */}
                 <Stack
                     direction='column'
@@ -146,10 +411,23 @@ const ExaminerTable = ({
                     spacing='20px'
                     h='100%'>
                     {/** table */}
-                    <Box>
+                    <Box minH='48vh'>
                         <Table size='sm'>
                             <Thead>
                                 <Tr>
+                                    <Th w='46px'>
+                                        <Checkbox
+                                            isChecked={
+                                                exportData.length > 0
+                                                    ? true
+                                                    : false
+                                            }
+                                            onChange={handleGeneralCheckbox}
+                                            bg='#ffffff'
+                                            icon={<AiOutlineMinus />}
+                                            colorScheme='pink'
+                                        />
+                                    </Th>
                                     {TableHead.map((data, index) => {
                                         return (
                                             <Th
@@ -203,24 +481,56 @@ const ExaminerTable = ({
                                     <>
                                         {allExaminerItems.items.map(
                                             (data, index) => {
-                                                let checkData =
-                                                    selectedExaminers.find(
-                                                        (element) =>
-                                                            element._id ===
-                                                            data._id
-                                                    )
-                                                let selectionColor = checkData
-                                                    ? '#fef9ef'
-                                                    : ''
-                                                let checkedStatus = checkData
-                                                    ? true
-                                                    : false
+                                                 let includedInExport
+                                                 if (exportData.length > 0) {
+                                                     let checkData =
+                                                         exportData.some(
+                                                             (
+                                                                 datacheck,
+                                                                 index
+                                                             ) =>
+                                                                 data._id ===
+                                                                 datacheck._id
+                                                         )
+
+                                                     includedInExport =
+                                                         checkData
+                                                 } else {
+                                                     includedInExport = false
+                                                 }
+                                                let selectionColor =
+                                                    includedInExport
+                                                        ? '#fef9ef'
+                                                        : ''
+                                                let checkedStatus =
+                                                    includedInExport
+                                                        ? true
+                                                        : false
 
                                                 return (
                                                     <Tr
-                                                        className='table_row'
+                                                        className={`table_row ${
+                                                            includedInExport
+                                                                ? 'row_selected'
+                                                                : ''
+                                                        }`}
+                                                       
                                                         bg={selectionColor}
                                                         key={index}>
+                                                        <Td w='46px'>
+                                                            <Checkbox
+                                                                isChecked={
+                                                                    includedInExport
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleIndivCheckbox(
+                                                                        e,
+                                                                        data
+                                                                    )
+                                                                }
+                                                                colorScheme='pink'
+                                                            />
+                                                        </Td>
                                                         <Td>1</Td>
                                                         <Td>
                                                             <Box className='type_examiner'>
@@ -535,3 +845,63 @@ const PaginationStack = styled(Stack)`
         }
     }
 `
+
+const SearchActivity = styled(Stack)`
+    .sactivity_indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .sactivity_text {
+        font-family: 'Inter', sans-serif;
+        font-style: italic;
+        font-weight: normal;
+        font-size: 12px;
+
+        letter-spacing: 0.3px;
+        color: #838389;
+    }
+`
+
+const TableButton = styled(Box)`
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+
+    font-size: 14px;
+    line-height: 20px;
+    .btn_table {
+        height: 32px;
+        color: #464f60;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+        border-radius: 6px;
+        background: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__print {
+        height: 28px;
+        background: #f7f9fc;
+        box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+        border-radius: 6px;
+
+        letter-spacing: 0.02em;
+        color: #868fa0;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__rule {
+        height: 32px;
+        background: #20202a;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #33333c;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
+    }
+`
+

@@ -4,102 +4,104 @@ import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
-import ViewExaminerDetail from '../../../../components/ProjectComponents/ViewExaminer/ViewExaminerDetail'
-import ViewInfoForm from '../../../../components/ProjectComponents/ViewExaminer/ViewInfoForm'
-import ViewPaymentInfo from '../../../../components/ProjectComponents/ViewExaminer/ViewPaymentInfo'
+
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-    getIndividualExaminer,
-    allExaminers,
+    getIndividualOpponent,
+    allOpponents,
     reset as eReset,
-} from '../../../../store/features/Examiner/examinerSlice'
+} from '../../../../store/features/opponents/opponentSlice'
 import {
     getIndividualProject,
     getAllProjects,
     reset as pReset,
 } from '../../../../store/features/project/projectSlice'
-import ViewExaminerFiles from '../../../../components/ProjectComponents/ViewExaminer/ViewExaminerFiles'
+
+import ViewOpponentDetailForm from '../../../../components/ProjectComponents/AssignOpponents/ViewOpponentDetailForm'
+import ViewOpponentFiles from '../../../../components/ProjectComponents/AssignOpponents/ViewOpponentFiles'
+import ViewOpponentPayInfo from '../../../../components/ProjectComponents/AssignOpponents/ViewOpponentPayInfo'
 const PhdViewProjectOpponent = () => {
-     const [projectValues, setProjectValues] = React.useState(null)
-     const [examinerValues, setExaminerValues] = React.useState(null)
-     let routeNavigate = useNavigate()
-     let params = useParams()
-     let dispatch = useDispatch()
-     let projectCase = useSelector((state) => state.project)
+    const [projectValues, setProjectValues] = React.useState(null)
+    const [examinerValues, setExaminerValues] = React.useState(null)
+    let routeNavigate = useNavigate()
+    let params = useParams()
+    let dispatch = useDispatch()
+    let projectCase = useSelector((state) => state.project)
 
-     let examinerCase = useSelector((state) => state.examiner)
-     useEffect(() => {
-         console.log('props', params.e_id)
-         console.log('props2', params.p_id)
+    let examinerCase = useSelector((state) => state.opponent)
+    useEffect(() => {
+        console.log('props', params.o_id)
+        console.log('props2', params.p_id)
 
-         /** dispatch to get project */
-         dispatch(getIndividualProject(params.p_id))
-         /** dispatch to get examiner */
-         dispatch(getIndividualExaminer(params.e_id))
-     }, [params.e_id, params.p_id, dispatch])
+        /** dispatch to get project */
+        dispatch(getIndividualProject(params.p_id))
+        /** dispatch to get examiner */
+        dispatch(getIndividualOpponent(params.o_id))
+    }, [params.o_id, params.p_id, dispatch])
 
-     useEffect(() => {
-         dispatch(allExaminers(params.p_id))
-     }, [])
+    useEffect(() => {
+        dispatch(allOpponents(params.p_id))
+    }, [])
 
-     useEffect(() => {
-         dispatch(getAllProjects(params.p_id))
-     }, [])
+    useEffect(() => {
+        dispatch(getAllProjects(params.p_id))
+    }, [])
 
-     useEffect(() => {
-         let findExaminer = examinerCase.allExaminerItems.items.find(
-             (element) => element._id === params.e_id
-         )
+    useEffect(() => {
+        console.log(
+            'examinerCase.allOpponentItems.items',
+            examinerCase.allOpponentItems.items
+        )
+        let findExaminer = examinerCase.allOpponentItems.items.find(
+            (element) => element._id === params.o_id
+        )
 
-         console.log('all examiners', findExaminer)
+        console.log('all examiners', findExaminer)
 
-         if (findExaminer) {
-             setExaminerValues(findExaminer)
-         }
-     }, [examinerCase.allExaminerItems, params.e_id])
+        if (findExaminer) {
+            setExaminerValues(findExaminer)
+        }
+    }, [examinerCase.allOpponentItems, params.o_id])
 
-     useEffect(() => {
-         let findProject = projectCase.allprojects.items.find(
-             (element) => element._id === params.p_id
-         )
+    useEffect(() => {
+        let findProject = projectCase.allprojects.items.find(
+            (element) => element._id === params.p_id
+        )
 
-         console.log('findProject', findProject)
+        if (findProject) {
+            setProjectValues(findProject)
+        }
+    }, [projectCase.allprojects, params.p_id])
 
-         if (findProject) {
-             setProjectValues(findProject)
-         }
-     }, [projectCase.allprojects, params.p_id])
+    let toast = useToast()
+    useEffect(() => {
+        if (projectCase.isError) {
+            toast({
+                position: 'top',
+                title: examinerCase.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+            dispatch(pReset())
+        }
+        dispatch(pReset())
+    }, [projectCase.isError, projectCase.isSuccess, projectCase.message])
 
-     console.log(examinerCase)
-     let toast = useToast()
-     useEffect(() => {
-         if (projectCase.isError) {
-             toast({
-                 position: 'top',
-                 title: examinerCase.message,
-                 status: 'error',
-                 duration: 10000,
-                 isClosable: true,
-             })
-             dispatch(pReset())
-         }
-         dispatch(pReset())
-     }, [projectCase.isError, projectCase.isSuccess, projectCase.message])
-
-     useEffect(() => {
-         if (examinerCase.isError) {
-             toast({
-                 position: 'top',
-                 title: examinerCase.message,
-                 status: 'error',
-                 duration: 10000,
-                 isClosable: true,
-             })
-             dispatch(eReset())
-         }
-         dispatch(eReset())
-     }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
+    useEffect(() => {
+        if (examinerCase.isError) {
+            toast({
+                position: 'top',
+                title: examinerCase.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+            dispatch(eReset())
+        }
+        dispatch(eReset())
+    }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -145,7 +147,7 @@ const PhdViewProjectOpponent = () => {
                                 as='button'
                                 onClick={() =>
                                     routeNavigate(
-                                        `/phd/projects/examiners/update/${params.p_id}/${params.e_id}`
+                                        `/phd/projects/opponents/update/${params.p_id}/${params.o_id}`
                                     )
                                 }>
                                 Edit Details
@@ -161,10 +163,10 @@ const PhdViewProjectOpponent = () => {
                                     direction='column'
                                     w='70%'
                                     spacing='20px'>
-                                    <ViewExaminerDetail
+                                    <ViewOpponentDetailForm
                                         values={examinerValues}
                                     />
-                                    <ViewExaminerFiles
+                                    <ViewOpponentFiles
                                         values={examinerValues}
                                         projectValues={projectValues}
                                     />
@@ -175,19 +177,10 @@ const PhdViewProjectOpponent = () => {
                                     direction='column'
                                     w='30%'
                                     spacing='20px'>
-                                    <ViewInfoForm
+                                    <ViewOpponentPayInfo
                                         values={examinerValues}
                                         projectValues={projectValues}
                                     />
-
-                                    {examinerValues !== null &&
-                                    examinerValues.typeOfExaminer ===
-                                        'External' ? (
-                                        <ViewPaymentInfo
-                                            values={examinerValues}
-                                            projectValues={projectValues}
-                                        />
-                                    ) : null}
                                 </Stack>
                             </Stack>
                         </Stack>
@@ -199,7 +192,6 @@ const PhdViewProjectOpponent = () => {
 }
 
 export default PhdViewProjectOpponent
-
 
 const Container = styled(Stack)``
 
@@ -227,5 +219,3 @@ const SubmitButton = styled(Box)`
     font-size: 14px;
     line-height: 20px;
 `
-
-

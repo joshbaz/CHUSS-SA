@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Box, Stack } from '@chakra-ui/react'
+import { Box, Stack, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
@@ -19,8 +19,16 @@ import ExaminerTable from '../../../components/ExaminerComponents/AllExaminers/E
 import {
     reset,
     allExaminers,
-    paginatedExaminer,
 } from '../../../store/features/Examiner/examinerSlice'
+import {
+    allSupervisors,
+    reset as sreset,
+} from '../../../store/features/supervisors/supervisorSlice'
+
+import {
+    allOpponents,
+    reset as oreset,
+} from '../../../store/features/opponents/opponentSlice'
 
 const tiledata = [
     {
@@ -46,35 +54,123 @@ const tiledata = [
     },
 ]
 
-const statsdata = [
-    {
-        title: 'Total Examiners',
-        value: 12,
-        subText: 'All Examiners both Internal and External ',
-        link: '',
-        bg: '#DDF5DF',
-        color: '#1BBD2B',
-    },
-    {
-        title: 'Total Supervisors',
-        value: 103,
-        subText: 'Cumulative of supervisors in the system.',
-        link: '',
-        bg: '#FFE2D9',
-        color: '#FF3D00',
-    },
-    {
-        title: 'Total Opponents',
-        value: 203,
-        subText: 'Cumulative of opponents in the system.',
-        link: '',
-        bg: '#EDEEFF',
-        color: '#293AD1',
-    },
-]
-
 const ManageExaminers = () => {
     let routeNavigate = useNavigate()
+
+    const [statsdata, setStatsData] = React.useState([
+        {
+            title: 'Total Examiners',
+            value: 0,
+            subText: 'All Examiners both Internal and External ',
+            link: '/m-examiners/examiners',
+            bg: '#DDF5DF',
+            color: '#1BBD2B',
+        },
+        {
+            title: 'Total Supervisors',
+            value: 0,
+            subText: 'Cumulative of supervisors in the system.',
+            link: '',
+            bg: '#FFE2D9',
+            color: '#FF3D00',
+        },
+        {
+            title: 'Total Opponents',
+            value: 0,
+            subText: 'Cumulative of opponents in the system.',
+            link: '',
+            bg: '#EDEEFF',
+            color: '#293AD1',
+        },
+    ])
+    let dispatch = useDispatch()
+    let toast = useToast()
+
+    React.useEffect(() => {
+        dispatch(allExaminers())
+        dispatch(allSupervisors())
+        dispatch(allOpponents())
+    }, [])
+
+    let examinerCase = useSelector((state) => state.examiner)
+    let opponentCase = useSelector((state) => state.opponent)
+    let supervisorCase = useSelector((state) => state.supervisor)
+
+    React.useEffect(() => {
+        setStatsData([
+            {
+                title: 'Total Examiners',
+                value: examinerCase.allExaminerItems.items.length,
+                subText: 'All Examiners both Internal and External ',
+                link: '/m-examiners/examiners',
+                bg: '#DDF5DF',
+                color: '#1BBD2B',
+            },
+            {
+                title: 'Total Supervisors',
+                value: supervisorCase.allSupervisorItems.items.length,
+                subText: 'Cumulative of supervisors in the system.',
+                link: '/m-examiners/supervisors',
+                bg: '#FFE2D9',
+                color: '#FF3D00',
+            },
+            {
+                title: 'Total Opponents',
+                value: opponentCase.allOpponentItems.items.length,
+                subText: 'Cumulative of opponents in the system.',
+                link: '/m-examiners/opponents',
+                bg: '#EDEEFF',
+                color: '#293AD1',
+            },
+        ])
+    }, [
+        examinerCase.allExaminerItems.items,
+        opponentCase.allOpponentItems.items,
+        supervisorCase.allSupervisorItems,
+    ])
+
+    React.useEffect(() => {
+        if (examinerCase.isError) {
+            toast({
+                position: 'top',
+                title: examinerCase.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            dispatch(reset())
+        }
+
+        if (opponentCase.isError) {
+            toast({
+                position: 'top',
+                title: opponentCase.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            dispatch(reset())
+        }
+
+        if (supervisorCase.isError) {
+            toast({
+                position: 'top',
+                title: supervisorCase.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            dispatch(sreset())
+        }
+
+        dispatch(reset())
+        dispatch(sreset())
+        dispatch(oreset())
+    }, [examinerCase, opponentCase, supervisorCase])
+
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>

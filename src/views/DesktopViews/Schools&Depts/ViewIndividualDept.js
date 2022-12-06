@@ -71,16 +71,16 @@ const ViewIndividualDept = ({ onClose, viewValues }) => {
                 </Stack>
             </Stack>
             <Stack
-                p='0px 20px'
+                p='30px 20px'
                 h='48px'
                 bg='#ffffff'
                 direction='row'
                 borderRadius='0 0 8px 8px'
                 justifyContent='flex-end'
                 alignItems='center'>
-                <Box className='cancel_button' onClick={() => onClose()}>
+                <Button className='cancel_button' onClick={() => onClose()}>
                     Close
-                </Box>
+                </Button>
             </Stack>
         </PopupForm>
     )
@@ -103,7 +103,7 @@ const PopupForm = styled(Stack)`
         font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
-        font-size: 14px;
+        font-size: 16px;
         line-height: 20px;
         color: #464f60;
         letter-spacing: 0.02em;
@@ -133,9 +133,24 @@ const PopupForm = styled(Stack)`
         }
     }
 
+    input {
+        background: #ffffff;
+
+        border: 1px solid gray.200;
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
+            0px 0px 0px 1px rgba(134, 143, 160, 0.16);
+        border-radius: 6px;
+        height: 32px;
+        width: 100%;
+        color: #20202a;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
     .cancel_button {
         width: 64px;
-        height: 24px;
+        height: 32px;
         color: #abaaaf;
         font-weight: 500;
         font-size: 14px;

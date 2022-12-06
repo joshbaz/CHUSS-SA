@@ -34,6 +34,20 @@ const schoolUpdate = async (values) => {
     return response
 }
 
+/** service to create examiner from project */
+const deleteSchool = async (values) => {
+    const response = await window.electronAPI.deleteSchool(values)
+
+    return response
+}
+
+/** service to create examiner from project */
+const deleteDepartment = async (values) => {
+    const response = await window.electronAPI.deleteDepartment(values)
+
+    return response
+}
+
 /** add department */
 const departmentCreate = async (values) => {
     const response = await window.electronAPI.createDepartment(values)
@@ -55,6 +69,8 @@ let schoolService = {
     schoolUpdate,
     departmentCreate,
     departmentUpdate,
+    deleteSchool,
+    deleteDepartment,
 }
 
 export default schoolService

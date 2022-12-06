@@ -84,6 +84,19 @@ export const getIndividualSchool = createAsyncThunk(
 )
 
 /** department create */
+export const deleteSchool = createAsyncThunk(
+    'school/delete',
+    async (values, thunkAPI) => {
+        const deleteAttempt = await schoolService.deleteSchool(values)
+        if (deleteAttempt.type === 'success') {
+            return deleteAttempt
+        } else {
+            return thunkAPI.rejectWithValue(deleteAttempt.message)
+        }
+    }
+)
+
+/** department create */
 export const departmentCreate = createAsyncThunk(
     'school/department/create',
     async (values, thunkAPI) => {
@@ -105,6 +118,18 @@ export const departmentUpdate = createAsyncThunk(
             return creationAttempt
         } else {
             return thunkAPI.rejectWithValue(creationAttempt.message)
+        }
+    }
+)
+/** delete department */
+export const deleteDepartment = createAsyncThunk(
+    'school/department/delete',
+    async (values, thunkAPI) => {
+        const deleteAttempt = await schoolService.deleteDepartment(values)
+        if (deleteAttempt.type === 'success') {
+            return deleteAttempt
+        } else {
+            return thunkAPI.rejectWithValue(deleteAttempt.message)
         }
     }
 )
@@ -190,6 +215,21 @@ export const schoolSlice = createSlice({
                 state.isError = true
                 state.message = action.payload
             })
+
+            //delete School
+            .addCase(deleteSchool.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(deleteSchool.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(deleteSchool.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
             /** department create */
             .addCase(departmentCreate.pending, (state) => {
                 state.isLoading = true
@@ -215,6 +255,21 @@ export const schoolSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(departmentUpdate.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            //update department
+            .addCase(deleteDepartment.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(deleteDepartment.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(deleteDepartment.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

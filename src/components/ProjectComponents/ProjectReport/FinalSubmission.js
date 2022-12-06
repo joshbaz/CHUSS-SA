@@ -54,6 +54,8 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
         }
         if (values !== null && values.FinalSubmissionFiles.length > 0) {
             setFilesList(values.FinalSubmissionFiles)
+        } else {
+            setFilesList([])
         }
     }, [values])
 

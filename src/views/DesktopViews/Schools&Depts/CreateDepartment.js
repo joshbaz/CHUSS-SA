@@ -12,7 +12,7 @@ import {
     ModalBody,
 } from '@chakra-ui/react'
 
-const CreateDepartment = ({ onClose, values, handleChange }) => {
+const CreateDepartment = ({ onClose, values, handleChange, isSubmittingp }) => {
     return (
         <PopupForm p='0px' justifyContent='space-between'>
             <Stack
@@ -71,19 +71,27 @@ const CreateDepartment = ({ onClose, values, handleChange }) => {
                 </Stack>
             </Stack>
             <Stack
-                p='0px 20px'
-                h='48px'
+                p='10px 20px'
+                h='100%'
                 bg='#ffffff'
                 direction='row'
                 borderRadius='0 0 8px 8px'
                 justifyContent='flex-end'
                 alignItems='center'>
-                <Box className='cancel_button' onClick={() => onClose()}>
+                <Button
+                    h='38px'
+                    className='cancel_button'
+                    onClick={() => onClose()}>
                     Cancel
-                </Box>
-                <Button type='submit' className='apply_button'>
+                </Button>
+                <Button
+                    h='38px'
+                    colorScheme={'red'}
+                    type='submit'
+                    isLoading={isSubmittingp ? true : false}
+                    className='apply_button'>
                     {' '}
-                    Apply
+                    Submit
                 </Button>
             </Stack>
         </PopupForm>
@@ -107,7 +115,7 @@ const PopupForm = styled(Stack)`
         font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
-        font-size: 14px;
+        font-size: 16px;
         line-height: 20px;
         color: #464f60;
         letter-spacing: 0.02em;
@@ -137,9 +145,24 @@ const PopupForm = styled(Stack)`
         }
     }
 
+    input {
+        background: #ffffff;
+
+        border: 1px solid gray.200;
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
+            0px 0px 0px 1px rgba(134, 143, 160, 0.16);
+        border-radius: 6px;
+        height: 32px;
+        width: 100%;
+        color: #20202a;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
     .cancel_button {
         width: 64px;
-        height: 24px;
+        height: 32px;
         color: #abaaaf;
         font-weight: 500;
         font-size: 14px;
@@ -151,8 +174,8 @@ const PopupForm = styled(Stack)`
     }
     .apply_button {
         width: 64px;
-        height: 24px;
-        color: #f14c54;
+        height: 32px;
+        color: #ffffff;
         font-weight: 500;
         font-size: 14px;
         line-height: 20px;

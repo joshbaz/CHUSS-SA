@@ -17,6 +17,7 @@ import {
     Text,
     GridItem,
     useToast,
+    SimpleGrid,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -38,42 +39,33 @@ import SchoolTable from '../../../components/SchoolComponents/AllSchools/SchoolT
 
 const AllSchools = () => {
     const [selectedSchools, setSelectedSchools] = React.useState([])
-    const [filterSearchOption, setFilterSearchOption] = React.useState('All')
+    const [filterSearchOption, setFilterSearchOption] =
+        React.useState('School Name')
     const [searchWord, setSearchWord] = React.useState('')
+    const [exportData, setExportData] = React.useState([])
     const filterItems = [
         {
-            title: 'Academic Year',
-            subItems: ['2017', '2018', '2019', '2020'],
+            title: 'School Name',
         },
         {
-            title: 'Candidate Name',
+            title: 'Dean',
         },
         {
-            title: 'Last update',
-        },
-        {
-            title: 'Status',
-            subItems: [
-                'All',
-                'In Review',
-                'Completed',
-                'Approved Viva',
-                'Graduated',
-                'on Hold',
-            ],
-        },
-        {
-            title: 'Examiners',
-            subItems: ['Joshua', 'daisy', 'stephanie'],
-        },
-        {
-            title: 'Topic',
+            title: 'Email',
         },
     ]
 
     const [filterActive, setFilterActive] = React.useState(false)
     const [filterInfo, setFilterInfo] = React.useState([])
+    const [searchActive, setSearchActive] = React.useState(false)
 
+    /** handle search option change */
+    const handleSearchOptionChange = (valuet) => {
+        setSearchWord('')
+        setFilterSearchOption(valuet)
+    }
+
+    /** this handles search word changes */
     const handleSearchInput = (e) => {
         e.preventDefault()
         console.log('e.target', e.target.value)
@@ -87,6 +79,7 @@ const AllSchools = () => {
     }
 
     const handleSubmitFilter = () => {
+        /** search word */
         if (searchWord) {
             if (filterInfo.length > 0) {
                 let newFilterInfo = [...filterInfo]
@@ -134,6 +127,13 @@ const AllSchools = () => {
                 //setFilterSearchOption('All')
                 // console.log('filtered Info', filterInfo)
             }
+        }
+    }
+
+    /** function to set the search active  */
+    const handleSearchActive = () => {
+        if (filterInfo.length > 0) {
+            setSearchActive(true)
         }
     }
 
@@ -188,7 +188,8 @@ const AllSchools = () => {
     const clearAllFilters = () => {
         setFilterInfo([])
         setSearchWord('')
-        setFilterSearchOption('All')
+        setSearchActive(false)
+        setFilterSearchOption('School Name')
     }
 
     const handleRemoveFilter = (Info) => {
@@ -221,6 +222,7 @@ const AllSchools = () => {
         }
         console.log(page)
         dispatch(paginatedSchool(values))
+        dispatch(allSchools())
     }, [Location])
 
     useEffect(() => {
@@ -247,6 +249,22 @@ const AllSchools = () => {
         // }
     }, [isSuccess, isError, message])
 
+    
+        /** realtime schools */
+    
+
+    //    useEffect(() => {
+    //        const io = initSocketConnection()
+    //        dispatch(tagGetAll())
+    //        dispatch(getAllProjects())
+    //        io.on('updatestudent', (data) => {
+    //            if (data.actions === 'update-all-student') {
+    //                dispatch(tagGetAll())
+    //                dispatch(getAllProjects())
+    //            }
+    //        })
+    //    }, [])
+
     console.log('all examinerttt', paginatedSchools)
     return (
         <Container direction='row' w='100vw'>
@@ -255,7 +273,7 @@ const AllSchools = () => {
             </Box>
 
             <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar topbarData={{ title: 'Schools ', count: null }} />
+                <TopBar topbarData={{ title: 'All Schools ', count: null }} />
 
                 <Stack direction='column' padding={'0 20px'}>
                     {/** filter inputs && button */}
@@ -271,15 +289,16 @@ const AllSchools = () => {
                                 spacing={'0px'}
                                 alignItems='center'>
                                 <Box>
-                                    <Menu closeOnSelect={false}>
+                                    <Menu closeOnSelect={true}>
                                         <MenuButton
                                             h='32px'
+                                            w='188px'
                                             className='filter_button'
                                             as={Button}
                                             variant='solid'
                                             leftIcon={<FaFilter />}
                                             rightIcon={<IoIosArrowDown />}>
-                                            {filterSearchOption || 'All'}
+                                            {filterSearchOption}
                                         </MenuButton>
                                         <MenuList>
                                             {filterItems.map((data, index) => {
@@ -362,7 +381,7 @@ const AllSchools = () => {
                                                         <MenuItem
                                                             key={index}
                                                             onClick={() =>
-                                                                setFilterSearchOption(
+                                                                handleSearchOptionChange(
                                                                     data.title
                                                                 )
                                                             }>
@@ -379,6 +398,7 @@ const AllSchools = () => {
                                 <Box h='32px'>
                                     <InputGroup
                                         h='32px'
+                                        minW='300px'
                                         pr='0'
                                         p='0'
                                         m='0'
@@ -387,9 +407,10 @@ const AllSchools = () => {
                                             <Button
                                                 p='0'
                                                 m='0'
+                                                bg='transparent'
                                                 h='100%'
                                                 w='100%'
-                                                bg='transparent'
+                                                borderRadius='0px'
                                                 size='28px'>
                                                 <BiSearch />
                                             </Button>
@@ -406,13 +427,26 @@ const AllSchools = () => {
                                 </Box>
                             </Stack>
 
-                            <Box>
+                            <TableButton>
                                 <Button
-                                    className='search_button'
-                                    variant='solid'>
+                                    onClick={handleSubmitFilter}
+                                    disabled={searchWord ? false : true}
+                                    leftIcon={<AiOutlinePlus />}
+                                    className='btn__rule'>
+                                    Add Rule
+                                </Button>
+                            </TableButton>
+
+                            <TableButton>
+                                <Button
+                                    onClick={handleSearchActive}
+                                    disabled={
+                                        filterInfo.length > 0 ? false : true
+                                    }
+                                    className='btn__print'>
                                     Search
                                 </Button>
-                            </Box>
+                            </TableButton>
                         </Stack>
 
                         {/**  button */}
@@ -448,11 +482,16 @@ const AllSchools = () => {
                                 </Stack>
 
                                 {filterInfo.length > 0 && (
-                                    <Stack direction='row'>
+                                    <SimpleGrid
+                                        gap='20px'
+                                        minChildWidth='max-content'>
                                         {filterInfo.map((data, index) => (
-                                            <Box key={index}>
+                                            <Box
+                                                key={index}
+                                                w='-webkit-fit-content'>
                                                 <FilterInfoStack
                                                     direction='row'
+                                                    w='-webkit-fit-content'
                                                     alignItems='center'>
                                                     <h1>{data.title}:</h1>
                                                     <Stack direction='row'>
@@ -486,7 +525,7 @@ const AllSchools = () => {
                                                 </FilterInfoStack>
                                             </Box>
                                         ))}
-                                    </Stack>
+                                    </SimpleGrid>
                                 )}
                             </Stack>
                         </Box>
@@ -495,6 +534,11 @@ const AllSchools = () => {
 
                         <Box>
                             <SchoolTable
+                                setExportData={setExportData}
+                                exportData={exportData}
+                                searchActive={searchActive}
+                                filterInfo={filterInfo}
+                                allItems={allSchoolItems}
                                 paginatedItems={paginatedSchools}
                                 selectedItems={selectedSchools}
                                 setSelectedItems={setSelectedSchools}
@@ -511,103 +555,125 @@ export default AllSchools
 
 const Container = styled(Stack)`
     font-family: 'Inter', sans-serif;
-    .s_title {
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 600;
-        font-size: 20px;
-        line-height: 24px;
-        color: #1a2240;
-    }
-
-    .sumbox {
-        width: 296.44px;
-        height: 93px;
-
-        background: #ffffff;
-        box-shadow: 0px 4.65px 34.875px rgba(0, 0, 0, 0.03);
-        border-radius: 10.4625px;
-        cursor: pointer;
-    }
-
     .add_button {
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        letter-spacing: 0.02em;
-        color: #ffffff;
-    }
-`
-
-const InputStack = styled(Stack)`
-    .button {
-        min-width: 73px;
         height: 32px;
+        color: #ffffff;
         background: #f4797f;
         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
-        border-radius: 6px;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
+        letter-spacing: 0.02em;
+        font-size: 14px;
+    }
+
+    .subfilter_button {
+        width: inherit;
+
+        text-align: left;
+        focus: none;
+        border-radius: none !important;
+        ::hover {
+            background: transparent !important;
+        }
+    }
+    .filter_button {
+        background: #ffffff;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+        border-radius: 6px 0px 0px 6px;
+    }
+
+    .menu_options {
+        .chakra-menu__icon {
+            box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+                0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+            border-radius: 4px;
+            background: green;
+        }
+
+        .chakra-menu__icon-wrapper {
+            color: #fbfbfb;
+            background: #f4797f !important;
+            border: 1px solid #f4797f !important;
+            box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+                0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+            border-radius: 4px;
+        }
+
+        svg {
+            background: #f4797f !important;
+            border: 1px solid #f4797f !important;
+        }
+    }
+
+    .input_group {
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
+            0px 0px 0px 1px rgba(134, 143, 160, 0.16);
+        border-radius: 0px 6px 6px 0px;
+
+        -webkit-user-select: none;
+
+        :hover {
+            border: 0px solid transparent;
+            box-shadow: 0px;
+            border-radius: 0px 6px 6px 0px;
+            outline: none;
+        }
+
+        button {
+            :hover {
+                background: transparent;
+            }
+        }
+
+        input {
+            border: 0px solid transparent;
+            -webkit-box-shadow: none;
+        }
+
+        select {
+            border: 0px solid transparent;
+            height: 32px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0px 6px 6px 0px;
+            background: transparent;
+            outline: none;
+            -webkit-user-select: none;
+            -webkit-box-shadow: none;
+        }
+
+        background: #ffffff;
+    }
+
+    .filter_num {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 600;
         font-size: 14px;
         line-height: 20px;
-        color: #ffffff;
-        padding: 0px 12px;
-    }
-`
-
-const AdStack = styled(Stack)`
-    color: #838389;
-    .ad_icon {
-        font-size: 25px;
+        color: #3a3a43;
     }
 
-    .ad_text {
-        font-family: 'Inter', sans-serif;
-        font-style: italic;
-        font-weight: 600;
-        font-size: 17px;
-    }
-`
-
-const LinksStack = styled(Stack)`
-    h1 {
+    .clear_button {
         font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
-        font-size: 17px;
-        line-height: 21px;
-        color: #1a2240;
-    }
-
-    .link_icon {
-        width: 34.88px;
-        height: 34.88px;
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 17px;
-        border-radius: 6.975px;
-    }
-
-    .link_text {
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 17.4375px;
-        line-height: 21px;
-        color: #000000;
+        font-size: 12px;
+        line-height: 18px;
+        color: #838389;
     }
 `
-
-const StatStack = styled(Stack)``
 
 const FilterInfoStack = styled(Stack)`
     position: relative;
     width: 100%;
-    height: 22px;
-    padding: 0 8px;
+    min-height: 22px;
+    height: 100%;
+    padding: 8px 8px;
     background: #fceded;
     border-radius: 4px;
     h1 {
@@ -631,5 +697,46 @@ const FilterInfoStack = styled(Stack)`
     .close_icon {
         color: #838389;
         font-size: 12px;
+    }
+`
+
+const TableButton = styled(Box)`
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+
+    font-size: 14px;
+    line-height: 20px;
+    .btn_table {
+        height: 32px;
+        color: #464f60;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+        border-radius: 6px;
+        background: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__print {
+        height: 32px;
+        background: #f7f9fc;
+        box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+        border-radius: 6px;
+
+        letter-spacing: 0.02em;
+        color: #868fa0;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__rule {
+        height: 32px;
+        background: #20202a;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #33333c;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
     }
 `

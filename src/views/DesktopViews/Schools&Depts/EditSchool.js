@@ -12,11 +12,12 @@ import {
     ModalBody,
 } from '@chakra-ui/react'
 
-const EditIndividualDept = ({
-    onClose,
+const EditSchool = ({
     editValues,
+    onClose,
     handleChange,
     handleEditSubmit,
+    isSubmittingp,
 }) => {
     return (
         <PopupForm p='0px' justifyContent='space-between'>
@@ -25,28 +26,40 @@ const EditIndividualDept = ({
                 direction='column'
                 spacing={'20px'}
                 h='70%'>
-                <Box className='pop_title'>Edit Department</Box>
+                <Box className='pop_title'>Edit School</Box>
 
                 <Stack spacing={'10px'}>
                     <label>
-                        Department Name <span>*</span>
+                        School Name <span>*</span>
                     </label>
                     <Input
                         type='text'
-                        name='deptName'
-                        value={editValues.deptName}
+                        name='schoolName'
+                        value={editValues.schoolName}
                         onChange={handleChange}
                     />
                 </Stack>
 
                 <Stack spacing={'10px'}>
                     <label>
-                        Dept Head <span>*</span>
+                        Dean Name <span>*</span>
                     </label>
                     <Input
                         type='text'
-                        name='deptHead'
-                        value={editValues.deptHead}
+                        name='deanName'
+                        value={editValues.deanName}
+                        onChange={handleChange}
+                    />
+                </Stack>
+
+                <Stack spacing={'10px'}>
+                    <label>
+                        Designation <span>*</span>
+                    </label>
+                    <Input
+                        type='text'
+                        name='deanName'
+                        value={editValues.deanDesignation}
                         onChange={handleChange}
                     />
                 </Stack>
@@ -83,22 +96,27 @@ const EditIndividualDept = ({
                 borderRadius='0 0 8px 8px'
                 justifyContent='flex-end'
                 alignItems='center'>
-                <Button className='cancel_button' onClick={() => onClose()}>
+                <Button
+                    h='38px'
+                    className='cancel_button'
+                    onClick={() => onClose()}>
                     Cancel
                 </Button>
                 <Button
+                    h='38px'
                     colorScheme={'red'}
-                    onClick={handleEditSubmit}
+                    onClick={() => handleEditSubmit()}
+                    isLoading={isSubmittingp ? true : false}
                     className='apply_button'>
                     {' '}
-                    Apply
+                    Submit
                 </Button>
             </Stack>
         </PopupForm>
     )
 }
 
-export default EditIndividualDept
+export default EditSchool
 
 const PopupForm = styled(Stack)`
     width: 100%;
@@ -161,7 +179,7 @@ const PopupForm = styled(Stack)`
     }
 
     .cancel_button {
-        width: 84px;
+        width: 64px;
         height: 32px;
         color: #abaaaf;
         font-weight: 500;
@@ -173,10 +191,9 @@ const PopupForm = styled(Stack)`
         cursor: pointer;
     }
     .apply_button {
-        width: 84px;
+        width: 64px;
         height: 32px;
         color: #ffffff;
-
         font-weight: 500;
         font-size: 14px;
         line-height: 20px;
@@ -184,6 +201,5 @@ const PopupForm = styled(Stack)`
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        font-family: 'Inter', sans-serif;
     }
 `

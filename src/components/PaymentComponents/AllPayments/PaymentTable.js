@@ -40,11 +40,11 @@ import { useSelector } from 'react-redux'
 const PaymentTable = () => {
     const filterTabData = [
         {
-            title: 'All',
+            title: 'Examiners',
             dataCount: 27,
         },
         {
-            title: 'Sent',
+            title: 'Opponents',
             dataCount: 7,
         },
         {

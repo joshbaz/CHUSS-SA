@@ -62,6 +62,7 @@ import EditPhdSupervisor from '../views/DesktopViews/Projects/Supervisors/EditPh
 import PhdViewProjectExaminer from '../views/DesktopViews/Projects/Examiners/PhdViewProjectExaminer'
 import PhdEditProjectExaminer from '../views/DesktopViews/Projects/Examiners/PhdEditProjectExaminer'
 import PhdViewProjectOpponent from '../views/DesktopViews/Projects/Opponents/PhdViewProjectOpponent'
+import PhdEditProjectOpponent from '../views/DesktopViews/Projects/Opponents/PhdEditProjectOpponent'
 const AllRoutes = () => {
     return (
         <HashRouter>
@@ -272,6 +273,12 @@ const AllRoutes = () => {
                         exact
                         path='/phd/projects/opponents/view/:p_id/:o_id'
                         element={<PhdViewProjectOpponent />}
+                    />
+
+                    <Route
+                        exact
+                        path='/phd/projects/opponents/update/:p_id/:o_id'
+                        element={<PhdEditProjectOpponent />}
                     />
 
                     {/** opponent reports */}

@@ -134,7 +134,7 @@ const FormContainer = styled(Box)`
 
             font-style: normal;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 17px;
             line-height: 137.5%;
             color: #111827;
         }
@@ -155,11 +155,17 @@ const FormContainer = styled(Box)`
 
     input {
         background: #ffffff;
+
+        border: 1px solid gray.200;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
             0px 0px 0px 1px rgba(134, 143, 160, 0.16);
         border-radius: 6px;
         height: 32px;
         width: 100%;
+        color: #20202a;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
     }
 
     .formfields__Dfieldset {

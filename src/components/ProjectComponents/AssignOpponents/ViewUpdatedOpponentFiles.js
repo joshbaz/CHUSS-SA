@@ -24,12 +24,13 @@ import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 import { useDispatch, useSelector } from 'react-redux'
 import {
     reset,
-    deleteFileExaminer,
-    addFileExaminer,
-} from '../../../store/features/project/projectSlice'
+    deleteFileOpponent,
+    addFileOpponent,
+} from '../../../store/features/opponents/opponentSlice'
 import { useNavigate } from 'react-router-dom'
 
-const UpdateExaminerProjectApp = ({ values, projectValues }) => {
+
+const ViewUpdatedOpponentFiles = ({ values, projectValues }) => {
     const [filesList, setFilesList] = React.useState([])
     const [filesList2, setFilesList2] = React.useState([])
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -44,7 +45,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
     let dispatch = useDispatch()
     let toast = useToast()
     let routeNavigate = useNavigate()
-    let { isError, isSuccess, message } = useSelector((state) => state.project)
+    let { isError, isSuccess, message } = useSelector((state) => state.opponent)
 
     /** new file submission */
     const handleFileSubmission = () => {
@@ -60,7 +61,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
                 },
             }
 
-            dispatch(addFileExaminer(newValues))
+            dispatch(addFileOpponent(newValues))
             setChangeMade(false)
             setUpdateSubmitting(true)
         }
@@ -83,7 +84,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
     /** handle confirm delete */
     const onRemoveUpload = () => {
         if (removeDetails.projectId && removeDetails.fileId) {
-            dispatch(deleteFileExaminer(removeDetails))
+            dispatch(deleteFileOpponent(removeDetails))
             setIsSubmittingp(true)
         }
     }
@@ -157,10 +158,10 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
             setNameValues(values.name)
 
             let examinerToFind = values._id
-            let arrayToCheck = projectValues.examiners
+            let arrayToCheck = projectValues.opponents
 
             let checks = arrayToCheck.find(
-                (data) => data.examinerId._id === examinerToFind
+                (data) => data.opponentId._id === examinerToFind
             )
 
             if (checks && checks.projectAppointmentLetter) {
@@ -168,7 +169,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
             } else {
                 setFilesList2([])
             }
-           
+            console.log('checks', checks)
         }
     }, [projectValues, values])
 
@@ -232,7 +233,6 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
         ])
         onOpen()
     }
-
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -513,7 +513,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
     )
 }
 
-export default UpdateExaminerProjectApp
+export default ViewUpdatedOpponentFiles
 
 const FormContainer = styled(Box)`
     font-family: 'Inter', sans-serif;

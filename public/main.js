@@ -312,6 +312,20 @@ ipcMain.handle('update-resubmission', projectController.updateResubmission)
 /**update a handle */
 ipcMain.handle('updates-od-reportsss', projectController.createNewExUpdate)
 
+/** remove opponent files */
+ipcMain.handle(
+    'delete-fileproject-Opponent',
+    opponentController.removeProjectFileOpponent
+)
+ipcMain.handle(
+    'add-fileproject-Opponent',
+    opponentController.addProjectFileOpponent
+)
+ipcMain.handle(
+    'remove-project-Opponent',
+    opponentController.removeProjectOpponentsR
+)
+
 /**
  *
  * Opponents
@@ -480,6 +494,10 @@ ipcMain.handle('individual-school', schoolController.getIndividualSchool)
 ipcMain.handle('create-school', schoolController.createSchool)
 /** update examiner */
 ipcMain.handle('update-school', schoolController.updateSchool)
+
+/** delete school and departments */
+ipcMain.handle('delete-department', schoolController.deleteDepartment)
+ipcMain.handle('delete-school', schoolController.deleteSchool)
 /** create department */
 ipcMain.handle('create-department', schoolController.createDepartment)
 ipcMain.handle('update-department', schoolController.updateDepartment)
@@ -709,6 +727,124 @@ ipcMain.handle('export-student-csv', async (event, values) => {
                 Status: data2.activeStatus,
                 Registration: returnedData.toUpperCase(),
                 'Submission Status': data2.submissionStatus,
+            }
+        })
+
+        console.log('rows  data', rowData, rowData)
+
+        const worksheet = XLSX.utils.json_to_sheet(rowData)
+        worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
+            return { wch: 10 }
+        })
+        const workbook = XLSX.utils.book_new()
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, `${values.tableName}`)
+
+        await XLSX.writeFile(workbook, dialogSaves.filePath)
+
+        const newoptions = {
+            message: `Export Successfully Saved - ${dialogSaves.filePath}`,
+        }
+        dialog.showMessageBox(mainWindow, newoptions)
+    }
+})
+
+/** handler for export student csv */
+
+ipcMain.handle('export-school-csv', async (event, values) => {
+    const options = {
+        defaultPath: app.getPath('documents') + `/${values.tableName}.${'csv'}`,
+        filters: [
+            {
+                name: 'Custom File Type',
+                extensions: ['xls', 'xlsx', 'xlsb', 'csv', 'ods'],
+            },
+        ],
+    }
+    const dialogSaves = await dialog.showSaveDialog(mainWindow, options)
+
+    if (dialogSaves.canceled) {
+        return
+    } else {
+        //console.log("my values", values);
+        // fs.writeFile(
+        //     dialogSaves.filePath,
+        //     values.data,
+        //     { encoding: 'base64' },
+        //     function (err) {
+        //         if (err) {
+        //             console.log('file failed')
+        //         }
+        //         //return;
+        //         const newoptions = {
+        //             message: `File Saved - ${dialogSaves.filePath}`,
+        //         }
+        //         dialog.showMessageBox(null, newoptions)
+        //     }
+        // )
+
+        /** handle function to give registration */
+
+        const rowData = await values.data.map((data2, index) => {
+            /** function to return latest registration */
+
+            return {
+                No: index + 1,
+                'School Name': data2.schoolName,
+                Dean: data2.deanName,
+                Designation: data2.deanDesignation,
+                'Office Number': data2.officeNumber,
+                Email: data2.email,
+                'Department No.': data2.departments.length,
+            }
+        })
+
+        console.log('rows  data', rowData, rowData)
+
+        const worksheet = XLSX.utils.json_to_sheet(rowData)
+        worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
+            return { wch: 10 }
+        })
+        const workbook = XLSX.utils.book_new()
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, `${values.tableName}`)
+
+        await XLSX.writeFile(workbook, dialogSaves.filePath)
+
+        const newoptions = {
+            message: `Export Successfully Saved - ${dialogSaves.filePath}`,
+        }
+        dialog.showMessageBox(mainWindow, newoptions)
+    }
+})
+
+/** handler for export departments csv */
+
+ipcMain.handle('export-departments-csv', async (event, values) => {
+    const options = {
+        defaultPath: app.getPath('documents') + `/${values.tableName}.${'csv'}`,
+        filters: [
+            {
+                name: 'Custom File Type',
+                extensions: ['xls', 'xlsx', 'xlsb', 'csv', 'ods'],
+            },
+        ],
+    }
+    const dialogSaves = await dialog.showSaveDialog(mainWindow, options)
+
+    if (dialogSaves.canceled) {
+        return
+    } else {
+        const rowData = await values.data.map((data2, index) => {
+            /** function to return latest registration */
+
+            return {
+                No: index + 1,
+                'Department Name': data2.deptName,
+                'Department Head': data2.deptHead,
+                Email: data2.email,
+                officeNumber: `${data2.officeNumber}`,
+                'Creation Date': data2.creationDate,
             }
         })
 

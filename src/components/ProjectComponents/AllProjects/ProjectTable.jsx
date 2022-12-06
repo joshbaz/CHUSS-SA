@@ -420,7 +420,7 @@ const ProjectTable = ({
                                 return check
                             }
                             /** topic */
-                            if (newFilterArray[iteration].title === 'topic') {
+                            if (newFilterArray[iteration].title === 'Topic') {
                                 let topic = data1.topic.toLowerCase()
 
                                 let check = newFilterArray[
@@ -432,7 +432,7 @@ const ProjectTable = ({
                                 return check
                             }
                             /** status */
-                            if (newFilterArray[iteration].title === 'status') {
+                            if (newFilterArray[iteration].title === 'Status') {
                                 let status = data1.activeStatus.toLowerCase()
 
                                 let check = newFilterArray[
@@ -1594,7 +1594,7 @@ const ProjectTable = ({
                                     alignItems='center'
                                     justifyContent='space-between'>
                                     <Box>
-                                        <h1>Delete Registration</h1>
+                                        <h1>Delete Student</h1>
                                     </Box>
                                 </Stack>
 
