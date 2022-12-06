@@ -58,6 +58,10 @@ const OpponentTable = ({
     allExaminerItems,
     setSelectedExaminers,
     selectedExaminers,
+    searchActive,
+    allSearchedData,
+    handleResetAll,
+    handleSearchReset,
 }) => {
     const [activityDrpdown, setActivityDropDown] = React.useState(false)
     const [pexaminers, setPExaminers] = React.useState({
@@ -98,10 +102,21 @@ const OpponentTable = ({
 
     /** pagination */
     let PaginationFirstNumber =
-        pexaminers.currentPage * pexaminers.perPage - pexaminers.perPage + 1
+        allExaminerItems.currentPage * allExaminerItems.itemsPerPage -
+        allExaminerItems.itemsPerPage +
+        1
 
     let PaginationLastNumber =
-        PaginationFirstNumber + pexaminers.current_total - 1
+        PaginationFirstNumber + allExaminerItems.totalItemsDisplayed - 1
+
+    /** search pagination */
+    let PaginationFirstNumber2 =
+        allSearchedData.currentPage * allSearchedData.itemsPerPage -
+        allSearchedData.itemsPerPage +
+        1
+
+    let PaginationLastNumber2 =
+        PaginationFirstNumber2 + allSearchedData.totalItemsDisplayed - 1
 
     const handlePrev = () => {}
 
@@ -117,7 +132,40 @@ const OpponentTable = ({
                     spacing='20px'
                     h='100%'>
                     {/** table */}
-                    <Box>
+                    <Stack direction='column' spacing='10px' minH={'65vh'}>
+                        <Stack
+                            direction='row'
+                            alignItems='center'
+                            justifyContent='space-between'>
+                            <Stack direction='row'>
+                                {/** clear button */}
+                                <Box
+                                    as='button'
+                                    className='clear_button'
+                                    onClick={handleResetAll}>
+                                    Reset All
+                                </Box>
+                                <Box
+                                    as='button'
+                                    className='clear_button'
+                                    onClick={() => handleSearchReset()}>
+                                    Reset Search
+                                </Box>
+
+                                <Box className='clear_button'>
+                                    Selected: {selectedExaminers.length}
+                                </Box>
+                            </Stack>
+
+                            <SearchActivity direction='row' alignItems='center'>
+                                <Box
+                                    className='sactivity_indicator'
+                                    bg={searchActive ? 'green' : 'red'}
+                                />
+                                <Box className='sactivity_text'>Search</Box>
+                            </SearchActivity>
+                        </Stack>
+
                         <Table size='sm'>
                             <Thead>
                                 <Tr>
@@ -169,136 +217,323 @@ const OpponentTable = ({
                                 </Tr>
                             </Thead>
 
-                            <Tbody>
-                                {allExaminerItems.items.length > 0 ? (
-                                    <>
-                                        {allExaminerItems.items.map(
-                                            (data, index) => {
-                                                let checkData =
-                                                    selectedExaminers.find(
-                                                        (element) =>
-                                                            element._id ===
-                                                            data._id
-                                                    )
-                                                let selectionColor = checkData
-                                                    ? '#fef9ef'
-                                                    : ''
-                                                let checkedStatus = checkData
-                                                    ? true
-                                                    : false
+                            {searchActive ? (
+                                <Tbody>
+                                    {allSearchedData.items.length > 0 ? (
+                                        <>
+                                            {allSearchedData.items.map(
+                                                (data, index) => {
+                                                    let checkData =
+                                                        selectedExaminers.find(
+                                                            (element) =>
+                                                                element._id ===
+                                                                data._id
+                                                        )
+                                                    let selectionColor =
+                                                        checkData
+                                                            ? '#fef9ef'
+                                                            : ''
+                                                    let checkedStatus =
+                                                        checkData ? true : false
 
-                                                return (
-                                                    <Tr
-                                                        className='table_row'
-                                                        bg={selectionColor}
-                                                        key={index}>
-                                                        <Td>
-                                                            <Checkbox
-                                                                colorScheme='pink'
-                                                                onChange={(e) =>
-                                                                    handleCheckChange(
-                                                                        e,
-                                                                        data
-                                                                    )
-                                                                }
-                                                                isChecked={
-                                                                    checkedStatus
-                                                                }
-                                                            />
-                                                        </Td>
-                                                        <Td>1</Td>
-                                                        <Td>
-                                                            <Box className='type_examiner'>
-                                                                {
-                                                                    data.typeOfExaminer
-                                                                }
-                                                            </Box>
-                                                        </Td>
-                                                        <Td>
-                                                            {data.jobtitle}{' '}
-                                                            {data.name}
-                                                        </Td>
-                                                        <Td>{data.email}</Td>
-                                                        <Td width='100px'>
-                                                            <Box
-                                                                style={{
-                                                                    color:
-                                                                        data
-                                                                            .generalAppointmentLetters
-                                                                            .length >
-                                                                        0
-                                                                            ? '#293AD1'
-                                                                            : '#D4D4D6',
-                                                                    fontSize:
-                                                                        '15px',
-                                                                    width: '100%',
-                                                                    display:
-                                                                        'flex',
-                                                                    justifyContent:
-                                                                        'center',
-                                                                }}>
-                                                                <MdVerified />
-                                                            </Box>
-                                                        </Td>
-                                                    </Tr>
-                                                )
-                                            }
-                                        )}
-                                    </>
-                                ) : (
-                                    <Tr
-                                        position='relative'
-                                        h='48px'
-                                        borderBottom={'1px solid #E1FCEF'}>
-                                        <Box>
-                                            <NoItems>No Records Found</NoItems>
-                                        </Box>
-                                    </Tr>
-                                )}
-                            </Tbody>
+                                                    return (
+                                                        <Tr
+                                                            className='table_row'
+                                                            bg={selectionColor}
+                                                            key={index}>
+                                                            <Td>
+                                                                <Checkbox
+                                                                    colorScheme='pink'
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        handleCheckChange(
+                                                                            e,
+                                                                            data
+                                                                        )
+                                                                    }
+                                                                    isChecked={
+                                                                        checkedStatus
+                                                                    }
+                                                                />
+                                                            </Td>
+                                                            <Td>1</Td>
+                                                            <Td>
+                                                                <Box className='type_examiner'>
+                                                                    {
+                                                                        data.typeOfExaminer
+                                                                    }
+                                                                </Box>
+                                                            </Td>
+                                                            <Td>
+                                                                {data.jobtitle}{' '}
+                                                                {data.name}
+                                                            </Td>
+                                                            <Td>
+                                                                {data.email}
+                                                            </Td>
+                                                            <Td width='100px'>
+                                                                <Box
+                                                                    style={{
+                                                                        color:
+                                                                            data
+                                                                                .generalAppointmentLetters
+                                                                                .length >
+                                                                            0
+                                                                                ? '#293AD1'
+                                                                                : '#D4D4D6',
+                                                                        fontSize:
+                                                                            '15px',
+                                                                        width: '100%',
+                                                                        display:
+                                                                            'flex',
+                                                                        justifyContent:
+                                                                            'center',
+                                                                    }}>
+                                                                    <MdVerified />
+                                                                </Box>
+                                                            </Td>
+                                                        </Tr>
+                                                    )
+                                                }
+                                            )}
+                                        </>
+                                    ) : (
+                                        <Tr
+                                            position='relative'
+                                            h='48px'
+                                            borderBottom={'1px solid #E1FCEF'}>
+                                            <Box>
+                                                <NoItems>
+                                                    No Records Found
+                                                </NoItems>
+                                            </Box>
+                                        </Tr>
+                                    )}
+                                </Tbody>
+                            ) : (
+                                <Tbody>
+                                    {allExaminerItems.items.length > 0 ? (
+                                        <>
+                                            {allExaminerItems.items.map(
+                                                (data, index) => {
+                                                    let checkData =
+                                                        selectedExaminers.find(
+                                                            (element) =>
+                                                                element._id ===
+                                                                data._id
+                                                        )
+                                                    let selectionColor =
+                                                        checkData
+                                                            ? '#fef9ef'
+                                                            : ''
+                                                    let checkedStatus =
+                                                        checkData ? true : false
+
+                                                    return (
+                                                        <Tr
+                                                            className='table_row'
+                                                            bg={selectionColor}
+                                                            key={index}>
+                                                            <Td>
+                                                                <Checkbox
+                                                                    colorScheme='pink'
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        handleCheckChange(
+                                                                            e,
+                                                                            data
+                                                                        )
+                                                                    }
+                                                                    isChecked={
+                                                                        checkedStatus
+                                                                    }
+                                                                />
+                                                            </Td>
+                                                            <Td>1</Td>
+                                                            <Td>
+                                                                <Box className='type_examiner'>
+                                                                    {
+                                                                        data.typeOfExaminer
+                                                                    }
+                                                                </Box>
+                                                            </Td>
+                                                            <Td>
+                                                                {data.jobtitle}{' '}
+                                                                {data.name}
+                                                            </Td>
+                                                            <Td>
+                                                                {data.email}
+                                                            </Td>
+                                                            <Td width='100px'>
+                                                                <Box
+                                                                    style={{
+                                                                        color:
+                                                                            data
+                                                                                .generalAppointmentLetters
+                                                                                .length >
+                                                                            0
+                                                                                ? '#293AD1'
+                                                                                : '#D4D4D6',
+                                                                        fontSize:
+                                                                            '15px',
+                                                                        width: '100%',
+                                                                        display:
+                                                                            'flex',
+                                                                        justifyContent:
+                                                                            'center',
+                                                                    }}>
+                                                                    <MdVerified />
+                                                                </Box>
+                                                            </Td>
+                                                        </Tr>
+                                                    )
+                                                }
+                                            )}
+                                        </>
+                                    ) : (
+                                        <Tr
+                                            position='relative'
+                                            h='48px'
+                                            borderBottom={'1px solid #E1FCEF'}>
+                                            <Box>
+                                                <NoItems>
+                                                    No Records Found
+                                                </NoItems>
+                                            </Box>
+                                        </Tr>
+                                    )}
+                                </Tbody>
+                            )}
                         </Table>
-                    </Box>
+                    </Stack>
 
                     {/** Pagination */}
-                    {examinerLists.length > 0 && (
-                        <PaginationStack
-                            direction='row'
-                            height='56px'
-                            alignItems='center'
-                            justifyContent={'space-between'}>
-                            <Box className='pages'>
-                                <span>
-                                    {`${PaginationFirstNumber}`} -{' '}
-                                    {`${PaginationLastNumber}`} of{' '}
-                                    {`${pexaminers.overall_total}`}
-                                </span>
-                            </Box>
-                            <Stack
-                                h='90%'
-                                direction='row'
-                                spacing='20px'
-                                alignItems='center'
-                                className='pagination'>
-                                <Box className='rows'>
-                                    <h1>Rows per page:</h1>
-                                    <span>{pexaminers.perPage}</span>
-                                </Box>
 
-                                {/** pagination arrows */}
-                                <Stack
+                    {searchActive ? (
+                        <Box>
+                            {' '}
+                            {allSearchedData.items.length > 0 && (
+                                <PaginationStack
                                     direction='row'
+                                    height='56px'
                                     alignItems='center'
-                                    className='arrows'>
-                                    <Box className='left' onClick={handlePrev}>
-                                        <MdKeyboardArrowLeft />
+                                    justifyContent={'space-between'}>
+                                    <Box className='pages'>
+                                        <span>
+                                            {`${PaginationFirstNumber2}`} -{' '}
+                                            {`${PaginationLastNumber2}`} of{' '}
+                                            {`${allSearchedData.totalSearchedItems}`}
+                                        </span>
                                     </Box>
-                                    <Box>{pexaminers.currentPage}</Box>
-                                    <Box className='right' onClick={handleNext}>
-                                        <MdKeyboardArrowRight />
+                                    <Stack
+                                        h='90%'
+                                        direction='row'
+                                        spacing='20px'
+                                        alignItems='center'
+                                        className='pagination'>
+                                        <Box className='rows'>
+                                            <h1>Rows per page:</h1>
+                                            <span>
+                                                {' '}
+                                                {allSearchedData.itemsPerPage}
+                                            </span>
+                                        </Box>
+
+                                        {/** pagination arrows */}
+                                        <Stack
+                                            direction='row'
+                                            alignItems='center'
+                                            className='arrows'>
+                                            <Box
+                                                className='left'
+                                                onClick={handlePrev}>
+                                                <MdKeyboardArrowLeft />
+                                            </Box>
+                                            <Box style={{ display: 'flex' }}>
+                                                <span>
+                                                    {
+                                                        allSearchedData.currentPage
+                                                    }
+                                                </span>
+                                                /
+                                                <span>
+                                                    {allSearchedData.totalPages}
+                                                </span>
+                                            </Box>
+                                            <Box
+                                                className='right'
+                                                onClick={handleNext}>
+                                                <MdKeyboardArrowRight />
+                                            </Box>
+                                        </Stack>
+                                    </Stack>
+                                </PaginationStack>
+                            )}
+                        </Box>
+                    ) : (
+                        <Box>
+                            {' '}
+                            {allExaminerItems.items.length > 0 && (
+                                <PaginationStack
+                                    direction='row'
+                                    height='56px'
+                                    alignItems='center'
+                                    justifyContent={'space-between'}>
+                                    <Box className='pages'>
+                                        <span>
+                                            {`${PaginationFirstNumber}`} -{' '}
+                                            {`${PaginationLastNumber}`} of{' '}
+                                            {`${allExaminerItems.totalItems}`}
+                                        </span>
                                     </Box>
-                                </Stack>
-                            </Stack>
-                        </PaginationStack>
+                                    <Stack
+                                        h='90%'
+                                        direction='row'
+                                        spacing='20px'
+                                        alignItems='center'
+                                        className='pagination'>
+                                        <Box className='rows'>
+                                            <h1>Rows per page:</h1>
+                                            <span>
+                                                {allExaminerItems.itemsPerPage}
+                                            </span>
+                                        </Box>
+
+                                        {/** pagination arrows */}
+                                        <Stack
+                                            direction='row'
+                                            alignItems='center'
+                                            className='arrows'>
+                                            <Box
+                                                className='left'
+                                                onClick={handlePrev}>
+                                                <MdKeyboardArrowLeft />
+                                            </Box>
+                                            <Box style={{ display: 'flex' }}>
+                                                <span>
+                                                    {
+                                                        allExaminerItems.currentPage
+                                                    }
+                                                </span>
+                                                /
+                                                <span>
+                                                    {
+                                                        allExaminerItems.totalPages
+                                                    }
+                                                </span>
+                                            </Box>
+                                            <Box
+                                                className='right'
+                                                onClick={handleNext}>
+                                                <MdKeyboardArrowRight />
+                                            </Box>
+                                        </Stack>
+                                    </Stack>
+                                </PaginationStack>
+                            )}
+                        </Box>
                     )}
                 </Stack>
             </Box>
@@ -309,7 +544,7 @@ const OpponentTable = ({
 export default OpponentTable
 
 const Container = styled(Box)`
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -351,7 +586,7 @@ const Container = styled(Box)`
 
     .table_head {
         color: #5e5c60 !important;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px !important;
@@ -368,7 +603,7 @@ const Container = styled(Box)`
     }
 
     td {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 400;
         font-size: 14px;
@@ -383,6 +618,15 @@ const Container = styled(Box)`
         letter-spacing: 0.02em;
         text-transform: uppercase;
     }
+
+    .clear_button {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 18px;
+        color: #838389;
+    }
 `
 
 const NoItems = styled(Box)`
@@ -393,7 +637,7 @@ const NoItems = styled(Box)`
     justify-content: center;
     align-items: center;
 
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
@@ -408,7 +652,7 @@ const PaginationStack = styled(Stack)`
         background: #ffffff;
     }
     .pages {
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: normal;
         font-size: 12px;
@@ -420,7 +664,7 @@ const PaginationStack = styled(Stack)`
         display: flex;
         align-items: center;
         h1 {
-            font-family: Inter;
+            font-family: 'Inter', sans-serif;
             font-style: normal;
             font-weight: normal;
             font-size: 12px;
@@ -428,7 +672,7 @@ const PaginationStack = styled(Stack)`
         }
         span {
             margin-left: 2px;
-            font-family: Inter;
+            font-family: 'Inter', sans-serif;
             font-style: normal;
             font-weight: normal;
             font-size: 12px;
@@ -455,5 +699,23 @@ const PaginationStack = styled(Stack)`
             box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
             border-radius: 6px;
         }
+    }
+`
+
+const SearchActivity = styled(Stack)`
+    .sactivity_indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .sactivity_text {
+        font-family: 'Inter', sans-serif;
+        font-style: italic;
+        font-weight: normal;
+        font-size: 12px;
+
+        letter-spacing: 0.3px;
+        color: #838389;
     }
 `

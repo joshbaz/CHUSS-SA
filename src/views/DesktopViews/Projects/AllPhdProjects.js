@@ -16,7 +16,9 @@ import {
     Grid,
     Text,
     GridItem,
+    SimpleGrid,
     useToast,
+    Select,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -40,45 +42,56 @@ import {
     reset as treset,
     tagGetAll,
 } from '../../../store/features/tags/tagSlice'
+import { initSocketConnection } from '../../../socketio.service'
 
-const AllProjects = () => {
+const AllPhdProjects = () => {
     const tagsData = useSelector((state) => state.tag)
-    const [filterSearchOption, setFilterSearchOption] = React.useState('All')
+    const [filterSearchOption, setFilterSearchOption] =
+        React.useState('Student Name')
     const [searchWord, setSearchWord] = React.useState('')
+    const [searchStatus, setSearchStatus] = React.useState('')
+    const [exportData, setExportData] = React.useState([])
     const filterItems = [
         {
-            title: 'Academic Year',
-            subItems: ['2017', '2018', '2019', '2020'],
+            title: 'Student Name',
         },
         {
-            title: 'Candidate Name',
+            title: 'Student (SRN)',
         },
         {
-            title: 'Last update',
+            title: 'Registration',
+        },
+        {
+            title: 'Submission',
         },
         {
             title: 'Status',
-            subItems: [
-                'All',
-                'In Review',
-                'Completed',
-                'Approved Viva',
-                'Graduated',
-                'on Hold',
-            ],
         },
-        {
-            title: 'Examiners',
-            subItems: ['Joshua', 'daisy', 'stephanie'],
-        },
+
         {
             title: 'Topic',
         },
     ]
 
-    const [filterActive, setFilterActive] = React.useState(false)
+    const [searchActive, setSearchActive] = React.useState(false)
     const [filterInfo, setFilterInfo] = React.useState([])
 
+    /** handle search option change */
+    const handleSearchOptionChange = (valuet) => {
+        setSearchWord('')
+        setSearchStatus('')
+        setFilterSearchOption(valuet)
+    }
+
+    /** handle status changes */
+    /** function to add a search status */
+    const handleSearchStatusChange = (e) => {
+        e.preventDefault()
+
+        setSearchStatus(e.target.value.toLowerCase())
+    }
+
+    /** this handles search word changes */
     const handleSearchInput = (e) => {
         e.preventDefault()
         console.log('e.target', e.target.value)
@@ -92,6 +105,7 @@ const AllProjects = () => {
     }
 
     const handleSubmitFilter = () => {
+        /** search word */
         if (searchWord) {
             if (filterInfo.length > 0) {
                 let newFilterInfo = [...filterInfo]
@@ -139,6 +153,63 @@ const AllProjects = () => {
                 //setFilterSearchOption('All')
                 // console.log('filtered Info', filterInfo)
             }
+        }
+
+        /** search status */
+        if (searchStatus) {
+            if (filterInfo.length > 0) {
+                let newFilterInfo = [...filterInfo]
+
+                for (let i = 0; i < newFilterInfo.length; i++) {
+                    let iteration = i + 1
+
+                    if (newFilterInfo[i].title === filterSearchOption) {
+                        if (newFilterInfo[i].searchfor.includes(searchStatus)) {
+                            return null
+                        } else {
+                            let filterSelected = {
+                                title: filterSearchOption,
+                                searchfor: [
+                                    ...newFilterInfo[i].searchfor,
+                                    searchStatus,
+                                ],
+                            }
+                            newFilterInfo.splice(i, 1, filterSelected)
+                            setFilterInfo(newFilterInfo)
+                            setSearchWord('')
+                            return filterSelected
+                        }
+                    } else if (
+                        newFilterInfo[i].title !== filterSearchOption &&
+                        iteration === newFilterInfo.length
+                    ) {
+                        let filterSelected = {
+                            title: filterSearchOption,
+                            searchfor: [searchStatus],
+                        }
+
+                        setFilterInfo([...newFilterInfo, filterSelected])
+                        setSearchWord('')
+                    }
+                }
+            } else {
+                let filterSelected = {
+                    title: filterSearchOption,
+                    searchfor: [searchStatus],
+                }
+
+                setFilterInfo([...filterInfo, filterSelected])
+                setSearchStatus('')
+                //setFilterSearchOption('All')
+                // console.log('filtered Info', filterInfo)
+            }
+        }
+    }
+
+    /** function to set the search active  */
+    const handleSearchActive = () => {
+        if (filterInfo.length > 0) {
+            setSearchActive(true)
         }
     }
 
@@ -193,7 +264,9 @@ const AllProjects = () => {
     const clearAllFilters = () => {
         setFilterInfo([])
         setSearchWord('')
-        setFilterSearchOption('All')
+        setSearchStatus('')
+        setSearchActive(false)
+        setFilterSearchOption('Student Name')
     }
 
     const handleRemoveFilter = (Info) => {
@@ -229,8 +302,15 @@ const AllProjects = () => {
     }, [Location])
 
     useEffect(() => {
+        const io = initSocketConnection()
         dispatch(tagGetAll())
         dispatch(getAllProjects())
+        io.on('updatestudent', (data) => {
+            if (data.actions === 'update-all-student') {
+                dispatch(tagGetAll())
+                dispatch(getAllProjects())
+            }
+        })
     }, [])
 
     useEffect(() => {
@@ -272,6 +352,48 @@ const AllProjects = () => {
         // }
     }, [isSuccess, isError, message])
 
+    /** function to select statuses */
+    const TableStatuses = React.useMemo(() => {
+        if (filterSearchOption) {
+            if (filterSearchOption === 'Status') {
+                let allInfoData = tagsData.allTagItems.items.filter(
+                    (data, index) => data.table === 'project'
+                )
+
+                return allInfoData
+            } else if (filterSearchOption === 'Registration') {
+                let allInfoData = [
+                    {
+                        tagName: 'Provisional Admission',
+                    },
+                    {
+                        tagName: 'Full Admission',
+                    },
+                    {
+                        tagName: 'De-registered',
+                    },
+                ]
+
+                return allInfoData
+            } else if (filterSearchOption === 'Submission') {
+                let allInfoData = [
+                    {
+                        tagName: 'normal',
+                    },
+                    {
+                        tagName: 'resubmission',
+                    },
+                ]
+
+                return allInfoData
+            } else {
+                return []
+            }
+        } else {
+            return []
+        }
+    }, [tagsData.allTagItems.items, filterSearchOption])
+
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -279,7 +401,9 @@ const AllProjects = () => {
             </Box>
 
             <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar topbarData={{ title: 'Phd Students', count: null }} />
+                <TopBar
+                    topbarData={{ title: 'PhD Students', count: null }}
+                />
 
                 <Stack direction='column' padding={'0 20px'}>
                     {/** filter inputs && button */}
@@ -295,9 +419,10 @@ const AllProjects = () => {
                                 spacing={'5px'}
                                 alignItems='center'>
                                 <Box>
-                                    <Menu closeOnSelect={false}>
+                                    <Menu closeOnSelect={true}>
                                         <MenuButton
                                             h='32px'
+                                            w='188px'
                                             className='filter_button'
                                             as={Button}
                                             variant='solid'
@@ -386,7 +511,7 @@ const AllProjects = () => {
                                                         <MenuItem
                                                             key={index}
                                                             onClick={() =>
-                                                                setFilterSearchOption(
+                                                                handleSearchOptionChange(
                                                                     data.title
                                                                 )
                                                             }>
@@ -401,42 +526,113 @@ const AllProjects = () => {
 
                                 {/** input */}
                                 <Box h='32px'>
-                                    <InputGroup
-                                        h='32px'
-                                        pr='0'
-                                        p='0'
-                                        m='0'
-                                        className='input_group'>
-                                        <InputLeftElement h='32px' p='0' m='0'>
-                                            <Button
-                                                p='0'
-                                                m='0'
-                                                onClick={handleSubmitFilter}
-                                                h='100%'
-                                                w='100%'
-                                                borderRadius='0px'
-                                                size='28px'>
-                                                <BiSearch />
-                                            </Button>
-                                        </InputLeftElement>
-                                        <Input
+                                    {filterSearchOption === 'Registration' ||
+                                    filterSearchOption === 'Submission' ||
+                                    filterSearchOption === 'Status' ? (
+                                        <InputGroup
                                             h='32px'
-                                            type='text'
-                                            placeholder='Search'
-                                            onChange={handleSearchInput}
-                                            value={searchWord}
-                                            style={{ textIndent: '5px' }}
-                                        />
-                                        <InputRightElement h='32px'>
-                                            <Button
-                                                h='100%'
-                                                w='100%'
-                                                size='28px'>
-                                                <CgFormatSlash />
-                                            </Button>
-                                        </InputRightElement>
-                                    </InputGroup>
+                                            minW='300px'
+                                            pr=''
+                                            p='0'
+                                            pl='30px'
+                                            m='0'
+                                            className='input_group'>
+                                            <InputLeftElement
+                                                h='32px'
+                                                bg='transparent'
+                                                p='0'
+                                                m='0'>
+                                                <Button
+                                                    p='0'
+                                                    m='0'
+                                                    bg='transparent'
+                                                    h='100%'
+                                                    w='100%'
+                                                    borderRadius='0px'
+                                                    size='28px'>
+                                                    <BiSearch />
+                                                </Button>
+                                            </InputLeftElement>
+                                            {TableStatuses.length > 0 ? (
+                                                <Select
+                                                    placeholder='select status'
+                                                    onChange={
+                                                        handleSearchStatusChange
+                                                    }
+                                                    value={searchStatus}>
+                                                    {TableStatuses.map(
+                                                        (data, index) => {
+                                                            return (
+                                                                <option
+                                                                    key={index}>
+                                                                    {data.tagName.toLowerCase()}
+                                                                </option>
+                                                            )
+                                                        }
+                                                    )}
+                                                </Select>
+                                            ) : (
+                                                <Select placeholder='select status'></Select>
+                                            )}
+                                        </InputGroup>
+                                    ) : (
+                                        <InputGroup
+                                            h='32px'
+                                            minW='300px'
+                                            pr='0'
+                                            p='0'
+                                            m='0'
+                                            className='input_group'>
+                                            <InputLeftElement
+                                                h='32px'
+                                                p='0'
+                                                m='0'>
+                                                <Button
+                                                    p='0'
+                                                    m='0'
+                                                    bg='transparent'
+                                                    h='100%'
+                                                    w='100%'
+                                                    borderRadius='0px'
+                                                    size='28px'>
+                                                    <BiSearch />
+                                                </Button>
+                                            </InputLeftElement>
+                                            <Input
+                                                h='32px'
+                                                type='text'
+                                                placeholder='Search'
+                                                onChange={handleSearchInput}
+                                                value={searchWord}
+                                                style={{ textIndent: '5px' }}
+                                            />
+                                        </InputGroup>
+                                    )}
                                 </Box>
+
+                                <TableButton>
+                                    <Button
+                                        onClick={handleSubmitFilter}
+                                        disabled={
+                                            searchWord || searchStatus
+                                                ? false
+                                                : true
+                                        }
+                                        leftIcon={<AiOutlinePlus />}
+                                        className='btn__rule'>
+                                        Add Rule
+                                    </Button>
+                                </TableButton>
+                                <TableButton>
+                                    <Button
+                                        onClick={handleSearchActive}
+                                        disabled={
+                                            filterInfo.length > 0 ? false : true
+                                        }
+                                        className='btn__print'>
+                                        Search
+                                    </Button>
+                                </TableButton>
                             </Stack>
                             {/**
 
@@ -489,11 +685,16 @@ const AllProjects = () => {
                                 </Stack>
 
                                 {filterInfo.length > 0 && (
-                                    <Stack direction='row'>
+                                    <SimpleGrid
+                                        gap='20px'
+                                        minChildWidth='max-content'>
                                         {filterInfo.map((data, index) => (
-                                            <Box key={index}>
+                                            <Box
+                                                key={index}
+                                                w='-webkit-fit-content'>
                                                 <FilterInfoStack
                                                     direction='row'
+                                                    w='-webkit-fit-content'
                                                     alignItems='center'>
                                                     <h1>{data.title}:</h1>
                                                     <Stack direction='row'>
@@ -527,7 +728,7 @@ const AllProjects = () => {
                                                 </FilterInfoStack>
                                             </Box>
                                         ))}
-                                    </Stack>
+                                    </SimpleGrid>
                                 )}
                             </Stack>
                         </Box>
@@ -536,6 +737,10 @@ const AllProjects = () => {
 
                         <Box>
                             <ProjectTable
+                                setExportData={setExportData}
+                                exportData={exportData}
+                                searchActive={searchActive}
+                                filterInfo={filterInfo}
                                 allTagData={tagsData.allTagItems.items}
                                 studentType={'phd'}
                                 rpath={'/phd/projects'}
@@ -548,15 +753,16 @@ const AllProjects = () => {
     )
 }
 
-export default AllProjects
+export default AllPhdProjects
 
 const Container = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     .add_button {
         height: 32px;
         color: #ffffff;
         background: #f4797f;
         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         letter-spacing: 0.02em;
@@ -608,21 +814,45 @@ const Container = styled(Stack)`
             0px 0px 0px 1px rgba(134, 143, 160, 0.16);
         border-radius: 0px 6px 6px 0px;
 
-        &:hover {
+        -webkit-user-select: none;
+
+        :hover {
             border: 0px solid transparent;
             box-shadow: 0px;
             border-radius: 0px 6px 6px 0px;
+            outline: none;
+        }
+
+        button {
+            :hover {
+                background: transparent;
+            }
         }
 
         input {
             border: 0px solid transparent;
+            -webkit-box-shadow: none;
+        }
+
+        select {
+            border: 0px solid transparent;
+            height: 32px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0px 6px 6px 0px;
+            background: transparent;
+            outline: none;
+            -webkit-user-select: none;
+            -webkit-box-shadow: none;
         }
 
         background: #ffffff;
     }
 
     .filter_num {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 14px;
@@ -631,7 +861,7 @@ const Container = styled(Stack)`
     }
 
     .clear_button {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -643,13 +873,14 @@ const Container = styled(Stack)`
 const FilterInfoStack = styled(Stack)`
     position: relative;
     width: 100%;
-    height: 22px;
-    padding: 0 8px;
+    min-height: 22px;
+    height: 100%;
+    padding: 8px 8px;
     background: #fceded;
     border-radius: 4px;
     h1 {
         color: #f14c54;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 12px;
@@ -658,7 +889,7 @@ const FilterInfoStack = styled(Stack)`
 
     p {
         color: #15151d;
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 12px;
@@ -668,5 +899,46 @@ const FilterInfoStack = styled(Stack)`
     .close_icon {
         color: #838389;
         font-size: 12px;
+    }
+`
+
+const TableButton = styled(Box)`
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+
+    font-size: 14px;
+    line-height: 20px;
+    .btn_table {
+        height: 32px;
+        color: #464f60;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+        border-radius: 6px;
+        background: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__print {
+        height: 32px;
+        background: #f7f9fc;
+        box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+        border-radius: 6px;
+
+        letter-spacing: 0.02em;
+        color: #868fa0;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__rule {
+        height: 32px;
+        background: #20202a;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #33333c;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
     }
 `

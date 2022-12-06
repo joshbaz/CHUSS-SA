@@ -209,7 +209,7 @@ const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 17px;
@@ -226,7 +226,7 @@ const SubmitButton = styled(Box)`
         border-radius: 6px;
 
         color: ${({ disabledb }) => (disabledb ? '#868fa0' : '#ffffff')};
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;

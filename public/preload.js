@@ -6,7 +6,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     loginValidation: (values) => ipcRenderer.invoke('login-validation', values),
     /** bridge for csv exportation */
     exportCSV: (values) => ipcRenderer.invoke('export-csv', values),
+    exportStudentCSV: (values) =>
+        ipcRenderer.invoke('export-student-csv', values),
     /** projects */
+    projectDeletion: (values) =>
+        ipcRenderer.invoke('remove-student-project', values),
     projectCreation: (values) => ipcRenderer.invoke('create-project', values),
     projectUpdate: (values) => ipcRenderer.invoke('update-project', values),
     getPProjects: (values) => ipcRenderer.invoke('get-p-project', values),
@@ -73,6 +77,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getIndividualDCMember: (id) =>
         ipcRenderer.invoke('individual-dcmember', id),
     updateDCmember: (values) => ipcRenderer.invoke('update-dcmember', values),
+    removeDCMember: (values) => ipcRenderer.invoke('remove-dcmember', values),
     /** opponents */
     createProjectOpponent: (values) =>
         ipcRenderer.invoke('create-opponent-project', values),

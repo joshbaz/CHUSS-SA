@@ -161,3 +161,22 @@ exports.updateDCMember = async (event, values) => {
         return errorResult
     }
 }
+
+/** remove supervisor */
+exports.removeDCMember = async (event, values) => {
+    try {
+        let responseData = await axios.patch(
+            `${BASE_API_}/doctoralmember/v1/project/remove/${values.projectId}/${values.supId}`,
+            values
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}

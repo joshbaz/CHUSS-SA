@@ -27,6 +27,7 @@ import {
 
 const CreateMastersProject = () => {
     const [helperFunctions, setHelperFunctions] = React.useState(null)
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let routeNavigate = useNavigate()
 
     let dispatch = useDispatch()
@@ -53,7 +54,7 @@ const CreateMastersProject = () => {
 
             dispatch(preset())
         }
-         dispatch(preset())
+        dispatch(preset())
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
@@ -67,6 +68,7 @@ const CreateMastersProject = () => {
         if (isError) {
             if (helperFunctions !== null) {
                 helperFunctions.setSubmitting(false)
+                setIsSubmittingp(() => false)
             }
             toast({
                 position: 'top',
@@ -75,6 +77,7 @@ const CreateMastersProject = () => {
                 duration: 10000,
                 isClosable: true,
             })
+            setIsSubmittingp(() => false)
 
             dispatch(reset())
         }
@@ -88,8 +91,9 @@ const CreateMastersProject = () => {
                     duration: 10000,
                     isClosable: true,
                 })
-                //helperFunctions.resetForm()
+                helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
+                setIsSubmittingp(() => false)
 
                 setHelperFunctions(null)
             }
@@ -142,6 +146,7 @@ const CreateMastersProject = () => {
                         onSubmit={async (values, helpers) => {
                             setHelperFunctions(helpers)
                             dispatch(projectCreate(values))
+                            setIsSubmittingp(() => true)
                         }}>
                         {({
                             values,
@@ -183,13 +188,13 @@ const CreateMastersProject = () => {
                                                 type='submit'
                                                 disabled={
                                                     !(isValid && dirty) ||
-                                                    isSubmitting
+                                                    isSubmittingp
                                                 }
                                                 isLoading={
-                                                    isSubmitting ? true : false
+                                                    isSubmittingp ? true : false
                                                 }
                                                 className='button'>
-                                                Submit project
+                                                Submit Student
                                             </Button>
                                         </SubmitButton>
                                     </Stack>

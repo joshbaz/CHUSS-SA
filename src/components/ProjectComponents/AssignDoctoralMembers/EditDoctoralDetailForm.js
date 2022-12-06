@@ -2,13 +2,13 @@ import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
 
-const OpponentADetailForm = ({ values, handleChange,errors }) => {
+const EditDoctoralDetailForm = ({ values, handleChange, errors }) => {
     return (
         <FormContainer>
             <Box className='form_container'>
                 {/** form title */}
                 <Box className='formtitle'>
-                    <h1>Details of Opponent</h1>
+                    <h1>Details of Doctoral Committee Member</h1>
                 </Box>
 
                 <Stack
@@ -26,12 +26,22 @@ const OpponentADetailForm = ({ values, handleChange,errors }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.jobtitle
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='text'
-                                    value={values.jobtitle}
+                                    value={
+                                        values !== null && values.jobtitle
+                                            ? values.jobtitle
+                                            : ''
+                                    }
                                     name='jobtitle'
                                     onChange={handleChange}
                                     placeholder={'i.e Prof. or Assoc.Prof.'}
                                 />
+
                                 {errors && errors.jobtitle ? (
                                     <ErrorMsg className='filesError'>
                                         {errors.jobtitle}
@@ -48,13 +58,21 @@ const OpponentADetailForm = ({ values, handleChange,errors }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.name
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='text'
-                                    value={values.name}
+                                    value={
+                                        values !== null && values.name
+                                            ? values.name
+                                            : ''
+                                    }
                                     name='name'
                                     onChange={handleChange}
                                     placeholder={'i.e Apollo Kimani'}
                                 />
-
                                 {errors && errors.name ? (
                                     <ErrorMsg className='filesError'>
                                         {errors.name}
@@ -73,8 +91,17 @@ const OpponentADetailForm = ({ values, handleChange,errors }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.email
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='text'
-                                    value={values.email}
+                                    value={
+                                        values !== null && values.email
+                                            ? values.email
+                                            : null
+                                    }
                                     name='email'
                                     onChange={handleChange}
                                     placeholder={'email i.e apollo@yahoo.com'}
@@ -95,13 +122,21 @@ const OpponentADetailForm = ({ values, handleChange,errors }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.phoneNumber
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='text'
-                                    value={values.phoneNumber}
+                                    value={
+                                        values !== null && values.phoneNumber
+                                            ? values.phoneNumber
+                                            : ''
+                                    }
                                     name='phoneNumber'
                                     onChange={handleChange}
                                     placeholder={'e.g 256787785114'}
                                 />
-
                                 {errors && errors.phoneNumber ? (
                                     <ErrorMsg className='filesError'>
                                         {errors.phoneNumber}
@@ -113,23 +148,19 @@ const OpponentADetailForm = ({ values, handleChange,errors }) => {
 
                     <Box className='formfields__Sfieldset'>
                         <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Postal address <span>*</span>
-                            </label>
+                            <label>Postal address</label>
                             <fieldset>
                                 <Input
                                     type='text'
-                                    value={values.postalAddress}
+                                    value={
+                                        values !== null && values.postalAddress
+                                            ? values.postalAddress
+                                            : ''
+                                    }
                                     name='postalAddress'
                                     onChange={handleChange}
                                     placeholder={'postalAddress'}
                                 />
-
-                                {errors && errors.postalAddress ? (
-                                    <ErrorMsg className='filesError'>
-                                        {errors.postalAddress}
-                                    </ErrorMsg>
-                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -140,8 +171,18 @@ const OpponentADetailForm = ({ values, handleChange,errors }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.countryOfResidence
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='text'
-                                    value={values.countryOfResidence}
+                                    value={
+                                        values !== null &&
+                                        values.countryOfResidence
+                                            ? values.countryOfResidence
+                                            : ''
+                                    }
                                     name='countryOfResidence'
                                     onChange={handleChange}
                                     placeholder={'i.e Uganda'}
@@ -165,35 +206,26 @@ const OpponentADetailForm = ({ values, handleChange,errors }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.placeOfWork
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='text'
-                                    value={values.placeOfWork}
+                                    value={
+                                        values !== null && values.placeOfWork
+                                            ? values.placeOfWork
+                                            : ''
+                                    }
                                     name='placeOfWork'
                                     onChange={handleChange}
                                     placeholder={'i.e Makerere University'}
                                 />
-
                                 {errors && errors.placeOfWork ? (
                                     <ErrorMsg className='filesError'>
                                         {errors.placeOfWork}
                                     </ErrorMsg>
                                 ) : null}
-                            </fieldset>
-                        </Stack>
-                    </Box>
-
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
-                            <label>
-                                Other Academic and/or Professional Titles{' '}
-                            </label>
-                            <fieldset>
-                                <Input
-                                    type='text'
-                                    value={values.otherTitles}
-                                    name='otherTitles'
-                                    onChange={handleChange}
-                                    placeholder={'i.e Ph.D, Dr.'}
-                                />
                             </fieldset>
                         </Stack>
                     </Box>
@@ -203,7 +235,7 @@ const OpponentADetailForm = ({ values, handleChange,errors }) => {
     )
 }
 
-export default OpponentADetailForm
+export default EditDoctoralDetailForm
 
 const FormContainer = styled(Box)`
     font-family: 'Inter', sans-serif;
@@ -228,7 +260,7 @@ const FormContainer = styled(Box)`
 
             font-style: normal;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 17px;
             line-height: 137.5%;
             color: #111827;
         }
@@ -249,11 +281,17 @@ const FormContainer = styled(Box)`
 
     input {
         background: #ffffff;
+
+        border: 1px solid gray.200;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
             0px 0px 0px 1px rgba(134, 143, 160, 0.16);
         border-radius: 6px;
         height: 32px;
         width: 100%;
+        color: #20202a;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
     }
 
     .formfields__Dfieldset {

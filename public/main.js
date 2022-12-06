@@ -7,7 +7,7 @@ const isDev = require('electron-is-dev')
 const os = require('os')
 const axios = require('axios')
 const { BASE_API_ } = require('./base_url.config')
-
+const Moments = require('moment-timezone')
 const projectController = require('./controllers/projects/projects')
 const examinerController = require('./controllers/Examiners/Examiners')
 const supervisorController = require('./controllers/supervisors')
@@ -240,6 +240,8 @@ ipcMain.handle('remove-registration', registrationController.removeRegistration)
 ipcMain.handle('remove-cfiles', projectController.removeCaFiles)
 ipcMain.handle('remove-vifiles', projectController.removeViFiles)
 ipcMain.handle('remove-fiSfiles', projectController.removeFinalSFiles)
+/** remove student and project */
+ipcMain.handle('remove-student-project', projectController.deleteProject)
 
 /** remove report files */
 ipcMain.handle('remove-exrpfiles', reportController.removeExRpFiles)
@@ -376,6 +378,8 @@ ipcMain.handle('individual-dcmember', doctoralMController.getIndividualDCMember)
 
 /** update Doctoral Members */
 ipcMain.handle('update-dcmember', doctoralMController.updateDCMember)
+/** remove DCMember */
+ipcMain.handle('remove-dcmember', doctoralMController.removeDCMember)
 
 /*
  * Examiners
@@ -592,6 +596,119 @@ ipcMain.handle('export-csv', async (event, values) => {
                 studentContacts: data2.studentContacts,
                 Topic: data2.topic,
                 Status: data2.status,
+            }
+        })
+
+        console.log('rows  data', rowData, rowData)
+
+        const worksheet = XLSX.utils.json_to_sheet(rowData)
+        worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
+            return { wch: 10 }
+        })
+        const workbook = XLSX.utils.book_new()
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, `${values.tableName}`)
+
+        await XLSX.writeFile(workbook, dialogSaves.filePath)
+
+        const newoptions = {
+            message: `Export Successfully Saved - ${dialogSaves.filePath}`,
+        }
+        dialog.showMessageBox(mainWindow, newoptions)
+    }
+})
+
+/** handler for export student csv */
+
+ipcMain.handle('export-student-csv', async (event, values) => {
+    const options = {
+        defaultPath: app.getPath('documents') + `/${values.tableName}.${'csv'}`,
+        filters: [
+            {
+                name: 'Custom File Type',
+                extensions: ['xls', 'xlsx', 'xlsb', 'csv', 'ods'],
+            },
+        ],
+    }
+    const dialogSaves = await dialog.showSaveDialog(mainWindow, options)
+    console.log('dialogSaves', dialogSaves)
+
+    if (dialogSaves.canceled) {
+        return
+    } else {
+        //console.log("my values", values);
+        // fs.writeFile(
+        //     dialogSaves.filePath,
+        //     values.data,
+        //     { encoding: 'base64' },
+        //     function (err) {
+        //         if (err) {
+        //             console.log('file failed')
+        //         }
+        //         //return;
+        //         const newoptions = {
+        //             message: `File Saved - ${dialogSaves.filePath}`,
+        //         }
+        //         dialog.showMessageBox(null, newoptions)
+        //     }
+        // )
+
+        /** handle function to give registration */
+        const getLatestRegistration = (dataArray) => {
+            let filDatas = dataArray.filter((data) => {
+                if (
+                    data.registrationId.registrationtype.toLowerCase() ===
+                    'provisional admission'
+                ) {
+                    return data
+                }
+                if (
+                    data.registrationId.registrationtype.toLowerCase() ===
+                    'full admission'
+                ) {
+                    return data
+                }
+                if (
+                    data.registrationId.registrationtype.toLowerCase() ===
+                    'de-registered'
+                ) {
+                    return data
+                }
+            })
+
+            if (filDatas.length > 1) {
+                let latest = filDatas[0]
+
+                filDatas.forEach((element) => {
+                    if (
+                        Moments(element.registrationId.date).isAfter(
+                            latest.registrationId.date
+                        )
+                    ) {
+                        latest = element
+                    }
+                })
+
+                return latest.registrationId.registrationtype
+            } else if (filDatas.length > 0 && filDatas.length === 1) {
+                return filDatas[0].registrationId.registrationtype
+            } else {
+                return '-'
+            }
+        }
+
+        const rowData = await values.data.map((data2, index) => {
+            let allRegistrations = [...data2.registration]
+            /** function to return latest registration */
+            let returnedData = getLatestRegistration(allRegistrations)
+            return {
+                No: index + 1,
+                'Student Name': data2.student.studentName,
+                'Registration No.': data2.student.registrationNumber,
+                Topic: data2.topic,
+                Status: data2.activeStatus,
+                Registration: returnedData.toUpperCase(),
+                'Submission Status': data2.submissionStatus,
             }
         })
 

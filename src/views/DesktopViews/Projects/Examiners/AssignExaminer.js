@@ -30,13 +30,36 @@ import {
     getIndividualProject,
     reset as preset,
 } from '../../../../store/features/project/projectSlice'
+
+
 const AssignExaminer = ({ ...props }) => {
     const [filterSearchOption, setFilterSearchOption] = React.useState('All')
     const [searchWord, setSearchWord] = React.useState('')
+    const [perPage, setPerPage] = React.useState(10)
 
     const [filterActive, setFilterActive] = React.useState(false)
     const [filterInfo, setFilterInfo] = React.useState([])
     const [projectId, setProjectId] = React.useState('')
+
+    const [allDisplayData, setAllDisplayData] = React.useState({
+        currentPage: 1,
+        itemsPerPage: 10,
+        items: [],
+        allItems: [],
+        totalItemsDisplayed: 0,
+        totalItems: 0,
+        totalPages: 0,
+    })
+
+    const [searchData, setSearchData] = React.useState({
+        currentPage: 1,
+        itemsPerPage: 10,
+        items: [],
+        allSearchItems: [],
+        totalItemsDisplayed: 0,
+        totalSearchedItems: 0,
+        totalPages: 0,
+    })
 
     const [selectedExaminers, setSelectedExaminers] = React.useState([])
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
@@ -124,6 +147,36 @@ const AssignExaminer = ({ ...props }) => {
         dispatch(allExaminers())
     }, [])
 
+    /** set all the display Data */
+    useEffect(() => {
+        /** initial items  */
+        //items collected
+        const allItemsCollected = allExaminerItems.items
+        //total all items
+        const totalItems = allExaminerItems.items.length
+        let itemsPerPage = perPage
+        const currentPage = allDisplayData.currentPage
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+        const currentItems = allItemsCollected.slice(
+            indexOfFirstItem,
+            indexOfLastItem
+        )
+
+        const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+        setAllDisplayData({
+            currentPage: currentPage,
+            itemsPerPage: itemsPerPage,
+            items: currentItems,
+            allItems: allExaminerItems.items,
+            totalItemsDisplayed: currentItems.length,
+            totalItems: totalItems,
+            totalPages: pageLength,
+        })
+    }, [allExaminerItems, perPage])
+
     useEffect(() => {
         if (isError) {
             toast({
@@ -149,7 +202,7 @@ const AssignExaminer = ({ ...props }) => {
             setIsSubmittingp(false)
 
             onClose()
-            routeNavigate(`/projects/projectreport/${params.pid}`, {
+            routeNavigate(`/phd/projects/projectreport/${params.pid}`, {
                 replace: true,
             })
             dispatch(reset())
@@ -167,6 +220,78 @@ const AssignExaminer = ({ ...props }) => {
         }
         dispatch(assignExaminer(allValues))
     }
+
+    /** function to handle search examiners */
+    const handleSearchSubmission = () => {
+        if (searchWord) {
+            setFilterActive(true)
+        }
+    }
+
+    /** function to handle search reset */
+    const handleSearchReset = () => {
+        setFilterActive(false)
+        setSearchWord('')
+    }
+
+    /** function to handle reset */
+    const handleResetAll = () => {
+        setFilterActive(false)
+        setSearchWord('')
+        setSelectedExaminers([])
+    }
+
+    /** handle search */
+    const handleSearch = () => {
+        const searchResults = allDisplayData.allItems.filter((data1, index) => {
+            let name = `${data1.name.toLowerCase()}`
+            let tname = `${
+                data1.jobtitle.toLowerCase() + ' ' + data1.name.toLowerCase()
+            }`
+
+            if (name.includes(searchWord)) {
+                return data1
+            }
+
+            if (tname.includes(searchWord)) {
+                return data1
+            }
+
+            return null
+        })
+
+        //items collected
+        const allItemsCollected = searchResults
+        //total all items
+        const totalItems = searchResults.length
+        let itemsPerPage = perPage
+        const currentPage = allDisplayData.currentPage
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+        const currentItems = allItemsCollected.slice(
+            indexOfFirstItem,
+            indexOfLastItem
+        )
+
+        const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+        setSearchData({
+            currentPage: currentPage,
+            itemsPerPage: itemsPerPage,
+            items: currentItems,
+            allSearchItems: searchResults,
+            totalItemsDisplayed: currentItems.length,
+            totalSearchedItems: totalItems,
+            totalPages: pageLength,
+        })
+    }
+
+    useEffect(() => {
+        if (filterActive) {
+            handleSearch()
+        }
+    }, [searchWord, filterActive])
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -233,6 +358,7 @@ const AssignExaminer = ({ ...props }) => {
 
                             <Box>
                                 <Button
+                                    onClick={handleSearchSubmission}
                                     className='search_button'
                                     variant='solid'>
                                     Search
@@ -260,7 +386,7 @@ const AssignExaminer = ({ ...props }) => {
                                 <Button
                                     onClick={() =>
                                         routeNavigate(
-                                            `/projects/examiners/p_create/${projectId}`
+                                            `/phd/projects/examiners/p_create/${projectId}`
                                         )
                                     }
                                     className='add_button'
@@ -275,9 +401,14 @@ const AssignExaminer = ({ ...props }) => {
 
                     <Stack>
                         <ExaminerTable
-                            allExaminerItems={allExaminerItems}
+                            allExaminerItems={allDisplayData}
+                            allSearchedData={searchData}
+                            searchActive={filterActive}
+                            handleSearchReset={handleSearchReset}
+                            handleResetAll={handleResetAll}
                             selectedExaminers={selectedExaminers}
                             setSelectedExaminers={setSelectedExaminers}
+                            rlink={'/phd'}
                         />
                     </Stack>
                 </Stack>

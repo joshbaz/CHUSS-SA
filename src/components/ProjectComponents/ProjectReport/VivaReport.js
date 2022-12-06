@@ -26,18 +26,24 @@ import { RiLayoutGridFill } from 'react-icons/ri'
 import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
 import { HiPencil } from 'react-icons/hi'
 import { AiOutlinePlus } from 'react-icons/ai'
+import { RiDeleteBin6Line } from 'react-icons/ri'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux'
 import {
+    removeViFiles,
     updateProjectStatus,
     reset,
 } from '../../../store/features/project/projectSlice'
+
+
 import { FiCheck } from 'react-icons/fi'
 import VivaPopupFileUpload from './VivaPopupFileUpload'
 import VivaPopupDefense from './VivaPopupDefense'
 import VivaReportOpponent from './VivaReportOpponent'
+import Moments from 'moment-timezone'
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 
 const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
@@ -57,6 +63,10 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [projectId, setProjectId] = React.useState('')
     const [selectedFile, setSelectedFile] = React.useState(null)
+    const [removeActive, setRemoveActive] = React.useState(false)
+    const [removeDetails, setRemoveDetails] = React.useState(null)
+
+    const [isViewFile, setIsViewFile] = React.useState(false)
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
@@ -193,9 +203,8 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
     }
 
     /** run after submission awaiting for response */
-
     React.useEffect(() => {
-        if (isError) {
+        if (isError && isSubmittingp) {
             toast({
                 position: 'top',
                 title: message.message,
@@ -221,17 +230,16 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
             setChangeMade(false)
             onClose()
             dispatch(reset())
+            setRemoveActive(false)
+            setRemoveDetails(null)
         }
         dispatch(reset())
     }, [isError, isSuccess, message, dispatch])
 
     /** submittion of the changes */
+    /** submittion of the changes */
     React.useEffect(() => {
-        if (
-            Object.keys(errors).length === 0 &&
-            setIsSubmittingp &&
-            changeMade
-        ) {
+        if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
             dispatch(
                 updateProjectStatus({
                     ...newActiveStatus,
@@ -241,7 +249,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
             //setIsSubmittingp(false)
         }
 
-        if (Object.keys(errors).length > 0 && setIsSubmittingp && changeMade) {
+        if (Object.keys(errors).length > 0 && isSubmittingp && changeMade) {
             setIsSubmittingp(false)
             setChangeMade(false)
         }
@@ -264,7 +272,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                 fileType: data.fileId.fileType,
             },
         ])
-        onOpen()
+        setIsViewFile(() => true)
     }
 
     const handleDownloadFile = async (data) => {
@@ -301,6 +309,34 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
             }
         }
     }
+
+     const handleRemove = (fId, nam, secId) => {
+         console.log('gggdfd', fId, nam, secId)
+         if (values._id && fId) {
+             let rvalues = {
+                 fId: fId,
+                 name: nam,
+                 secId: secId,
+                 projectId: values._id,
+             }
+             setRemoveDetails(() => rvalues)
+             setRemoveActive(true)
+         }
+     }
+
+       const onRemoveUpload = () => {
+           if (removeDetails.projectId && removeDetails.fId) {
+               dispatch(removeViFiles(removeDetails))
+               setIsSubmittingp(true)
+           }
+       }
+
+        const cancelRemoveUpload = () => {
+            setRemoveActive(false)
+            setRemoveDetails(null)
+
+            // onClose()
+        }
 
     return (
         <Container>
@@ -435,7 +471,15 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                                     value={
                                                         values !== null &&
                                                         values.DateOfDefense
-                                                            ? values.DateOfDefense
+                                                            ? Moments(
+                                                                  values.DateOfDefense
+                                                              )
+                                                                  .tz(
+                                                                      'Africa/Kampala'
+                                                                  )
+                                                                  .format(
+                                                                      'DD MMM Y'
+                                                                  )
                                                             : ''
                                                     }
                                                 />
@@ -475,7 +519,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                         alignItems='center'
                                         onClick={() =>
                                             routeNavigate(
-                                                `/projects/opponents/assign/${values._id}`
+                                                `/phd/projects/opponents/assign/${values._id}`
                                             )
                                         }
                                         style={{ cursor: 'pointer' }}>
@@ -528,18 +572,43 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                                                     id='email'
                                                                 />
                                                                 <InputRightElement h='32px'>
-                                                                    <Button
-                                                                        onClick={() =>
-                                                                            routeNavigate(
-                                                                                `/projects/examiners/view/${values._id}/${data.examinerId._id}`
-                                                                            )
-                                                                        }
-                                                                        bg='transparent'
-                                                                        h='100%'
-                                                                        w='100%'
-                                                                        size='28px'>
-                                                                        <BiLinkExternal />
-                                                                    </Button>
+                                                                    <Stack
+                                                                        direction='row'
+                                                                        pr='10px'>
+                                                                        <Button
+                                                                            onClick={() =>
+                                                                                handleRemove(
+                                                                                    data
+                                                                                        .opponentId
+                                                                                        ._id,
+                                                                                    data
+                                                                                        .opponentId
+                                                                                        .name,
+                                                                                    data
+                                                                                        .opponentId
+                                                                                        .jobtitle,
+                                                                                    data._id
+                                                                                )
+                                                                            }
+                                                                            bg='transparent'
+                                                                            h='100%'
+                                                                            w='100%'
+                                                                            size='28px'>
+                                                                            <RiDeleteBin6Line />
+                                                                        </Button>
+                                                                        <Button
+                                                                            onClick={() =>
+                                                                                routeNavigate(
+                                                                                    `/phd/projects/opponents/view/${values._id}/${data.opponentId._id}`
+                                                                                )
+                                                                            }
+                                                                            bg='transparent'
+                                                                            h='100%'
+                                                                            w='100%'
+                                                                            size='28px'>
+                                                                            <BiLinkExternal />
+                                                                        </Button>
+                                                                    </Stack>
                                                                 </InputRightElement>
                                                             </InputGroup>
                                                         </Box>
@@ -665,6 +734,17 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                                                                     File
                                                                                 </MenuItem>
                                                                                 <MenuItem
+                                                                                    onClick={() =>
+                                                                                        handleRemove(
+                                                                                            data
+                                                                                                .fileId
+                                                                                                .fileId,
+                                                                                            data
+                                                                                                .fileId
+                                                                                                .fileName,
+                                                                                            data._id
+                                                                                        )
+                                                                                    }
                                                                                     fontSize={
                                                                                         '14px'
                                                                                     }>
@@ -743,9 +823,58 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                                             </Stack>
 
                                                             <Stack justifyContent='center'>
-                                                                <Box color='#838389'>
-                                                                    <BsThreeDots />
-                                                                </Box>
+                                                                <Menu>
+                                                                    <MenuButton>
+                                                                        <Box color='#838389'>
+                                                                            <BsThreeDots />
+                                                                        </Box>
+                                                                    </MenuButton>
+
+                                                                    <MenuList>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                handleFileView(
+                                                                                    data
+                                                                                )
+                                                                            }
+                                                                            fontSize={
+                                                                                '14px'
+                                                                            }>
+                                                                            View
+                                                                            File
+                                                                        </MenuItem>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                handleDownloadFile(
+                                                                                    data
+                                                                                )
+                                                                            }
+                                                                            fontSize={
+                                                                                '14px'
+                                                                            }>
+                                                                            Download
+                                                                            File
+                                                                        </MenuItem>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                handleRemove(
+                                                                                    data
+                                                                                        .fileId
+                                                                                        .fileId,
+                                                                                    data
+                                                                                        .fileId
+                                                                                        .fileName,
+                                                                                    data._id
+                                                                                )
+                                                                            }
+                                                                            fontSize={
+                                                                                '14px'
+                                                                            }>
+                                                                            Delete
+                                                                            File
+                                                                        </MenuItem>
+                                                                    </MenuList>
+                                                                </Menu>
                                                             </Stack>
                                                         </FileStack>
                                                     )
@@ -773,6 +902,36 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                     </Stack>
                 </Stack>
             </Box>
+            {/** vieing file */}
+            {/** modal for viewing file */}
+            <Modal
+                w='100vw'
+                isOpen={isViewFile}
+                p='0'
+                onClose={() => setIsViewFile(() => false)}
+                size=''>
+                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
+                <ModalContent p='0' style={{ width: '60vw', height: '80vh' }}>
+                    <ModalBody p='0' style={{ width: '100%', height: '80vh' }}>
+                        <Box style={{ width: '100%', height: '80vh' }}>
+                            <DocViewer
+                                className='documentViewer'
+                                prefetchMethod='GET'
+                                documents={selectedFile}
+                                pluginRenderers={DocViewerRenderers}
+                                config={{
+                                    header: {
+                                        disableHeader: true,
+                                        disableFileName: true,
+                                        retainURLParams: false,
+                                    },
+                                }}
+                                style={{ width: '100%', height: '80vh' }}
+                            />
+                        </Box>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
             {/** change project status */}
             <Modal w='100vw' isOpen={isOpen} p='0' onClose={onClose}>
                 <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
@@ -928,6 +1087,75 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                 setDefenseUploadActive={setDefenseUploadActive}
                 defenseUploadActive={defenseUploadActive}
             />
+            <Modal
+                w='100vw'
+                isOpen={removeActive}
+                p='0'
+                onClose={() => cancelRemoveUpload()}>
+                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
+                <ModalContent p='0'>
+                    <ModalBody p='0'>
+                        <PopupForm
+                            p='0px'
+                            direction='column'
+                            spacing='0'
+                            justifyContent='space-between'>
+                            <Stack direction='column' spacing={'10px'} h='50%'>
+                                <Stack
+                                    className='pop_titleRR'
+                                    direction='row'
+                                    w='100%'
+                                    alignItems='center'
+                                    justifyContent='space-between'>
+                                    <Box>
+                                        <h1>Remove Files</h1>
+                                    </Box>
+                                </Stack>
+
+                                <Stack
+                                    p='10px 20px 10px 20px'
+                                    spacing={'2px'}
+                                    direction='row'
+                                    className='list_text'>
+                                    <p>
+                                        Are you sure you want to remove
+                                        <span>
+                                            <li>
+                                                {removeDetails !== null &&
+                                                    removeDetails.name}
+                                            </li>
+                                        </span>
+                                        from this project.
+                                    </p>
+                                </Stack>
+                            </Stack>
+                            <Stack
+                                p='0px 20px'
+                                h='65px'
+                                bg='#ffffff'
+                                direction='row'
+                                borderTop='1px solid #E9EDF5'
+                                borderRadius='0 0 8px 8px'
+                                justifyContent='flex-end'
+                                alignItems='center'>
+                                <Button
+                                    variant='outline'
+                                    className='cancel_button'
+                                    onClick={() => cancelRemoveUpload()}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={onRemoveUpload}
+                                    disabled={false}
+                                    isLoading={isSubmittingp ? true : false}
+                                    className='apply_button'>
+                                    Confirm
+                                </Button>
+                            </Stack>
+                        </PopupForm>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </Container>
     )
 }

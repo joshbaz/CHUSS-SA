@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
 
-const DoctoralADetailForm = ({ values, handleChange }) => {
+const DoctoralADetailForm = ({ values, handleChange, errors }) => {
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -27,11 +27,21 @@ const DoctoralADetailForm = ({ values, handleChange }) => {
                             <fieldset>
                                 <Input
                                     type='text'
+                                    className={
+                                        errors && errors.jobtitle
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     value={values.jobtitle}
                                     name='jobtitle'
                                     onChange={handleChange}
                                     placeholder={'i.e Prof. or Assoc.Prof.'}
                                 />
+                                {errors && errors.jobtitle ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.jobtitle}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -43,12 +53,22 @@ const DoctoralADetailForm = ({ values, handleChange }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.name
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='text'
                                     value={values.name}
                                     name='name'
                                     onChange={handleChange}
                                     placeholder={'i.e Apollo Kimani'}
                                 />
+                                {errors && errors.name ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.name}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -62,12 +82,22 @@ const DoctoralADetailForm = ({ values, handleChange }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.email
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='text'
                                     value={values.email}
                                     name='email'
                                     onChange={handleChange}
                                     placeholder={'email i.e apollo@yahoo.com'}
                                 />
+                                {errors && errors.email ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.email}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                         <Stack
@@ -78,12 +108,22 @@ const DoctoralADetailForm = ({ values, handleChange }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.phoneNumber
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='text'
                                     value={values.phoneNumber}
                                     name='phoneNumber'
                                     onChange={handleChange}
                                     placeholder={'e.g 256787785114'}
                                 />
+                                {errors && errors.phoneNumber ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.phoneNumber}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Stack>
@@ -112,11 +152,21 @@ const DoctoralADetailForm = ({ values, handleChange }) => {
                             <fieldset>
                                 <Input
                                     type='text'
+                                    className={
+                                        errors && errors.countryOfResidence
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     value={values.countryOfResidence}
                                     name='countryOfResidence'
                                     onChange={handleChange}
                                     placeholder={'i.e Uganda'}
                                 />
+                                {errors && errors.countryOfResidence ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.countryOfResidence}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -130,12 +180,22 @@ const DoctoralADetailForm = ({ values, handleChange }) => {
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.placeOfWork
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     type='text'
                                     value={values.placeOfWork}
                                     name='placeOfWork'
                                     onChange={handleChange}
                                     placeholder={'i.e Makerere University'}
                                 />
+                                {errors && errors.placeOfWork ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.placeOfWork}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -148,7 +208,7 @@ const DoctoralADetailForm = ({ values, handleChange }) => {
 export default DoctoralADetailForm
 
 const FormContainer = styled(Box)`
-    font-family: Inter;
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -170,14 +230,14 @@ const FormContainer = styled(Box)`
 
             font-style: normal;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 17px;
             line-height: 137.5%;
             color: #111827;
         }
     }
 
     label {
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-weight: 500;
         font-size: 14px;
         line-height: 20px;
@@ -191,11 +251,20 @@ const FormContainer = styled(Box)`
 
     input {
         background: #ffffff;
+        border-color: transparent;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
             0px 0px 0px 1px rgba(134, 143, 160, 0.16);
         border-radius: 6px;
         height: 32px;
         width: 100%;
+        color: #20202a;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .input_error {
+        border-color: red !important;
+        box-shadow: none;
     }
 
     .formfields__Dfieldset {
@@ -203,4 +272,14 @@ const FormContainer = styled(Box)`
     }
 `
 
+const ErrorMsg = styled(Box)`
+    font-size: 13px;
+    line-height: 20px;
+    padding: 5px 10px;
+    color: #f14c54;
+    font-family: 'Inter', sans-serif;
 
+    .filesError {
+        padding: 0;
+    }
+`

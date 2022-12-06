@@ -145,7 +145,7 @@ const ViewOpponentReport = (props) => {
                                 as='button'
                                 onClick={() =>
                                     routeNavigate(
-                                        `/projects/opponents/updatereport/${params.p_id}/${params.rp_id}`
+                                        `/phd/projects/opponents/updatereport/${params.p_id}/${params.rp_id}`
                                     )
                                 }>
                                 Update report

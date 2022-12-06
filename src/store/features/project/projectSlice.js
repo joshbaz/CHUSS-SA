@@ -19,6 +19,18 @@ const initialState = {
     message: '',
 }
 
+/** delete project projectDeletion */
+export const projectDeletion = createAsyncThunk(
+    'projects/delete/student',
+    async (Info, thunkAPI) => {
+        const deleteAttempt = await projectService.projectDeletion(Info)
+        if (deleteAttempt.type === 'success') {
+            return deleteAttempt
+        } else {
+            return thunkAPI.rejectWithValue(deleteAttempt.message)
+        }
+    }
+)
 /** create project */
 export const projectCreate = createAsyncThunk(
     'projects/create',
@@ -575,6 +587,21 @@ export const projectSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(removeFinalSFiles.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            //delete Project
+            .addCase(projectDeletion.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(projectDeletion.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(projectDeletion.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

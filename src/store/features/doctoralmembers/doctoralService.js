@@ -39,6 +39,13 @@ const dcmemberUpdate = async (values) => {
 
     return response
 }
+
+/** service to remove supervisor from project */
+const removeDCMember = async (values) => {
+    const response = await window.electronAPI.removeDCMember(values)
+
+    return response
+}
 let doctoralService = {
     projectDCMemberCreate,
     assignDCMember,
@@ -47,6 +54,7 @@ let doctoralService = {
     getIndividualDCMember,
 
     dcmemberUpdate,
+    removeDCMember,
 }
 
 export default doctoralService

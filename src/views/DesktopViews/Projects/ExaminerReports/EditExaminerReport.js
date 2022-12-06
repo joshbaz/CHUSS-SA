@@ -1,5 +1,12 @@
 import React, { useEffect } from 'react'
-import { Box, Stack, Text, useToast, Button } from '@chakra-ui/react'
+import {
+    Box,
+    Stack,
+    Text,
+    useToast,
+    Button,
+    useDisclosure,
+} from '@chakra-ui/react'
 import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../../components/common/Navigation/Navigation'
@@ -12,39 +19,109 @@ import UploadUpdateReport from '../../../../components/ProjectComponents/Examine
 import {
     reset,
     getExaminerReport,
-    updateExaminerReport,
+    getAllExaminerReports,
 } from '../../../../store/features/reports/reportSlice'
-
+import {
+    updateRRport,
+    reset as aureset,
+} from '../../../../store/features/project/projectSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import { initSocketConnection } from '../../../../socketio.service.js'
 
 const EditExaminerReport = (props) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [changeMade, setChnageMade] = React.useState(false)
     const [initials, setInitials] = React.useState(null)
+    const [newRDeat, setnewRDeat] = React.useState(null)
+
     const [errors, setErrors] = React.useState({})
-    const [loadingComponent, setloadingComponent] = React.useState(false)
+    const [loadingComponen, setloadingComponent] = React.useState(false)
+
     let routeNavigate = useNavigate()
     let params = useParams()
     let dispatch = useDispatch()
-    let { individualReport, isSuccess, isError, message } = useSelector(
-        (state) => state.report
-    )
+    let projectCase = useSelector((state) => state.project)
+    let { individualReport, allreports, isSuccess, isError, message } =
+        useSelector((state) => state.report)
     useEffect(() => {
-        if (
-            individualReport !== null &&
-            individualReport._id !== params.rp_id
-        ) {
-            dispatch(getExaminerReport(params.rp_id))
+        dispatch(getAllExaminerReports())
+        dispatch(getExaminerReport(params.rp_id))
+
+        const io = initSocketConnection()
+        io.on('updatereport', (data) => {
+            if (
+                data.actions === 'update-report' &&
+                data.data === params.rp_id.toString()
+            ) {
+                dispatch(getAllExaminerReports())
+                dispatch(getExaminerReport(params.rp_id))
+            }
+        })
+    }, [dispatch, params.rp_id])
+
+    useEffect(() => {
+        console.log(params.rp_id, 'id', allreports)
+
+        if (allreports.items.length > 0) {
+            let allDetails = allreports.items.find(
+                (data) => data._id === params.rp_id
+            )
+            console.log('asl', allDetails.reportFiles.length)
+            if (allDetails) {
+                let saveDeta = {
+                    ...allDetails,
+                    reportFile: null,
+                    reportFiles:
+                        allDetails.reportFiles &&
+                        allDetails.reportFiles.length > 0
+                            ? allDetails.reportFiles
+                            : [],
+                }
+                setnewRDeat(() => saveDeta)
+            }
+        } else {
         }
-        if (individualReport === null) {
-            dispatch(getExaminerReport(params.rp_id))
-        }
-    }, [props, dispatch, individualReport])
+    }, [params.rp_id, allreports])
 
     let toast = useToast()
 
     useEffect(() => {
-        if (isError) {
+        if (projectCase.isError && isSubmittingp) {
+            toast({
+                position: 'top',
+                title: projectCase.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(() => false)
+            setChnageMade(false)
+
+            dispatch(aureset())
+        }
+
+        if (projectCase.isSuccess && isSubmittingp) {
+            toast({
+                position: 'top',
+                title: projectCase.message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            setChnageMade(false)
+            dispatch(aureset())
+        }
+        dispatch(aureset())
+    }, [
+        projectCase.isError,
+        projectCase.isSuccess,
+        projectCase.message,
+        isSubmittingp,
+    ])
+
+    useEffect(() => {
+        if (isError && isSubmittingp) {
             toast({
                 position: 'top',
                 title: message,
@@ -73,38 +150,18 @@ const EditExaminerReport = (props) => {
         dispatch(reset())
     }, [isError, isSuccess, message, dispatch, isSubmittingp])
 
-    useEffect(() => {
-        if (initials === null && individualReport !== null) {
-            if (individualReport._id === params.rp_id) {
-                setInitials({
-                    score: '',
-                    remarks: '',
-                    ungraded: null,
-
-                    ...individualReport,
-                    reportFile: null,
-                })
-            }
-        }
-
-        // setloadingComponent(false)
-        // return () => {
-        //     setInitials(null)
-        // }
-    }, [individualReport, params.rp_id])
-
     const handleChange = (e) => {
         e.preventDefault()
         setIsSubmittingp(() => false)
         setErrors({})
         setChnageMade(true)
         if (e.target.name === 'ungraded') {
-            setInitials((prevState) => ({
+            setnewRDeat((prevState) => ({
                 ...prevState,
-                [e.target.name]: e.target.checked,
+                [e.target.name]: e.target.checked ? 'true' : 'false',
             }))
         } else {
-            setInitials((prevState) => ({
+            setnewRDeat((prevState) => ({
                 ...prevState,
                 [e.target.name]: e.target.value,
             }))
@@ -119,10 +176,10 @@ const EditExaminerReport = (props) => {
         //console.log(InputFile.url, 'InputFile')
         console.log('all details', InputFile)
         let vv = {
-            ...initials,
+            ...newRDeat,
             reportFile: InputFile,
         }
-        setInitials(() => vv)
+        setnewRDeat(() => vv)
     }
 
     let validate = (values) => {
@@ -136,21 +193,20 @@ const EditExaminerReport = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        setErrors(validate(initials))
-        setIsSubmittingp(() => true)
+        setErrors(validate(newRDeat))
+        setIsSubmittingp(true)
     }
+
+    const diffhanldeSubmit = () => {}
 
     useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
             console.log(Object.keys(errors).length, 'No errors', errors)
             let newInitals = {
-                score: initials.score,
-                remarks: initials.remarks,
-                ungraded: initials.ungraded,
-                reportFile: initials.reportFile,
-                _id: params.rp_id,
+                ...newRDeat,
+                reportId: newRDeat._id,
             }
-            dispatch(updateExaminerReport(newInitals))
+            dispatch(updateRRport(newInitals))
             setChnageMade(() => false)
         } else if (
             Object.keys(errors).length > 0 &&
@@ -159,8 +215,11 @@ const EditExaminerReport = (props) => {
         ) {
             setIsSubmittingp(false)
             setChnageMade(false)
+        } else {
+            setIsSubmittingp(false)
+            setChnageMade(false)
         }
-    }, [isSubmittingp])
+    }, [isSubmittingp, dispatch])
 
     return (
         <Container direction='row' w='100vw'>
@@ -169,7 +228,12 @@ const EditExaminerReport = (props) => {
             </Box>
 
             <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar topbarData={{ title: 'Projects', count: null }} />
+                <TopBar
+                    topbarData={{
+                        title: 'PhD report for update',
+                        count: null,
+                    }}
+                />
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={handleSubmit}>
@@ -222,12 +286,12 @@ const EditExaminerReport = (props) => {
                                     w='70%'
                                     spacing='20px'>
                                     <UpdateOverallScores
-                                        values={initials}
+                                        values={newRDeat}
                                         errors={errors}
                                         handleChange={handleChange}
                                     />
                                     <ViewUpdatedFiles
-                                        values={initials}
+                                        values={newRDeat}
                                         errors={errors}
                                         handleChange={handleChange}
                                     />
@@ -238,13 +302,13 @@ const EditExaminerReport = (props) => {
                                     w='30%'
                                     spacing='20px'>
                                     <ViewUpdateExaminerDetail
-                                        values={initials}
+                                        values={newRDeat}
                                         errors={errors}
                                         handleChange={handleChange}
                                     />
 
                                     <UploadUpdateReport
-                                        values={initials}
+                                        values={newRDeat}
                                         errors={errors}
                                         handleChange={handleChange}
                                         setFieldValue={handleFileChange}
@@ -267,7 +331,7 @@ const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 17px;
@@ -284,7 +348,7 @@ const SubmitButton = styled(Box)`
         border-radius: 6px;
 
         color: ${({ disabledb }) => (disabledb ? '#868fa0' : '#ffffff')};
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;

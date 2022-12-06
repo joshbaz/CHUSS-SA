@@ -98,6 +98,18 @@ export const dcmemberUpdate = createAsyncThunk(
         }
     }
 )
+
+export const removeDCMember = createAsyncThunk(
+    'dcmember/remove/c',
+    async (values, thunkAPI) => {
+        const removeAttempt = await doctoralService.removeDCMember(values)
+        if (removeAttempt.type === 'success') {
+            return removeAttempt
+        } else {
+            return thunkAPI.rejectWithValue(removeAttempt.message)
+        }
+    }
+)
 export const doctoralSlice = createSlice({
     name: 'dcmember',
     initialState,
@@ -187,6 +199,22 @@ export const doctoralSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(dcmemberUpdate.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            //remove
+            //update Examiner
+            .addCase(removeDCMember.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(removeDCMember.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(removeDCMember.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

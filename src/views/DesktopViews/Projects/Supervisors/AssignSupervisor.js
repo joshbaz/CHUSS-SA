@@ -33,142 +33,264 @@ import {
 import SupervisorTable from '../../../../components/ProjectComponents/AssignSupervisors/SupervisorTable'
 
 const AssignSupervisor = () => {
-    const [filterSearchOption, setFilterSearchOption] = React.useState('All')
-    const [searchWord, setSearchWord] = React.useState('')
+   const [filterSearchOption, setFilterSearchOption] = React.useState('All')
+   const [searchWord, setSearchWord] = React.useState('')
+   const [perPage, setPerPage] = React.useState(10)
 
-    const [filterActive, setFilterActive] = React.useState(false)
-    const [filterInfo, setFilterInfo] = React.useState([])
-    const [projectId, setProjectId] = React.useState('')
+   const [filterActive, setFilterActive] = React.useState(false)
+   const [filterInfo, setFilterInfo] = React.useState([])
+   const [projectId, setProjectId] = React.useState('')
 
-    const [selectedExaminers, setSelectedExaminers] = React.useState([])
-    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    let dispatch = useDispatch()
-    let params = useParams()
-    let toast = useToast()
-    let { allSupervisorItems, isSuccess, isError, message } = useSelector(
-        (state) => state.supervisor
-    )
-    let IndividualProject = useSelector((state) => state.project)
+   const [allDisplayData, setAllDisplayData] = React.useState({
+       currentPage: 1,
+       itemsPerPage: 10,
+       items: [],
+       allItems: [],
+       totalItemsDisplayed: 0,
+       totalItems: 0,
+       totalPages: 0,
+   })
+   const [searchData, setSearchData] = React.useState({
+       currentPage: 1,
+       itemsPerPage: 10,
+       items: [],
+       allSearchItems: [],
+       totalItemsDisplayed: 0,
+       totalSearchedItems: 0,
+       totalPages: 0,
+   })
 
-    const handleSearchInput = (e) => {
-        e.preventDefault()
-        console.log('e.target', e.target.value)
-        let value = e.target.value || ''
-        setSearchWord(value.toLowerCase())
-        // let filterSelected = {
-        //     title: filterSearchOption,
-        //     searchfor: e.target.value,
-        // }
-        // setFilterInfo([...filterInfo, filterSelected])
-    }
+   const [selectedExaminers, setSelectedExaminers] = React.useState([])
+   const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+   const { isOpen, onOpen, onClose } = useDisclosure()
+   let dispatch = useDispatch()
+   let params = useParams()
+   let toast = useToast()
+   let { allSupervisorItems, isSuccess, isError, message } = useSelector(
+       (state) => state.supervisor
+   )
+   let IndividualProject = useSelector((state) => state.project)
 
-    const handleSubmitFilter = () => {
-        if (searchWord) {
-            if (filterInfo.length > 0) {
-                let newFilterInfo = [...filterInfo]
+   const handleSearchInput = (e) => {
+       e.preventDefault()
+       console.log('e.target', e.target.value)
+       let value = e.target.value || ''
+       setSearchWord(value.toLowerCase())
+       // let filterSelected = {
+       //     title: filterSearchOption,
+       //     searchfor: e.target.value,
+       // }
+       // setFilterInfo([...filterInfo, filterSelected])
+   }
 
-                for (let i = 0; i < newFilterInfo.length; i++) {
-                    let iteration = i + 1
+   const handleSubmitFilter = () => {
+       if (searchWord) {
+           if (filterInfo.length > 0) {
+               let newFilterInfo = [...filterInfo]
 
-                    if (newFilterInfo[i].title === filterSearchOption) {
-                        if (newFilterInfo[i].searchfor.includes(searchWord)) {
-                            return null
-                        } else {
-                            let filterSelected = {
-                                title: filterSearchOption,
-                                searchfor: [
-                                    ...newFilterInfo[i].searchfor,
-                                    searchWord,
-                                ],
-                            }
-                            newFilterInfo.splice(i, 1, filterSelected)
-                            setFilterInfo(newFilterInfo)
-                            setSearchWord('')
-                            return filterSelected
-                        }
-                    } else if (
-                        newFilterInfo[i].title !== filterSearchOption &&
-                        iteration === newFilterInfo.length
-                    ) {
-                        let filterSelected = {
-                            title: filterSearchOption,
-                            searchfor: [searchWord],
-                        }
+               for (let i = 0; i < newFilterInfo.length; i++) {
+                   let iteration = i + 1
 
-                        setFilterInfo([...newFilterInfo, filterSelected])
-                        setSearchWord('')
-                    }
-                }
-            } else {
-                let filterSelected = {
-                    title: filterSearchOption,
-                    searchfor: [searchWord],
-                }
+                   if (newFilterInfo[i].title === filterSearchOption) {
+                       if (newFilterInfo[i].searchfor.includes(searchWord)) {
+                           return null
+                       } else {
+                           let filterSelected = {
+                               title: filterSearchOption,
+                               searchfor: [
+                                   ...newFilterInfo[i].searchfor,
+                                   searchWord,
+                               ],
+                           }
+                           newFilterInfo.splice(i, 1, filterSelected)
+                           setFilterInfo(newFilterInfo)
+                           setSearchWord('')
+                           return filterSelected
+                       }
+                   } else if (
+                       newFilterInfo[i].title !== filterSearchOption &&
+                       iteration === newFilterInfo.length
+                   ) {
+                       let filterSelected = {
+                           title: filterSearchOption,
+                           searchfor: [searchWord],
+                       }
 
-                setFilterInfo([...filterInfo, filterSelected])
-                setSearchWord('')
-                //setFilterSearchOption('All')
-                // console.log('filtered Info', filterInfo)
-            }
-        }
-    }
-    let routeNavigate = useNavigate()
+                       setFilterInfo([...newFilterInfo, filterSelected])
+                       setSearchWord('')
+                   }
+               }
+           } else {
+               let filterSelected = {
+                   title: filterSearchOption,
+                   searchfor: [searchWord],
+               }
 
-    useEffect(() => {
-        if (params.pid) {
-            setProjectId(params.pid)
-            dispatch(getIndividualProject(params.pid))
-        }
-    }, [])
+               setFilterInfo([...filterInfo, filterSelected])
+               setSearchWord('')
+               //setFilterSearchOption('All')
+               // console.log('filtered Info', filterInfo)
+           }
+       }
+   }
+   let routeNavigate = useNavigate()
 
-    useEffect(() => {
-        dispatch(allSupervisors())
-    }, [])
+   useEffect(() => {
+       if (params.pid) {
+           setProjectId(params.pid)
+           dispatch(getIndividualProject(params.pid))
+       }
+   }, [])
 
-    useEffect(() => {
-        if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-            setIsSubmittingp(false)
-            dispatch(reset())
-        }
+   useEffect(() => {
+       dispatch(allSupervisors())
+   }, [])
 
-        if (isSuccess && message) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
-            setSelectedExaminers([])
-            setIsSubmittingp(false)
+   /** set all the display Data */
+   useEffect(() => {
+       /** initial items  */
+       //items collected
+       const allItemsCollected = allSupervisorItems.items
+       //total all items
+       const totalItems = allSupervisorItems.items.length
+       let itemsPerPage = perPage
+       const currentPage = allDisplayData.currentPage
+       const indexOfLastItem = currentPage * itemsPerPage
+       const indexOfFirstItem = indexOfLastItem - itemsPerPage
 
-            onClose()
-            routeNavigate(`/phd/projects/projectreport/${params.pid}`, {
-                replace: true,
-            })
-            dispatch(reset())
-        }
+       const currentItems = allItemsCollected.slice(
+           indexOfFirstItem,
+           indexOfLastItem
+       )
 
-        dispatch(reset())
-    }, [isSuccess, isError, message])
+       const pageLength = Math.ceil(totalItems / itemsPerPage)
 
-    /** handle popup submit */
-    const handleAssignSubmit = () => {
-        setIsSubmittingp(true)
-        let allValues = {
-            items: selectedExaminers,
-            projectId,
-        }
-        dispatch(assignSupervisor(allValues))
-    }
+       setAllDisplayData({
+           currentPage: currentPage,
+           itemsPerPage: itemsPerPage,
+           items: currentItems,
+           allItems: allSupervisorItems.items,
+           totalItemsDisplayed: currentItems.length,
+           totalItems: totalItems,
+           totalPages: pageLength,
+       })
+   }, [allSupervisorItems, perPage])
+
+   useEffect(() => {
+       if (isError) {
+           toast({
+               position: 'top',
+               title: message,
+               status: 'error',
+               duration: 10000,
+               isClosable: true,
+           })
+           setIsSubmittingp(false)
+           dispatch(reset())
+       }
+
+       if (isSuccess && message) {
+           toast({
+               position: 'top',
+               title: message.message,
+               status: 'success',
+               duration: 10000,
+               isClosable: true,
+           })
+           setSelectedExaminers([])
+           setIsSubmittingp(false)
+
+           onClose()
+           routeNavigate(`/phd/projects/projectreport/${params.pid}`, {
+               replace: true,
+           })
+           dispatch(reset())
+       }
+
+       dispatch(reset())
+   }, [isSuccess, isError, message])
+
+   /** handle popup submit */
+   const handleAssignSubmit = () => {
+       setIsSubmittingp(true)
+       let allValues = {
+           items: selectedExaminers,
+           projectId,
+       }
+       dispatch(assignSupervisor(allValues))
+   }
+
+   /** function to handle search supervisors */
+   const handleSearchSubmission = () => {
+       if (searchWord) {
+           setFilterActive(true)
+       }
+   }
+
+   /** function to handle search reset */
+   const handleSearchReset = () => {
+       setFilterActive(false)
+       setSearchWord('')
+   }
+
+   /** function to handle reset */
+   const handleResetAll = () => {
+       setFilterActive(false)
+       setSearchWord('')
+       setSelectedExaminers([])
+   }
+
+   /** handle search */
+   const handleSearch = () => {
+       const searchResults = allDisplayData.allItems.filter((data1, index) => {
+           let name = `${data1.name.toLowerCase()}`
+           let tname = `${
+               data1.jobtitle.toLowerCase() + ' ' + data1.name.toLowerCase()
+           }`
+
+           if (name.includes(searchWord)) {
+               return data1
+           }
+
+           if (tname.includes(searchWord)) {
+               return data1
+           }
+
+           return null
+       })
+
+       //items collected
+       const allItemsCollected = searchResults
+       //total all items
+       const totalItems = searchResults.length
+       let itemsPerPage = perPage
+       const currentPage = allDisplayData.currentPage
+       const indexOfLastItem = currentPage * itemsPerPage
+       const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+       const currentItems = allItemsCollected.slice(
+           indexOfFirstItem,
+           indexOfLastItem
+       )
+
+       const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+       setSearchData({
+           currentPage: currentPage,
+           itemsPerPage: itemsPerPage,
+           items: currentItems,
+           allSearchItems: searchResults,
+           totalItemsDisplayed: currentItems.length,
+           totalSearchedItems: totalItems,
+           totalPages: pageLength,
+       })
+   }
+
+   useEffect(() => {
+       if (filterActive) {
+           handleSearch()
+       }
+   }, [searchWord, filterActive])
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -235,6 +357,7 @@ const AssignSupervisor = () => {
 
                             <Box>
                                 <Button
+                                    onClick={handleSearchSubmission}
                                     className='search_button'
                                     variant='solid'>
                                     Search
@@ -277,7 +400,11 @@ const AssignSupervisor = () => {
 
                     <Stack>
                         <SupervisorTable
-                            allExaminerItems={allSupervisorItems}
+                            allExaminerItems={allDisplayData}
+                            allSearchedData={searchData}
+                            searchActive={filterActive}
+                            handleSearchReset={handleSearchReset}
+                            handleResetAll={handleResetAll}
                             selectedExaminers={selectedExaminers}
                             setSelectedExaminers={setSelectedExaminers}
                             rlink={'/phd'}

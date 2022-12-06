@@ -4,17 +4,13 @@ import { BrowserRouter, HashRouter, Routes, Route } from 'react-router-dom'
 
 import ProtectedRoute from './protectedRoutes'
 import Reset from '../views/AuthViews/Reset'
-import AllProjects from '../views/DesktopViews/Projects/AllProjects'
-import CreateProject from '../views/DesktopViews/Projects/CreateProject'
-import ProjectReport from '../views/DesktopViews/Projects/ProjectReport'
-import EditProject from '../views/DesktopViews/Projects/EditProject'
-import AddExaminers from '../views/DesktopViews/Projects/AddExaminers'
-
-import UpdateExaminer from '../views/DesktopViews/Projects/UpdateExaminer'
+import AllProjects from '../views/DesktopViews/Projects/AllPhdProjects'
+import CreateProject from '../views/DesktopViews/Projects/CreatePhdProject'
+import ProjectReport from '../views/DesktopViews/Projects/PhDProjectReport'
+import EditProject from '../views/DesktopViews/Projects/EditPhdProject'
 
 import AssignExaminer from '../views/DesktopViews/Projects/Examiners/AssignExaminer'
 import CreateProjectExaminer from '../views/DesktopViews/Projects/Examiners/CreateProjectExaminer'
-import ViewProjectExaminer from '../views/DesktopViews/Projects/ViewProjectExaminer'
 
 import ViewExaminerReport from '../views/DesktopViews/Projects/ExaminerReports/ViewExaminerReport'
 import EditExaminerReport from '../views/DesktopViews/Projects/ExaminerReports/EditExaminerReport'
@@ -55,6 +51,17 @@ import MaViewProjectExaminer from '../views/DesktopViews/ProjectMasters/MastersE
 import MaEditProjectExaminer from '../views/DesktopViews/ProjectMasters/MastersExaminers/MaEditProjectExaminer'
 import MaViewExaminerReport from '../views/DesktopViews/ProjectMasters/MastersExaminerReports/MaViewExaminerReport'
 import MaEditExaminerReport from '../views/DesktopViews/ProjectMasters/MastersExaminerReports/MaEditExaminerReport'
+import AllPhdProjects from '../views/DesktopViews/Projects/AllPhdProjects'
+import CreatePhdProject from '../views/DesktopViews/Projects/CreatePhdProject'
+import EditPhdProject from '../views/DesktopViews/Projects/EditPhdProject'
+import PhDProjectReport from '../views/DesktopViews/Projects/PhDProjectReport'
+import ViewDoctoralMember from '../views/DesktopViews/Projects/DoctoralMembers/ViewDoctoralMember'
+import EditDoctoralMember from '../views/DesktopViews/Projects/DoctoralMembers/EditDoctoralMember'
+import ViewPhdSupervisor from '../views/DesktopViews/Projects/Supervisors/ViewPhdSupervisor'
+import EditPhdSupervisor from '../views/DesktopViews/Projects/Supervisors/EditPhdSupervisor'
+import PhdViewProjectExaminer from '../views/DesktopViews/Projects/Examiners/PhdViewProjectExaminer'
+import PhdEditProjectExaminer from '../views/DesktopViews/Projects/Examiners/PhdEditProjectExaminer'
+import PhdViewProjectOpponent from '../views/DesktopViews/Projects/Opponents/PhdViewProjectOpponent'
 const AllRoutes = () => {
     return (
         <HashRouter>
@@ -134,11 +141,14 @@ const AllRoutes = () => {
                     />
 
                     {/** create examiner from project tab/page */}
-                    <Route
-                        exact
-                        path='/masters/projects/examiners/create/:id'
-                        element={<AddExaminers />}
-                    />
+                    {/**
+                     * // <Route
+                //     exact
+                //     path='/masters/projects/examiners/create/:id'
+                //     element={<AddExaminers />}
+                // />
+                     * 
+                     */}
 
                     {/** view examiner from project tab/page */}
                     <Route
@@ -168,26 +178,27 @@ const AllRoutes = () => {
                     />
 
                     {/** phd student projects */}
+                    {/** All PHD student projects */}
                     <Route
                         exact
                         path='/phd/projects'
-                        element={<AllProjects />}
+                        element={<AllPhdProjects />}
                     />
                     <Route
                         exact
                         path='/phd/projects/create'
-                        element={<CreateProject />}
+                        element={<CreatePhdProject />}
                     />
 
                     <Route
                         exact
                         path='/phd/projects/edit/:id'
-                        element={<EditProject />}
+                        element={<EditPhdProject />}
                     />
                     <Route
                         exact
                         path='/phd/projects/projectreport/:id'
-                        element={<ProjectReport />}
+                        element={<PhDProjectReport />}
                     />
 
                     {/** route for assign supervisor for phd */}
@@ -203,6 +214,20 @@ const AllRoutes = () => {
                         element={<CreateProjectSupervisor />}
                     />
 
+                    {/** view supervisors from project tab/page */}
+                    <Route
+                        exact
+                        path='/phd/projects/supervisors/view/:p_id/:s_id'
+                        element={<ViewPhdSupervisor />}
+                    />
+
+                    {/** Masters - update supervisors from project tab/page */}
+                    <Route
+                        exact
+                        path='/phd/projects/supervisors/update/:p_id/:s_id'
+                        element={<EditPhdSupervisor />}
+                    />
+
                     {/** route for assign doctoral comm member phd */}
                     <Route
                         exact
@@ -215,6 +240,20 @@ const AllRoutes = () => {
                         path='/phd/projects/doctoralmember/p_create/:pid'
                         element={<CreateProjectDMember />}
                     />
+
+                    {/** view doctoral comm member from project tab/page */}
+                    <Route
+                        exact
+                        path='/phd/projects/doctoralmember/view/:p_id/:d_id'
+                        element={<ViewDoctoralMember />}
+                    />
+
+                    {/** view doctoral comm member from project tab/page */}
+                    <Route
+                        exact
+                        path='/phd/projects/doctoralmember/update/:p_id/:d_id'
+                        element={<EditDoctoralMember />}
+                    />
                     {/** route for assign opponents */}
                     <Route
                         exact
@@ -226,6 +265,13 @@ const AllRoutes = () => {
                         exact
                         path='/phd/projects/opponents/p_create/:pid'
                         element={<CreateProjectOpponent />}
+                    />
+
+                    {/** create opponents if not found in assign inside project*/}
+                    <Route
+                        exact
+                        path='/phd/projects/opponents/view/:p_id/:o_id'
+                        element={<PhdViewProjectOpponent />}
                     />
 
                     {/** opponent reports */}
@@ -255,25 +301,29 @@ const AllRoutes = () => {
                         element={<CreateProjectExaminer />}
                     />
 
-                    {/** create examiner from project tab/page */}
-                    <Route
+                    {/** create examiner from project tab/page to remove */}
+                    {/**
+                         * 
+                         *  <Route
                         exact
                         path='/phd/projects/examiners/create/:id'
                         element={<AddExaminers />}
                     />
+                         * 
+                         */}
 
                     {/** view examiner from project tab/page */}
                     <Route
                         exact
                         path='/phd/projects/examiners/view/:p_id/:e_id'
-                        element={<ViewProjectExaminer />}
+                        element={<PhdViewProjectExaminer />}
                     />
 
                     {/** update examiner from project tab/page */}
                     <Route
                         exact
-                        path='/phd/projects/examiners/update/:s_id/:e_id'
-                        element={<UpdateExaminer />}
+                        path='/phd/projects/examiners/update/:p_id/:e_id'
+                        element={<PhdEditProjectExaminer />}
                     />
 
                     {/** view examiner report */}

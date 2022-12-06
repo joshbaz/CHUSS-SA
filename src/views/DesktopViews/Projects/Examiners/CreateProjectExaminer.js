@@ -22,6 +22,7 @@ import {
     getIndividualProject,
     reset as preset,
 } from '../../../../store/features/project/projectSlice'
+
 const CreateProjectExaminer = ({ ...props }) => {
     const [helperFunctions, setHelperFunctions] = React.useState(null)
     const [projectId, setProjectId] = React.useState('')
@@ -74,6 +75,7 @@ const CreateProjectExaminer = ({ ...props }) => {
             }
             dispatch(reset())
         }
+        dispatch(reset())
     }, [isError, isSuccess, message])
 
     const initialValues = {
@@ -129,6 +131,7 @@ const CreateProjectExaminer = ({ ...props }) => {
                                 : `Examiner Selection`
                         }`,
                         count: null,
+                        backButton: true,
                     }}
                 />
 
@@ -170,13 +173,6 @@ const CreateProjectExaminer = ({ ...props }) => {
                                             className='back_button'
                                             direction='row'
                                             alignItems='center'>
-                                            <Box
-                                                fontSize='25px'
-                                                onClick={() =>
-                                                    routeNavigate(-1)
-                                                }>
-                                                <MdArrowBack />
-                                            </Box>
                                             <Text>Add New Examiners</Text>
                                         </BackButtonStack>
 
@@ -268,7 +264,7 @@ const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 17px;
@@ -285,7 +281,7 @@ const SubmitButton = styled(Box)`
         border-radius: 6px;
 
         color: ${({ disabledb }) => (disabledb ? '#868fa0' : '#ffffff')};
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;

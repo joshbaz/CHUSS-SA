@@ -84,7 +84,7 @@ const VivaReportOpponent = ({ values }) => {
             setReportLists([])
         }
     }, [values])
-    
+
     return (
         <Container p='25px 20px'>
             <Box className='form_container'>
@@ -245,7 +245,7 @@ const VivaReportOpponent = ({ values }) => {
                                                                     <MenuItem
                                                                         onClick={() =>
                                                                             routeNavigate(
-                                                                                `/projects/opponents/updatereport/${values._id}/${data.reportId._id}`
+                                                                                `/phd/projects/opponents/updatereport/${values._id}/${data.reportId._id}`
                                                                             )
                                                                         }>
                                                                         Edit
@@ -254,7 +254,7 @@ const VivaReportOpponent = ({ values }) => {
                                                                     <MenuItem
                                                                         onClick={() =>
                                                                             routeNavigate(
-                                                                                `/projects/opponents/viewreport/${values._id}/${data.reportId._id}`
+                                                                                `/phd/projects/opponents/viewreport/${values._id}/${data.reportId._id}`
                                                                             )
                                                                         }>
                                                                         View

@@ -712,3 +712,33 @@ exports.removeFinalSFiles = async (event, values) => {
         return response
     }
 }
+
+/** delete project */
+exports.deleteProject = async (event, values) => {
+    try {
+        let responseData = await axios.delete(
+            `${BASE_API_}/project/v1/student/remove/${values.projectId}`
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorArray = []
+        errorArray.push(error)
+
+        let response = {
+            message: '',
+            type: 'error',
+        }
+        if (errorArray.length !== 0 && errorArray[0].response) {
+            response.message = errorArray[0].response.data
+        } else if (errorArray.length !== 0 && !errorArray[0].response) {
+            response.message = errorArray[0].message
+        }
+
+        return response
+    }
+}

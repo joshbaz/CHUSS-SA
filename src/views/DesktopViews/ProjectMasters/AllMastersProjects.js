@@ -16,6 +16,7 @@ import {
     Grid,
     Text,
     GridItem,
+    SimpleGrid,
     useToast,
     Select,
 } from '@chakra-ui/react'
@@ -41,12 +42,15 @@ import {
     reset as treset,
     tagGetAll,
 } from '../../../store/features/tags/tagSlice'
+import { initSocketConnection } from '../../../socketio.service'
 
 const AllMastersProjects = () => {
     const tagsData = useSelector((state) => state.tag)
     const [filterSearchOption, setFilterSearchOption] =
         React.useState('Student Name')
     const [searchWord, setSearchWord] = React.useState('')
+    const [searchStatus, setSearchStatus] = React.useState('')
+    const [exportData, setExportData] = React.useState([])
     const filterItems = [
         {
             title: 'Student Name',
@@ -69,14 +73,25 @@ const AllMastersProjects = () => {
         },
     ]
 
-    const [filterActive, setFilterActive] = React.useState(false)
+    const [searchActive, setSearchActive] = React.useState(false)
     const [filterInfo, setFilterInfo] = React.useState([])
 
     /** handle search option change */
     const handleSearchOptionChange = (valuet) => {
+        setSearchWord('')
+        setSearchStatus('')
         setFilterSearchOption(valuet)
     }
 
+    /** handle status changes */
+    /** function to add a search status */
+    const handleSearchStatusChange = (e) => {
+        e.preventDefault()
+
+        setSearchStatus(e.target.value.toLowerCase())
+    }
+
+    /** this handles search word changes */
     const handleSearchInput = (e) => {
         e.preventDefault()
         console.log('e.target', e.target.value)
@@ -90,6 +105,7 @@ const AllMastersProjects = () => {
     }
 
     const handleSubmitFilter = () => {
+        /** search word */
         if (searchWord) {
             if (filterInfo.length > 0) {
                 let newFilterInfo = [...filterInfo]
@@ -137,6 +153,63 @@ const AllMastersProjects = () => {
                 //setFilterSearchOption('All')
                 // console.log('filtered Info', filterInfo)
             }
+        }
+
+        /** search status */
+        if (searchStatus) {
+            if (filterInfo.length > 0) {
+                let newFilterInfo = [...filterInfo]
+
+                for (let i = 0; i < newFilterInfo.length; i++) {
+                    let iteration = i + 1
+
+                    if (newFilterInfo[i].title === filterSearchOption) {
+                        if (newFilterInfo[i].searchfor.includes(searchStatus)) {
+                            return null
+                        } else {
+                            let filterSelected = {
+                                title: filterSearchOption,
+                                searchfor: [
+                                    ...newFilterInfo[i].searchfor,
+                                    searchStatus,
+                                ],
+                            }
+                            newFilterInfo.splice(i, 1, filterSelected)
+                            setFilterInfo(newFilterInfo)
+                            setSearchWord('')
+                            return filterSelected
+                        }
+                    } else if (
+                        newFilterInfo[i].title !== filterSearchOption &&
+                        iteration === newFilterInfo.length
+                    ) {
+                        let filterSelected = {
+                            title: filterSearchOption,
+                            searchfor: [searchStatus],
+                        }
+
+                        setFilterInfo([...newFilterInfo, filterSelected])
+                        setSearchWord('')
+                    }
+                }
+            } else {
+                let filterSelected = {
+                    title: filterSearchOption,
+                    searchfor: [searchStatus],
+                }
+
+                setFilterInfo([...filterInfo, filterSelected])
+                setSearchStatus('')
+                //setFilterSearchOption('All')
+                // console.log('filtered Info', filterInfo)
+            }
+        }
+    }
+
+    /** function to set the search active  */
+    const handleSearchActive = () => {
+        if (filterInfo.length > 0) {
+            setSearchActive(true)
         }
     }
 
@@ -191,6 +264,8 @@ const AllMastersProjects = () => {
     const clearAllFilters = () => {
         setFilterInfo([])
         setSearchWord('')
+        setSearchStatus('')
+        setSearchActive(false)
         setFilterSearchOption('Student Name')
     }
 
@@ -227,8 +302,15 @@ const AllMastersProjects = () => {
     }, [Location])
 
     useEffect(() => {
+        const io = initSocketConnection()
         dispatch(tagGetAll())
         dispatch(getAllProjects())
+        io.on('updatestudent', (data) => {
+            if (data.actions === 'update-all-student') {
+                dispatch(tagGetAll())
+                dispatch(getAllProjects())
+            }
+        })
     }, [])
 
     useEffect(() => {
@@ -288,7 +370,7 @@ const AllMastersProjects = () => {
                         tagName: 'Full Admission',
                     },
                     {
-                        tagName: 'De-regestered',
+                        tagName: 'De-registered',
                     },
                 ]
 
@@ -337,9 +419,10 @@ const AllMastersProjects = () => {
                                 spacing={'5px'}
                                 alignItems='center'>
                                 <Box>
-                                    <Menu closeOnSelect={false}>
+                                    <Menu closeOnSelect={true}>
                                         <MenuButton
                                             h='32px'
+                                            w='188px'
                                             className='filter_button'
                                             as={Button}
                                             variant='solid'
@@ -448,12 +531,35 @@ const AllMastersProjects = () => {
                                     filterSearchOption === 'Status' ? (
                                         <InputGroup
                                             h='32px'
-                                            pr='0'
+                                            minW='300px'
+                                            pr=''
                                             p='0'
+                                            pl='30px'
                                             m='0'
                                             className='input_group'>
+                                            <InputLeftElement
+                                                h='32px'
+                                                bg='transparent'
+                                                p='0'
+                                                m='0'>
+                                                <Button
+                                                    p='0'
+                                                    m='0'
+                                                    bg='transparent'
+                                                    h='100%'
+                                                    w='100%'
+                                                    borderRadius='0px'
+                                                    size='28px'>
+                                                    <BiSearch />
+                                                </Button>
+                                            </InputLeftElement>
                                             {TableStatuses.length > 0 ? (
-                                                <Select placeholder='select status'>
+                                                <Select
+                                                    placeholder='select status'
+                                                    onChange={
+                                                        handleSearchStatusChange
+                                                    }
+                                                    value={searchStatus}>
                                                     {TableStatuses.map(
                                                         (data, index) => {
                                                             return (
@@ -472,6 +578,7 @@ const AllMastersProjects = () => {
                                     ) : (
                                         <InputGroup
                                             h='32px'
+                                            minW='300px'
                                             pr='0'
                                             p='0'
                                             m='0'
@@ -483,7 +590,7 @@ const AllMastersProjects = () => {
                                                 <Button
                                                     p='0'
                                                     m='0'
-                                                    onClick={handleSubmitFilter}
+                                                    bg='transparent'
                                                     h='100%'
                                                     w='100%'
                                                     borderRadius='0px'
@@ -506,10 +613,24 @@ const AllMastersProjects = () => {
                                 <TableButton>
                                     <Button
                                         onClick={handleSubmitFilter}
-                                        disabled={searchWord ? false : true}
+                                        disabled={
+                                            searchWord || searchStatus
+                                                ? false
+                                                : true
+                                        }
                                         leftIcon={<AiOutlinePlus />}
                                         className='btn__rule'>
                                         Add Rule
+                                    </Button>
+                                </TableButton>
+                                <TableButton>
+                                    <Button
+                                        onClick={handleSearchActive}
+                                        disabled={
+                                            filterInfo.length > 0 ? false : true
+                                        }
+                                        className='btn__print'>
+                                        Search
                                     </Button>
                                 </TableButton>
                             </Stack>
@@ -564,11 +685,16 @@ const AllMastersProjects = () => {
                                 </Stack>
 
                                 {filterInfo.length > 0 && (
-                                    <Stack direction='row'>
+                                    <SimpleGrid
+                                        gap='20px'
+                                        minChildWidth='max-content'>
                                         {filterInfo.map((data, index) => (
-                                            <Box key={index}>
+                                            <Box
+                                                key={index}
+                                                w='-webkit-fit-content'>
                                                 <FilterInfoStack
                                                     direction='row'
+                                                    w='-webkit-fit-content'
                                                     alignItems='center'>
                                                     <h1>{data.title}:</h1>
                                                     <Stack direction='row'>
@@ -602,7 +728,7 @@ const AllMastersProjects = () => {
                                                 </FilterInfoStack>
                                             </Box>
                                         ))}
-                                    </Stack>
+                                    </SimpleGrid>
                                 )}
                             </Stack>
                         </Box>
@@ -611,6 +737,10 @@ const AllMastersProjects = () => {
 
                         <Box>
                             <ProjectTable
+                                setExportData={setExportData}
+                                exportData={exportData}
+                                searchActive={searchActive}
+                                filterInfo={filterInfo}
                                 allTagData={tagsData.allTagItems.items}
                                 studentType={'masters'}
                                 rpath={'/masters/projects'}
@@ -684,14 +814,38 @@ const Container = styled(Stack)`
             0px 0px 0px 1px rgba(134, 143, 160, 0.16);
         border-radius: 0px 6px 6px 0px;
 
-        &:hover {
+        -webkit-user-select: none;
+
+        :hover {
             border: 0px solid transparent;
             box-shadow: 0px;
             border-radius: 0px 6px 6px 0px;
+            outline: none;
+        }
+
+        button {
+            :hover {
+                background: transparent;
+            }
         }
 
         input {
             border: 0px solid transparent;
+            -webkit-box-shadow: none;
+        }
+
+        select {
+            border: 0px solid transparent;
+            height: 32px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0px 6px 6px 0px;
+            background: transparent;
+            outline: none;
+            -webkit-user-select: none;
+            -webkit-box-shadow: none;
         }
 
         background: #ffffff;
@@ -719,8 +873,9 @@ const Container = styled(Stack)`
 const FilterInfoStack = styled(Stack)`
     position: relative;
     width: 100%;
-    height: 22px;
-    padding: 0 8px;
+    min-height: 22px;
+    height: 100%;
+    padding: 8px 8px;
     background: #fceded;
     border-radius: 4px;
     h1 {

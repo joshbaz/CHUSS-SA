@@ -347,6 +347,7 @@ const MastersProjectDetails = ({ values, rlink }) => {
                                     )}
                                 </Stack>
                             </Stack>
+                            {/** end supervisors */}
                         </Stack>
 
                         {/** Admissions */}

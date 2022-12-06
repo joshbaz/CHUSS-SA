@@ -1,3 +1,9 @@
+const projectDeletion = async (InfoData)=> {
+   const response = await window.electronAPI.projectDeletion(InfoData)
+
+   return response 
+}
+
 const projectCreate = async (InfoData) => {
     const response = await window.electronAPI.projectCreation(InfoData)
 
@@ -129,6 +135,7 @@ const projectService = {
     removeCaFiles,
     removeViFiles,
     removeFinalSFiles,
+    projectDeletion,
 }
 
 export default projectService

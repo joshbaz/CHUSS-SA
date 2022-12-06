@@ -46,8 +46,10 @@ const ViewUpdatedFiles = ({ values }) => {
         console.log(params.rp_id, 'in files')
         if (values !== null && values.reportFiles.length > 0) {
             setFilesList(values.reportFiles)
+        }else {
+             setFilesList([])
         }
-    }, [values])
+    }, [values, params.rp_id])
 
     React.useEffect(() => {
         if (isError && isSubmittingsp) {
@@ -71,8 +73,8 @@ const ViewUpdatedFiles = ({ values }) => {
                 duration: 10000,
                 isClosable: true,
             })
-            setIsSubmittingsp(false)
-
+            setIsSubmittingsp(() => false)
+            setRemoveActive(() => false)
             dispatch(reset())
         }
         dispatch(reset())

@@ -20,79 +20,83 @@ import {
 import SupervisorADetailForm from '../../../../components/ProjectComponents/AssignSupervisors/SupervisorA_DetailForm'
 
 const CreateProjectSupervisor = () => {
-    const [helperFunctions, setHelperFunctions] = React.useState(null)
-    const [projectId, setProjectId] = React.useState('')
-    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
-    let routeNavigate = useNavigate()
-    let params = useParams()
-    let toast = useToast()
-    let dispatch = useDispatch()
-    const { isError, isSuccess, message } = useSelector(
-        (state) => state.supervisor
-    )
-    let IndividualProject = useSelector((state) => state.project)
-    useEffect(() => {
-        if (params.pid) {
-            setProjectId(params.pid)
-            dispatch(getIndividualProject(params.pid))
-        }
-    }, [])
+  const [helperFunctions, setHelperFunctions] = React.useState(null)
+  const [projectId, setProjectId] = React.useState('')
+  const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+  let routeNavigate = useNavigate()
+  let params = useParams()
+  let toast = useToast()
+  let dispatch = useDispatch()
+  const { isError, isSuccess, message } = useSelector(
+      (state) => state.supervisor
+  )
+  let IndividualProject = useSelector((state) => state.project)
+  useEffect(() => {
+      if (params.pid) {
+          setProjectId(params.pid)
+          dispatch(getIndividualProject(params.pid))
+      }
+  }, [])
 
-    useEffect(() => {
-        if (isError) {
-            if (helperFunctions !== null) {
-                helperFunctions.setSubmitting(false)
-                setIsSubmittingp(false)
-            }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+  useEffect(() => {
+      if (isError) {
+          if (helperFunctions !== null) {
+              helperFunctions.setSubmitting(false)
+              setIsSubmittingp(false)
+          }
+          toast({
+              position: 'top',
+              title: message,
+              status: 'error',
+              duration: 10000,
+              isClosable: true,
+          })
 
-            dispatch(reset())
-        }
+          dispatch(reset())
+      }
 
-        if (isSuccess) {
-            if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
-                helperFunctions.resetForm()
-                helperFunctions.setSubmitting(false)
-                setIsSubmittingp(false)
-                setHelperFunctions(null)
-            }
-            dispatch(reset())
-        }
-    }, [isError, isSuccess, message])
+      if (isSuccess) {
+          if (helperFunctions !== null) {
+              toast({
+                  position: 'top',
+                  title: message.message,
+                  status: 'success',
+                  duration: 10000,
+                  isClosable: true,
+              })
+              helperFunctions.resetForm()
+              helperFunctions.setSubmitting(false)
+              setIsSubmittingp(false)
+              routeNavigate(`/phd/projects/projectreport/${params.pid}`, {
+                  replace: true,
+              })
+              setHelperFunctions(null)
+          }
+          dispatch(reset())
+      }
+  }, [isError, isSuccess, message])
 
-    const initialValues = {
-        jobtitle: '',
-        name: '',
-        email: '',
-        phoneNumber: '',
-        postalAddress: '',
-        countryOfResidence: '',
-        placeOfWork: '',
-        otherTitles: '',
-    }
+  const initialValues = {
+      jobtitle: '',
+      name: '',
+      email: '',
+      phoneNumber: '',
+      postalAddress: '',
+      countryOfResidence: '',
+      placeOfWork: '',
+      otherTitles: '',
+  }
 
-    const validationSchema = yup.object().shape({
-        jobtitle: yup.string().required('required'),
-        name: yup.string().required('required'),
-        phoneNumber: yup.string().required('required'),
-        postalAddress: yup.string().required('required'),
-        countryOfResidence: yup.string().required('required'),
-        placeOfWork: yup.string().required('required'),
-        email: yup.string().email('Invalid email').required('required'),
-    })
+  const validationSchema = yup.object().shape({
+      jobtitle: yup.string().required('required'),
+      name: yup.string().required('required'),
+      phoneNumber: yup.string().required('required'),
+      postalAddress: yup.string().required('required'),
+      countryOfResidence: yup.string().required('required'),
+      placeOfWork: yup.string().required('required'),
+      email: yup.string().email('Invalid email').required('required'),
+  })
+
 
     return (
         <Container direction='row' w='100vw'>
@@ -110,6 +114,7 @@ const CreateProjectSupervisor = () => {
                                 : `Supervisor Selection`
                         }`,
                         count: null,
+                        backButton: true,
                     }}
                 />
 
@@ -151,13 +156,6 @@ const CreateProjectSupervisor = () => {
                                             className='back_button'
                                             direction='row'
                                             alignItems='center'>
-                                            <Box
-                                                fontSize='25px'
-                                                onClick={() =>
-                                                    routeNavigate(-1)
-                                                }>
-                                                <MdArrowBack />
-                                            </Box>
                                             <Text>Add New Supervisor</Text>
                                         </BackButtonStack>
 
@@ -207,7 +205,7 @@ const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 17px;
@@ -224,7 +222,7 @@ const SubmitButton = styled(Box)`
         border-radius: 6px;
 
         color: ${({ disabledb }) => (disabledb ? '#868fa0' : '#ffffff')};
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;

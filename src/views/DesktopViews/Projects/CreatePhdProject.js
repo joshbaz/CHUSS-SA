@@ -6,6 +6,11 @@ import TopBar from '../../../components/common/Navigation/TopBar'
 import { MdArrowBack } from 'react-icons/md'
 import StudentDetailForm from '../../../components/ProjectComponents/CreateProject/CreateForms/StudentDetailForm'
 import ContactForm from '../../../components/ProjectComponents/CreateProject/CreateForms/ContactForm'
+import SupervisorForm from '../../../components/ProjectComponents/CreateProject/CreateForms/SupervisorForm'
+import SubmissionDateForm from '../../../components/ProjectComponents/CreateProject/CreateForms/SubmissionDateForm'
+import UploadFileForm from '../../../components/ProjectComponents/CreateProject/CreateForms/UploadFileForm'
+import UploadThesisFile from '../../../components/ProjectComponents/CreateProject/CreateForms/UploadThesisFile'
+import RegistrationForm from '../../../components/ProjectComponents/CreateProject/CreateForms/RegistrationForm'
 import { useNavigate } from 'react-router-dom'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
@@ -19,88 +24,94 @@ import {
     programTypeGetAll,
     academicYearGetAll,
 } from '../../../store/features/preferences/preferenceSlice'
-const CreateProject = () => {
-    const [helperFunctions, setHelperFunctions] = React.useState(null)
-    let routeNavigate = useNavigate()
 
-    let dispatch = useDispatch()
-    const { isLoading, isError, isSuccess, message } = useSelector(
-        (state) => state.project
-    )
-    const preferencesData = useSelector((state) => state.preference)
-    useEffect(() => {
-        dispatch(programTypeGetAll())
-        dispatch(academicYearGetAll())
-    }, [])
-    useEffect(() => {
-        if (preferencesData.isError) {
-            if (helperFunctions !== null) {
-                helperFunctions.setSubmitting(false)
-            }
-            toast({
-                position: 'top',
-                title: preferencesData.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+const CreatePhdProject = () => {
+      const [helperFunctions, setHelperFunctions] = React.useState(null)
+      const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+      let routeNavigate = useNavigate()
 
-            dispatch(reset())
-        }
+      let dispatch = useDispatch()
+      const { isLoading, isError, isSuccess, message } = useSelector(
+          (state) => state.project
+      )
+      const preferencesData = useSelector((state) => state.preference)
+      useEffect(() => {
+          dispatch(programTypeGetAll())
+          dispatch(academicYearGetAll())
+      }, [])
+      useEffect(() => {
+          if (preferencesData.isError) {
+              if (helperFunctions !== null) {
+                  helperFunctions.setSubmitting(false)
+              }
+              toast({
+                  position: 'top',
+                  title: preferencesData.message,
+                  status: 'error',
+                  duration: 10000,
+                  isClosable: true,
+              })
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        preferencesData.isError,
-        preferencesData.isSuccess,
-        preferencesData.message,
-        dispatch,
-    ])
+              dispatch(preset())
+          }
+          dispatch(preset())
 
-    useEffect(() => {
-        if (isError) {
-            if (helperFunctions !== null) {
-                helperFunctions.setSubmitting(false)
-            }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [
+          preferencesData.isError,
+          preferencesData.isSuccess,
+          preferencesData.message,
+          dispatch,
+      ])
 
-            dispatch(reset())
-        }
+      useEffect(() => {
+          if (isError) {
+              if (helperFunctions !== null) {
+                  helperFunctions.setSubmitting(false)
+                  setIsSubmittingp(() => false)
+              }
+              toast({
+                  position: 'top',
+                  title: message,
+                  status: 'error',
+                  duration: 10000,
+                  isClosable: true,
+              })
+              setIsSubmittingp(() => false)
 
-        if (isSuccess) {
-            if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
-                //helperFunctions.resetForm()
-                helperFunctions.setSubmitting(false)
+              dispatch(reset())
+          }
 
-                setHelperFunctions(null)
-            }
-            dispatch(reset())
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isError, isSuccess, message, dispatch])
+          if (isSuccess) {
+              if (helperFunctions !== null) {
+                  toast({
+                      position: 'top',
+                      title: message.message,
+                      status: 'success',
+                      duration: 10000,
+                      isClosable: true,
+                  })
+                  helperFunctions.resetForm()
+                  helperFunctions.setSubmitting(false)
+                  setIsSubmittingp(() => false)
 
-    const validationSchema = yup.object().shape({
-        email: yup.string().email('Invalid email').required('required'),
-        registrationNumber: yup.string().required('required'),
-        studentName: yup.string().required('required'),
-        programType: yup.string().required('required'),
-        degreeProgram: yup.string().required('required'),
-        schoolName: yup.string().required('required'),
-        departmentName: yup.string().required('required'),
-        phoneNumber: yup.string().required('required'),
-    })
+                  setHelperFunctions(null)
+              }
+              dispatch(reset())
+          }
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [isError, isSuccess, message, dispatch])
+
+      const validationSchema = yup.object().shape({
+          email: yup.string().email('Invalid email').required('required'),
+          registrationNumber: yup.string().required('required'),
+          studentName: yup.string().required('required'),
+          programType: yup.string().required('required'),
+          degreeProgram: yup.string().required('required'),
+          schoolName: yup.string().required('required'),
+          departmentName: yup.string().required('required'),
+          phoneNumber: yup.string().required('required'),
+      })
 
     const initialValues = {
         registrationNumber: '',
@@ -135,6 +146,7 @@ const CreateProject = () => {
                         onSubmit={async (values, helpers) => {
                             setHelperFunctions(helpers)
                             dispatch(projectCreate(values))
+                            setIsSubmittingp(() => true)
                         }}>
                         {({
                             values,
@@ -168,7 +180,7 @@ const CreateProject = () => {
                                                 }>
                                                 <MdArrowBack />
                                             </Box>
-                                            <Text>Add New Project</Text>
+                                            <Text>Add New Student</Text>
                                         </BackButtonStack>
                                         <SubmitButton
                                             disabledb={!(isValid && dirty)}>
@@ -176,13 +188,13 @@ const CreateProject = () => {
                                                 type='submit'
                                                 disabled={
                                                     !(isValid && dirty) ||
-                                                    isSubmitting
+                                                    isSubmittingp
                                                 }
                                                 isLoading={
-                                                    isSubmitting ? true : false
+                                                    isSubmittingp ? true : false
                                                 }
                                                 className='button'>
-                                                Submit project
+                                                Submit Student
                                             </Button>
                                         </SubmitButton>
                                     </Stack>
@@ -225,22 +237,21 @@ const CreateProject = () => {
                                         */}
 
                                             {/**
-                                             * <UploadFileForm
+                                     <UploadFileForm
                                                 values={values}
                                                 errors={errors}
                                                 setFieldValue={setFieldValue}
                                             />
-                                             * 
-                                             */}
+                                    */}
 
-                                            {/**
-                                             *  <UploadThesisFile
+                                            {/** 
+                                         * 
+                                         *  <UploadThesisFile
                                                 values={values}
                                                 errors={errors}
                                                 setFieldValue={setFieldValue}
                                             />
-                                             * 
-                                             */}
+                                         */}
                                         </Stack>
                                     </Stack>
                                 </Stack>
@@ -255,12 +266,13 @@ const CreateProject = () => {
     )
 }
 
-export default CreateProject
+export default CreatePhdProject
 const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 17px;
@@ -277,7 +289,7 @@ const SubmitButton = styled(Box)`
         border-radius: 6px;
 
         color: ${({ disabledb }) => (disabledb ? '#868fa0' : '#ffffff')};
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;
