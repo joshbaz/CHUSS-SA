@@ -288,7 +288,7 @@ const GEViewStudentTable = () => {
                             {allDisplayData.items.length > 0 ? (
                                 <>
                                     {allDisplayData.items.map((data, index) => {
-                                        console.log('graded', data)
+                                       // console.log('graded', data)
                                         let studentType =
                                             data.student
                                                 .graduate_program_type === 'PhD'

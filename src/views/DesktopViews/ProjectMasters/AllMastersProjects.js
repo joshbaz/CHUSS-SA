@@ -296,7 +296,7 @@ const AllMastersProjects = () => {
         let values = {
             page: page,
         }
-        console.log(page)
+       
         dispatch(getPProjects(values))
     }, [Location])
 
@@ -470,11 +470,7 @@ const AllMastersProjects = () => {
                                                                         onChange={(
                                                                             value
                                                                         ) => {
-                                                                            console.log(
-                                                                                'value',
-                                                                                data.title,
-                                                                                value
-                                                                            )
+                                                                         
                                                                             checkboxesFilter(
                                                                                 data.title,
                                                                                 value

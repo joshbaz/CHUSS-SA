@@ -60,14 +60,14 @@ const GEViewSupportFiles = ({ values }) => {
     /** function to download file */
     const handleDownloadFile = async (data) => {
         const dataGiven = await window.electronAPI.getdownloadFile(data.fileId)
-        console.log(dataGiven, 'testing')
+       // console.log(dataGiven, 'testing')
         let nameValues = values !== null && values.name ? values.name : ''
         if (!dataGiven.message) {
             let newData = {
                 ...dataGiven,
             }
             if (nameValues !== null) {
-                console.log(nameValues, 'nameValues')
+               // console.log(nameValues, 'nameValues')
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -82,7 +82,7 @@ const GEViewSupportFiles = ({ values }) => {
                 newData
             )
 
-            console.log('messahe', performDowload)
+          //  console.log('messahe', performDowload)
             // if (performDowload.message) {
             //     alert(performDowload.message)
             // }
@@ -97,7 +97,7 @@ const GEViewSupportFiles = ({ values }) => {
 
         const dataGiven = 'herer'
 
-        console.log(dataGiven, 'given', data.fileId)
+      //  console.log(dataGiven, 'given', data.fileId)
         setSelectedFile([
             {
                 uri: `http://188.166.65.21:8000/docs/files/${data.fileId}`,
@@ -112,7 +112,7 @@ const GEViewSupportFiles = ({ values }) => {
 
     /** activate delete project App file */
     const handleRemove = (fdetail) => {
-        console.log('fdetail', fdetail)
+      //  console.log('fdetail', fdetail)
         if (values._id && fdetail._id) {
             let rvalues = {
                 fileId: fdetail._id,
@@ -205,7 +205,7 @@ const GEViewSupportFiles = ({ values }) => {
                             {selectedView === 'grid' ? (
                                 <Stack direction='column'>
                                     {filesList.map((data, index) => {
-                                        console.log('diff values', data)
+                                      //  console.log('diff values', data)
                                         let size
 
                                         if (data.fileId.fileSize) {

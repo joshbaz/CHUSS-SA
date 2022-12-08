@@ -39,7 +39,7 @@ const OpponentViewFile = ({ values, nameValues }) => {
 
         const dataGiven = 'herer'
 
-        console.log(dataGiven, 'given', data.files.fileId)
+       
         setSelectedFile([
             {
                 uri: `http://188.166.65.21:8000/docs/files/${data.files.fileId}`,
@@ -54,14 +54,14 @@ const OpponentViewFile = ({ values, nameValues }) => {
         const dataGiven = await window.electronAPI.getdownloadFile(
             data.files.fileId
         )
-        console.log(dataGiven, 'testing')
+      
 
         if (!dataGiven.message) {
             let newData = {
                 ...dataGiven,
             }
             if (nameValues !== null) {
-                console.log(nameValues, 'nameValues')
+              
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -78,9 +78,9 @@ const OpponentViewFile = ({ values, nameValues }) => {
                 newData
             )
 
-            console.log('messahe', performDowload)
+         
             if (performDowload.message) {
-                alert(performDowload.message)
+              //  alert(performDowload.message)
             }
         }
     }
@@ -137,7 +137,7 @@ const OpponentViewFile = ({ values, nameValues }) => {
                             {selectedView === 'grid' ? (
                                 <Stack direction='row'>
                                     {filesList.map((data, index) => {
-                                        console.log('individual Datat', data)
+                                      
                                         let size = formatSize(
                                             parseInt(data.files.fileSize)
                                         )
@@ -238,7 +238,7 @@ const OpponentViewFile = ({ values, nameValues }) => {
                             ) : (
                                 <Stack direction='row'>
                                     {filesList.map((data, index) => {
-                                        console.log('individual Data', data)
+                                      
                                         return (
                                             <FileStack
                                                 key={index}

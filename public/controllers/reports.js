@@ -26,15 +26,15 @@ exports.updateExaminerssReport = async (event, values) => {
         const FormData = require('form-data')
         const fd = new FormData()
 
-        console.log('report values values', values)
+       // console.log('report values values', values)
 
-        console.log('before report values values', values.reportFile)
+      //  console.log('before report values values', values.reportFile)
         // fd.append(
         //     'reportssFiles',
         //     fs.createReadStream(values.reportFile.url),
         //     `${'reportfile'}${values.reportFile.ext}`
         // )
-        console.log('after report values values', values.reportFile)
+       // console.log('after report values values', values.reportFile)
         fd.append('score', values.score)
         fd.append('ungraded', values.ungraded)
         fd.append('remarks', values.remarks)
@@ -43,7 +43,7 @@ exports.updateExaminerssReport = async (event, values) => {
         let responseData = await axios.patch(
             `${BASE_API_}/reporrts/v1/update/${values._id}`
         )
-        console.log('after report values values', values._id)
+      //  console.log('after report values values', values._id)
         let data = {
             message: responseData.data,
             type: 'success',

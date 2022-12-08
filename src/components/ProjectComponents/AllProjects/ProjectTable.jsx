@@ -348,7 +348,7 @@ const ProjectTable = ({
             }
             /** resubmission */
             if (filterInfo[0].title === 'Submission') {
-                console.log('submission', data1.submissionStatus.toLowerCase())
+              //  console.log('submission', data1.submissionStatus.toLowerCase())
                 let status = data1.submissionStatus.toLowerCase()
 
                 let check = filterInfo[0].searchfor.some((details) =>
@@ -395,7 +395,7 @@ const ProjectTable = ({
                                     name.includes(details)
                                 )
 
-                                console.log('check', check)
+                              //  console.log('check', check)
 
                                 return check
                             }
@@ -414,7 +414,7 @@ const ProjectTable = ({
                                     name.includes(details)
                                 )
 
-                                console.log('check', check)
+                             //   console.log('check', check)
 
                                 return check
                             }
@@ -563,18 +563,14 @@ const ProjectTable = ({
                         }
                     )
 
-                  
-
                     setExportData(newDataToSave)
                 }
             } else {
                 if (allDisplayData.allItems.length > 0) {
                     let newDataToSave = allDisplayData.allItems.map((data) => {
-                        
                         return data
                     })
 
-                    
                     setExportData(newDataToSave)
                 }
             }
@@ -585,7 +581,6 @@ const ProjectTable = ({
 
     /** function to handle checkbox on each item */
     const handleIndivCheckbox = (e, data) => {
-        
         if (exportData.length > 0) {
             let checkData = exportData.some(
                 (datacheck, index) => data._id === datacheck._id
@@ -894,7 +889,6 @@ const ProjectTable = ({
                                                             element.tagName ===
                                                             activeStatus.status
                                                     )
-                                              
                                             }
                                         } else {
                                         }
@@ -1189,10 +1183,7 @@ const ProjectTable = ({
                                                             element.tagName ===
                                                             activeStatus.status
                                                     )
-                                                console.log(
-                                                    activeElementSet,
-                                                    'eeel'
-                                                )
+                                              
                                             }
                                         } else {
                                         }

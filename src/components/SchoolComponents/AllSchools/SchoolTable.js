@@ -286,7 +286,7 @@ const SchoolTable = ({
                                     name.includes(details)
                                 )
 
-                                console.log('check', check)
+                              
 
                                 return check
                             }
@@ -301,7 +301,7 @@ const SchoolTable = ({
                                     name.includes(details)
                                 )
 
-                                console.log('check', check)
+                               
 
                                 return check
                             }

@@ -152,7 +152,7 @@ const DepartmentTable = ({
 
     /** function to handle checkbox on each item */
     const handleIndivCheckbox = (e, data) => {
-        console.log('checking0', e.target.checked, data)
+       
         if (exportData.length > 0) {
             let checkData = exportData.some(
                 (datacheck, index) => data.departmentId._id === datacheck._id
@@ -216,7 +216,7 @@ const DepartmentTable = ({
                     }
                 })
 
-                console.log('generalstts', newDataToSave)
+               
                 setExportData(newDataToSave)
             }
         } else {

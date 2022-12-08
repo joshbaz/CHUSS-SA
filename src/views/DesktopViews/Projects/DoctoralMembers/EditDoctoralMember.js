@@ -124,7 +124,7 @@ const EditDoctoralMember = () => {
 
     React.useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-            console.log(Object.keys(errors).length, 'No errors', errors)
+         
             dispatch(dcmemberUpdate(individual))
         } else if (
             Object.keys(errors).length > 0 &&

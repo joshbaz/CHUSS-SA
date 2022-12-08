@@ -66,7 +66,7 @@ const FinalSubmitPopupUpload = ({
     /** function to get files */
     const handlefile = async (setFieldValue) => {
         const getfiles = await window.electronAPI.oppDetail()
-        console.log('getfiles', getfiles)
+       
         if (getfiles === null) {
         } else {
             setFieldValue('finalsubmitfiles', {

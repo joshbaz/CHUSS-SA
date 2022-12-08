@@ -39,8 +39,7 @@ const PhdEditProjectOpponent = () => {
 
     let examinerCase = useSelector((state) => state.opponent)
     useEffect(() => {
-        console.log('props', params.o_id)
-        console.log('props2', params.p_id)
+     
 
         /** dispatch to get project */
         dispatch(getIndividualProject(params.p_id))
@@ -73,7 +72,7 @@ const PhdEditProjectOpponent = () => {
             (element) => element._id === params.o_id
         )
 
-        console.log('all examiners', findExaminer)
+      
 
         if (findExaminer) {
             setExaminerValues(findExaminer)
@@ -85,14 +84,14 @@ const PhdEditProjectOpponent = () => {
             (element) => element._id === params.p_id
         )
 
-        console.log('findProject', findProject)
+      
 
         if (findProject) {
             setProjectValues(findProject)
         }
     }, [projectCase.allprojects, params.p_id])
 
-    console.log(examinerCase)
+  
     let toast = useToast()
     useEffect(() => {
         if (projectCase.isError) {

@@ -36,7 +36,7 @@ const EditMastersProject = (props) => {
 
     React.useEffect(() => {
         let id = params.id
-        console.log(id, 'iddss')
+       
         dispatch(getIndividualProject(id))
         dispatch(programTypeGetAll())
         dispatch(academicYearGetAll())
@@ -239,7 +239,7 @@ const EditMastersProject = (props) => {
 
     React.useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-            console.log(Object.keys(errors).length, 'No errors', errors)
+         
             dispatch(projectUpdate(initials))
         } else if (
             Object.keys(errors).length > 0 &&

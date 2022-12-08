@@ -28,7 +28,7 @@ const ViewSupervisor = () => {
 
         let examinerCase = useSelector((state) => state.examiner)
         useEffect(() => {
-            console.log('props', params.id)
+          
 
             /** dispatch to get project */
             // dispatch(getIndividualProject(params.p_id))
@@ -38,7 +38,7 @@ const ViewSupervisor = () => {
             dispatch(getStudentsByExaminer(params.id))
         }, [params.id, dispatch])
 
-        console.log(examinerCase)
+     
         let toast = useToast()
         useEffect(() => {
             if (examinerCase.isError) {

@@ -63,6 +63,14 @@ import PhdViewProjectExaminer from '../views/DesktopViews/Projects/Examiners/Phd
 import PhdEditProjectExaminer from '../views/DesktopViews/Projects/Examiners/PhdEditProjectExaminer'
 import PhdViewProjectOpponent from '../views/DesktopViews/Projects/Opponents/PhdViewProjectOpponent'
 import PhdEditProjectOpponent from '../views/DesktopViews/Projects/Opponents/PhdEditProjectOpponent'
+import AllOpponents from '../views/DesktopViews/OpponentsView/AllOpponents'
+import CreateNewOpponent from '../views/DesktopViews/OpponentsView/CreateNewOpponent'
+import ViewOpponent from '../views/DesktopViews/OpponentsView/ViewOpponent'
+import EditOpponent from '../views/DesktopViews/OpponentsView/EditOpponent'
+import AllSupervisors from '../views/DesktopViews/ESupervisorsView/AllSupervisors'
+import CreateNewSupervisor from '../views/DesktopViews/ESupervisorsView/CreateNewSupervisor'
+import ViewSupervisor from '../views/DesktopViews/ESupervisorsView/ViewSupervisor'
+import EditSupervisor from '../views/DesktopViews/ESupervisorsView/EditSupervisor'
 const AllRoutes = () => {
     return (
         <HashRouter>
@@ -381,50 +389,50 @@ const AllRoutes = () => {
                     <Route
                         exact
                         path='/m-examiners/opponents'
-                        element={<AllExaminers />}
+                        element={<AllOpponents />}
                     />
 
                     <Route
                         exact
                         path='/m-examiners/opponents/create'
-                        element={<CreateNewExaminer />}
+                        element={<CreateNewOpponent />}
                     />
 
                     <Route
                         exact
                         path='/m-examiners/opponents/view/:id'
-                        element={<ViewExaminer />}
+                        element={<ViewOpponent />}
                     />
 
                     <Route
                         exact
                         path='/m-examiners/opponents/edit/:id'
-                        element={<EditExaminer />}
+                        element={<EditOpponent />}
                     />
 
                     {/** all supervisors page routes */}
                     <Route
                         exact
                         path='/m-examiners/supervisors'
-                        element={<AllExaminers />}
+                        element={<AllSupervisors />}
                     />
 
                     <Route
                         exact
                         path='/m-examiners/supervisors/create'
-                        element={<CreateNewExaminer />}
+                        element={<CreateNewSupervisor />}
                     />
 
                     <Route
                         exact
                         path='/m-examiners/supervisors/view/:id'
-                        element={<ViewExaminer />}
+                        element={<ViewSupervisor />}
                     />
 
                     <Route
                         exact
                         path='/m-examiners/supervisors/edit/:id'
-                        element={<EditExaminer />}
+                        element={<EditSupervisor />}
                     />
 
                     {/** payment page routes */}

@@ -46,7 +46,7 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
         }
         if (values !== null && values.files.length > 0) {
             setFilesList(values.files)
-            console.log(values.files, 'gill')
+           
         } else {
             setFilesList([])
         }
@@ -66,14 +66,14 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
         const dataGiven = await window.electronAPI.getdownloadFile(
             data.fileId.fileId
         )
-        console.log(dataGiven, 'testing')
+       
 
         if (!dataGiven.message) {
             let newData = {
                 ...dataGiven,
             }
             if (nameValues !== null) {
-                console.log(nameValues, 'nameValues')
+               
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -90,9 +90,9 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
                 newData
             )
 
-            console.log('messahe', performDowload)
+           
             if (performDowload.message) {
-                alert(performDowload.message)
+               // alert(performDowload.message)
             }
         }
     }
@@ -110,7 +110,7 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
     }
 
     const handleRemove = (fId, nam, secId) => {
-        console.log('gggdfd', fId, nam, secId)
+     
         if (values._id && fId) {
             let rvalues = {
                 fId: fId,

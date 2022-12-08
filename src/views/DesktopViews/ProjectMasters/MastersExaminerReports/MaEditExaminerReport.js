@@ -60,13 +60,13 @@ const MaEditExaminerReport = () => {
     }, [dispatch, params.rp_id])
 
     useEffect(() => {
-        console.log(params.rp_id, 'id', allreports)
+      
 
         if (allreports.items.length > 0) {
             let allDetails = allreports.items.find(
                 (data) => data._id === params.rp_id
             )
-            console.log('asl', allDetails.reportFiles.length)
+          
             if (allDetails) {
                 let saveDeta = {
                     ...allDetails,
@@ -174,7 +174,7 @@ const MaEditExaminerReport = () => {
         setErrors({})
         setChnageMade(() => true)
         //console.log(InputFile.url, 'InputFile')
-        console.log('all details', InputFile)
+     
         let vv = {
             ...newRDeat,
             reportFile: InputFile,
@@ -201,7 +201,7 @@ const MaEditExaminerReport = () => {
 
     useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-            console.log(Object.keys(errors).length, 'No errors', errors)
+       
             let newInitals = {
                 ...newRDeat,
                 reportId: newRDeat._id,

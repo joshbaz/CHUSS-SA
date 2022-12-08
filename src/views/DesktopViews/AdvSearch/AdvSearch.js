@@ -229,7 +229,7 @@ const AdvSearch = () => {
         }
     }, [selectedTable])
 
-    console.log(TableLists, 'TableLists')
+   
 
     /** function to select statuses */
     const TableStatuses = React.useMemo(() => {
@@ -298,7 +298,7 @@ const AdvSearch = () => {
     const handleFilterSearchOption = (e) => {
         e.preventDefault()
 
-        console.log('changes', e.target.value)
+      
         setSearchWord('')
         setSearchStatus('')
         setSearchWordOption(e.target.value)
@@ -308,7 +308,7 @@ const AdvSearch = () => {
     const handleQueryChange = (e) => {
         e.preventDefault()
 
-        console.log('changes', e.target.value)
+      
         setSearchWordQuery(e.target.value)
     }
 

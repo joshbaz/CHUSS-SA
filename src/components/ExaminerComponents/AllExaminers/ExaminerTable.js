@@ -213,18 +213,18 @@ const ExaminerTable = ({
                         }
                     )
 
-                    console.log('generalss', newDataToSave)
+                   // console.log('generalss', newDataToSave)
 
                     setExportData(newDataToSave)
                 }
             } else {
                 if (allDisplayData.allItems.length > 0) {
                     let newDataToSave = allDisplayData.allItems.map((data) => {
-                        console.log('allDisplayData', data.activeStatus)
+                      //  console.log('allDisplayData', data.activeStatus)
                         return data
                     })
 
-                    console.log('generalstts', newDataToSave)
+                  //  console.log('generalstts', newDataToSave)
                     setExportData(newDataToSave)
                 }
             }
@@ -235,7 +235,7 @@ const ExaminerTable = ({
 
     /** function to handle checkbox on each item */
     const handleIndivCheckbox = (e, data) => {
-        console.log('checking0', e.target.checked, data)
+      //  console.log('checking0', e.target.checked, data)
         if (exportData.length > 0) {
             let checkData = exportData.some(
                 (datacheck, index) => data._id === datacheck._id
@@ -484,7 +484,7 @@ const ExaminerTable = ({
                                     name.includes(details)
                                 )
 
-                                console.log('check', check)
+                              //  console.log('check', check)
 
                                 return check
                             }

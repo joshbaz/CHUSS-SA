@@ -79,7 +79,7 @@ const AllOpponents = () => {
 
     const handleSearchInput = (e) => {
         e.preventDefault()
-        console.log('e.target', e.target.value)
+      
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
         // let filterSelected = {
@@ -222,7 +222,7 @@ const AllOpponents = () => {
         let values = {
             page: page,
         }
-        console.log(page)
+     
         dispatch(paginatedExaminer(values))
     }, [Location])
 
@@ -250,7 +250,7 @@ const AllOpponents = () => {
         // }
     }, [isSuccess, isError, message])
 
-    console.log('all examinerttt', paginatedExaminers)
+   
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -325,11 +325,7 @@ const AllOpponents = () => {
                                                                         onChange={(
                                                                             value
                                                                         ) => {
-                                                                            console.log(
-                                                                                'value',
-                                                                                data.title,
-                                                                                value
-                                                                            )
+                                                                         
                                                                             checkboxesFilter(
                                                                                 data.title,
                                                                                 value

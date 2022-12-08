@@ -68,7 +68,7 @@ const AllSchools = () => {
     /** this handles search word changes */
     const handleSearchInput = (e) => {
         e.preventDefault()
-        console.log('e.target', e.target.value)
+     
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
         // let filterSelected = {
@@ -220,7 +220,7 @@ const AllSchools = () => {
         let values = {
             page: page,
         }
-        console.log(page)
+      
         dispatch(paginatedSchool(values))
         dispatch(allSchools())
     }, [Location])
@@ -265,7 +265,7 @@ const AllSchools = () => {
     //        })
     //    }, [])
 
-    console.log('all examinerttt', paginatedSchools)
+   
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -341,11 +341,7 @@ const AllSchools = () => {
                                                                         onChange={(
                                                                             value
                                                                         ) => {
-                                                                            console.log(
-                                                                                'value',
-                                                                                data.title,
-                                                                                value
-                                                                            )
+                                                                          
                                                                             checkboxesFilter(
                                                                                 data.title,
                                                                                 value

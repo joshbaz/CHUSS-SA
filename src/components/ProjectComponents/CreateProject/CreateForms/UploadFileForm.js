@@ -10,7 +10,7 @@ const UploadFileForm = ({ setFieldValue, values }) => {
 
     const handlefile = async () => {
         const getfiles = await window.electronAPI.oppDetail()
-        console.log('getfiles', getfiles)
+
         if (getfiles === null) {
         } else {
             setFieldValue('scannedForm', {
@@ -19,8 +19,6 @@ const UploadFileForm = ({ setFieldValue, values }) => {
             })
         }
     }
-
-    
 
     //console.log(window.electronAPI.recieveFileDetails())
     return (

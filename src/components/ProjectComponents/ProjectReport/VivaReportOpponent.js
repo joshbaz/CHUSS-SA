@@ -76,7 +76,7 @@ const VivaReportOpponent = ({ values }) => {
                         element.opponentId._id === data.reportId.opponent
                 )
                 newData.examinerDetails = examinerData2
-                console.log(newData)
+             
                 arrayData.push(newData)
             })
 

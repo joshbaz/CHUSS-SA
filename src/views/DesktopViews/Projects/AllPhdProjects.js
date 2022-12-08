@@ -11,11 +11,8 @@ import {
     MenuItemOption,
     InputGroup,
     Input,
-    InputRightElement,
     InputLeftElement,
-    Grid,
     Text,
-    GridItem,
     SimpleGrid,
     useToast,
     Select,
@@ -27,7 +24,7 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io'
 import { FaFilter } from 'react-icons/fa'
 import { BiSearch } from 'react-icons/bi'
-import { CgFormatSlash } from 'react-icons/cg'
+
 import { GrClose } from 'react-icons/gr'
 import ProjectTable from '../../../components/ProjectComponents/AllProjects/ProjectTable'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -94,7 +91,7 @@ const AllPhdProjects = () => {
     /** this handles search word changes */
     const handleSearchInput = (e) => {
         e.preventDefault()
-        console.log('e.target', e.target.value)
+      
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
         // let filterSelected = {
@@ -297,7 +294,7 @@ const AllPhdProjects = () => {
         let values = {
             page: page,
         }
-        console.log(page)
+       
         dispatch(getPProjects(values))
     }, [Location])
 
@@ -401,9 +398,7 @@ const AllPhdProjects = () => {
             </Box>
 
             <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar
-                    topbarData={{ title: 'PhD Students', count: null }}
-                />
+                <TopBar topbarData={{ title: 'PhD Students', count: null }} />
 
                 <Stack direction='column' padding={'0 20px'}>
                     {/** filter inputs && button */}
@@ -471,11 +466,7 @@ const AllPhdProjects = () => {
                                                                         onChange={(
                                                                             value
                                                                         ) => {
-                                                                            console.log(
-                                                                                'value',
-                                                                                data.title,
-                                                                                value
-                                                                            )
+                                                                          
                                                                             checkboxesFilter(
                                                                                 data.title,
                                                                                 value

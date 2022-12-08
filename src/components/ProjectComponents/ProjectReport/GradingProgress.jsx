@@ -90,7 +90,7 @@ const GradingProgress = ({ values }) => {
                             ? 33.3
                             : data.reportId.score
                     )
-                    console.log(data.reportId.reportStatus)
+                 
                     if (data.reportId.reportStatus === 'pending') {
                         pieColor.push('#FAA723')
                     }

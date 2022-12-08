@@ -17,9 +17,9 @@ let initialState = {
 export const updateExaminerReport = createAsyncThunk(
     'reports/f/update',
     async (values, thunkAPI) => {
-        console.log('are we even here et')
+       
         const updateAttempt = await reportService.updateExaminerReport(values)
-        console.log('are we even here yet')
+       
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {

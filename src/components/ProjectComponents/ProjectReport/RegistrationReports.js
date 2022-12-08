@@ -150,7 +150,7 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
     /** function to activate add register */
     const activateViewRegister = (data) => {
         if (projectId !== null) {
-            console.log(data, 'trying')
+          
             setViewData(() => data)
             setViewRegister(true)
         }
@@ -176,14 +176,14 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
     /** function to download file */
     const handleDownloadFile = async (data) => {
         const dataGiven = await window.electronAPI.getdownloadFile(data.fileId)
-        console.log(dataGiven, 'testing')
+       
 
         if (!dataGiven.message) {
             let newData = {
                 ...dataGiven,
             }
             if (nameValues !== null) {
-                console.log(nameValues, 'nameValues')
+               
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -198,9 +198,9 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
                 newData
             )
 
-            console.log('messahe', performDowload)
+         
             if (performDowload.message) {
-                alert(performDowload.message)
+               // alert(performDowload.message)
             }
         }
     }
@@ -213,7 +213,7 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
 
         const dataGiven = 'herer'
 
-        console.log(dataGiven, 'given', data.fileId)
+      
         setSelectedFile([
             {
                 uri: `http://188.166.65.21:8000/docs/files/${data.fileId}`,

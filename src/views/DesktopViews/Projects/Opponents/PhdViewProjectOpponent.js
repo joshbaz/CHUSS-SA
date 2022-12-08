@@ -31,8 +31,7 @@ const PhdViewProjectOpponent = () => {
 
     let examinerCase = useSelector((state) => state.opponent)
     useEffect(() => {
-        console.log('props', params.o_id)
-        console.log('props2', params.p_id)
+      
 
         /** dispatch to get project */
         dispatch(getIndividualProject(params.p_id))
@@ -49,15 +48,12 @@ const PhdViewProjectOpponent = () => {
     }, [])
 
     useEffect(() => {
-        console.log(
-            'examinerCase.allOpponentItems.items',
-            examinerCase.allOpponentItems.items
-        )
+       
         let findExaminer = examinerCase.allOpponentItems.items.find(
             (element) => element._id === params.o_id
         )
 
-        console.log('all examiners', findExaminer)
+      
 
         if (findExaminer) {
             setExaminerValues(findExaminer)

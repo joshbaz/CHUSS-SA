@@ -3,6 +3,15 @@ import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
 
 const ViewPayExaminerDetails = ({ values }) => {
+    const [dvalues, setDValues] = React.useState(null)
+
+    React.useEffect(() => {
+        if (values !== null && values.examiner) {
+            setDValues(values.examiner)
+        } else if (values !== null && values.opponent) {
+            setDValues(values.opponent)
+        }
+    }, [values])
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -27,8 +36,8 @@ const ViewPayExaminerDetails = ({ values }) => {
                                 <Input
                                     type='text'
                                     value={
-                                        values !== null && values.examiner.name
-                                            ? values.examiner.name
+                                        dvalues !== null && dvalues.name
+                                            ? dvalues.name
                                             : ''
                                     }
                                     readOnly
@@ -46,9 +55,8 @@ const ViewPayExaminerDetails = ({ values }) => {
                                 <Input
                                     type='text'
                                     value={
-                                        values !== null &&
-                                        values.examiner.placeOfWork
-                                            ? values.examiner.placeOfWork
+                                        dvalues !== null && dvalues.placeOfWork
+                                            ? dvalues.placeOfWork
                                             : ''
                                     }
                                     readOnly
@@ -66,9 +74,9 @@ const ViewPayExaminerDetails = ({ values }) => {
                                 <Input
                                     type='text'
                                     value={
-                                        values !== null &&
-                                        values.examiner.postalAddress
-                                            ? values.examiner.postalAddress
+                                        dvalues !== null &&
+                                        dvalues.postalAddress
+                                            ? dvalues.postalAddress
                                             : ''
                                     }
                                     readOnly
@@ -86,9 +94,8 @@ const ViewPayExaminerDetails = ({ values }) => {
                                 <Input
                                     type='text'
                                     value={
-                                        values !== null &&
-                                        values.examiner.phoneNumber
-                                            ? values.examiner.phoneNumber
+                                        dvalues !== null && dvalues.phoneNumber
+                                            ? dvalues.phoneNumber
                                             : ''
                                     }
                                     readOnly
@@ -104,8 +111,8 @@ const ViewPayExaminerDetails = ({ values }) => {
                                 <Input
                                     type='email'
                                     value={
-                                        values !== null && values.examiner.email
-                                            ? values.examiner.email
+                                        dvalues !== null && dvalues.email
+                                            ? dvalues.email
                                             : ''
                                     }
                                     readOnly

@@ -129,28 +129,28 @@ const ProjectDetails = ({ values, rlink }) => {
 
     /** dc member */
 
-     React.useEffect(() => {
-         if (dcMState.isError && isSubmittingp) {
-             setIsSubmittingp(false)
-             dispatch(dreset())
-         }
-         if (dcMState.isSuccess && isSubmittingp) {
-             toast({
-                 position: 'top',
-                 title: dcMState.message.message,
-                 status: 'success',
-                 duration: 10000,
-                 isClosable: true,
-             })
-             setIsSubmittingp(false)
-             setRemoveActive2(false)
-             setRemoveDetails2(null)
+    React.useEffect(() => {
+        if (dcMState.isError && isSubmittingp) {
+            setIsSubmittingp(false)
+            dispatch(dreset())
+        }
+        if (dcMState.isSuccess && isSubmittingp) {
+            toast({
+                position: 'top',
+                title: dcMState.message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            setRemoveActive2(false)
+            setRemoveDetails2(null)
 
-             dispatch(dreset())
-         }
+            dispatch(dreset())
+        }
 
-         dispatch(dreset())
-     }, [dcMState.isSuccess, dcMState.message, dcMState.isError])
+        dispatch(dreset())
+    }, [dcMState.isSuccess, dcMState.message, dcMState.isError])
 
     React.useEffect(() => {
         // console.log('all iten', values.doctoralmembers)
@@ -170,7 +170,6 @@ const ProjectDetails = ({ values, rlink }) => {
                     element.registrationId.registrationtype.toLowerCase() ===
                     'full admission'
             )
-            console.log('all Provisonal d', foundPData)
 
             if (foundPData) {
                 setProvisionalAdm(foundPData)
@@ -445,7 +444,6 @@ const ProjectDetails = ({ values, rlink }) => {
                                         <Stack spacing={'8px'}>
                                             {values.doctoralmembers.map(
                                                 (data, index) => {
-                                                    console.log('mmmmm', data)
                                                     return (
                                                         <Stack
                                                             key={index}

@@ -14,6 +14,7 @@ import {
     InputLeftElement,
     Text,
     useToast,
+    SimpleGrid,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -28,49 +29,48 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
     reset,
     getPaginatedPayments,
+    getAllPayments,
 } from '../../../store/features/payments/paymentSlice'
 import PaymentTable from '../../../components/PaymentComponents/AllPayments/PaymentTable'
 
 const AllPayments = () => {
-    const [filterSearchOption, setFilterSearchOption] = React.useState('All')
+    const [filterSearchOption, setFilterSearchOption] =
+        React.useState('Examiner Name')
+
     const [searchWord, setSearchWord] = React.useState('')
+    const [exportData, setExportData] = React.useState([])
+    const [searchActive, setSearchActive] = React.useState(false)
     const filterItems = [
         {
-            title: 'Academic Year',
-            subItems: ['2017', '2018', '2019', '2020'],
+            title: 'Examiner Name',
         },
         {
-            title: 'Candidate Name',
+            title: 'Examiner Type',
         },
         {
-            title: 'Last update',
+            title: 'Request No',
+        },
+        {
+            title: 'Student Name',
         },
         {
             title: 'Status',
-            subItems: [
-                'All',
-                'In Review',
-                'Completed',
-                'Approved Viva',
-                'Graduated',
-                'on Hold',
-            ],
-        },
-        {
-            title: 'Examiners',
-            subItems: ['Joshua', 'daisy', 'stephanie'],
-        },
-        {
-            title: 'Topic',
         },
     ]
 
     const [filterActive, setFilterActive] = React.useState(false)
     const [filterInfo, setFilterInfo] = React.useState([])
 
+    /** handle search option change */
+    const handleSearchOptionChange = (valuet) => {
+        setSearchWord('')
+
+        setFilterSearchOption(valuet)
+    }
+
     const handleSearchInput = (e) => {
         e.preventDefault()
-        console.log('e.target', e.target.value)
+
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
         // let filterSelected = {
@@ -81,6 +81,7 @@ const AllPayments = () => {
     }
 
     const handleSubmitFilter = () => {
+        /** search word */
         if (searchWord) {
             if (filterInfo.length > 0) {
                 let newFilterInfo = [...filterInfo]
@@ -128,6 +129,13 @@ const AllPayments = () => {
                 //setFilterSearchOption('All')
                 // console.log('filtered Info', filterInfo)
             }
+        }
+    }
+
+    /** function to set the search active  */
+    const handleSearchActive = () => {
+        if (filterInfo.length > 0) {
+            setSearchActive(true)
         }
     }
 
@@ -182,7 +190,9 @@ const AllPayments = () => {
     const clearAllFilters = () => {
         setFilterInfo([])
         setSearchWord('')
-        setFilterSearchOption('All')
+
+        setSearchActive(false)
+        setFilterSearchOption('Student Name')
     }
 
     const handleRemoveFilter = (Info) => {
@@ -211,9 +221,10 @@ const AllPayments = () => {
         let values = {
             page: page,
         }
-        console.log(page)
+     
 
         dispatch(getPaginatedPayments())
+        dispatch(getAllPayments())
     }, [Location])
 
     useEffect(() => {
@@ -239,6 +250,7 @@ const AllPayments = () => {
         //     })
         // }
     }, [isSuccess, isError, message])
+
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -246,7 +258,7 @@ const AllPayments = () => {
             </Box>
 
             <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar topbarData={{ title: 'Payments', count: null }} />
+                <TopBar topbarData={{ title: 'All Payments', count: null }} />
 
                 <Stack direction='column' padding={'0 20px'}>
                     {/** filter inputs && button */}
@@ -262,15 +274,17 @@ const AllPayments = () => {
                                 spacing={'0px'}
                                 alignItems='center'>
                                 <Box>
-                                    <Menu closeOnSelect={false}>
+                                    <Menu closeOnSelect={true}>
                                         <MenuButton
                                             h='32px'
+                                            w='188px'
                                             className='filter_button'
                                             as={Button}
                                             variant='solid'
                                             leftIcon={<FaFilter />}
                                             rightIcon={<IoIosArrowDown />}>
-                                            {filterSearchOption || 'All'}
+                                            {filterSearchOption ||
+                                                'Examiner Name'}
                                         </MenuButton>
                                         <MenuList>
                                             {filterItems.map((data, index) => {
@@ -313,11 +327,7 @@ const AllPayments = () => {
                                                                         onChange={(
                                                                             value
                                                                         ) => {
-                                                                            console.log(
-                                                                                'value',
-                                                                                data.title,
-                                                                                value
-                                                                            )
+                                                                          
                                                                             checkboxesFilter(
                                                                                 data.title,
                                                                                 value
@@ -353,7 +363,7 @@ const AllPayments = () => {
                                                         <MenuItem
                                                             key={index}
                                                             onClick={() =>
-                                                                setFilterSearchOption(
+                                                                handleSearchOptionChange(
                                                                     data.title
                                                                 )
                                                             }>
@@ -370,6 +380,7 @@ const AllPayments = () => {
                                 <Box h='32px'>
                                     <InputGroup
                                         h='32px'
+                                        minW='300px'
                                         pr='0'
                                         p='0'
                                         m='0'
@@ -378,9 +389,10 @@ const AllPayments = () => {
                                             <Button
                                                 p='0'
                                                 m='0'
+                                                bg='transparent'
                                                 h='100%'
                                                 w='100%'
-                                                bg='transparent'
+                                                borderRadius='0px'
                                                 size='28px'>
                                                 <BiSearch />
                                             </Button>
@@ -397,42 +409,26 @@ const AllPayments = () => {
                                 </Box>
                             </Stack>
 
-                            <Box>
+                            <TableButton>
                                 <Button
-                                    className='search_button'
-                                    variant='solid'>
+                                    onClick={handleSubmitFilter}
+                                    disabled={searchWord ? false : true}
+                                    leftIcon={<AiOutlinePlus />}
+                                    className='btn__rule'>
+                                    Add Rule
+                                </Button>
+                            </TableButton>
+                            <TableButton>
+                                <Button
+                                    onClick={handleSearchActive}
+                                    disabled={
+                                        filterInfo.length > 0 ? false : true
+                                    }
+                                    className='btn__print'>
                                     Search
                                 </Button>
-                            </Box>
-                            {/**
-
-                          <Box>
-                                <Button
-                                    className='add_button'
-                                    leftIcon={<AiOutlinePlus />}
-                                    colorScheme='red'
-                                    variant='solid'>
-                                    Create report
-                                </Button>
-                            </Box>
-                        
-                        
-                        */}
+                            </TableButton>
                         </Stack>
-
-                        {/**  button */}
-                        <Box>
-                            <Button
-                                onClick={() =>
-                                    routeNavigate('/projects/create')
-                                }
-                                className='add_button'
-                                leftIcon={<AiOutlinePlus />}
-                                colorScheme='red'
-                                variant='solid'>
-                                New payment
-                            </Button>
-                        </Box>
                     </Stack>
 
                     <Stack direction='column' spacing='28px'>
@@ -455,11 +451,16 @@ const AllPayments = () => {
                                 </Stack>
 
                                 {filterInfo.length > 0 && (
-                                    <Stack direction='row'>
+                                    <SimpleGrid
+                                        gap='20px'
+                                        minChildWidth='max-content'>
                                         {filterInfo.map((data, index) => (
-                                            <Box key={index}>
+                                            <Box
+                                                key={index}
+                                                w='-webkit-fit-content'>
                                                 <FilterInfoStack
                                                     direction='row'
+                                                    w='-webkit-fit-content'
                                                     alignItems='center'>
                                                     <h1>{data.title}:</h1>
                                                     <Stack direction='row'>
@@ -493,7 +494,7 @@ const AllPayments = () => {
                                                 </FilterInfoStack>
                                             </Box>
                                         ))}
-                                    </Stack>
+                                    </SimpleGrid>
                                 )}
                             </Stack>
                         </Box>
@@ -501,7 +502,12 @@ const AllPayments = () => {
                         {/** table & tabs */}
 
                         <Box>
-                            <PaymentTable />
+                            <PaymentTable
+                                setExportData={setExportData}
+                                exportData={exportData}
+                                searchActive={searchActive}
+                                filterInfo={filterInfo}
+                            />
                         </Box>
                     </Stack>
                 </Stack>
@@ -642,5 +648,46 @@ const FilterInfoStack = styled(Stack)`
     .close_icon {
         color: #838389;
         font-size: 12px;
+    }
+`
+
+const TableButton = styled(Box)`
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+
+    font-size: 14px;
+    line-height: 20px;
+    .btn_table {
+        height: 32px;
+        color: #464f60;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+        border-radius: 6px;
+        background: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__print {
+        height: 32px;
+        background: #f7f9fc;
+        box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+        border-radius: 6px;
+
+        letter-spacing: 0.02em;
+        color: #868fa0;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__rule {
+        height: 32px;
+        background: #20202a;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #33333c;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
     }
 `

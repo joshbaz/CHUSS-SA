@@ -108,7 +108,7 @@ const MastersProjectDetails = ({ values, rlink }) => {
                     element.registrationId.registrationtype.toLowerCase() ===
                     'full admission'
             )
-            console.log('all Provisonal d', foundPData)
+           
 
             if (foundPData) {
                 setProvisionalAdm(foundPData)

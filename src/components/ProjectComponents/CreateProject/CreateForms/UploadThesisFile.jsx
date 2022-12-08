@@ -8,7 +8,7 @@ const UploadThesisFile = ({ setFieldValue, values }) => {
 
     const handlefile = async () => {
         const getfiles = await window.electronAPI.oppDetail()
-        console.log('getfiles', getfiles)
+       
         if (getfiles === null) {
         } else {
             setFieldValue('thesisfile', {
@@ -18,7 +18,7 @@ const UploadThesisFile = ({ setFieldValue, values }) => {
         }
     }
 
-    console.log('thesis Values', values.thesisfile)
+   
 
     return (
         <FormContainer>

@@ -68,7 +68,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
 
     /** activate delete project App file */
     const handleRemove = (fdetail) => {
-        console.log('fdetail', fdetail)
+      
         if (projectValues._id && fdetail._id) {
             let rvalues = {
                 fileId: fdetail._id,
@@ -139,7 +139,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
 
     const handlefile = async () => {
         const getfiles = await window.electronAPI.oppDetail()
-        console.log('getfiles', getfiles)
+      
         if (getfiles === null) {
         } else {
             setChangeMade(true)
@@ -152,8 +152,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
 
     React.useEffect(() => {
         if (projectValues !== null && values !== null) {
-            console.log('projectValues', projectValues)
-            console.log('values', values)
+           
             setNameValues(values.name)
 
             let examinerToFind = values._id
@@ -185,14 +184,14 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
     /** function to download file */
     const handleDownloadFile = async (data) => {
         const dataGiven = await window.electronAPI.getdownloadFile(data.fileId)
-        console.log(dataGiven, 'testing')
+      
 
         if (!dataGiven.message) {
             let newData = {
                 ...dataGiven,
             }
             if (nameValues !== null) {
-                console.log(nameValues, 'nameValues')
+              
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -207,7 +206,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
                 newData
             )
 
-            console.log('messahe', performDowload)
+         
             // if (performDowload.message) {
             //     alert(performDowload.message)
             // }
@@ -222,7 +221,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
 
         const dataGiven = 'herer'
 
-        console.log(dataGiven, 'given', data.fileId)
+       
         setSelectedFile([
             {
                 uri: `http://188.166.65.21:8000/docs/files/${data.fileId}`,

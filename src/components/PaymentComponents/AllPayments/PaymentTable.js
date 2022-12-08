@@ -22,8 +22,11 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
+    Button,
 } from '@chakra-ui/react'
+import { BiDownload } from 'react-icons/bi'
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
+import Moments from 'moment-timezone'
 import {
     IoIosArrowDropright,
     IoIosArrowDropdown,
@@ -37,36 +40,50 @@ import { CgNotes } from 'react-icons/cg'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
-const PaymentTable = () => {
-    const filterTabData = [
+const PaymentTable = ({
+    searchActive,
+    filterInfo,
+    exportData,
+    setExportData,
+}) => {
+    const [perPage, setPerPage] = React.useState(10)
+
+    const [allDisplayData, setAllDisplayData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allItems: [],
+        totalItemsDisplayed: 0,
+        totalAllItems: 0,
+        totalPages: 0,
+    })
+
+    const [searchData, setSearchData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allSearchItems: [],
+        totalItemsDisplayed: 0,
+        totalSearchedItems: 0,
+        totalPages: 0,
+    })
+
+    const [filterTabData, setfilterTabData] = React.useState([
         {
-            title: 'Examiners',
-            dataCount: 27,
+            title: 'All',
+            dataCount: 0,
         },
-        {
-            title: 'Opponents',
-            dataCount: 7,
-        },
-        {
-            title: 'Pending',
-            dataCount: 4,
-        },
-        {
-            title: 'On Hold',
-            dataCount: 4,
-        },
-    ]
+    ])
 
     const TableHead = [
-        {
-            title: '#',
-            filter: true,
-        },
         {
             title: 'Request NO.',
         },
         {
             title: 'Examiner Name',
+        },
+        {
+            title: 'Examiner Type',
         },
         {
             title: 'Topic',
@@ -84,461 +101,1125 @@ const PaymentTable = () => {
         },
     ]
 
-    let { paginatedPayments } = useSelector((state) => state.payment)
+    let { paginatedPayments, allPaymentItems } = useSelector(
+        (state) => state.payment
+    )
 
-    const [activityDrpdown, setActivityDropDown] = React.useState(false)
-    let activeDrop = React.useRef(null)
+    let routeNavigate = useNavigate()
 
-    const handleDropDown = () => {
-        setActivityDropDown(!activityDrpdown)
-    }
+    /** changes all document tabs */
+    useEffect(() => {
+        if (searchActive) {
+            setfilterTabData([
+                {
+                    title: 'All',
+                    dataCount: searchData.totalSearchedItems,
+                },
+            ])
+        } else {
+            setfilterTabData([
+                {
+                    title: 'All',
+                    dataCount: allDisplayData.totalAllItems,
+                },
+            ])
+        }
+    }, [
+        searchActive,
+        allDisplayData.totalAllItems,
+        searchData.totalSearchedItems,
+    ])
+
+    useEffect(() => {
+        let allQueriedItems = allPaymentItems.items.filter((datas) => {
+            return datas
+        })
+        /** initial items  */
+        //items collected
+        const allItemsCollected = allQueriedItems
+        //total all items
+        const totalItems = allQueriedItems.length
+        let itemsPerPage = perPage
+        const currentPage = 1
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+        const currentItems = allItemsCollected.slice(
+            indexOfFirstItem,
+            indexOfLastItem
+        )
+
+        const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+        setAllDisplayData({
+            currentPage: currentPage,
+            itemsPerPage: itemsPerPage,
+            items: currentItems,
+            allItems: allQueriedItems,
+            totalItemsDisplayed: currentItems.length,
+            totalAllItems: totalItems,
+            totalPages: pageLength,
+        })
+    }, [allPaymentItems.items])
 
     let PaginationFirstNumber =
-        paginatedPayments.currentPage * paginatedPayments.perPage -
-        paginatedPayments.perPage +
+        allDisplayData.currentPage * allDisplayData.itemsPerPage -
+        allDisplayData.itemsPerPage +
         1
 
     let PaginationLastNumber =
-        PaginationFirstNumber + paginatedPayments.current_total - 1
+        PaginationFirstNumber + allDisplayData.totalItemsDisplayed - 1
 
-    const handlePrev = () => {}
+    /** searched Pagination */
+    let PaginationSFirstNumber =
+        searchData.currentPage * searchData.itemsPerPage -
+        searchData.itemsPerPage +
+        1
+    let PaginationSLastNumber =
+        PaginationSFirstNumber + searchData.totalItemsDisplayed - 1
 
-    const handleNext = () => {}
+    /** function to handle search filters */
+    const handleFilters = () => {
+        const searchResults = allDisplayData.allItems.filter((data1, index) => {
+            /** student name */
+            if (filterInfo[0].title === 'Examiner Name') {
+                let name1 = data1.examiner
+                    ? `${
+                          data1.examiner.jobtitle.toLowerCase() +
+                          ' ' +
+                          data1.examiner.name.toLowerCase()
+                      }`
+                    : `${
+                          data1.opponent.jobtitle.toLowerCase() +
+                          ' ' +
+                          data1.opponent.name.toLowerCase()
+                      }`
+                let name2 = data1.examiner
+                    ? `${data1.examiner.name.toLowerCase()}`
+                    : `${data1.opponent.name.toLowerCase()}`
+                //console.log('name', name)
+                let check = filterInfo[0].searchfor.some((details) =>
+                    name1.includes(details)
+                )
 
-    let routeNavigate = useNavigate()
+                let check2 = filterInfo[0].searchfor.some((details) =>
+                    name2.includes(details)
+                )
+
+                if (check || check2) {
+                    return true
+                }
+            }
+
+            if (filterInfo[0].title === 'Examiner Type') {
+                let name = data1.examiner ? 'examiner' : 'opponent'
+
+                let check = filterInfo[0].searchfor.some((details) =>
+                    name.includes(details)
+                )
+
+                return check
+            }
+
+            /** topic */
+            if (filterInfo[0].title === 'Request No') {
+                let topic = data1.payCode.toLowerCase()
+
+                let check = filterInfo[0].searchfor.some((details) =>
+                    topic.includes(details)
+                )
+
+                return check
+            }
+            /** status */
+            if (filterInfo[0].title === 'Status') {
+                let status = data1.payStatus.toLowerCase()
+
+                let check = filterInfo[0].searchfor.some((details) =>
+                    status.includes(details)
+                )
+
+                return check
+            }
+
+            /** resubmission */
+            if (filterInfo[0].title === 'Student Name') {
+                let status = data1.student.studentName.toLowerCase()
+
+                let check = filterInfo[0].searchfor.some((details) =>
+                    status.includes(details)
+                )
+
+                return check
+            }
+
+            return null
+        })
+
+        /** filters to add to the first */
+        if (searchResults.length > 0 && filterInfo.length > 1) {
+            let newFilterArray = [...filterInfo]
+            newFilterArray.splice(0, 1)
+            //console.log('new arrayS', newFilterArray)
+            //stopped here
+
+            //make a new copy of the searched Data
+            let newSearchedData = [...searchResults]
+
+            //iterate through the queries
+            for (
+                let iteration = 0;
+                iteration < newFilterArray.length;
+                iteration++
+            ) {
+                if (newSearchedData.length > 0) {
+                    /** filter the data */
+                    const newResults = newSearchedData.filter(
+                        (data1, index) => {
+                            /** student name */
+                            if (
+                                newFilterArray[iteration].title ===
+                                'Examiner Name'
+                            ) {
+                                let name1 = data1.examiner
+                                    ? `${
+                                          data1.examiner.jobtitle.toLowerCase() +
+                                          ' ' +
+                                          data1.examiner.name.toLowerCase()
+                                      }`
+                                    : `${
+                                          data1.opponent.jobtitle.toLowerCase() +
+                                          ' ' +
+                                          data1.opponent.name.toLowerCase()
+                                      }`
+                                let name2 = data1.examiner
+                                    ? `${data1.examiner.name.toLowerCase()}`
+                                    : `${data1.opponent.name.toLowerCase()}`
+
+                                let check = newFilterArray[
+                                    iteration
+                                ].searchfor.some((details) =>
+                                    name1.includes(details)
+                                )
+
+                                let check2 = newFilterArray[
+                                    iteration
+                                ].searchfor.some((details) =>
+                                    name2.includes(details)
+                                )
+
+                                if (check || check2) {
+                                    return true
+                                }
+                            }
+
+                            /** student SRN */
+                            if (
+                                newFilterArray[iteration].title ===
+                                'Examiner Type'
+                            ) {
+                                let name = data1.examiner
+                                    ? 'examiner'
+                                    : 'opponent'
+
+                                let check = newFilterArray[
+                                    iteration
+                                ].searchfor.some((details) =>
+                                    name.includes(details)
+                                )
+
+                                return check
+                            }
+                            /** topic */
+                            if (
+                                newFilterArray[iteration].title === 'Request No'
+                            ) {
+                                let topic = data1.payCode.toLowerCase()
+
+                                let check = newFilterArray[
+                                    iteration
+                                ].searchfor.some((details) =>
+                                    topic.includes(details)
+                                )
+
+                                return check
+                            }
+                            /** status */
+                            if (newFilterArray[iteration].title === 'Status') {
+                                let status = data1.payStatus.toLowerCase()
+
+                                let check = newFilterArray[
+                                    iteration
+                                ].searchfor.some((details) =>
+                                    status.includes(details)
+                                )
+
+                                return check
+                            }
+
+                            /** resubmission */
+                            if (
+                                newFilterArray[iteration].title ===
+                                'Student Name'
+                            ) {
+                                let status =
+                                    data1.student.studentName.toLowerCase()
+
+                                let check = newFilterArray[
+                                    iteration
+                                ].searchfor.some((details) =>
+                                    status.includes(details)
+                                )
+
+                                return check
+                            }
+
+                            return null
+                        }
+                    )
+
+                    /** assign the new results */
+
+                    newSearchedData = [...newResults]
+                } else {
+                    return
+                }
+            }
+            // perform state update of the results
+
+            //items collected
+            const allItemsCollected = newSearchedData
+            //total all items
+            const totalItems = newSearchedData.length
+            let itemsPerPage = perPage
+            const currentPage = 1
+            const indexOfLastItem = currentPage * itemsPerPage
+            const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+            const currentItems = allItemsCollected.slice(
+                indexOfFirstItem,
+                indexOfLastItem
+            )
+
+            const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+            setSearchData({
+                currentPage: currentPage,
+                itemsPerPage: itemsPerPage,
+                items: currentItems,
+                allSearchItems: newSearchedData,
+                totalItemsDisplayed: currentItems.length,
+                totalSearchedItems: totalItems,
+                totalPages: pageLength,
+            })
+        } else {
+            /** filter info less than 2 and no searched data */
+            /** set the records */
+            //items collected
+            const allItemsCollected = searchResults
+            //total all items
+            const totalItems = searchResults.length
+            let itemsPerPage = perPage
+            const currentPage = 1
+            const indexOfLastItem = currentPage * itemsPerPage
+            const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+            const currentItems = allItemsCollected.slice(
+                indexOfFirstItem,
+                indexOfLastItem
+            )
+
+            const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+            setSearchData({
+                currentPage: currentPage,
+                itemsPerPage: itemsPerPage,
+                items: currentItems,
+                allSearchItems: searchResults,
+                totalItemsDisplayed: currentItems.length,
+                totalSearchedItems: totalItems,
+                totalPages: pageLength,
+            })
+        }
+    }
+
+    useEffect(() => {
+        if (filterInfo.length > 0) {
+            handleFilters()
+        }
+    }, [filterInfo])
+
+    /** function to handle general checkbox */
+    const handleGeneralCheckbox = (e) => {
+        if (e.target.checked) {
+            if (searchActive) {
+                if (searchData.allSearchItems.length > 0) {
+                    let newDataToSave = searchData.allSearchItems.map(
+                        (data) => {
+                            return data
+                        }
+                    )
+
+                    setExportData(newDataToSave)
+                }
+            } else {
+                if (allDisplayData.allItems.length > 0) {
+                    let newDataToSave = allDisplayData.allItems.map((data) => {
+                        return data
+                    })
+
+                    setExportData(newDataToSave)
+                }
+            }
+        } else {
+            setExportData([])
+        }
+    }
+
+    /** function to handle checkbox on each item */
+    const handleIndivCheckbox = (e, data) => {
+        if (exportData.length > 0) {
+            let checkData = exportData.some(
+                (datacheck, index) => data._id === datacheck._id
+            )
+
+            if (checkData) {
+                let newChecksData = [...exportData]
+                for (
+                    let iteration = 0;
+                    iteration < newChecksData.length;
+                    iteration++
+                ) {
+                    if (newChecksData[iteration]._id === data._id) {
+                        newChecksData.splice(iteration, 1)
+                        setExportData([...newChecksData])
+
+                        return
+                    }
+                }
+            } else {
+                setExportData([...exportData, data])
+            }
+        } else {
+            setExportData([data])
+        }
+    }
+
+    const handlePrev = () => {
+        if (searchActive) {
+            if (searchData.currentPage - 1 >= 1) {
+                let page = searchData.currentPage - 1
+                const indexOfLastItem = page * searchData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - searchData.itemsPerPage
+
+                const currentItems = searchData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setSearchData(() => ({
+                    ...searchData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                }))
+            }
+        } else {
+            if (allDisplayData.currentPage - 1 >= 1) {
+                let page = allDisplayData.currentPage - 1
+                const indexOfLastItem = page * allDisplayData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allDisplayData.itemsPerPage
+
+                const currentItems = allDisplayData.allItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setAllDisplayData({
+                    ...allDisplayData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        }
+    }
+
+    const handleNext = () => {
+        if (searchActive) {
+            if (searchData.currentPage + 1 <= searchData.totalPages) {
+                let page = searchData.currentPage + 1
+                const indexOfLastItem = page * searchData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - searchData.itemsPerPage
+
+                const currentItems = searchData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setSearchData({
+                    ...searchData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        } else {
+            if (allDisplayData.currentPage + 1 <= allDisplayData.totalPages) {
+                let page = allDisplayData.currentPage + 1
+                const indexOfLastItem = page * allDisplayData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allDisplayData.itemsPerPage
+
+                const currentItems = allDisplayData.allItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setAllDisplayData(() => ({
+                    ...allDisplayData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                }))
+            }
+        }
+    }
+
+    /** function to handle data exportation */
+    const handleExportation = async () => {
+        if (exportData.length > 0) {
+            let values = {
+                tableName: 'Payments',
+                data: exportData,
+            }
+            await window.electronAPI.exportStudentCSV(values)
+        }
+    }
 
     return (
         <Container>
             {/** tab data */}
             <Box>
-                <Tabs variant='unstyled'>
-                    <TabList>
-                        {filterTabData.map((data, index) => {
-                            return (
-                                <Tab
-                                    key={index}
-                                    _selected={{
-                                        color: '#F14C54',
-                                        fontWeight: '700',
-                                        borderBottom: '2px solid #DB5A5A',
-                                    }}
-                                    className='tab'>
-                                    <Stack
-                                        direction='row'
-                                        alignItems={'center'}>
-                                        <h2>{data.title}</h2>
-                                        <Text>{data.dataCount}</Text>
-                                    </Stack>
-                                </Tab>
-                            )
-                        })}
-                    </TabList>
-                </Tabs>
-            </Box>
-
-            {/** table */}
-            <Box minH='48vh'>
-                <Table size='sm'>
-                    <Thead>
-                        <Tr>
-                            <Th w='46px'>
-                                <Checkbox
-                                    bg='#ffffff'
-                                    icon={<AiOutlineMinus />}
-                                    colorScheme='pink'
-                                />
-                            </Th>
-                            <Th></Th>
-                            {TableHead.map((data, index) => {
+                <Stack
+                    direction='row'
+                    alignItems={'flex-end'}
+                    justifyContent={'space-between'}>
+                    <Tabs variant='unstyled'>
+                        <TabList>
+                            {filterTabData.map((data, index) => {
                                 return (
-                                    <Th key={index} className='table_head'>
+                                    <Tab
+                                        key={index}
+                                        _selected={{
+                                            color: '#F14C54',
+                                            fontWeight: '700',
+                                            borderBottom: '2px solid #DB5A5A',
+                                        }}
+                                        className='tab'>
                                         <Stack
                                             direction='row'
                                             alignItems={'center'}>
-                                            <Text>{data.title}</Text>
-
-                                            {data.filter && (
-                                                <Stack
-                                                    h='13px'
-                                                    direction='column'
-                                                    justifyContent={'center'}
-                                                    spacing='2px'
-                                                    padding='0'
-                                                    m='0'>
-                                                    <Box
-                                                        h='30%'
-                                                        color='#464F60'
-                                                        style={{
-                                                            fontSize: '12px',
-                                                        }}>
-                                                        <TiArrowSortedUp />
-                                                    </Box>
-                                                    <Box
-                                                        color='#ABAAAF'
-                                                        style={{
-                                                            fontSize: '12px',
-                                                        }}>
-                                                        <TiArrowSortedDown />
-                                                    </Box>
-                                                </Stack>
-                                            )}
+                                            <h2>{data.title}</h2>
+                                            <Text>{data.dataCount}</Text>
                                         </Stack>
-                                    </Th>
+                                    </Tab>
                                 )
                             })}
-                            <Th></Th>
-                        </Tr>
-                    </Thead>
+                        </TabList>
+                    </Tabs>
 
-                    <Tbody>
-                        {paginatedPayments.items.length > 0 ? (
-                            <>
-                                {paginatedPayments.items.map((data, index) => {
-                                    return (
-                                        <>
-                                            <Tr
-                                                className='table_row'
-                                                key={data._id}>
-                                                <Td w='46px'>
-                                                    <Checkbox colorScheme='pink' />
-                                                </Td>
-                                                <Td w='36px'>
-                                                    <Box
-                                                        onClick={handleDropDown}
-                                                        ref={activeDrop}
-                                                        style={{
-                                                            color: '#5E5C60',
-                                                            fontSize: '16px',
-                                                        }}>
-                                                        {activityDrpdown ? (
-                                                            <IoIosArrowDropdown />
-                                                        ) : (
-                                                            <IoIosArrowDropright />
-                                                        )}
-                                                    </Box>
-                                                </Td>
-                                                <Td>1</Td>
-                                                <Td
-                                                    style={{
-                                                        color: '#5E5C60',
-                                                        fontWeight: 500,
-                                                    }}>
-                                                    {data.payCode}
-                                                </Td>
-                                                <Td
-                                                    style={{
-                                                        color: '#5E5C60',
-                                                        fontWeight: 500,
-                                                    }}>
-                                                    {data.examiner.jobtitle}
-                                                    {data.examiner.name}
-                                                </Td>
-                                                <Td
-                                                    maxW='250px'
-                                                    style={{
-                                                        fontWeight: 500,
-                                                        color: '#15151D',
-                                                    }}>
-                                                    {data.project.topic}
-                                                </Td>
-                                                <Td
-                                                    className='studentName'
-                                                    style={{
-                                                        color: '#15151D',
-                                                        fontWeight: 500,
-                                                        fontSize: '13px',
-                                                    }}>
-                                                    {data.student.studentName}
-                                                </Td>
+                    <SearchActivity
+                        pb={'6px'}
+                        direction='row'
+                        alignItems='center'>
+                        <Box
+                            className='sactivity_indicator'
+                            bg={searchActive ? 'green' : 'red'}
+                        />
+                        <Box className='sactivity_text'>Search</Box>
+                        <TableButton>
+                            <Button
+                                onClick={handleExportation}
+                                leftIcon={<BiDownload />}
+                                disabled={exportData.length > 0 ? false : true}
+                                className='btn__print'>
+                                Export
+                            </Button>
+                        </TableButton>
+                    </SearchActivity>
+                </Stack>
 
-                                                <Td>
-                                                    {' '}
-                                                    <StatusItem
-                                                        width='90px'
-                                                        className='reviews'
-                                                        direction='row'
-                                                        alignItems='center'>
-                                                        <div />
-                                                        <Text>
-                                                            {' '}
-                                                            {data.payStatus}
-                                                        </Text>
-                                                    </StatusItem>
-                                                </Td>
+                {/** Examiner Panel */}
+                <Stack>
+                    {/** table */}
+                    <Box minH='48vh'>
+                        <Table size='sm'>
+                            <Thead>
+                                <Tr>
+                                    <Th w='46px'>
+                                        <Checkbox
+                                            isChecked={
+                                                exportData.length > 0
+                                                    ? true
+                                                    : false
+                                            }
+                                            onChange={handleGeneralCheckbox}
+                                            bg='#ffffff'
+                                            icon={<AiOutlineMinus />}
+                                            colorScheme='pink'
+                                        />
+                                    </Th>
 
-                                                <Td>
-                                                    <Box className='semester'>
-                                                        {data.createdAt}{' '}
-                                                    </Box>
-                                                </Td>
+                                    {TableHead.map((data, index) => {
+                                        return (
+                                            <Th
+                                                key={index}
+                                                className='table_head'>
+                                                <Stack
+                                                    direction='row'
+                                                    alignItems={'center'}>
+                                                    <Text>{data.title}</Text>
 
-                                                <Td>
-                                                    <Menu>
-                                                        <MenuButton>
-                                                            <Box fontSize='20px'>
-                                                                <TbDotsVertical />
+                                                    {data.filter && (
+                                                        <Stack
+                                                            h='13px'
+                                                            direction='column'
+                                                            justifyContent={
+                                                                'center'
+                                                            }
+                                                            spacing='2px'
+                                                            padding='0'
+                                                            m='0'>
+                                                            <Box
+                                                                h='30%'
+                                                                color='#464F60'
+                                                                style={{
+                                                                    fontSize:
+                                                                        '12px',
+                                                                }}>
+                                                                <TiArrowSortedUp />
                                                             </Box>
-                                                        </MenuButton>
-                                                        <MenuList zIndex={'10'}>
-                                                            <MenuItem
-                                                                onClick={() =>
-                                                                    routeNavigate(
-                                                                        `/payments/edit/${data._id}`
-                                                                    )
-                                                                }>
-                                                                Edit
-                                                            </MenuItem>
-                                                            <MenuItem
-                                                                onClick={() =>
-                                                                    routeNavigate(
-                                                                        `/payments/view/${data._id}`
-                                                                    )
-                                                                }>
-                                                                View
-                                                            </MenuItem>
-                                                            <MenuItem>
-                                                                Delete
-                                                            </MenuItem>
-                                                        </MenuList>
-                                                    </Menu>
-                                                </Td>
-                                            </Tr>
-                                            {activityDrpdown && (
-                                                <Tr
-                                                    position='relative'
-                                                    h='250px'
-                                                    borderBottom={
-                                                        '1px solid #E1FCEF'
+                                                            <Box
+                                                                color='#ABAAAF'
+                                                                style={{
+                                                                    fontSize:
+                                                                        '12px',
+                                                                }}>
+                                                                <TiArrowSortedDown />
+                                                            </Box>
+                                                        </Stack>
+                                                    )}
+                                                </Stack>
+                                            </Th>
+                                        )
+                                    })}
+                                    <Th></Th>
+                                </Tr>
+                            </Thead>
+
+                            {searchActive ? (
+                                <Tbody>
+                                    {searchData.items.length > 0 ? (
+                                        <>
+                                            {searchData.items.map(
+                                                (data, index) => {
+                                                    let creationDate =
+                                                        new Moments(
+                                                            data.createdAt
+                                                        )
+                                                            .tz(
+                                                                'Africa/Kampala'
+                                                            )
+                                                            .format(
+                                                                'ddd DD MMM yy H:m'
+                                                            )
+
+                                                    let includedInExport
+                                                    if (exportData.length > 0) {
+                                                        let checkData =
+                                                            exportData.some(
+                                                                (
+                                                                    datacheck,
+                                                                    index
+                                                                ) =>
+                                                                    data._id ===
+                                                                    datacheck._id
+                                                            )
+
+                                                        includedInExport =
+                                                            checkData
+                                                    } else {
+                                                        includedInExport = false
                                                     }
-                                                    key={index}>
-                                                    <Box h='100%'>
-                                                        <TableDropDown
-                                                            w='100vw'
-                                                            bg='#ffffff'
-                                                            h='100%'
-                                                            position='absolute'>
-                                                            <ListStack
-                                                                spacing='36px'
-                                                                h='100%'>
-                                                                <Stack
-                                                                    className='list-item'
-                                                                    direction='row'
-                                                                    w='100%'
-                                                                    alignItems={
-                                                                        'center'
-                                                                    }>
-                                                                    <Box className='icon_add'>
-                                                                        <RiPencilFill />
-                                                                    </Box>
-
-                                                                    <Box className='activities'>
-                                                                        <Text>
-                                                                            <span className='activity_identity'>{`{name}`}</span>{' '}
-                                                                            updated{' '}
-                                                                            <span className='activity_type'>
-                                                                                payment
-                                                                                reciept
-                                                                            </span>{' '}
-                                                                            from{' '}
-                                                                            <span className='activity_text'>
-                                                                                150000
-                                                                            </span>{' '}
-                                                                            to{' '}
-                                                                            <span className='activity_text'>
-                                                                                520,000
-                                                                                Ugx
-                                                                            </span>{' '}
-                                                                            on{' '}
-                                                                            {`{Date}`}{' '}
-                                                                            @{' '}
-                                                                            {`{time}`}
-                                                                        </Text>
-                                                                    </Box>
-                                                                </Stack>
-
-                                                                <Stack
-                                                                    direction='row'
-                                                                    w='100%'
-                                                                    className='list-item'
-                                                                    alignItems={
-                                                                        'flex-start'
-                                                                    }>
-                                                                    <Box className='icon_stat'>
-                                                                        <IoIosStats />
-                                                                    </Box>
-
-                                                                    <Stack className='activities'>
-                                                                        <Box>
-                                                                            <Stack
-                                                                                spacing='5px'
-                                                                                direction='row'
-                                                                                className='activities_texts'>
-                                                                                <Text className='activity_identity'>{`{name}`}</Text>{' '}
-                                                                                <Text>
-                                                                                    updated
-                                                                                </Text>
-                                                                                <span className='activity_type'>
-                                                                                    status
-                                                                                </span>
-                                                                                <Text>
-                                                                                    from
-                                                                                </Text>
-                                                                                <StatusItem
-                                                                                    className='reviews'
-                                                                                    direction='row'
-                                                                                    alignItems='center'>
-                                                                                    <div />
-                                                                                    <Text>
-                                                                                        {' '}
-                                                                                        In
-                                                                                        Review
-                                                                                    </Text>
-                                                                                </StatusItem>
-                                                                                <Text>
-                                                                                    to
-                                                                                </Text>
-                                                                                <StatusItem
-                                                                                    className='approved'
-                                                                                    direction='row'
-                                                                                    alignItems='center'>
-                                                                                    <div />
-                                                                                    <Text>
-                                                                                        Approved
-                                                                                        Viva
-                                                                                    </Text>
-                                                                                </StatusItem>
-                                                                                <Text>
-                                                                                    on{' '}
-                                                                                    {`{Date}`}{' '}
-                                                                                    @{' '}
-                                                                                    {`{time}`}
-                                                                                </Text>
-                                                                            </Stack>
-                                                                        </Box>
-
-                                                                        <Stack
-                                                                            className='status_update'
-                                                                            direction='row'
-                                                                            alignItems={
-                                                                                'center'
-                                                                            }>
-                                                                            <Box>
-                                                                                <CgNotes />
-                                                                            </Box>
-
-                                                                            <Box>
-                                                                                <Text>
-                                                                                    This
-                                                                                    is
-                                                                                    a
-                                                                                    note,
-                                                                                    user
-                                                                                    fills
-                                                                                    in
-                                                                                    while
-                                                                                    changing
-                                                                                    the
-                                                                                    status,
-                                                                                    which
-                                                                                    explains
-                                                                                    the
-                                                                                    current
-                                                                                    project
-                                                                                    status.
-                                                                                </Text>
-                                                                            </Box>
-                                                                        </Stack>
-                                                                    </Stack>
-                                                                </Stack>
-
-                                                                <Stack
-                                                                    direction='row'
-                                                                    w='100%'
-                                                                    alignItems={
-                                                                        'center'
+                                                    return (
+                                                        <Tr
+                                                            className='table_row'
+                                                            key={data._id}>
+                                                            <Td w='46px'>
+                                                                <Checkbox
+                                                                    isChecked={
+                                                                        includedInExport
                                                                     }
-                                                                    className='list-item'>
-                                                                    <Box className='icon_create'>
-                                                                        <AiOutlinePlus />
-                                                                    </Box>
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        handleIndivCheckbox(
+                                                                            e,
+                                                                            data
+                                                                        )
+                                                                    }
+                                                                    colorScheme='pink'
+                                                                />
+                                                            </Td>
 
-                                                                    <Box className='activities'>
-                                                                        <Text>
-                                                                            <span className='activity_identity'>{`{name}`}</span>{' '}
-                                                                            created{' '}
-                                                                            <span className='activity_type'>
-                                                                                project
-                                                                            </span>{' '}
-                                                                            on{' '}
-                                                                            {`{Date}`}{' '}
-                                                                            @{' '}
-                                                                            {`{time}`}
-                                                                        </Text>
-                                                                    </Box>
-                                                                </Stack>
-                                                            </ListStack>
-                                                        </TableDropDown>
-                                                    </Box>
-                                                </Tr>
+                                                            <Td
+                                                                style={{
+                                                                    color: '#5E5C60',
+                                                                    fontWeight: 500,
+                                                                }}>
+                                                                {data.payCode}
+                                                            </Td>
+                                                            <Td
+                                                                style={{
+                                                                    color: '#5E5C60',
+                                                                    fontWeight: 500,
+                                                                }}>
+                                                                {data.examiner
+                                                                    ? data
+                                                                          .examiner
+                                                                          .jobtitle
+                                                                    : data
+                                                                          .opponent
+                                                                          .jobtitle}
+                                                                {data.examiner
+                                                                    ? data
+                                                                          .examiner
+                                                                          .name
+                                                                    : data
+                                                                          .opponent
+                                                                          .name}
+                                                            </Td>
+
+                                                            <Td
+                                                                style={{
+                                                                    color: '#5E5C60',
+                                                                    fontWeight: 500,
+                                                                }}>
+                                                                {data.examiner
+                                                                    ? 'EXAMINER'
+                                                                    : 'OPPONENT'}
+                                                            </Td>
+                                                            <Td
+                                                                maxW='250px'
+                                                                style={{
+                                                                    fontWeight: 500,
+                                                                    color: '#15151D',
+                                                                }}>
+                                                                {
+                                                                    data.project
+                                                                        .topic
+                                                                }
+                                                            </Td>
+                                                            <Td
+                                                                className='studentName'
+                                                                style={{
+                                                                    color: '#15151D',
+                                                                    fontWeight: 500,
+                                                                    fontSize:
+                                                                        '13px',
+                                                                }}>
+                                                                {
+                                                                    data.student
+                                                                        .studentName
+                                                                }
+                                                            </Td>
+
+                                                            <Td>
+                                                                {' '}
+                                                                <StatusItem
+                                                                    width='90px'
+                                                                    className={
+                                                                        data.payStatus ===
+                                                                        'pending'
+                                                                            ? 'reviews'
+                                                                            : 'completed'
+                                                                    }
+                                                                    direction='row'
+                                                                    alignItems='center'>
+                                                                    <div />
+                                                                    <Text>
+                                                                        {' '}
+                                                                        {
+                                                                            data.payStatus
+                                                                        }
+                                                                    </Text>
+                                                                </StatusItem>
+                                                            </Td>
+
+                                                            <Td>
+                                                                <Box className='semester'>
+                                                                    {
+                                                                        creationDate
+                                                                    }{' '}
+                                                                </Box>
+                                                            </Td>
+
+                                                            <Td>
+                                                                <Menu>
+                                                                    <MenuButton>
+                                                                        <Box fontSize='20px'>
+                                                                            <TbDotsVertical />
+                                                                        </Box>
+                                                                    </MenuButton>
+                                                                    <MenuList
+                                                                        zIndex={
+                                                                            '10'
+                                                                        }>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                routeNavigate(
+                                                                                    `/payments/view/${data._id}`
+                                                                                )
+                                                                            }>
+                                                                            View
+                                                                            Payment
+                                                                        </MenuItem>
+                                                                    </MenuList>
+                                                                </Menu>
+                                                            </Td>
+                                                        </Tr>
+                                                    )
+                                                }
                                             )}
                                         </>
-                                    )
-                                })}
-                            </>
-                        ) : (
-                            <Tr
-                                position='relative'
-                                h='48px'
-                                borderBottom={'1px solid #E1FCEF'}>
-                                <Box>
-                                    <NoItems>No Records Found</NoItems>
-                                </Box>
-                            </Tr>
-                        )}
-                    </Tbody>
-                </Table>
-            </Box>
+                                    ) : (
+                                        <Tr
+                                            position='relative'
+                                            h='48px'
+                                            borderBottom={'1px solid #E1FCEF'}>
+                                            <Box>
+                                                <NoItems>
+                                                    No Records Found
+                                                </NoItems>
+                                            </Box>
+                                        </Tr>
+                                    )}
+                                </Tbody>
+                            ) : (
+                                <Tbody>
+                                    {allDisplayData.items.length > 0 ? (
+                                        <>
+                                            {allDisplayData.items.map(
+                                                (data, index) => {
+                                                    let creationDate =
+                                                        new Moments(
+                                                            data.createdAt
+                                                        )
+                                                            .tz(
+                                                                'Africa/Kampala'
+                                                            )
+                                                            .format(
+                                                                'ddd DD MMM yy H:m'
+                                                            )
 
-            {/** Pagination */}
+                                                    let includedInExport
+                                                    if (exportData.length > 0) {
+                                                        let checkData =
+                                                            exportData.some(
+                                                                (
+                                                                    datacheck,
+                                                                    index
+                                                                ) =>
+                                                                    data._id ===
+                                                                    datacheck._id
+                                                            )
 
-            <PaginationStack
-                direction='row'
-                height='56px'
-                alignItems='center'
-                justifyContent={'space-between'}>
-                <Box className='pages'>
-                    <span>
-                        {`${PaginationFirstNumber}`} -{' '}
-                        {`${PaginationLastNumber}`} of{' '}
-                        {`${paginatedPayments.overall_total}`}
-                    </span>
-                </Box>
-                <Stack
-                    h='90%'
-                    direction='row'
-                    spacing='20px'
-                    alignItems='center'
-                    className='pagination'>
-                    <Box className='rows'>
-                        <h1>Rows per page:</h1>
-                        <span>{paginatedPayments.perPage}</span>
+                                                        includedInExport =
+                                                            checkData
+                                                    } else {
+                                                        includedInExport = false
+                                                    }
+                                                    return (
+                                                        <Tr
+                                                            className='table_row'
+                                                            key={data._id}>
+                                                            <Td w='46px'>
+                                                                <Checkbox
+                                                                    isChecked={
+                                                                        includedInExport
+                                                                    }
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        handleIndivCheckbox(
+                                                                            e,
+                                                                            data
+                                                                        )
+                                                                    }
+                                                                    colorScheme='pink'
+                                                                />
+                                                            </Td>
+
+                                                            <Td
+                                                                style={{
+                                                                    color: '#5E5C60',
+                                                                    fontWeight: 500,
+                                                                }}>
+                                                                {data.payCode}
+                                                            </Td>
+                                                            <Td
+                                                                style={{
+                                                                    color: '#5E5C60',
+                                                                    fontWeight: 500,
+                                                                }}>
+                                                                {data.examiner
+                                                                    ? data
+                                                                          .examiner
+                                                                          .jobtitle
+                                                                    : data
+                                                                          .opponent
+                                                                          .jobtitle}
+                                                                {data.examiner
+                                                                    ? data
+                                                                          .examiner
+                                                                          .name
+                                                                    : data
+                                                                          .opponent
+                                                                          .name}
+                                                            </Td>
+
+                                                            <Td
+                                                                style={{
+                                                                    color: '#5E5C60',
+                                                                    fontWeight: 500,
+                                                                }}>
+                                                                {data.examiner
+                                                                    ? 'EXAMINER'
+                                                                    : 'OPPONENT'}
+                                                            </Td>
+                                                            <Td
+                                                                maxW='250px'
+                                                                style={{
+                                                                    fontWeight: 500,
+                                                                    color: '#15151D',
+                                                                }}>
+                                                                {
+                                                                    data.project
+                                                                        .topic
+                                                                }
+                                                            </Td>
+                                                            <Td
+                                                                className='studentName'
+                                                                style={{
+                                                                    color: '#15151D',
+                                                                    fontWeight: 500,
+                                                                    fontSize:
+                                                                        '13px',
+                                                                }}>
+                                                                {
+                                                                    data.student
+                                                                        .studentName
+                                                                }
+                                                            </Td>
+
+                                                            <Td>
+                                                                {' '}
+                                                                <StatusItem
+                                                                    width='90px'
+                                                                    className={
+                                                                        data.payStatus ===
+                                                                        'pending'
+                                                                            ? 'reviews'
+                                                                            : 'completed'
+                                                                    }
+                                                                    direction='row'
+                                                                    alignItems='center'>
+                                                                    <div />
+                                                                    <Text>
+                                                                        {' '}
+                                                                        {
+                                                                            data.payStatus
+                                                                        }
+                                                                    </Text>
+                                                                </StatusItem>
+                                                            </Td>
+
+                                                            <Td>
+                                                                <Box className='semester'>
+                                                                    {
+                                                                        creationDate
+                                                                    }{' '}
+                                                                </Box>
+                                                            </Td>
+
+                                                            <Td>
+                                                                <Menu>
+                                                                    <MenuButton>
+                                                                        <Box fontSize='20px'>
+                                                                            <TbDotsVertical />
+                                                                        </Box>
+                                                                    </MenuButton>
+                                                                    <MenuList
+                                                                        zIndex={
+                                                                            '10'
+                                                                        }>
+                                                                        <MenuItem
+                                                                            onClick={() =>
+                                                                                routeNavigate(
+                                                                                    `/payments/view/${data._id}`
+                                                                                )
+                                                                            }>
+                                                                            View
+                                                                            Payment
+                                                                        </MenuItem>
+                                                                    </MenuList>
+                                                                </Menu>
+                                                            </Td>
+                                                        </Tr>
+                                                    )
+                                                }
+                                            )}
+                                        </>
+                                    ) : (
+                                        <Tr
+                                            position='relative'
+                                            h='48px'
+                                            borderBottom={'1px solid #E1FCEF'}>
+                                            <Box>
+                                                <NoItems>
+                                                    No Records Found
+                                                </NoItems>
+                                            </Box>
+                                        </Tr>
+                                    )}
+                                </Tbody>
+                            )}
+                        </Table>
                     </Box>
 
-                    {/** pagination arrows */}
-                    <Stack
-                        direction='row'
-                        alignItems='center'
-                        className='arrows'>
-                        <Box className='left' onClick={handlePrev}>
-                            <MdKeyboardArrowLeft />
+                    {/** Pagination */}
+
+                    {/** Pagination */}
+
+                    {searchActive ? (
+                        <Box>
+                            {' '}
+                            {searchData.items.length > 0 && (
+                                <PaginationStack
+                                    direction='row'
+                                    height='56px'
+                                    alignItems='center'
+                                    justifyContent={'space-between'}>
+                                    <Box className='pages'>
+                                        <span>
+                                            {`${PaginationSFirstNumber}`} -{' '}
+                                            {`${PaginationSLastNumber}`} of{' '}
+                                            {`${searchData.totalSearchedItems}`}
+                                        </span>
+                                    </Box>
+                                    <Stack
+                                        h='90%'
+                                        direction='row'
+                                        spacing='20px'
+                                        alignItems='center'
+                                        className='pagination'>
+                                        <Box className='rows'>
+                                            <h1>Rows per page:</h1>
+                                            <span>
+                                                {searchData.itemsPerPage}
+                                            </span>
+                                        </Box>
+
+                                        {/** pagination arrows */}
+                                        <Stack
+                                            direction='row'
+                                            alignItems='center'
+                                            className='arrows'>
+                                            <Box
+                                                className='left'
+                                                onClick={handlePrev}>
+                                                <MdKeyboardArrowLeft />
+                                            </Box>
+                                            <Box>
+                                                {' '}
+                                                {searchData.currentPage}/
+                                                {searchData.totalPages}
+                                            </Box>
+                                            <Box
+                                                className='right'
+                                                onClick={handleNext}>
+                                                <MdKeyboardArrowRight />
+                                            </Box>
+                                        </Stack>
+                                    </Stack>
+                                </PaginationStack>
+                            )}
                         </Box>
-                        <Box>1</Box>
-                        <Box className='right' onClick={handleNext}>
-                            <MdKeyboardArrowRight />
+                    ) : (
+                        <Box>
+                            {' '}
+                            {allDisplayData.items.length > 0 && (
+                                <PaginationStack
+                                    direction='row'
+                                    height='56px'
+                                    alignItems='center'
+                                    justifyContent={'space-between'}>
+                                    <Box className='pages'>
+                                        <span>
+                                            {`${PaginationFirstNumber}`} -{' '}
+                                            {`${PaginationLastNumber}`} of{' '}
+                                            {`${allDisplayData.totalAllItems}`}
+                                        </span>
+                                    </Box>
+                                    <Stack
+                                        h='90%'
+                                        direction='row'
+                                        spacing='20px'
+                                        alignItems='center'
+                                        className='pagination'>
+                                        <Box className='rows'>
+                                            <h1>Rows per page:</h1>
+                                            <span>
+                                                {allDisplayData.itemsPerPage}
+                                            </span>
+                                        </Box>
+
+                                        {/** pagination arrows */}
+                                        <Stack
+                                            direction='row'
+                                            alignItems='center'
+                                            className='arrows'>
+                                            <Box
+                                                className='left'
+                                                onClick={handlePrev}>
+                                                <MdKeyboardArrowLeft />
+                                            </Box>
+                                            <Box>
+                                                {' '}
+                                                {allDisplayData.currentPage}/
+                                                {allDisplayData.totalPages}
+                                            </Box>
+                                            <Box
+                                                className='right'
+                                                onClick={handleNext}>
+                                                <MdKeyboardArrowRight />
+                                            </Box>
+                                        </Stack>
+                                    </Stack>
+                                </PaginationStack>
+                            )}
                         </Box>
-                    </Stack>
+                    )}
                 </Stack>
-            </PaginationStack>
+            </Box>
         </Container>
     )
 }
@@ -858,5 +1539,64 @@ const PaginationStack = styled(Stack)`
             box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
             border-radius: 6px;
         }
+    }
+`
+
+const SearchActivity = styled(Stack)`
+    .sactivity_indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .sactivity_text {
+        font-family: 'Inter', sans-serif;
+        font-style: italic;
+        font-weight: normal;
+        font-size: 12px;
+
+        letter-spacing: 0.3px;
+        color: #838389;
+    }
+`
+
+const TableButton = styled(Box)`
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+
+    font-size: 14px;
+    line-height: 20px;
+    .btn_table {
+        height: 32px;
+        color: #464f60;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+        border-radius: 6px;
+        background: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__print {
+        height: 28px;
+        background: #f7f9fc;
+        box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+        border-radius: 6px;
+
+        letter-spacing: 0.02em;
+        color: #868fa0;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__rule {
+        height: 32px;
+        background: #20202a;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #33333c;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
     }
 `

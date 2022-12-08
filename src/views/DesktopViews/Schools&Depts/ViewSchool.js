@@ -78,7 +78,7 @@ const ViewSchool = (props) => {
         let values = {
             page: page,
         }
-        console.log(page)
+     
         dispatch(allSchools(values))
     }, [Location])
 
@@ -86,7 +86,7 @@ const ViewSchool = (props) => {
         useSelector((state) => state.school)
 
     useEffect(() => {
-        console.log('location', allSchoolItems, params)
+      
 
         if (allSchoolItems.items.length > 0) {
             let checkItem = allSchoolItems.items.filter(
@@ -97,7 +97,7 @@ const ViewSchool = (props) => {
                 setValues(...checkItem)
                 setSchoolId(checkItem[0]._id)
 
-                console.log('location333', checkItem, params, ...checkItem)
+               
             }
         }
     }, [params, allSchoolItems])
@@ -194,13 +194,13 @@ const ViewSchool = (props) => {
     }, [isError, isSuccess, message])
 
     React.useEffect(() => {
-        console.log('errors', errors)
+     
         if (
             Object.keys(errors).length === 0 &&
             isSubmittingedits &&
             changeMade
         ) {
-            console.log(Object.keys(errors).length, 'No errors', errors)
+          
             let values2 = {
                 ...editValues,
                 schoolId: editValues._id,

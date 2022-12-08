@@ -73,7 +73,7 @@ const AssignSupervisor = () => {
 
    const handleSearchInput = (e) => {
        e.preventDefault()
-       console.log('e.target', e.target.value)
+     
        let value = e.target.value || ''
        setSearchWord(value.toLowerCase())
        // let filterSelected = {

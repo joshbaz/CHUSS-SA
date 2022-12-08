@@ -26,7 +26,7 @@ const EditOpponentReport = (props) => {
     let dispatch = useDispatch()
 
     useEffect(() => {
-        console.log('params.rp_id', params.rp_id)
+     
         dispatch(getOpponentReport(params.rp_id))
     }, [params.rp_id, dispatch])
 
@@ -141,7 +141,7 @@ const EditOpponentReport = (props) => {
             setIsSubmittingp &&
             changeMade
         ) {
-            console.log(Object.keys(errors).length, 'No errors', errors)
+           
             dispatch(updateOpponentReport(initials))
         } else if (
             Object.keys(errors).length > 0 &&

@@ -1,5 +1,6 @@
 //handle api requests
 import Cookies from 'js-cookie'
+import Moments from 'moment-timezone'
 const Login = async (userData) => {
     const response = await window.electronAPI.loginValidation(userData)
 
@@ -7,9 +8,11 @@ const Login = async (userData) => {
         Cookies.set('_tk', response.token, {
             expires: 1,
         })
+        let newDate = Moments(new Date())
+       
         localStorage.setItem(
             'user',
-            JSON.stringify({ ...response, type: null })
+            JSON.stringify({ ...response, currentDate: newDate, type: null })
         )
     }
 

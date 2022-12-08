@@ -4,7 +4,7 @@ import { Box, Stack, Input } from '@chakra-ui/react'
 
 const Account = ({ handleChange }) => {
     let user = JSON.parse(localStorage.getItem('user'))
-    console.log(user)
+
     return (
         <FormContainer>
             <Box className='form_container'>

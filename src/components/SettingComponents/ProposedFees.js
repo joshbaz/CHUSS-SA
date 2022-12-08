@@ -317,7 +317,7 @@ const ProposedFees = ({ handleChange, programData }) => {
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
-                                console.log('val', values)
+                              
                                 dispatch(programTypeUpdate(values))
                             }}>
                             {({

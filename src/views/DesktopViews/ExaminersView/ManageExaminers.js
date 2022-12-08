@@ -38,21 +38,23 @@ const tiledata = [
         bg: '#DDF5DF',
         color: '#1BBD2B',
     },
-    {
-        title: 'Manage Supervisors',
-        icon: <RiFoldersFill />,
-        link: '/m-examiners/supervisors',
-        bg: '#FFE2D9',
-        color: '#FF3D00',
-    },
-    {
-        title: 'Manage Opponents',
-        icon: <RiFoldersFill />,
-        link: '/m-examiners/opponents',
-        bg: '#EDEEFF',
-        color: '#293AD1',
-    },
+  
 ]
+
+//   {
+//         title: 'Manage Supervisors',
+//         icon: <RiFoldersFill />,
+//         link: '/m-examiners/supervisors',
+//         bg: '#FFE2D9',
+//         color: '#FF3D00',
+//     },
+//     {
+//         title: 'Manage Opponents',
+//         icon: <RiFoldersFill />,
+//         link: '/m-examiners/opponents',
+//         bg: '#EDEEFF',
+//         color: '#293AD1',
+//     },
 
 const ManageExaminers = () => {
     let routeNavigate = useNavigate()

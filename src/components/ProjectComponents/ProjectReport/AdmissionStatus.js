@@ -64,7 +64,7 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
 
     //handle statusChnage
     const changeStatus = (val) => {
-        console.log('changes', val)
+       
         setChangeMade(() => false)
         let newValues = {
             projectId: projectId,

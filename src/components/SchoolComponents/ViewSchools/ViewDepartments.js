@@ -276,13 +276,13 @@ const ViewDepartments = ({ indivdualValues }) => {
     }
 
     React.useEffect(() => {
-        console.log('errors', errors)
+     
         if (
             Object.keys(errors).length === 0 &&
             isSubmittingedits &&
             changeMade
         ) {
-            console.log(Object.keys(errors).length, 'No errors', errors)
+         
             let values2 = {
                 ...editValues,
                 schoolId: editValues.id,

@@ -99,7 +99,7 @@ const Dashboard = () => {
         let values = {
             page: page,
         }
-        console.log(page)
+       
         dispatch(getPProjects(values))
         dispatch(getAllProjects())
     }, [Location])

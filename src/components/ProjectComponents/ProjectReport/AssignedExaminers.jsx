@@ -34,7 +34,7 @@ const AssignedExaminers = ({ values, rlink }) => {
     let toast = useToast()
     let { isSuccess, message, isError } = useSelector((state) => state.project)
     const handleRemove = (supId, nam, title, secId) => {
-        console.log('secccc', secId)
+       
         if (values._id && supId && secId) {
             let rvalues = {
                 exId: supId,
@@ -63,7 +63,7 @@ const AssignedExaminers = ({ values, rlink }) => {
 
     /** handle separation of examiners */
     useEffect(() => {
-        console.log('diff', values)
+       
         if (values !== null) {
             const filterNormal = values.examiners.filter(
                 (data) => data.submissionType === 'normal'

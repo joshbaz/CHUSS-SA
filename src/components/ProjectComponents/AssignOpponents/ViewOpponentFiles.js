@@ -29,7 +29,7 @@ const ViewOpponentFiles = ({ values, projectValues }) => {
 
      useEffect(() => {
          if (values !== null && values.generalAppointmentLetters.length > 0) {
-             console.log(values.generalAppointmentLetters, 'at again')
+           
              setFilesList(values.generalAppointmentLetters)
              setNameValues(values.name)
          }
@@ -37,8 +37,7 @@ const ViewOpponentFiles = ({ values, projectValues }) => {
 
      useEffect(() => {
          if (projectValues !== null && values !== null) {
-             console.log('projectValues', projectValues)
-             console.log('values', values)
+            
              setNameValues(values.name)
 
              let examinerToFind = values._id
@@ -51,7 +50,7 @@ const ViewOpponentFiles = ({ values, projectValues }) => {
              if (checks && checks.projectAppointmentLetter) {
                  setFilesList2([{ ...checks.projectAppointmentLetter }])
              }
-             console.log('checks', checks)
+          
          }
      }, [projectValues, values])
 
@@ -68,14 +67,14 @@ const ViewOpponentFiles = ({ values, projectValues }) => {
      /** function to download file */
      const handleDownloadFile = async (data) => {
          const dataGiven = await window.electronAPI.getdownloadFile(data.fileId)
-         console.log(dataGiven, 'testing')
+       
 
          if (!dataGiven.message) {
              let newData = {
                  ...dataGiven,
              }
              if (nameValues !== null) {
-                 console.log(nameValues, 'nameValues')
+               
                  let newNameValue = nameValues.toString().split(' ')[0]
 
                  newData = {
@@ -90,7 +89,7 @@ const ViewOpponentFiles = ({ values, projectValues }) => {
                  newData
              )
 
-             console.log('messahe', performDowload)
+            
              // if (performDowload.message) {
              //     alert(performDowload.message)
              // }
@@ -105,7 +104,7 @@ const ViewOpponentFiles = ({ values, projectValues }) => {
 
          const dataGiven = 'herer'
 
-         console.log(dataGiven, 'given', data.fileId)
+       
          setSelectedFile([
              {
                  uri: `http://188.166.65.21:8000/docs/files/${data.fileId}`,

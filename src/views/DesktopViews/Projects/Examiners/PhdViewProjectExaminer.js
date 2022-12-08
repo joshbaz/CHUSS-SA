@@ -31,9 +31,7 @@ const PhdViewProjectExaminer = () => {
 
      let examinerCase = useSelector((state) => state.examiner)
      useEffect(() => {
-         console.log('props', params.e_id)
-         console.log('props2', params.p_id)
-
+       
          /** dispatch to get project */
          dispatch(getIndividualProject(params.p_id))
          /** dispatch to get examiner */
@@ -53,7 +51,7 @@ const PhdViewProjectExaminer = () => {
              (element) => element._id === params.e_id
          )
 
-         console.log('all examiners', findExaminer)
+      
 
          if (findExaminer) {
              setExaminerValues(findExaminer)
@@ -65,14 +63,14 @@ const PhdViewProjectExaminer = () => {
              (element) => element._id === params.p_id
          )
 
-         console.log('findProject', findProject)
+      
 
          if (findProject) {
              setProjectValues(findProject)
          }
      }, [projectCase.allprojects, params.p_id])
 
-     console.log(examinerCase)
+   
      let toast = useToast()
      useEffect(() => {
          if (projectCase.isError) {

@@ -105,7 +105,7 @@ const AdvReportTable = ({
 
     //const [exportData, setExportData] = React.useState([])
     React.useEffect(() => {
-        console.log('items hereeerer', allItems.items, allProjects)
+      //  console.log('items hereeerer', allItems.items, allProjects)
         setAllDisplayItems(allItems.items)
 
         const filteredData = allItems.items.map((data) => {
@@ -123,7 +123,7 @@ const AdvReportTable = ({
             }
         })
 
-        console.log('Data achieved', filteredData)
+      //  console.log('Data achieved', filteredData)
 
         /** initial items  */
         //items collected
@@ -255,7 +255,7 @@ const AdvReportTable = ({
                         (details) => status > details
                     )
 
-                    console.log('this greater t', check, diff)
+                //    console.log('this greater t', check, diff)
                     return check
                 }
 
@@ -271,7 +271,7 @@ const AdvReportTable = ({
 
                 if (filterInfo[0].queryfunction === 'equal to') {
                     let status = reportDelay
-                    console.log('whT IS THE D', diff)
+                  //  console.log('whT IS THE D', diff)
                     let check = filterInfo[0].searchfor.some(
                         (details) => details == status
                     )
@@ -363,7 +363,7 @@ const AdvReportTable = ({
                                         name.includes(details)
                                     )
 
-                                    console.log('check', check)
+                                 //   console.log('check', check)
 
                                     return check
                                 }
@@ -926,10 +926,7 @@ const AdvReportTable = ({
                                                                 element.tagName ===
                                                                 activeStatus.status
                                                         )
-                                                    console.log(
-                                                        activeElementSet,
-                                                        'eeel'
-                                                    )
+                                                 
                                                 }
                                             } else {
                                             }
@@ -961,7 +958,7 @@ const AdvReportTable = ({
                                                   )
                                                 : 0
 
-                                            console.log('all my data', diff)
+                                           
                                             let reportDelay =
                                                 data.submissionDate ? 0 : diff
                                             return (
@@ -1073,7 +1070,7 @@ const AdvReportTable = ({
                                     <>
                                         {allDisplayData.items.map(
                                             (data, index) => {
-                                                console.log('all', data)
+                                              
                                                 let activeStatus
                                                 let activeElementSet
                                                 let includedInExport
@@ -1096,10 +1093,7 @@ const AdvReportTable = ({
                                                                     element.tagName ===
                                                                     activeStatus.status
                                                             )
-                                                        console.log(
-                                                            activeElementSet,
-                                                            'eeel'
-                                                        )
+                                                     
                                                     }
                                                 } else {
                                                 }
@@ -1135,7 +1129,7 @@ const AdvReportTable = ({
                                                       )
                                                     : 0
 
-                                                console.log('all my data', diff)
+                                              
                                                 let reportDelay =
                                                     data.submissionDate
                                                         ? 0

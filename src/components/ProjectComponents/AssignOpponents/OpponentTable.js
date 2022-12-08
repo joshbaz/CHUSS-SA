@@ -77,8 +77,7 @@ const OpponentTable = ({
     let routeNavigate = useNavigate()
 
     useEffect(() => {}, [])
-    console.log(allExaminerItems)
-    console.log(selectedExaminers, 'seke')
+   
     const handleCheckChange = (e, dataCollected) => {
         e.preventDefault()
 

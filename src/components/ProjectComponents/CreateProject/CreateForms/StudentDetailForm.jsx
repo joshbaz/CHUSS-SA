@@ -42,7 +42,7 @@ const StudentDetailForm = ({
         }
     }
 
-    console.log('finding', values.schoolName)
+   // console.log('finding', values.schoolName)
 
     const handleDepartmentChange = (e) => {
         e.preventDefault()

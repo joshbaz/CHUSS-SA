@@ -67,7 +67,7 @@ const PhDProjectReport = ({ ...props }) => {
     const preferenceData = useSelector((state) => state.preference)
     useEffect(() => {
         let id = params.id
-        console.log(id)
+       
         const io = initSocketConnection()
         dispatch(getIndividualProject(id))
         dispatch(tagGetAll())

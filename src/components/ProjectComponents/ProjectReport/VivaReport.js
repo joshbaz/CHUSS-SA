@@ -288,14 +288,14 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
         const dataGiven = await window.electronAPI.getdownloadFile(
             data.fileId.fileId
         )
-        console.log(dataGiven, 'testing')
+       
 
         if (!dataGiven.message) {
             let newData = {
                 ...dataGiven,
             }
             if (nameValues !== null) {
-                console.log(nameValues, 'nameValues')
+              
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -312,15 +312,15 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                 newData
             )
 
-            console.log('messahe', performDowload)
+         
             if (performDowload.message) {
-                alert(performDowload.message)
+              //  alert(performDowload.message)
             }
         }
     }
 
     const handleRemove = (fId, nam, secId) => {
-        console.log('gggdfd', fId, nam, secId)
+      
         if (values._id && fId) {
             let rvalues = {
                 fId: fId,

@@ -24,7 +24,7 @@ const ViewPayment = (props) => {
     let toast = useToast()
 
     useEffect(() => {
-        console.log('props', params.id)
+       
 
         /** dispatch to getSinglePayment */
         dispatch(getSinglePayment(params.id))
@@ -76,7 +76,8 @@ const ViewPayment = (props) => {
                                 <Text>Payment Request</Text>
                             </BackButtonStack>
 
-                            <Stack direction='row' alignItems='center'>
+                            {/**
+                                 *   <Stack direction='row' alignItems='center'>
                                 <SubmitButton
                                     as='button'
                                     onClick={() =>
@@ -91,6 +92,9 @@ const ViewPayment = (props) => {
                                     Print Request Form
                                 </PrintButton>
                             </Stack>
+                                 * 
+                                 * 
+                                 */}
                         </Stack>
 
                         {/** forms */}
@@ -106,7 +110,13 @@ const ViewPayment = (props) => {
                                         values={paymentCase.individualPayment}
                                     />
 
-                                    <ViewPayFiles />
+                                    {
+                                        /**
+                                         * <ViewPayFiles />
+                                         * 
+                                         */
+                                    }
+                                    
                                 </Stack>
 
                                 <Stack

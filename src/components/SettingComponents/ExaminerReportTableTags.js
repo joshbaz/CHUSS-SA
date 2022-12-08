@@ -57,7 +57,7 @@ const ExaminerReportTableTags = ({ allTagData }) => {
     let toast = useToast()
 
     const handleColorPicked = (color, setFieldValue) => {
-        console.log('colors', color)
+       
         let rgba = `rbga(${color.rgb.r},${color.rgb.g},${color.rgb.b}, 0.34)`
         let hex = color.hex
         setColorPicked(color)
@@ -415,7 +415,7 @@ const ExaminerReportTableTags = ({ allTagData }) => {
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
-                                console.log('val', values)
+                               
                                 dispatch(tagUpdate(values))
                             }}>
                             {({

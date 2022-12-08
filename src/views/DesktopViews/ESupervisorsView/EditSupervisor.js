@@ -52,7 +52,7 @@ const EditSupervisor = () => {
     const { individualExaminer, isLoading, isError, isSuccess, message } =
         useSelector((state) => state.examiner)
     useEffect(() => {
-        console.log('props', params.id)
+      
 
         /** dispatch to get project */
         // dispatch(getIndividualProject(params.p_id))
@@ -145,7 +145,7 @@ const EditSupervisor = () => {
         }
     }, [individualExaminer, initials])
 
-    console.log('initials', initials, errors)
+   
 
     const handleChange = (e) => {
         e.preventDefault()
@@ -212,9 +212,9 @@ const EditSupervisor = () => {
     }
 
     useEffect(() => {
-        console.log('errors', errors)
+      
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-            console.log(Object.keys(errors).length, 'No errors', errors)
+          
             dispatch(examinerUpdate(initials))
         } else if (
             Object.keys(errors).length > 0 &&

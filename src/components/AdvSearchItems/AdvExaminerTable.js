@@ -72,7 +72,7 @@ const AdvExaminerTable = ({
 
     //const [exportData, setExportData] = React.useState([])
     React.useEffect(() => {
-        console.log('items her333e', allItems.items)
+      //  console.log('items her333e', allItems.items)
         setAllDisplayItems(allItems.items)
 
         /** initial items  */
@@ -254,7 +254,7 @@ const AdvExaminerTable = ({
                                         name.includes(details)
                                     )
 
-                                    console.log('check', check)
+                                 //   console.log('check', check)
 
                                     return check
                                 }
@@ -442,7 +442,7 @@ const AdvExaminerTable = ({
         }
     }, [filterInfo])
 
-    console.log(allDisplayItems, 'allDisplayItems')
+   // console.log(allDisplayItems, 'allDisplayItems')
 
     /** function to handle next on pagination */
     const handleNext = () => {
@@ -551,7 +551,7 @@ const AdvExaminerTable = ({
 
     /** function to handle checkbox on each item */
     const handleIndivCheckbox = (e, data) => {
-        console.log('checking0', e.target.checked, data)
+      //  console.log('checking0', e.target.checked, data)
         if (exportData.length > 0) {
             let checkData = exportData.some(
                 (datacheck, index) => data._id === datacheck._id
@@ -613,7 +613,7 @@ const AdvExaminerTable = ({
                         }
                     )
 
-                    console.log('generalss', newDataToSave)
+               //     console.log('generalss', newDataToSave)
 
                     setExportData(newDataToSave)
                 }
@@ -621,7 +621,7 @@ const AdvExaminerTable = ({
                 if (allDisplayData.allSearchItems.length > 0) {
                     let newDataToSave = allDisplayData.allSearchItems.map(
                         (data) => {
-                            console.log('allDisplayData', data.activeStatus)
+                       //     console.log('allDisplayData', data.activeStatus)
                             return {
                                 _id: data._id,
                                 studentName: data.student.studentName,
@@ -632,7 +632,7 @@ const AdvExaminerTable = ({
                         }
                     )
 
-                    console.log('generalstts', newDataToSave)
+                 //   console.log('generalstts', newDataToSave)
                     setExportData(newDataToSave)
                 }
             }

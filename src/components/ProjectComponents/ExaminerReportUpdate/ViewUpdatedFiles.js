@@ -43,7 +43,7 @@ const ViewUpdatedFiles = ({ values }) => {
     let { isSuccess, isError, message } = useSelector((state) => state.report)
 
     React.useEffect(() => {
-        console.log(params.rp_id, 'in files')
+      
         if (values !== null && values.reportFiles.length > 0) {
             setFilesList(values.reportFiles)
         }else {
@@ -96,7 +96,7 @@ const ViewUpdatedFiles = ({ values }) => {
         const dataGiven = await window.electronAPI.getdownloadFile(
             data.files.fileId
         )
-        console.log(dataGiven, 'testing')
+      
 
         if (!dataGiven.message) {
             let newData = {
@@ -104,7 +104,7 @@ const ViewUpdatedFiles = ({ values }) => {
             }
             let nameValues = 'examiners'
             if (nameValues !== null) {
-                console.log(nameValues, 'nameValues')
+               
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -121,9 +121,9 @@ const ViewUpdatedFiles = ({ values }) => {
                 newData
             )
 
-            console.log('messahe', performDowload)
+          
             if (performDowload.message) {
-                alert(performDowload.message)
+               // alert(performDowload.message)
             }
         }
     }
@@ -131,7 +131,7 @@ const ViewUpdatedFiles = ({ values }) => {
     /** removing the file */
 
     const handleRemove = (fId, nam, secId) => {
-        console.log('gggdfd', fId, nam, secId)
+       
         if (params.rp_id && fId) {
             let rvalues = {
                 fId: fId,

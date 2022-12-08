@@ -6,7 +6,7 @@ import { MdOutlineFilePresent } from 'react-icons/md'
 const ExaminerAAppointmentUpload = ({ setFieldValue, values }) => {
     const handlefile = async () => {
         const getfiles = await window.electronAPI.oppDetail()
-        console.log('getfiles', getfiles)
+       
         if (getfiles === null) {
         } else {
             setFieldValue('examinerAppLetter', {
