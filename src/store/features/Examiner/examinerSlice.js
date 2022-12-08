@@ -130,6 +130,34 @@ export const examinerUpdate = createAsyncThunk(
     }
 )
 
+/** examiner delete */
+export const examinerDeletes = createAsyncThunk(
+    'examiner/delete',
+    async (values, thunkAPI) => {
+        const creationAttempt = await examinerService.examinerDeletes(values)
+        if (creationAttempt.type === 'success') {
+            return creationAttempt
+        } else {
+            return thunkAPI.rejectWithValue(creationAttempt.message)
+        }
+    }
+)
+
+/** examiner delete */
+export const examinerDeletesFiles = createAsyncThunk(
+    'examiner/deletesfiles',
+    async (values, thunkAPI) => {
+        const creationAttempt = await examinerService.examinerDeletesFiles(
+            values
+        )
+        if (creationAttempt.type === 'success') {
+            return creationAttempt
+        } else {
+            return thunkAPI.rejectWithValue(creationAttempt.message)
+        }
+    }
+)
+
 
 export const examinerSlice = createSlice({
     name: 'examiner',
@@ -246,6 +274,36 @@ export const examinerSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(examinerUpdate.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            //delete Examiner
+            .addCase(examinerDeletes.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(examinerDeletes.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(examinerDeletes.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            //delete Individual file
+            .addCase(examinerDeletesFiles.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(examinerDeletesFiles.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(examinerDeletesFiles.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

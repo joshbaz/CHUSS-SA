@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
+import Moments from 'moment-timezone'
+import { BiDownload } from 'react-icons/bi'
 import {
     Stack,
     Box,
@@ -73,14 +75,19 @@ const AdvStudentTable = ({
     exportData,
     setExportData,
 }) => {
-    const [allDisplayItems, setAllDisplayItems] = React.useState([])
+    const [filterTabData, setfilterTabData] = React.useState([
+        {
+            title: 'All',
+            dataCount: 0,
+        },
+    ])
     const [allDisplayData, setAllDisplayData] = React.useState({
         currentPage: 0,
         itemsPerPage: 8,
         items: [],
-        allSearchItems: [],
+        allItems: [],
         totalItemsDisplayed: 0,
-        totalSearchedItems: 0,
+        totalAllItems: 0,
         totalPages: 0,
     })
     const [projectTagData, setProjectTagData] = React.useState([])
@@ -95,15 +102,42 @@ const AdvStudentTable = ({
         totalPages: 0,
     })
 
-    //const [exportData, setExportData] = React.useState([])
-    React.useEffect(() => {
-        setAllDisplayItems(allItems.items)
+    let { allprojects, message, isSuccess, isError } = useSelector(
+        (state) => state.project
+    )
 
+    /** changes all document tabs */
+    useEffect(() => {
+        if (searchActive) {
+            setfilterTabData([
+                {
+                    title: 'All',
+                    dataCount: searchData.totalSearchedItems,
+                },
+            ])
+        } else {
+            setfilterTabData([
+                {
+                    title: 'All',
+                    dataCount: allDisplayData.totalAllItems,
+                },
+            ])
+        }
+    }, [
+        searchActive,
+        allDisplayData.totalAllItems,
+        searchData.totalSearchedItems,
+    ])
+
+    useEffect(() => {
+        let allQueriedItems = allprojects.items.filter((datas) => {
+            return datas
+        })
         /** initial items  */
         //items collected
-        const allItemsCollected = allItems.items
+        const allItemsCollected = allQueriedItems
         //total all items
-        const totalItems = allItems.items.length
+        const totalItems = allQueriedItems.length
         let itemsPerPage = perPage
         const currentPage = 1
         const indexOfLastItem = currentPage * itemsPerPage
@@ -120,24 +154,12 @@ const AdvStudentTable = ({
             currentPage: currentPage,
             itemsPerPage: itemsPerPage,
             items: currentItems,
-            allSearchItems: allItems.items,
+            allItems: allQueriedItems,
             totalItemsDisplayed: currentItems.length,
-            totalSearchedItems: totalItems,
+            totalAllItems: totalItems,
             totalPages: pageLength,
         })
-        /** export trial */
-        // const newExports = allItems.items.map((data, index) => {
-        //     return {
-        //         _id: data._id,
-        //         studentName: data.student.studentName,
-        //         studentContacts: data.student.phoneNumber,
-        //         topic: data.topic,
-        //         status: data.activeStatus,
-        //     }
-        // })
-        // // console.log('newExports', newExports)
-        // setExportData(newExports)
-    }, [allItems])
+    }, [allprojects.items])
 
     useEffect(() => {
         let allInfoData = allTagData.filter(
@@ -149,7 +171,7 @@ const AdvStudentTable = ({
 
     /** function to handle search filters */
     const handleFilters = () => {
-        const searchResults = allDisplayItems.filter((data1, index) => {
+        const searchResults = allDisplayData.items.filter((data1, index) => {
             /** student name */
             if (filterInfo[0].title === 'Student Name') {
                 if (filterInfo[0].queryfunction === 'is') {
@@ -171,25 +193,35 @@ const AdvStudentTable = ({
                 }
             }
             /** contacts */
-            if (filterInfo[0].title === 'Student Contacts') {
+            if (filterInfo[0].title === 'SRN') {
                 if (filterInfo[0].queryfunction === 'is') {
-                    let phone = data1.student.phoneNumber.toLowerCase()
-                    let email = data1.student.email.toLowerCase()
-                    let checkphone = filterInfo[0].searchfor.some((details) =>
-                        phone.includes(details)
-                    )
+                    let email = data1.student.registrationNumber.toLowerCase()
 
                     let checkemail = filterInfo[0].searchfor.some((details) =>
                         email.includes(details)
                     )
 
-                    if (checkphone || checkemail) {
+                    if (checkemail) {
+                        return true
+                    }
+                }
+            }
+
+            if (filterInfo[0].title === 'PhoneNumber') {
+                if (filterInfo[0].queryfunction === 'is') {
+                    let phone = data1.student.phoneNumber.toLowerCase()
+
+                    let checkphone = filterInfo[0].searchfor.some((details) =>
+                        phone.includes(details)
+                    )
+
+                    if (checkphone) {
                         return true
                     }
                 }
             }
             /** topic */
-            if (filterInfo[0].title === 'topic') {
+            if (filterInfo[0].title === 'Topic') {
                 if (filterInfo[0].queryfunction === 'is') {
                     let topic = data1.topic.toLowerCase()
 
@@ -201,7 +233,7 @@ const AdvStudentTable = ({
                 }
             }
             /** status */
-            if (filterInfo[0].title === 'status') {
+            if (filterInfo[0].title === 'Status') {
                 if (filterInfo[0].queryfunction === 'is') {
                     let status = data1.activeStatus.toLowerCase()
 
@@ -212,6 +244,18 @@ const AdvStudentTable = ({
                     return check
                 }
             }
+
+              if (filterInfo[0].title === 'Registration') {
+                  if (filterInfo[0].queryfunction === 'is') {
+                      let status = data1.activeStatus.toLowerCase()
+
+                      let check = filterInfo[0].searchfor.some((details) =>
+                          status.includes(details)
+                      )
+
+                      return check
+                  }
+              }
             /** registration */
             if (filterInfo[0].title === 'Registration') {
                 if (filterInfo[0].queryfunction === 'is') {
@@ -466,8 +510,6 @@ const AdvStudentTable = ({
         }
     }, [filterInfo])
 
-    console.log(allDisplayItems, 'allDisplayItems')
-
     /** function to handle next on pagination */
     const handleNext = () => {
         if (searchActive) {
@@ -497,18 +539,18 @@ const AdvStudentTable = ({
                 const indexOfFirstItem =
                     indexOfLastItem - allDisplayData.itemsPerPage
 
-                const currentItems = allDisplayData.allSearchItems.slice(
+                const currentItems = allDisplayData.allItems.slice(
                     indexOfFirstItem,
                     indexOfLastItem
                 )
 
-                setAllDisplayData({
+                setAllDisplayData(() => ({
                     ...allDisplayData,
                     currentPage: page,
                     itemsPerPage: perPage,
                     items: currentItems,
                     totalItemsDisplayed: currentItems.length,
-                })
+                }))
             }
         }
     }
@@ -526,13 +568,13 @@ const AdvStudentTable = ({
                     indexOfLastItem
                 )
 
-                setSearchData({
+                setSearchData(() => ({
                     ...searchData,
                     currentPage: page,
                     itemsPerPage: perPage,
                     items: currentItems,
                     totalItemsDisplayed: currentItems.length,
-                })
+                }))
             }
         } else {
             if (allDisplayData.currentPage - 1 >= 1) {
@@ -541,7 +583,7 @@ const AdvStudentTable = ({
                 const indexOfFirstItem =
                     indexOfLastItem - allDisplayData.itemsPerPage
 
-                const currentItems = allDisplayData.allSearchItems.slice(
+                const currentItems = allDisplayData.allItems.slice(
                     indexOfFirstItem,
                     indexOfLastItem
                 )
@@ -562,6 +604,7 @@ const AdvStudentTable = ({
         allDisplayData.currentPage * allDisplayData.itemsPerPage -
         allDisplayData.itemsPerPage +
         1
+
     let PaginationLastNumber =
         PaginationFirstNumber + allDisplayData.totalItemsDisplayed - 1
 
@@ -573,6 +616,51 @@ const AdvStudentTable = ({
     let PaginationSLastNumber =
         PaginationSFirstNumber + searchData.totalItemsDisplayed - 1
 
+    /** handle function to give registration */
+    const getLatestRegistration = (dataArray) => {
+        let filDatas = dataArray.filter((data) => {
+            if (
+                data.registrationId.registrationtype.toLowerCase() ===
+                'provisional admission'
+            ) {
+                return data
+            }
+            if (
+                data.registrationId.registrationtype.toLowerCase() ===
+                'full admission'
+            ) {
+                return data
+            }
+            if (
+                data.registrationId.registrationtype.toLowerCase() ===
+                'de-registered'
+            ) {
+                return data
+            }
+        })
+
+        if (filDatas.length > 1) {
+            let latest = filDatas[0]
+
+            filDatas.forEach((element) => {
+                if (
+                    Moments(element.registrationId.date).isAfter(
+                        latest.registrationId.date
+                    )
+                ) {
+                    latest = element
+                }
+            })
+
+            return latest.registrationId.registrationtype
+        } else if (filDatas.length > 0 && filDatas.length === 1) {
+            return filDatas[0].registrationId.registrationtype
+        } else {
+            return '-'
+        }
+    }
+
+    /** function to handle checkbox on each item */
     /** function to handle checkbox on each item */
     const handleIndivCheckbox = (e, data) => {
         console.log('checking0', e.target.checked, data)
@@ -596,30 +684,14 @@ const AdvStudentTable = ({
                     }
                 }
             } else {
-                setExportData([
-                    ...exportData,
-                    {
-                        _id: data._id,
-                        studentName: data.student.studentName,
-                        studentContacts: data.student.phoneNumber,
-                        topic: data.topic,
-                        status: data.activeStatus,
-                    },
-                ])
+                setExportData([...exportData, data])
             }
         } else {
-            setExportData([
-                {
-                    _id: data._id,
-                    studentName: data.student.studentName,
-                    studentContacts: data.student.phoneNumber,
-                    topic: data.topic,
-                    status: data.activeStatus,
-                },
-            ])
+            setExportData([data])
         }
     }
 
+    /** function to handle general checkbox */
     /** function to handle general checkbox */
     const handleGeneralCheckbox = (e) => {
         if (e.target.checked) {
@@ -627,13 +699,7 @@ const AdvStudentTable = ({
                 if (searchData.allSearchItems.length > 0) {
                     let newDataToSave = searchData.allSearchItems.map(
                         (data) => {
-                            return {
-                                _id: data._id,
-                                studentName: data.student.studentName,
-                                studentContacts: data.student.phoneNumber,
-                                topic: data.topic,
-                                status: data.activeStatus,
-                            }
+                            return data
                         }
                     )
 
@@ -642,19 +708,11 @@ const AdvStudentTable = ({
                     setExportData(newDataToSave)
                 }
             } else {
-                if (allDisplayData.allSearchItems.length > 0) {
-                    let newDataToSave = allDisplayData.allSearchItems.map(
-                        (data) => {
-                            console.log('allDisplayData', data.activeStatus)
-                            return {
-                                _id: data._id,
-                                studentName: data.student.studentName,
-                                studentContacts: data.student.phoneNumber,
-                                topic: data.topic,
-                                status: data.activeStatus,
-                            }
-                        }
-                    )
+                if (allDisplayData.allItems.length > 0) {
+                    let newDataToSave = allDisplayData.allItems.map((data) => {
+                        console.log('allDisplayData', data.activeStatus)
+                        return data
+                    })
 
                     console.log('generalstts', newDataToSave)
                     setExportData(newDataToSave)
@@ -665,10 +723,66 @@ const AdvStudentTable = ({
         }
     }
 
+    /** function to handle data exportation */
+    const handleExportation = async () => {
+        if (exportData.length > 0) {
+            let values = {
+                tableName: 'Students Table',
+                data: exportData,
+            }
+            await window.electronAPI.exportStudentCSV(values)
+        }
+    }
+
     return (
         <Container>
-            {/** table */}
+            <Stack
+                direction='row'
+                alignItems={'flex-end'}
+                justifyContent={'space-between'}>
+                <Tabs variant='unstyled'>
+                    <TabList>
+                        {filterTabData.map((data, index) => {
+                            return (
+                                <Tab
+                                    key={index}
+                                    _selected={{
+                                        color: '#F14C54',
+                                        fontWeight: '700',
+                                        borderBottom: '2px solid #DB5A5A',
+                                    }}
+                                    className='tab'>
+                                    <Stack
+                                        direction='row'
+                                        alignItems={'center'}>
+                                        <h2>{data.title}</h2>
+                                        <Text>{data.dataCount}</Text>
+                                    </Stack>
+                                </Tab>
+                            )
+                        })}
+                    </TabList>
+                </Tabs>
 
+                <SearchActivity direction='row' alignItems='center'>
+                    <Box
+                        className='sactivity_indicator'
+                        bg={searchActive ? 'green' : 'red'}
+                    />
+                    <Box className='sactivity_text'>Search</Box>
+                    <TableButton>
+                        <Button
+                            onClick={handleExportation}
+                            leftIcon={<BiDownload />}
+                            disabled={exportData.length > 0 ? false : true}
+                            className='btn__print'>
+                            Export
+                        </Button>
+                    </TableButton>
+                </SearchActivity>
+            </Stack>
+
+            {/** table */}
             <Box minH='48vh'>
                 <Table size='sm'>
                     <Thead>
@@ -686,7 +800,11 @@ const AdvStudentTable = ({
                                     />
                                 </Th>
                                 {tableLists.map((data, index) => {
-                                    return <Th key={index}>{data.mtitle}</Th>
+                                    return (
+                                        <Th className='table_head' key={index}>
+                                            {data.mtitle}
+                                        </Th>
+                                    )
                                 })}
                             </Tr>
                         )}
@@ -734,14 +852,24 @@ const AdvStudentTable = ({
                                         } else {
                                             includedInExport = false
                                         }
+
+                                        let allRegistrations = [
+                                            ...data.registration,
+                                        ]
+
+                                        /** function to return latest registration */
+                                        let returnedData =
+                                            getLatestRegistration(
+                                                allRegistrations
+                                            )
                                         return (
                                             <Tr
-                                                key={data._id}
                                                 className={`table_row ${
                                                     includedInExport
                                                         ? 'row_selected'
                                                         : ''
-                                                }`}>
+                                                }`}
+                                                key={data._id}>
                                                 <Td w='46px'>
                                                     <Checkbox
                                                         isChecked={
@@ -757,31 +885,38 @@ const AdvStudentTable = ({
                                                     />
                                                 </Td>
                                                 <Td
-                                                    maxW='250px'
-                                                    className='studentName'>
-                                                    {data.student.studentName}{' '}
+                                                    minW='150px'
+                                                    maxW='150px'
+                                                    className='studentName'
+                                                    style={{
+                                                        color: '#15151D',
+                                                        fontWeight: 500,
+                                                        fontSize: '13px',
+                                                    }}>
+                                                    {data.student.studentName}
                                                 </Td>
-                                                <Td maxW='250px'>
-                                                    <ContactLists direction='column'>
-                                                        <Stack direction='row'>
-                                                            <Box>phone:</Box>
-                                                            <Box>
-                                                                {
-                                                                    data.student
-                                                                        .phoneNumber
-                                                                }
-                                                            </Box>
-                                                        </Stack>
-                                                        <Stack direction='row'>
-                                                            <Box>email:</Box>
-                                                            <Box>
-                                                                {
-                                                                    data.student
-                                                                        .email
-                                                                }
-                                                            </Box>
-                                                        </Stack>
-                                                    </ContactLists>
+
+                                                <Td
+                                                    style={{
+                                                        color: '#5E5C60',
+                                                        fontWeight: 500,
+                                                    }}>
+                                                    {
+                                                        data.student
+                                                            .registrationNumber
+                                                    }
+                                                </Td>
+
+                                                <Td
+                                                    minW='150px'
+                                                    maxW='150px'
+                                                    className='studentName'
+                                                    style={{
+                                                        color: '#15151D',
+                                                        fontWeight: 500,
+                                                        fontSize: '13px',
+                                                    }}>
+                                                    {data.student.phoneNumber}
                                                 </Td>
                                                 <Td
                                                     maxW='250px'
@@ -789,10 +924,16 @@ const AdvStudentTable = ({
                                                         fontWeight: 500,
                                                         color: '#15151D',
                                                     }}>
-                                                    {' '}
                                                     {data.topic}
                                                 </Td>
                                                 <Td>
+                                                    {
+                                                        data.student
+                                                            .graduate_program_type
+                                                    }
+                                                </Td>
+                                                <Td>
+                                                    {' '}
                                                     <StatusItem
                                                         tcolors={
                                                             activeElementSet &&
@@ -806,7 +947,7 @@ const AdvStudentTable = ({
                                                                 ? activeElementSet.rgba
                                                                 : ''
                                                         }
-                                                        minW='90px'
+                                                        minW='160px'
                                                         direction='row'
                                                         alignItems='center'>
                                                         <div />
@@ -820,8 +961,19 @@ const AdvStudentTable = ({
                                                         </Text>
                                                     </StatusItem>
                                                 </Td>
-                                                <Td maxW='250px'> </Td>
-                                                <Td maxW='250px'></Td>
+
+                                                <Td>
+                                                    <Box
+                                                        m='auto'
+                                                        w='100%'
+                                                        display='flex'
+                                                        className='subtype'
+                                                        justifyContent={
+                                                            'center'
+                                                        }>
+                                                        {data.submissionStatus}
+                                                    </Box>
+                                                </Td>
                                             </Tr>
                                         )
                                     })}
@@ -841,9 +993,9 @@ const AdvStudentTable = ({
                         </Tbody>
                     ) : (
                         <Tbody>
-                            {allDisplayItems.length > 0 ? (
+                            {allDisplayData.items.length > 0 ? (
                                 <>
-                                    {allDisplayItems.map((data, index) => {
+                                    {allDisplayData.items.map((data, index) => {
                                         let activeStatus
                                         let activeElementSet
                                         let includedInExport
@@ -882,14 +1034,24 @@ const AdvStudentTable = ({
                                         } else {
                                             includedInExport = false
                                         }
+
+                                        let allRegistrations = [
+                                            ...data.registration,
+                                        ]
+
+                                        /** function to return latest registration */
+                                        let returnedData =
+                                            getLatestRegistration(
+                                                allRegistrations
+                                            )
                                         return (
                                             <Tr
-                                                key={data._id}
                                                 className={`table_row ${
                                                     includedInExport
                                                         ? 'row_selected'
                                                         : ''
-                                                }`}>
+                                                }`}
+                                                key={data._id}>
                                                 <Td w='46px'>
                                                     <Checkbox
                                                         isChecked={
@@ -905,31 +1067,38 @@ const AdvStudentTable = ({
                                                     />
                                                 </Td>
                                                 <Td
-                                                    maxW='250px'
-                                                    className='studentName'>
-                                                    {data.student.studentName}{' '}
+                                                    minW='150px'
+                                                    maxW='150px'
+                                                    className='studentName'
+                                                    style={{
+                                                        color: '#15151D',
+                                                        fontWeight: 500,
+                                                        fontSize: '13px',
+                                                    }}>
+                                                    {data.student.studentName}
                                                 </Td>
-                                                <Td maxW='250px'>
-                                                    <ContactLists direction='column'>
-                                                        <Stack direction='row'>
-                                                            <Box>phone:</Box>
-                                                            <Box>
-                                                                {
-                                                                    data.student
-                                                                        .phoneNumber
-                                                                }
-                                                            </Box>
-                                                        </Stack>
-                                                        <Stack direction='row'>
-                                                            <Box>email:</Box>
-                                                            <Box>
-                                                                {
-                                                                    data.student
-                                                                        .email
-                                                                }
-                                                            </Box>
-                                                        </Stack>
-                                                    </ContactLists>
+
+                                                <Td
+                                                    style={{
+                                                        color: '#5E5C60',
+                                                        fontWeight: 500,
+                                                    }}>
+                                                    {
+                                                        data.student
+                                                            .registrationNumber
+                                                    }
+                                                </Td>
+
+                                                <Td
+                                                    minW='150px'
+                                                    maxW='150px'
+                                                    className='studentName'
+                                                    style={{
+                                                        color: '#15151D',
+                                                        fontWeight: 500,
+                                                        fontSize: '13px',
+                                                    }}>
+                                                    {data.student.phoneNumber}
                                                 </Td>
                                                 <Td
                                                     maxW='250px'
@@ -937,10 +1106,13 @@ const AdvStudentTable = ({
                                                         fontWeight: 500,
                                                         color: '#15151D',
                                                     }}>
-                                                    {' '}
                                                     {data.topic}
                                                 </Td>
                                                 <Td>
+                                                    {data.student.graduate_program_type.toUpperCase()}
+                                                </Td>
+                                                <Td>
+                                                    {' '}
                                                     <StatusItem
                                                         tcolors={
                                                             activeElementSet &&
@@ -954,7 +1126,7 @@ const AdvStudentTable = ({
                                                                 ? activeElementSet.rgba
                                                                 : ''
                                                         }
-                                                        minW='90px'
+                                                        minW='160px'
                                                         direction='row'
                                                         alignItems='center'>
                                                         <div />
@@ -968,8 +1140,19 @@ const AdvStudentTable = ({
                                                         </Text>
                                                     </StatusItem>
                                                 </Td>
-                                                <Td maxW='250px'> </Td>
-                                                <Td maxW='250px'></Td>
+
+                                                <Td>
+                                                    <Box
+                                                        m='auto'
+                                                        w='100%'
+                                                        display='flex'
+                                                        className='subtype'
+                                                        justifyContent={
+                                                            'center'
+                                                        }>
+                                                        {data.submissionStatus}
+                                                    </Box>
+                                                </Td>
                                             </Tr>
                                         )
                                     })}
@@ -990,27 +1173,101 @@ const AdvStudentTable = ({
             </Box>
             {/** pagination */}
             {searchActive ? (
-                <AdvPagination2
-                    paginationFirstNumber={PaginationSFirstNumber}
-                    paginationLastNumber={PaginationSLastNumber}
-                    overalltotal={searchData.totalSearchedItems}
-                    perPages={perPage}
-                    currentPage={searchData.currentPage}
-                    totalPages={searchData.totalPages}
-                    handleNext={handleNext}
-                    handlePrev={handlePrev}
-                />
+                <Box>
+                    {' '}
+                    {searchData.items.length > 0 && (
+                        <PaginationStack
+                            direction='row'
+                            height='56px'
+                            alignItems='center'
+                            justifyContent={'space-between'}>
+                            <Box className='pages'>
+                                <span>
+                                    {`${PaginationSFirstNumber}`} -{' '}
+                                    {`${PaginationSLastNumber}`} of{' '}
+                                    {`${searchData.totalSearchedItems}`}
+                                </span>
+                            </Box>
+                            <Stack
+                                h='90%'
+                                direction='row'
+                                spacing='20px'
+                                alignItems='center'
+                                className='pagination'>
+                                <Box className='rows'>
+                                    <h1>Rows per page:</h1>
+                                    <span>{searchData.itemsPerPage}</span>
+                                </Box>
+
+                                {/** pagination arrows */}
+                                <Stack
+                                    direction='row'
+                                    alignItems='center'
+                                    className='arrows'>
+                                    <Box className='left' onClick={handlePrev}>
+                                        <MdKeyboardArrowLeft />
+                                    </Box>
+                                    <Box>
+                                        {' '}
+                                        {searchData.currentPage}/
+                                        {searchData.totalPages}
+                                    </Box>
+                                    <Box className='right' onClick={handleNext}>
+                                        <MdKeyboardArrowRight />
+                                    </Box>
+                                </Stack>
+                            </Stack>
+                        </PaginationStack>
+                    )}
+                </Box>
             ) : (
-                <AdvPagination
-                    paginationFirstNumber={PaginationFirstNumber}
-                    paginationLastNumber={PaginationLastNumber}
-                    overalltotal={allDisplayData.totalSearchedItems}
-                    perPages={perPage}
-                    currentPage={allDisplayData.currentPage}
-                    totalPages={allDisplayData.totalPages}
-                    handleNext={handleNext}
-                    handlePrev={handlePrev}
-                />
+                <Box>
+                    {' '}
+                    {allDisplayData.items.length > 0 && (
+                        <PaginationStack
+                            direction='row'
+                            height='56px'
+                            alignItems='center'
+                            justifyContent={'space-between'}>
+                            <Box className='pages'>
+                                <span>
+                                    {`${PaginationFirstNumber}`} -{' '}
+                                    {`${PaginationLastNumber}`} of{' '}
+                                    {`${allDisplayData.totalAllItems}`}
+                                </span>
+                            </Box>
+                            <Stack
+                                h='90%'
+                                direction='row'
+                                spacing='20px'
+                                alignItems='center'
+                                className='pagination'>
+                                <Box className='rows'>
+                                    <h1>Rows per page:</h1>
+                                    <span>{allDisplayData.itemsPerPage}</span>
+                                </Box>
+
+                                {/** pagination arrows */}
+                                <Stack
+                                    direction='row'
+                                    alignItems='center'
+                                    className='arrows'>
+                                    <Box className='left' onClick={handlePrev}>
+                                        <MdKeyboardArrowLeft />
+                                    </Box>
+                                    <Box>
+                                        {' '}
+                                        {allDisplayData.currentPage}/
+                                        {allDisplayData.totalPages}
+                                    </Box>
+                                    <Box className='right' onClick={handleNext}>
+                                        <MdKeyboardArrowRight />
+                                    </Box>
+                                </Stack>
+                            </Stack>
+                        </PaginationStack>
+                    )}
+                </Box>
             )}
         </Container>
     )
@@ -1100,11 +1357,6 @@ const Container = styled(Stack)`
 
     .studentName {
         text-transform: capitalize;
-        color: #15151d;
-        letter-spacing: 0.02em;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
     }
     .add_examiners {
         width: 24px;
@@ -1128,6 +1380,37 @@ const Container = styled(Stack)`
         justify-content: center;
         align-items: center;
         cursor: pointer;
+    }
+
+    .subtype {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 11px;
+        text-transform: uppercase;
+        padding: 4px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eeeeef;
+        border-radius: 4px;
+    }
+
+    .registration {
+        min-width: 140px;
+        width: 100%;
+        color: #3a3a43;
+        padding: 4px 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #eeeeef;
+        border-radius: 4px;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 12px;
+        text-transform: uppercase;
     }
 
     .semester {
@@ -1204,4 +1487,122 @@ const NoItems = styled(Box)`
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
+`
+
+const SearchActivity = styled(Stack)`
+    .sactivity_indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .sactivity_text {
+        font-family: 'Inter', sans-serif;
+        font-style: italic;
+        font-weight: normal;
+        font-size: 12px;
+
+        letter-spacing: 0.3px;
+        color: #838389;
+    }
+`
+
+const TableButton = styled(Box)`
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+
+    font-size: 14px;
+    line-height: 20px;
+    .btn_table {
+        height: 32px;
+        color: #464f60;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+        border-radius: 6px;
+        background: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__print {
+        height: 28px;
+        background: #f7f9fc;
+        box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+        border-radius: 6px;
+
+        letter-spacing: 0.02em;
+        color: #868fa0;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__rule {
+        height: 32px;
+        background: #20202a;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #33333c;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
+    }
+`
+
+const PaginationStack = styled(Stack)`
+    .pagination {
+        color: #6b7280;
+        align-items: center;
+        justify-content: flex-end;
+
+        background: #ffffff;
+    }
+    .pages {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 166%;
+        color: #111827;
+    }
+
+    .rows {
+        display: flex;
+        align-items: center;
+        h1 {
+            font-family: 'Inter', sans-serif;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 12px;
+            line-height: 166%;
+        }
+        span {
+            margin-left: 2px;
+            font-family: 'Inter', sans-serif;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 12px;
+            line-height: 19px;
+
+            letter-spacing: 0.3px;
+            color: #111827;
+        }
+    }
+
+    .arrows {
+        width: 88px;
+        display: flex;
+        justify-content: space-between;
+
+        .left,
+        .right {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+            border-radius: 6px;
+        }
+    }
 `

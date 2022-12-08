@@ -271,10 +271,9 @@ const ProjectTable = ({
             return '-'
         }
     }
-    console.log('allitems', allDisplayData.allItems)
+
     /** function to handle search filters */
     const handleFilters = () => {
-        console.log('allitems', allDisplayData.allItems)
         const searchResults = allDisplayData.allItems.filter((data1, index) => {
             /** student name */
             if (filterInfo[0].title === 'Student Name') {
@@ -564,18 +563,18 @@ const ProjectTable = ({
                         }
                     )
 
-                    console.log('generalss', newDataToSave)
+                  
 
                     setExportData(newDataToSave)
                 }
             } else {
                 if (allDisplayData.allItems.length > 0) {
                     let newDataToSave = allDisplayData.allItems.map((data) => {
-                        console.log('allDisplayData', data.activeStatus)
+                        
                         return data
                     })
 
-                    console.log('generalstts', newDataToSave)
+                    
                     setExportData(newDataToSave)
                 }
             }
@@ -586,7 +585,7 @@ const ProjectTable = ({
 
     /** function to handle checkbox on each item */
     const handleIndivCheckbox = (e, data) => {
-        console.log('checking0', e.target.checked, data)
+        
         if (exportData.length > 0) {
             let checkData = exportData.some(
                 (datacheck, index) => data._id === datacheck._id
@@ -895,10 +894,7 @@ const ProjectTable = ({
                                                             element.tagName ===
                                                             activeStatus.status
                                                     )
-                                                console.log(
-                                                    activeElementSet,
-                                                    'eeel'
-                                                )
+                                              
                                             }
                                         } else {
                                         }

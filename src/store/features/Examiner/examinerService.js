@@ -53,6 +53,20 @@ const examinerUpdate = async (values) => {
 
     return response
 }
+
+/** service to create examiner from project */
+const examinerDeletes = async (values) => {
+    const response = await window.electronAPI.deletesExaminer(values)
+
+    return response
+}
+
+/** service to create examiner from project */
+const examinerDeletesFiles = async (values) => {
+    const response = await window.electronAPI.deletesFilesExaminer(values)
+
+    return response
+}
 let examinerService = {
     projectExaminerCreate,
     assignExaminer,
@@ -62,6 +76,8 @@ let examinerService = {
     examinerCreate,
     getStudentsByExaminer,
     examinerUpdate,
+    examinerDeletes,
+    examinerDeletesFiles,
 }
 
 export default examinerService

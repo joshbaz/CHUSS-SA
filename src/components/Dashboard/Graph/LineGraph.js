@@ -4,7 +4,8 @@ import styled from 'styled-components'
 import { Line } from 'react-chartjs-2'
 import { RiInformationLine } from 'react-icons/ri'
 import { Chart, registerables } from 'chart.js'
-
+import { useSelector } from 'react-redux'
+import Moments from 'moment-timezone'
 Chart.register(...registerables)
 Chart.defaults.plugins.legend = false
 let lineOptions = {
@@ -29,7 +30,7 @@ let lineOptions = {
             display: true,
             ticks: {
                 display: true,
-                beginAtZero: false,
+                beginAtZero: true,
                 backdropPadding: {
                     x: 0,
                     y: 0,
@@ -64,12 +65,16 @@ let lineOptions = {
 }
 
 const LineGraph = () => {
+    const [graphLineSData, setGraphLineData] = React.useState({
+        labelData: [],
+        DataResults: [],
+    })
     let LineData = {
-        labels: ['2017', '2018', '2019', '2020', '2021', '2022'],
+        labels: graphLineSData.labelData,
         datasets: [
             {
                 label: 'messages',
-                data: [10, 20, 80, 100],
+                data: graphLineSData.DataResults,
                 fill: true,
                 backgroundColor: '#FFC043',
                 borderColor: '#991D27',
@@ -84,6 +89,84 @@ const LineGraph = () => {
             },
         ],
     }
+
+    const { allprojects } = useSelector((state) => state.project)
+
+    React.useEffect(() => {
+        let filteredData = allprojects.items.filter((data) => {
+            if (
+                data.activeStatus.toLowerCase() === 'graduated' &&
+                data.GraduationDate
+            ) {
+                return data
+            } else {
+            }
+        })
+
+        const arrayofDates = []
+        const arrayofDateData = []
+
+        let filtData = filteredData.filter((data) => {
+            if (arrayofDates.length === 0) {
+                let newDate = Moments(data.GraduationDate)
+                    .tz('Africa/Kampala')
+                    .format('yyyy')
+
+                arrayofDates.push(newDate.toString())
+
+                arrayofDateData.push({
+                    Date: newDate.toString(),
+                    NoOfStudents: 1,
+                })
+            } else {
+                let newDate = Moments(data.GraduationDate)
+                    .tz('Africa/Kampala')
+                    .format('yyyy')
+
+                for (
+                    let iteration = 0;
+                    iteration < arrayofDateData.length;
+                    iteration++
+                ) {
+                    let ttiterations = iteration + 1
+                    if (
+                        newDate.toString() === arrayofDateData[iteration].Date
+                    ) {
+                        return (arrayofDateData[iteration].NoOfStudents =
+                            arrayofDateData[iteration].NoOfStudents + 1)
+                    } else if (
+                        arrayofDateData[iteration].Date !==
+                            newDate.toString() &&
+                        ttiterations === arrayofDateData.length
+                    ) {
+                        arrayofDates.push(newDate.toString())
+                        arrayofDateData.push({
+                            Date: newDate.toString(),
+                            NoOfStudents: 1,
+                        })
+
+                        return null
+                    }
+                }
+            }
+        })
+
+        let sortedarray = arrayofDateData.sort(
+            (a, b) => new Moments(a.Date) - new Moments(b.Date)
+        )
+
+        let DatesToset = {
+            labelData: [],
+            DataResults: [],
+        }
+
+        sortedarray.filter((data) => {
+            DatesToset.labelData.push(data.Date)
+            DatesToset.DataResults.push(data.NoOfStudents)
+        })
+        setGraphLineData(DatesToset)
+    }, [allprojects.items])
+
     return (
         <Container>
             <Stack direction='column' spacing='10px' className='form_container'>
@@ -93,7 +176,7 @@ const LineGraph = () => {
                     w='100%'
                     alignItems='center'
                     justifyContent='space-between'>
-                    <Box>   
+                    <Box>
                         <h1>Analysis</h1>
                     </Box>
                 </Stack>

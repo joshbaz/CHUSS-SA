@@ -11,11 +11,8 @@ import {
     MenuItemOption,
     InputGroup,
     Input,
-    InputRightElement,
     InputLeftElement,
-    Grid,
     Text,
-    GridItem,
     useToast,
     Select,
     SimpleGrid,
@@ -252,7 +249,7 @@ const AllExaminerss = () => {
         setSearchWord('')
         setSearchStatus('')
         setSearchActive(false)
-        setFilterSearchOption('Student Name')
+        setFilterSearchOption('Examiner Name')
     }
 
     const handleRemoveFilter = (Info) => {
@@ -576,7 +573,7 @@ const AllExaminerss = () => {
                         <Box>
                             <Button
                                 onClick={() =>
-                                    routeNavigate(`/examiners/create`)
+                                    routeNavigate(`/m-examiners/examiners/create`)
                                 }
                                 className='add_button'
                                 leftIcon={<AiOutlinePlus />}

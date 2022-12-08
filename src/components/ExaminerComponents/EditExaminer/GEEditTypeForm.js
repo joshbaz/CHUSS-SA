@@ -25,11 +25,11 @@ const GEEditTypeForm = ({ values, handleChange }) => {
                             </label>
                             <fieldset>
                                 <Select
+                                    readOnly
                                     name='typeOfExaminer'
                                     value={
                                         values !== null && values.typeOfExaminer
-                                    }
-                                    onChange={handleChange}>
+                                    }>
                                     <option value=''>select option</option>
                                     <option value='External'>Yes</option>
                                     <option value='Internal'>No</option>
@@ -128,4 +128,3 @@ const FormContainer = styled(Box)`
         width: 100%;
     }
 `
-

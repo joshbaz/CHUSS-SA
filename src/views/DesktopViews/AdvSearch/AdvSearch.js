@@ -26,6 +26,7 @@ import {
     Checkbox,
     Radio,
     RadioGroup,
+    SimpleGrid,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -66,29 +67,6 @@ import AdvExaminerTable from '../../../components/AdvSearchItems/AdvExaminerTabl
 
 const dataModels = [
     {
-        title: 'Student Table',
-        models: [
-            {
-                mtitle: 'Student Name',
-            },
-            {
-                mtitle: 'Student Contacts',
-            },
-            {
-                mtitle: 'topic',
-            },
-            {
-                mtitle: 'status',
-            },
-            {
-                mtitle: 'Registration',
-            },
-            {
-                mtitle: 'Resubmission',
-            },
-        ],
-    },
-    {
         title: 'Examiner Reports Table',
         models: [
             {
@@ -111,26 +89,6 @@ const dataModels = [
             },
             {
                 mtitle: 'Report Delay',
-            },
-        ],
-    },
-    {
-        title: 'Examiners Table',
-        models: [
-            {
-                mtitle: 'Examiner Name',
-            },
-            {
-                mtitle: 'Type',
-            },
-            {
-                mtitle: 'PhoneNumber',
-            },
-            {
-                mtitle: 'Email',
-            },
-            {
-                mtitle: 'No. of Students',
             },
         ],
     },
@@ -180,6 +138,16 @@ const AdvSearch = () => {
     const [searchActive, setSearchActive] = React.useState(false)
     const [filterInfo, setFilterInfo] = React.useState([])
     const [exportData, setExportData] = React.useState([])
+
+    const [allDisplayData, setAllDisplayData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allSearchItems: [],
+        totalItemsDisplayed: 0,
+        totalSearchedItems: 0,
+        totalPages: 0,
+    })
 
     const [dropDownActive, setDropDownActive] = React.useState(false)
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -267,11 +235,51 @@ const AdvSearch = () => {
     const TableStatuses = React.useMemo(() => {
         if (selectedTable) {
             if (selectedTable === 'Student Table') {
-                let allInfoData = tagsData.allTagItems.items.filter(
-                    (data, index) => data.table === 'project'
-                )
+                if (searchWordOption === 'Program Type') {
+                    let allInfoData = [
+                        {
+                            tagName: 'Masters',
+                        },
+                        {
+                            tagName: 'PhD',
+                        },
+                    ]
 
-                return allInfoData
+                    return allInfoData
+                } else if (searchWordOption === 'Registration') {
+                    let allInfoData = [
+                        {
+                            tagName: 'Provisional Admission',
+                        },
+                        {
+                            tagName: 'Full Admission',
+                        },
+                        {
+                            tagName: 'De-registered',
+                        },
+                    ]
+
+                    return allInfoData
+                } else if (searchWordOption === 'Submission') {
+                    let allInfoData = [
+                        {
+                            tagName: 'normal',
+                        },
+                        {
+                            tagName: 'resubmission',
+                        },
+                    ]
+
+                    return allInfoData
+                } else if (searchWordOption === 'Status') {
+                    let allInfoData = tagsData.allTagItems.items.filter(
+                        (data, index) => data.table === 'project'
+                    )
+
+                    return allInfoData
+                } else {
+                    return []
+                }
             } else if (selectedTable === 'Examiner Reports Table') {
                 let allInfoData = tagsData.allTagItems.items.filter(
                     (data, index) => data.table === 'examinerReport'
@@ -284,7 +292,7 @@ const AdvSearch = () => {
         } else {
             return []
         }
-    }, [tagsData.allTagItems.items, selectedTable])
+    }, [tagsData.allTagItems.items, selectedTable, searchWordOption])
 
     /** function to handle filter change option */
     const handleFilterSearchOption = (e) => {
@@ -365,19 +373,22 @@ const AdvSearch = () => {
                                 setSearchWordOption('')
                                 return filterSelected
                             }
-                        }
-                        // else {
-                        //     let filterSelected = {
-                        //         title: searchWordOption,
-                        //         queryfunction: searchWordQuery,
-                        //         searchfor: [searchWord],
-                        //     }
+                        } else if (
+                            newFilterInfo[iteration].queryfunction !==
+                                searchWordQuery &&
+                            noIteration === newFilterInfo.length
+                        ) {
+                            let filterSelected = {
+                                title: searchWordOption,
+                                queryfunction: searchWordQuery,
+                                searchfor: [searchWord],
+                            }
 
-                        //     setFilterInfo([...newFilterInfo, filterSelected])
-                        //     setSearchWord('')
-                        //     setSearchWordOption('')
-                        //     return
-                        // }
+                            setFilterInfo([...newFilterInfo, filterSelected])
+                            setSearchWord('')
+                            setSearchWordOption('')
+                            return
+                        }
                     } else if (
                         /** search title doesnot exist */
                         newFilterInfo[iteration].title !== searchWordOption &&
@@ -510,7 +521,6 @@ const AdvSearch = () => {
     const handleSearchActive = () => {
         if (filterInfo.length > 0) {
             setSearchActive(true)
-            setExportData([])
         }
     }
 
@@ -539,12 +549,26 @@ const AdvSearch = () => {
         }
     }
 
+    const handleRemoveFilter = (Info, indexA) => {
+        let newFilterInfo = [...filterInfo]
+
+        newFilterInfo.filter((data, index) => {
+            if (data.title === Info.title && index === indexA) {
+                newFilterInfo.splice(index, 1)
+
+                return setFilterInfo([...newFilterInfo])
+            } else {
+                return null
+            }
+        })
+    }
+
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
                 <Navigation />
             </Box>
-            <Stack direction='column' w='100%' spacing='20px'>
+            <Stack direction='column' w='100%' spacing='20px' pb='40px'>
                 <TopBar
                     topbarData={{ title: 'Advanced Search ', count: null }}
                 />
@@ -586,33 +610,19 @@ const AdvSearch = () => {
                                      * 
                                      * 
                                      */}
-
-                                {exportData.length > 0 ? (
-                                    <TableButton>
-                                        <Button
-                                            onClick={handleExportation}
-                                            leftIcon={<MdPrint />}
-                                            className='btn__print'>
-                                            Export Report
-                                        </Button>
-                                    </TableButton>
-                                ) : (
-                                    <TableButton>
-                                        <Button
-                                            disabled={true}
-                                            leftIcon={<MdPrint />}
-                                            className='btn__print'>
-                                            Export Report
-                                        </Button>
-                                    </TableButton>
-                                )}
                             </Stack>
                         </Stack>
 
+                        {/** new rule */}
+
                         {/** Rule & search section */}
-                        <Stack direction='row'>
+                        <Stack
+                            direction='row'
+                            spacing={'5px'}
+                            alignItems='center'
+                            h='50px'>
                             {/** column to filter */}
-                            <Box>
+                            <Box minW='200px'>
                                 {TableLists.length > 0 ? (
                                     <Select
                                         onChange={handleFilterSearchOption}
@@ -659,7 +669,9 @@ const AdvSearch = () => {
                             </Box>
                             {/** search option */}
                             <Box>
-                                {searchWordOption === 'status' ||
+                                {searchWordOption === 'Status' ||
+                                searchWordOption === 'Registration' ||
+                                searchWordOption === 'Program Type' ||
                                 searchWordOption === 'Report Status' ? (
                                     <InputGroup
                                         h='32px'
@@ -709,7 +721,12 @@ const AdvSearch = () => {
 
                                         <Input
                                             h='32px'
-                                            type='text'
+                                            type={
+                                                searchWordOption ===
+                                                'Report Delay'
+                                                    ? 'number'
+                                                    : 'text'
+                                            }
                                             placeholder='Search'
                                             style={{ textIndent: '5px' }}
                                             value={searchWord}
@@ -722,7 +739,12 @@ const AdvSearch = () => {
                             <TableButton>
                                 <Button
                                     disabled={
-                                        searchWord || searchStatus
+                                        (searchWordQuery &&
+                                            searchWord &&
+                                            searchWordOption) ||
+                                        (searchStatus &&
+                                            searchWordQuery &&
+                                            searchWordOption)
                                             ? false
                                             : true
                                     }
@@ -730,6 +752,17 @@ const AdvSearch = () => {
                                     leftIcon={<AiOutlinePlus />}
                                     className='btn__rule'>
                                     Add Rule
+                                </Button>
+                            </TableButton>
+
+                            <TableButton>
+                                <Button
+                                    onClick={handleSearchActive}
+                                    disabled={
+                                        filterInfo.length > 0 ? false : true
+                                    }
+                                    className='btn__print'>
+                                    Search
                                 </Button>
                             </TableButton>
                         </Stack>
@@ -743,11 +776,6 @@ const AdvSearch = () => {
                                         direction='row'
                                         alignItems={'center'}
                                         spacing='14px'>
-                                        <Box
-                                            className='filter_query'
-                                            onClick={handleSearchActive}>
-                                            Query
-                                        </Box>
                                         <Box className='filter_num'>
                                             Filter : {filterInfo.length}
                                         </Box>
@@ -759,80 +787,66 @@ const AdvSearch = () => {
                                         </Box>
                                     </Stack>
 
-                                    {/** filter items */}
+                                    {/**new filter lists */}
                                     {filterInfo.length > 0 && (
-                                        <Stack direction='column'>
-                                            {filterInfo.map((data, index) => {
-                                                return (
+                                        <SimpleGrid
+                                            gap='20px'
+                                            minChildWidth='max-content'>
+                                            {filterInfo.map((data, index) => (
+                                                <Stack
+                                                    direction='row'
+                                                    alignItems={'center'}
+                                                    key={index}
+                                                    w='-webkit-fit-content'>
+                                                    {index !== 0 && (
+                                                        <Box className='filterOperation'>
+                                                            and
+                                                        </Box>
+                                                    )}
                                                     <FilterInfoStack
-                                                        direction='column'
-                                                        key={index}>
-                                                        <Stack
-                                                            spacing='20px'
-                                                            direction='row'
-                                                            alignItems={
-                                                                'center'
-                                                            }>
-                                                            {index !== 0 && (
-                                                                <Box className='filterOperation'>
-                                                                    and
-                                                                </Box>
-                                                            )}
-                                                            <Box className='close_icon'>
-                                                                <IoMdClose />
-                                                            </Box>
-                                                            <Box className='filterTitle'>
-                                                                <FilterKey
-                                                                    direction='row'
-                                                                    alignItems='center'>
-                                                                    <Box
-                                                                        p='0'
-                                                                        m='0'
-                                                                        color={
-                                                                            '#464f60'
-                                                                        }
-                                                                        bg='transparent'
-                                                                        size='28px'>
-                                                                        <FaFilter />
-                                                                    </Box>
-                                                                    <Box className='filterKey__text'>
-                                                                        {
-                                                                            data.title
-                                                                        }
-                                                                    </Box>
-                                                                </FilterKey>
-                                                            </Box>
-                                                            <Box className='filterOperation'>
-                                                                {
-                                                                    data.queryfunction
+                                                        direction='row'
+                                                        w='-webkit-fit-content'
+                                                        alignItems='center'>
+                                                        <h1>{data.title}:</h1>
+                                                        <Box className='filterOperation'>
+                                                            {data.queryfunction}
+                                                        </Box>
+                                                        <Stack direction='row'>
+                                                            {data.searchfor.map(
+                                                                (
+                                                                    searchdata,
+                                                                    indexes
+                                                                ) => {
+                                                                    return (
+                                                                        <Text
+                                                                            key={
+                                                                                indexes
+                                                                            }>
+                                                                            {
+                                                                                searchdata
+                                                                            }
+                                                                        </Text>
+                                                                    )
                                                                 }
-                                                            </Box>
-                                                            <Stack direction='row'>
-                                                                {data.searchfor.map(
-                                                                    (
-                                                                        searchdata,
-                                                                        indexes
-                                                                    ) => {
-                                                                        return (
-                                                                            <Box
-                                                                                className='filterText'
-                                                                                key={
-                                                                                    indexes
-                                                                                }>
-                                                                                {
-                                                                                    searchdata
-                                                                                }
-                                                                            </Box>
-                                                                        )
-                                                                    }
-                                                                )}
-                                                            </Stack>
+                                                            )}
                                                         </Stack>
+                                                        <Box
+                                                            className='close_icon'
+                                                            onClick={() =>
+                                                                handleRemoveFilter(
+                                                                    data,
+                                                                    index
+                                                                )
+                                                            }>
+                                                            <GrClose />
+                                                        </Box>
                                                     </FilterInfoStack>
-                                                )
-                                            })}
-                                        </Stack>
+                                                </Stack>
+                                            ))}
+                                        </SimpleGrid>
                                     )}
+
+                                    {/** end of filter lists */}
                                 </Stack>
                             </Box>
                         </Stack>
@@ -859,7 +873,7 @@ const AdvSearch = () => {
                                     setExportData={setExportData}
                                     exportData={exportData}
                                     tableLists={TableLists}
-                                    allProjects={allprojects}
+                                    allProjects={allprojects.items}
                                     allItems={reportCollectedDatas.allreports}
                                     searchActive={searchActive}
                                     allTagData={tagsData.allTagItems.items}
@@ -890,47 +904,64 @@ const AdvSearch = () => {
                 <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
                 <ModalContent p='0'>
                     <ModalBody p='0'>
-                        <PopupForm p='0px' justifyContent='space-between'>
-                            <Box p='10px 20px 0 20px' className='popup_title'>
-                                Select One(1) Table
-                            </Box>
-                            <RadioGroup
-                                onChange={onSelectTable}
-                                value={selectingTable}>
+                        <PopupForm
+                            p='0px'
+                            spacing={'0px'}
+                            justifyContent='space-between'>
+                            <Stack direction='column' spacing={'10px'} h='50%'>
                                 <Stack
-                                    p='10px 20px 0 20px'
-                                    direction='column'
-                                    spacing={'20px'}
-                                    h='70%'>
-                                    {dataModels.map((data, index) => {
-                                        return (
-                                            <ModelStack
-                                                direction='column'
-                                                key={index}>
-                                                <Stack direction='row'>
-                                                    <Radio
-                                                        colorScheme='red'
-                                                        value={
-                                                            data.title
-                                                        }></Radio>
-                                                    <label>{data.title}</label>
-                                                </Stack>
-                                            </ModelStack>
-                                        )
-                                    })}
+                                    className='popup_title'
+                                    direction='row'
+                                    w='100%'
+                                    alignItems='center'
+                                    justifyContent='space-between'>
+                                    <Box>
+                                        <h1> Select One(1) Table</h1>
+                                    </Box>
                                 </Stack>
-                            </RadioGroup>
+                                <RadioGroup
+                                    onChange={onSelectTable}
+                                    value={selectingTable}>
+                                    <Stack
+                                        p='10px 20px 0 20px'
+                                        direction='column'
+                                        spacing={'20px'}
+                                        h='70%'>
+                                        {dataModels.map((data, index) => {
+                                            return (
+                                                <ModelStack
+                                                    direction='column'
+                                                    key={index}>
+                                                    <Stack direction='row'>
+                                                        <Radio
+                                                            colorScheme='red'
+                                                            value={
+                                                                data.title
+                                                            }></Radio>
+                                                        <label>
+                                                            {data.title}
+                                                        </label>
+                                                    </Stack>
+                                                </ModelStack>
+                                            )
+                                        })}
+                                    </Stack>
+                                </RadioGroup>
+                            </Stack>
 
                             <Stack
                                 p='0px 20px'
                                 direction='row'
                                 alignItems='center'
+                                h='55px'
+                                bg='#ffffff'
+                                borderRadius='0 0 8px 8px'
                                 justifyContent='space-between'>
-                                <Box
+                                <Button
                                     className='cancel_button'
                                     onClick={() => onResetTable()}>
                                     Reset
-                                </Box>
+                                </Button>
 
                                 <Stack
                                     h='48px'
@@ -939,18 +970,18 @@ const AdvSearch = () => {
                                     justifyContent='flex-end'
                                     spacing='20px'
                                     alignItems='center'>
-                                    <Box
+                                    <Button
                                         className='cancel_button'
                                         onClick={() => onCancelTable()}>
                                         Cancel
-                                    </Box>
-                                    <Box>
-                                        <Box
-                                            className='apply_button'
-                                            onClick={() => onAddTable()}>
-                                            Select Table
-                                        </Box>
-                                    </Box>
+                                    </Button>
+
+                                    <Button
+                                        colorScheme={'red'}
+                                        className='apply_button'
+                                        onClick={() => onAddTable()}>
+                                        Select Table
+                                    </Button>
                                 </Stack>
                             </Stack>
                         </PopupForm>
@@ -1136,6 +1167,13 @@ const TableButton = styled(Box)`
 `
 
 const FilterInfoStack = styled(Stack)`
+    position: relative;
+    width: 100%;
+    min-height: 22px;
+    height: 100%;
+    padding: 8px 8px;
+    background: #fceded;
+    border-radius: 4px;
     h1 {
         color: #f14c54;
         font-family: 'Inter', sans-serif;
@@ -1154,41 +1192,18 @@ const FilterInfoStack = styled(Stack)`
         line-height: 18px;
     }
 
-    .close_icon {
-        color: #abaaaf !important;
-        font-size: 22px;
-    }
-    .filterTitle {
-        min-width: 152px;
-    }
-
     .filterOperation {
-        background: #eeeeef;
-        border-radius: 4px;
-        padding: 2px 8px;
-        gap: 4px;
-
+        color: #15151d;
         font-family: 'Inter', sans-serif;
         font-style: normal;
-        font-weight: 500;
+        font-weight: 600;
         font-size: 12px;
         line-height: 18px;
-        color: #15151d;
-        letter-spacing: 0.03em;
     }
 
-    .filterText {
-        background: #fceded;
-        border-radius: 4px;
-        padding: 2px 8px;
-
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 500;
+    .close_icon {
+        color: #838389;
         font-size: 12px;
-        line-height: 18px;
-        color: #15151d;
-        letter-spacing: 0.03em;
     }
 `
 const FilterKey = styled(Stack)`
@@ -1222,13 +1237,20 @@ const PopupForm = styled(Stack)`
     }
 
     .popup_title {
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        color: #464f60;
-        letter-spacing: 0.02em;
+        height: 45px;
+        width: 100%;
+
+        border-bottom: 1px solid #ebeefa;
+        padding: 0 30px;
+        h1 {
+            width: 100%;
+
+            font-style: normal;
+            font-weight: bold;
+            font-size: 17px;
+            line-height: 21px;
+            color: #111827;
+        }
     }
 
     input {
@@ -1247,7 +1269,7 @@ const PopupForm = styled(Stack)`
 
     .cancel_button {
         width: 64px;
-        height: 24px;
+        height: 32px;
         color: #abaaaf;
         font-weight: 500;
         font-size: 14px;
@@ -1258,9 +1280,9 @@ const PopupForm = styled(Stack)`
         cursor: pointer;
     }
     .apply_button {
-        width: 100%;
-        height: 24px;
-        color: #f14c54;
+        width: 50%;
+        height: 32px;
+        color: #ffffff;
         font-weight: 500;
         font-size: 14px;
         line-height: 20px;
@@ -1279,4 +1301,9 @@ const ModelStack = styled(Stack)`
     line-height: 20px;
     color: #464f60;
     letter-spacing: 0.02em;
+
+    label {
+        font-size: 14px;
+        font-weight: 600;
+    }
 `

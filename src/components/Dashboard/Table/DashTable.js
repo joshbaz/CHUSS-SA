@@ -42,39 +42,9 @@ import { RiPencilFill } from 'react-icons/ri'
 import { CgNotes } from 'react-icons/cg'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import Moments from 'moment-timezone'
 const DashTable = () => {
-    const filterTabData = [
-        {
-            title: 'All',
-            dataCount: 27,
-        },
-        {
-            title: 'In Review',
-            dataCount: 7,
-        },
-        {
-            title: 'Approved Viva',
-            dataCount: 4,
-        },
-        {
-            title: 'Completed',
-            dataCount: 4,
-        },
-        {
-            title: 'On Hold',
-            dataCount: 2,
-        },
-        {
-            title: 'Graduated',
-            dataCount: 2,
-        },
-    ]
-
     const TableHead = [
-        {
-            title: '#',
-            filter: true,
-        },
         {
             title: 'Student_REG_NO.',
         },
@@ -101,21 +71,77 @@ const DashTable = () => {
         },
     ]
 
-    const [addbutton, setaddbutton] = React.useState(true)
     const [activityDrpdown, setActivityDropDown] = React.useState(false)
+    const [projectTagData, setProjectTagData] = React.useState([])
+    const [displayDataRecent, setDisplayRecentData] = React.useState([])
     let activeDrop = React.useRef(null)
 
     const handleDropDown = () => {
         setActivityDropDown(!activityDrpdown)
     }
 
-    const handlePrev = () => {}
-
-    const handleNext = () => {}
-
     let routeNavigate = useNavigate()
 
-    let { pprojects } = useSelector((state) => state.project)
+    let { pprojects, allprojects } = useSelector((state) => state.project)
+    const tagsData = useSelector((state) => state.tag)
+
+    React.useEffect(() => {
+        let allDetails = [...allprojects.items] || []
+
+        allDetails.splice(6)
+        setDisplayRecentData([...allDetails])
+    }, [allprojects.items])
+
+    const getLatestRegistration = (dataArray) => {
+        let filDatas = dataArray.filter((data) => {
+            if (
+                data.registrationId.registrationtype.toLowerCase() ===
+                'provisional admission'
+            ) {
+                return data
+            }
+            if (
+                data.registrationId.registrationtype.toLowerCase() ===
+                'full admission'
+            ) {
+                return data
+            }
+            if (
+                data.registrationId.registrationtype.toLowerCase() ===
+                'de-registered'
+            ) {
+                return data
+            }
+        })
+
+        if (filDatas.length > 1) {
+            let latest = filDatas[0]
+
+            filDatas.forEach((element) => {
+                if (
+                    Moments(element.registrationId.date).isAfter(
+                        latest.registrationId.date
+                    )
+                ) {
+                    latest = element
+                }
+            })
+
+            return latest.registrationId.registrationtype
+        } else if (filDatas.length > 0 && filDatas.length === 1) {
+            return filDatas[0].registrationId.registrationtype
+        } else {
+            return '-'
+        }
+    }
+
+    React.useEffect(() => {
+        let allInfoData = tagsData.allTagItems.items.filter(
+            (data, index) => data.table === 'project'
+        )
+
+        setProjectTagData(allInfoData)
+    }, [tagsData.allTagItems.items])
     return (
         <Container spacing='25px' pb='20px'>
             {/** tab data */}
@@ -131,45 +157,13 @@ const DashTable = () => {
             </Stack>
 
             <Stack direction='column' spacing='0' p='0 30px' minH='352px'>
-                <Box>
-                    <Tabs variant='unstyled'>
-                        <TabList>
-                            {filterTabData.map((data, index) => {
-                                return (
-                                    <Tab
-                                        key={index}
-                                        _selected={{
-                                            color: '#F14C54',
-                                            fontWeight: '700',
-                                            borderBottom: '2px solid #DB5A5A',
-                                        }}
-                                        className='tab'>
-                                        <Stack
-                                            direction='row'
-                                            alignItems={'center'}>
-                                            <h2>{data.title}</h2>
-                                            <Text>{data.dataCount}</Text>
-                                        </Stack>
-                                    </Tab>
-                                )
-                            })}
-                        </TabList>
-                    </Tabs>
-                </Box>
+                <Box></Box>
 
                 {/** table */}
                 <Box>
                     <Table size='sm'>
                         <Thead>
                             <Tr>
-                                <Th w='46px'>
-                                    <Checkbox
-                                        bg='#ffffff'
-                                        icon={<AiOutlineMinus />}
-                                        colorScheme='pink'
-                                    />
-                                </Th>
-                                <Th></Th>
                                 {TableHead.map((data, index) => {
                                     return (
                                         <Th key={index} className='table_head'>
@@ -216,400 +210,233 @@ const DashTable = () => {
                         </Thead>
 
                         <Tbody>
-                            {pprojects.items.length > 0 ? (
+                            {displayDataRecent.length > 0 ? (
                                 <>
-                                    {pprojects.items.map((data, index) => {
+                                    {displayDataRecent.map((data, index) => {
+                                        let activeStatus
+                                        let activeElementSet
+                                        if (
+                                            data.projectStatus &&
+                                            data.projectStatus.length > 0 &&
+                                            projectTagData.length > 0
+                                        ) {
+                                            activeStatus =
+                                                data.projectStatus.find(
+                                                    (element) => element.active
+                                                )
+                                            if (activeStatus) {
+                                                activeElementSet =
+                                                    projectTagData.find(
+                                                        (element) =>
+                                                            element.tagName ===
+                                                            activeStatus.status
+                                                    )
+                                            }
+                                        } else {
+                                        }
+
+                                        let allRegistrations = [
+                                            ...data.registration,
+                                        ]
+
+                                        /** function to return latest registration */
+                                        let returnedData =
+                                            getLatestRegistration(
+                                                allRegistrations
+                                            )
+
+                                        let rpath =
+                                            data.student.graduate_program_type.toLowerCase() ===
+                                            'masters'
+                                                ? 'masters'
+                                                : 'phd'
                                         return (
-                                            <>
-                                                <Tr
-                                                    className='table_row'
-                                                    key={data._id}>
-                                                    <Td w='46px'>
-                                                        <Checkbox colorScheme='pink' />
-                                                    </Td>
-                                                    <Td w='36px'>
-                                                        <Box
-                                                            onClick={
-                                                                handleDropDown
-                                                            }
-                                                            ref={activeDrop}
-                                                            style={{
-                                                                color: '#5E5C60',
-                                                                fontSize:
-                                                                    '16px',
-                                                            }}>
-                                                            {activityDrpdown ? (
-                                                                <IoIosArrowDropdown />
-                                                            ) : (
-                                                                <IoIosArrowDropright />
-                                                            )}
-                                                        </Box>
-                                                    </Td>
-                                                    <Td>1</Td>
-                                                    <Td
-                                                        style={{
-                                                            color: '#5E5C60',
-                                                            fontWeight: 500,
-                                                        }}>
-                                                        {
-                                                            data.student
-                                                                .registrationNumber
-                                                        }
-                                                    </Td>
+                                            <Tr
+                                                className={`table_row `}
+                                                key={data._id}>
+                                                <Td
+                                                    style={{
+                                                        color: '#5E5C60',
+                                                        fontWeight: 500,
+                                                    }}>
+                                                    {
+                                                        data.student
+                                                            .registrationNumber
+                                                    }
+                                                </Td>
 
-                                                    <Td
-                                                        className='studentName'
-                                                        style={{
-                                                            color: '#15151D',
-                                                            fontWeight: 500,
-                                                            fontSize: '13px',
-                                                        }}>
-                                                        {
-                                                            data.student
-                                                                .studentName
+                                                <Td
+                                                    minW='150px'
+                                                    maxW='150px'
+                                                    className='studentName'
+                                                    style={{
+                                                        color: '#15151D',
+                                                        fontWeight: 500,
+                                                        fontSize: '13px',
+                                                    }}>
+                                                    {data.student.studentName}
+                                                </Td>
+                                                <Td
+                                                    maxW='250px'
+                                                    style={{
+                                                        fontWeight: 500,
+                                                        color: '#15151D',
+                                                    }}>
+                                                    {data.topic}
+                                                </Td>
+                                                <Td>
+                                                    {' '}
+                                                    <StatusItem
+                                                        tcolors={
+                                                            activeElementSet &&
+                                                            activeElementSet.hex
+                                                                ? activeElementSet.hex
+                                                                : ''
                                                         }
-                                                    </Td>
-                                                    <Td
-                                                        maxW='250px'
-                                                        style={{
-                                                            fontWeight: 500,
-                                                            color: '#15151D',
-                                                        }}>
-                                                        {data.topic}
-                                                    </Td>
-                                                    <Td>
-                                                        {' '}
-                                                        <StatusItem
-                                                            width='90px'
-                                                            className='reviews'
-                                                            direction='row'
-                                                            alignItems='center'>
-                                                            <div />
-                                                            <Text>
-                                                                {' '}
-                                                                In Review
-                                                            </Text>
-                                                        </StatusItem>
-                                                    </Td>
+                                                        bcolors={
+                                                            activeElementSet &&
+                                                            activeElementSet.rgba
+                                                                ? activeElementSet.rgba
+                                                                : ''
+                                                        }
+                                                        minW='160px'
+                                                        direction='row'
+                                                        alignItems='center'>
+                                                        <div />
+                                                        <Text>
+                                                            {' '}
+                                                            {activeElementSet &&
+                                                            activeElementSet.tagName !==
+                                                                undefined
+                                                                ? activeElementSet.tagName
+                                                                : ''}
+                                                        </Text>
+                                                    </StatusItem>
+                                                </Td>
 
-                                                    <Td>
-                                                        <Box
-                                                            m='auto'
-                                                            w='100%'
-                                                            display='flex'
-                                                            justifyContent={
-                                                                'center'
-                                                            }>
-                                                            {data.examiners
-                                                                .length < 1 ? (
-                                                                <Tooltip
-                                                                    color='#fbd2d4'
-                                                                    borderRadius={
-                                                                        '8px'
-                                                                    }
-                                                                    height='30px'
-                                                                    hasArrow
-                                                                    label={
-                                                                        <Box
-                                                                            style={{
-                                                                                fontFamily:
-                                                                                    'Inter',
-                                                                                fontSize:
-                                                                                    '14px',
-                                                                            }}
-                                                                            w='100%'
-                                                                            h='100%'
-                                                                            display='flex'
-                                                                            alignItems={
-                                                                                'center'
-                                                                            }
-                                                                            p='10px 5px 10px 5px'>
+                                                <Td>
+                                                    <Box
+                                                        m='auto'
+                                                        w='100%'
+                                                        display='flex'
+                                                        justifyContent={
+                                                            'center'
+                                                        }>
+                                                        {data.examiners.length <
+                                                        1 ? (
+                                                            <Tooltip
+                                                                color='#fbd2d4'
+                                                                borderRadius={
+                                                                    '8px'
+                                                                }
+                                                                height='30px'
+                                                                hasArrow
+                                                                label={
+                                                                    <Box
+                                                                        style={{
+                                                                            fontFamily:
+                                                                                'Inter',
+                                                                            fontSize:
+                                                                                '14px',
+                                                                        }}
+                                                                        w='100%'
+                                                                        h='100%'
+                                                                        display='flex'
+                                                                        alignItems={
+                                                                            'center'
+                                                                        }
+                                                                        p='10px 5px 10px 5px'>
+                                                                        Assign
+                                                                        Examiners
+                                                                    </Box>
+                                                                }>
+                                                                <Box className='add_examiners'>
+                                                                    <AiOutlinePlus />
+                                                                </Box>
+                                                            </Tooltip>
+                                                        ) : (
+                                                            <Tooltip
+                                                                hasArrow
+                                                                color='#fbd2d4'
+                                                                borderRadius={
+                                                                    '8px'
+                                                                }
+                                                                label={
+                                                                    <Box
+                                                                        style={{
+                                                                            fontFamily:
+                                                                                'Inter',
+                                                                            fontSize:
+                                                                                '14px',
+                                                                        }}
+                                                                        w='100%'
+                                                                        h='100%'
+                                                                        display='flex'
+                                                                        flexDirection={
+                                                                            'column'
+                                                                        }
+                                                                        alignItems={
+                                                                            'center'
+                                                                        }>
+                                                                        <Box p='10px 5px 10px 5px'>
                                                                             Assign
                                                                             Examiners
                                                                         </Box>
-                                                                    }>
-                                                                    <Box className='add_examiners'>
-                                                                        <AiOutlinePlus />
+                                                                        <Divider />
+                                                                        <Box p='10px 5px 10px 5px'>
+                                                                            View
+                                                                            Examiners
+                                                                        </Box>
                                                                     </Box>
-                                                                </Tooltip>
-                                                            ) : (
-                                                                <Tooltip
-                                                                    hasArrow
-                                                                    color='#fbd2d4'
-                                                                    borderRadius={
-                                                                        '8px'
+                                                                }>
+                                                                <Box className='examiner_item'>
+                                                                    {
+                                                                        data
+                                                                            .examiners
+                                                                            .length
                                                                     }
-                                                                    label={
-                                                                        <Box
-                                                                            style={{
-                                                                                fontFamily:
-                                                                                    'Inter',
-                                                                                fontSize:
-                                                                                    '14px',
-                                                                            }}
-                                                                            w='100%'
-                                                                            h='100%'
-                                                                            display='flex'
-                                                                            flexDirection={
-                                                                                'column'
-                                                                            }
-                                                                            alignItems={
-                                                                                'center'
-                                                                            }>
-                                                                            <Box p='10px 5px 10px 5px'>
-                                                                                Assign
-                                                                                Examiners
-                                                                            </Box>
-                                                                            <Divider />
-                                                                            <Box p='10px 5px 10px 5px'>
-                                                                                View
-                                                                                Examiners
-                                                                            </Box>
-                                                                        </Box>
-                                                                    }>
-                                                                    <Box className='examiner_item'>
-                                                                        {
-                                                                            data
-                                                                                .examiners
-                                                                                .length
-                                                                        }
-                                                                    </Box>
-                                                                </Tooltip>
-                                                            )}
-                                                        </Box>
-                                                    </Td>
-                                                    <Td>
-                                                        <Box className='semester'>
-                                                            {
-                                                                data.student
-                                                                    .semester
-                                                            }{' '}
-                                                            {
-                                                                data.student
-                                                                    .academicYear
-                                                            }
-                                                        </Box>
-                                                    </Td>
-                                                    <Td>
-                                                        <Box
-                                                            m='auto'
-                                                            w='100%'
-                                                            display='flex'
-                                                            justifyContent={
-                                                                'center'
-                                                            }></Box>
-                                                    </Td>
-                                                    <Td>
-                                                        <Menu>
-                                                            <MenuButton>
-                                                                <Box fontSize='20px'>
-                                                                    <TbDotsVertical />
                                                                 </Box>
-                                                            </MenuButton>
-                                                            <MenuList
-                                                                zIndex={'10'}>
-                                                                <MenuItem
-                                                                    onClick={() =>
-                                                                        routeNavigate(
-                                                                            `/projects/edit/${data._id}`
-                                                                        )
-                                                                    }>
-                                                                    Edit
-                                                                </MenuItem>
-                                                                <MenuItem
-                                                                    onClick={() =>
-                                                                        routeNavigate(
-                                                                            `/projects/projectreport/${data._id}`
-                                                                        )
-                                                                    }>
-                                                                    View
-                                                                </MenuItem>
-                                                                <MenuItem>
-                                                                    Delete
-                                                                </MenuItem>
-                                                            </MenuList>
-                                                        </Menu>
-                                                    </Td>
-                                                </Tr>
-                                                {activityDrpdown && (
-                                                    <Tr
-                                                        position='relative'
-                                                        h='250px'
-                                                        borderBottom={
-                                                            '1px solid #E1FCEF'
-                                                        }
-                                                        key={index}>
-                                                        <Box h='100%'>
-                                                            <TableDropDown
-                                                                w='100vw'
-                                                                bg='#ffffff'
-                                                                h='100%'
-                                                                position='absolute'>
-                                                                <ListStack
-                                                                    spacing='36px'
-                                                                    h='100%'>
-                                                                    <Stack
-                                                                        className='list-item'
-                                                                        direction='row'
-                                                                        w='100%'
-                                                                        alignItems={
-                                                                            'center'
-                                                                        }>
-                                                                        <Box className='icon_add'>
-                                                                            <RiPencilFill />
-                                                                        </Box>
-
-                                                                        <Box className='activities'>
-                                                                            <Text>
-                                                                                <span className='activity_identity'>{`{name}`}</span>{' '}
-                                                                                updated{' '}
-                                                                                <span className='activity_type'>
-                                                                                    payment
-                                                                                    reciept
-                                                                                </span>{' '}
-                                                                                from{' '}
-                                                                                <span className='activity_text'>
-                                                                                    150000
-                                                                                </span>{' '}
-                                                                                to{' '}
-                                                                                <span className='activity_text'>
-                                                                                    520,000
-                                                                                    Ugx
-                                                                                </span>{' '}
-                                                                                on{' '}
-                                                                                {`{Date}`}{' '}
-                                                                                @{' '}
-                                                                                {`{time}`}
-                                                                            </Text>
-                                                                        </Box>
-                                                                    </Stack>
-
-                                                                    <Stack
-                                                                        direction='row'
-                                                                        w='100%'
-                                                                        className='list-item'
-                                                                        alignItems={
-                                                                            'flex-start'
-                                                                        }>
-                                                                        <Box className='icon_stat'>
-                                                                            <IoIosStats />
-                                                                        </Box>
-
-                                                                        <Stack className='activities'>
-                                                                            <Box>
-                                                                                <Stack
-                                                                                    spacing='5px'
-                                                                                    direction='row'
-                                                                                    className='activities_texts'>
-                                                                                    <Text className='activity_identity'>{`{name}`}</Text>{' '}
-                                                                                    <Text>
-                                                                                        updated
-                                                                                    </Text>
-                                                                                    <span className='activity_type'>
-                                                                                        status
-                                                                                    </span>
-                                                                                    <Text>
-                                                                                        from
-                                                                                    </Text>
-                                                                                    <StatusItem
-                                                                                        className='reviews'
-                                                                                        direction='row'
-                                                                                        alignItems='center'>
-                                                                                        <div />
-                                                                                        <Text>
-                                                                                            {' '}
-                                                                                            In
-                                                                                            Review
-                                                                                        </Text>
-                                                                                    </StatusItem>
-                                                                                    <Text>
-                                                                                        to
-                                                                                    </Text>
-                                                                                    <StatusItem
-                                                                                        className='approved'
-                                                                                        direction='row'
-                                                                                        alignItems='center'>
-                                                                                        <div />
-                                                                                        <Text>
-                                                                                            Approved
-                                                                                            Viva
-                                                                                        </Text>
-                                                                                    </StatusItem>
-                                                                                    <Text>
-                                                                                        on{' '}
-                                                                                        {`{Date}`}{' '}
-                                                                                        @{' '}
-                                                                                        {`{time}`}
-                                                                                    </Text>
-                                                                                </Stack>
-                                                                            </Box>
-
-                                                                            <Stack
-                                                                                className='status_update'
-                                                                                direction='row'
-                                                                                alignItems={
-                                                                                    'center'
-                                                                                }>
-                                                                                <Box>
-                                                                                    <CgNotes />
-                                                                                </Box>
-
-                                                                                <Box>
-                                                                                    <Text>
-                                                                                        This
-                                                                                        is
-                                                                                        a
-                                                                                        note,
-                                                                                        user
-                                                                                        fills
-                                                                                        in
-                                                                                        while
-                                                                                        changing
-                                                                                        the
-                                                                                        status,
-                                                                                        which
-                                                                                        explains
-                                                                                        the
-                                                                                        current
-                                                                                        project
-                                                                                        status.
-                                                                                    </Text>
-                                                                                </Box>
-                                                                            </Stack>
-                                                                        </Stack>
-                                                                    </Stack>
-
-                                                                    <Stack
-                                                                        direction='row'
-                                                                        w='100%'
-                                                                        alignItems={
-                                                                            'center'
-                                                                        }
-                                                                        className='list-item'>
-                                                                        <Box className='icon_create'>
-                                                                            <AiOutlinePlus />
-                                                                        </Box>
-
-                                                                        <Box className='activities'>
-                                                                            <Text>
-                                                                                <span className='activity_identity'>{`{name}`}</span>{' '}
-                                                                                created{' '}
-                                                                                <span className='activity_type'>
-                                                                                    project
-                                                                                </span>{' '}
-                                                                                on{' '}
-                                                                                {`{Date}`}{' '}
-                                                                                @{' '}
-                                                                                {`{time}`}
-                                                                            </Text>
-                                                                        </Box>
-                                                                    </Stack>
-                                                                </ListStack>
-                                                            </TableDropDown>
-                                                        </Box>
-                                                    </Tr>
-                                                )}
-                                            </>
+                                                            </Tooltip>
+                                                        )}
+                                                    </Box>
+                                                </Td>
+                                                <Td>
+                                                    <Box className='registration'>
+                                                        {returnedData}{' '}
+                                                    </Box>
+                                                </Td>
+                                                <Td>
+                                                    <Box
+                                                        m='auto'
+                                                        w='100%'
+                                                        display='flex'
+                                                        className='subtype'
+                                                        justifyContent={
+                                                            'center'
+                                                        }>
+                                                        {data.submissionStatus}
+                                                    </Box>
+                                                </Td>
+                                                <Td>
+                                                    <Menu>
+                                                        <MenuButton>
+                                                            <Box fontSize='20px'>
+                                                                <TbDotsVertical />
+                                                            </Box>
+                                                        </MenuButton>
+                                                        <MenuList zIndex={'10'}>
+                                                            <MenuItem
+                                                                onClick={() =>
+                                                                    routeNavigate(
+                                                                        `${rpath}/projects/projectreport/${data._id}`
+                                                                    )
+                                                                }>
+                                                                View Student
+                                                            </MenuItem>
+                                                        </MenuList>
+                                                    </Menu>
+                                                </Td>
+                                            </Tr>
                                         )
                                     })}
                                 </>
@@ -627,12 +454,6 @@ const DashTable = () => {
                     </Table>
                 </Box>
             </Stack>
-
-            {/** more button */}
-
-            <SeeMoreButton>
-                <Button>See more...</Button>
-            </SeeMoreButton>
         </Container>
     )
 }
@@ -640,6 +461,7 @@ const DashTable = () => {
 export default DashTable
 
 const Container = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     .form_container {
         width: 100%;
         min-height: 360px;
@@ -658,7 +480,7 @@ const Container = styled(Stack)`
 
             font-style: normal;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 17px;
             line-height: 137.5%;
             color: #111827;
         }
@@ -767,6 +589,23 @@ const Container = styled(Stack)`
         cursor: pointer;
     }
 
+    .registration {
+        min-width: 140px;
+        width: 100%;
+        color: #3a3a43;
+        padding: 4px 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #eeeeef;
+        border-radius: 4px;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 11px;
+        text-transform: uppercase;
+    }
+
     .Sub_date {
         font-weight: 500;
     }
@@ -779,6 +618,20 @@ const Container = styled(Stack)`
         :hover {
             background: #fef9ef;
         }
+    }
+
+    .subtype {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 11px;
+        text-transform: uppercase;
+        padding: 4px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eeeeef;
+        border-radius: 4px;
     }
 `
 
@@ -877,11 +730,23 @@ const StatusItem = styled(Stack)`
     border-radius: 4px;
 
     padding: 3px 8px 3px 8px;
-
+    background: ${({ bcolors }) => bcolors};
     div {
         border-radius: 2px;
         width: 6px;
         height: 6px;
+        background: ${({ tcolors }) => tcolors};
+    }
+
+    p {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 18px;
+        letter-spacing: 0.03em;
+        text-transform: capitalize;
+        color: ${({ tcolors }) => tcolors};
     }
 `
 

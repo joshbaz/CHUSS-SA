@@ -45,38 +45,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 const GEViewStudentTable = () => {
-    const filterTabData = [
-        {
-            title: 'All',
-            dataCount: 27,
-        },
-        {
-            title: 'In Review',
-            dataCount: 7,
-        },
-        {
-            title: 'Approved Viva',
-            dataCount: 4,
-        },
-        {
-            title: 'Completed',
-            dataCount: 4,
-        },
-        {
-            title: 'On Hold',
-            dataCount: 2,
-        },
-        {
-            title: 'Graduated',
-            dataCount: 2,
-        },
-    ]
-
     const TableHead = [
-        {
-            title: '#',
-            filter: true,
-        },
         {
             title: 'Student_REG_NO.',
         },
@@ -84,42 +53,143 @@ const GEViewStudentTable = () => {
             title: 'Student Name',
         },
         {
+            title: 'Student Email',
+        },
+        {
+            title: 'Program ',
+        },
+        {
             title: 'Report/Grading',
             filter: true,
         },
-        {
-            title: 'STATUS',
-            filter: true,
-        },
-
-        {
-            title: 'Semester',
-        },
     ]
 
-    const [addbutton, setaddbutton] = React.useState(true)
-    const [activityDrpdown, setActivityDropDown] = React.useState(false)
-    let activeDrop = React.useRef(null)
+    const [perPage, setPerPage] = React.useState(10)
+    const [allDisplayData, setAllDisplayData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allItems: [],
+        totalItemsDisplayed: 0,
+        totalAllItems: 0,
+        totalPages: 0,
+    })
 
-    const handleDropDown = () => {
-        setActivityDropDown(!activityDrpdown)
-    }
+    const [filterTabData, setfilterTabData] = React.useState([
+        {
+            title: 'All',
+            dataCount: 0,
+        },
+    ])
 
-    const handlePrev = () => {}
-
-    const handleNext = () => {}
-
-    let routeNavigate = useNavigate()
-
+    const [searchData, setSearchData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allSearchItems: [],
+        totalItemsDisplayed: 0,
+        totalSearchedItems: 0,
+        totalPages: 0,
+    })
     let { studentData, individualExaminer } = useSelector(
         (state) => state.examiner
     )
 
+    /** changes all document tabs */
+    React.useEffect(() => {
+        setfilterTabData([
+            {
+                title: 'All',
+                dataCount: allDisplayData.totalAllItems,
+            },
+        ])
+    }, [allDisplayData.totalAllItems, searchData.totalSearchedItems])
+
+    React.useEffect(() => {
+        let allQueriedItems = studentData.items.filter((datas) => {
+            return datas
+        })
+        /** initial items  */
+        //items collected
+        const allItemsCollected = allQueriedItems
+        //total all items
+        const totalItems = allQueriedItems.length
+        let itemsPerPage = perPage
+        const currentPage = 1
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+        const currentItems = allItemsCollected.slice(
+            indexOfFirstItem,
+            indexOfLastItem
+        )
+
+        const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+        setAllDisplayData({
+            currentPage: currentPage,
+            itemsPerPage: itemsPerPage,
+            items: currentItems,
+            allItems: allQueriedItems,
+            totalItemsDisplayed: currentItems.length,
+            totalAllItems: totalItems,
+            totalPages: pageLength,
+        })
+    }, [studentData.items])
+
+    let routeNavigate = useNavigate()
+
     let PaginationFirstNumber =
-        studentData.currentPage * studentData.perPage - studentData.perPage + 1
+        allDisplayData.currentPage * allDisplayData.itemsPerPage -
+        allDisplayData.itemsPerPage +
+        1
 
     let PaginationLastNumber =
-        PaginationFirstNumber + studentData.current_total - 1
+        PaginationFirstNumber + allDisplayData.totalItemsDisplayed - 1
+
+    const handlePrev = () => {
+        if (allDisplayData.currentPage - 1 >= 1) {
+            let page = allDisplayData.currentPage - 1
+            const indexOfLastItem = page * allDisplayData.itemsPerPage
+            const indexOfFirstItem =
+                indexOfLastItem - allDisplayData.itemsPerPage
+
+            const currentItems = allDisplayData.allItems.slice(
+                indexOfFirstItem,
+                indexOfLastItem
+            )
+
+            setAllDisplayData({
+                ...allDisplayData,
+                currentPage: page,
+                itemsPerPage: perPage,
+                items: currentItems,
+                totalItemsDisplayed: currentItems.length,
+            })
+        }
+    }
+
+    const handleNext = () => {
+        if (allDisplayData.currentPage + 1 <= allDisplayData.totalPages) {
+            let page = allDisplayData.currentPage + 1
+            const indexOfLastItem = page * allDisplayData.itemsPerPage
+            const indexOfFirstItem =
+                indexOfLastItem - allDisplayData.itemsPerPage
+
+            const currentItems = allDisplayData.allItems.slice(
+                indexOfFirstItem,
+                indexOfLastItem
+            )
+
+            setAllDisplayData(() => ({
+                ...allDisplayData,
+                currentPage: page,
+                itemsPerPage: perPage,
+                items: currentItems,
+                totalItemsDisplayed: currentItems.length,
+            }))
+        }
+    }
     return (
         <Container spacing='25px' pb='20px'>
             {/** tab data */}
@@ -136,18 +206,39 @@ const GEViewStudentTable = () => {
 
             <Stack direction='column' spacing='0' p='0 30px' minH='352px'>
                 {/** table */}
-                <Box>
+                <Box minH='48vh'>
+                    <Stack
+                        direction='row'
+                        alignItems={'flex-end'}
+                        justifyContent={'space-between'}>
+                        <Tabs variant='unstyled'>
+                            <TabList>
+                                {filterTabData.map((data, index) => {
+                                    return (
+                                        <Tab
+                                            key={index}
+                                            _selected={{
+                                                color: '#F14C54',
+                                                fontWeight: '700',
+                                                borderBottom:
+                                                    '2px solid #DB5A5A',
+                                            }}
+                                            className='tab'>
+                                            <Stack
+                                                direction='row'
+                                                alignItems={'center'}>
+                                                <h2>{data.title}</h2>
+                                                <Text>{data.dataCount}</Text>
+                                            </Stack>
+                                        </Tab>
+                                    )
+                                })}
+                            </TabList>
+                        </Tabs>
+                    </Stack>
                     <Table size='sm'>
                         <Thead>
                             <Tr>
-                                <Th w='46px'>
-                                    <Checkbox
-                                        bg='#ffffff'
-                                        icon={<AiOutlineMinus />}
-                                        colorScheme='pink'
-                                    />
-                                </Th>
-
                                 {TableHead.map((data, index) => {
                                     return (
                                         <Th key={index} className='table_head'>
@@ -194,12 +285,17 @@ const GEViewStudentTable = () => {
                         </Thead>
 
                         <Tbody>
-                            {studentData.items.length > 0 ? (
+                            {allDisplayData.items.length > 0 ? (
                                 <>
-                                    {studentData.items.map((data, index) => {
+                                    {allDisplayData.items.map((data, index) => {
                                         console.log('graded', data)
+                                        let studentType =
+                                            data.student
+                                                .graduate_program_type === 'PhD'
+                                                ? 'phd'
+                                                : 'masters'
                                         let markedStatus = false
-
+                                        let reportId
                                         data.examinerReports.filter(
                                             (dataReport) => {
                                                 if (
@@ -217,11 +313,6 @@ const GEViewStudentTable = () => {
                                             <Tr
                                                 className='table_row'
                                                 key={data._id}>
-                                                <Td w='46px'>
-                                                    <Checkbox colorScheme='pink' />
-                                                </Td>
-
-                                                <Td>1</Td>
                                                 <Td
                                                     style={{
                                                         color: '#5E5C60',
@@ -241,6 +332,24 @@ const GEViewStudentTable = () => {
                                                         fontSize: '13px',
                                                     }}>
                                                     {data.student.studentName}
+                                                </Td>
+                                                <Td
+                                                    className='studentName'
+                                                    style={{
+                                                        color: '#15151D',
+                                                        fontWeight: 500,
+                                                        fontSize: '13px',
+                                                    }}>
+                                                    {data.student.email}
+                                                </Td>
+                                                <Td
+                                                    className='studentName'
+                                                    style={{
+                                                        color: '#15151D',
+                                                        fontWeight: 500,
+                                                        fontSize: '13px',
+                                                    }}>
+                                                    {studentType.toUpperCase()}
                                                 </Td>
                                                 <Td>
                                                     {markedStatus ? (
@@ -269,27 +378,6 @@ const GEViewStudentTable = () => {
                                                         </StatusItem>
                                                     )}
                                                 </Td>
-                                                <Td>
-                                                    {' '}
-                                                    <StatusItem
-                                                        width='90px'
-                                                        className='reviews'
-                                                        direction='row'
-                                                        alignItems='center'>
-                                                        <div />
-                                                        <Text> In Review</Text>
-                                                    </StatusItem>
-                                                </Td>
-
-                                                <Td>
-                                                    <Box className='semester'>
-                                                        {data.student.semester}{' '}
-                                                        {
-                                                            data.student
-                                                                .academicYear
-                                                        }
-                                                    </Box>
-                                                </Td>
 
                                                 <Td>
                                                     <Stack
@@ -299,7 +387,7 @@ const GEViewStudentTable = () => {
                                                         direction='row'
                                                         onClick={() =>
                                                             routeNavigate(
-                                                                `/projects/projectreport/${data._id}`
+                                                                `/${studentType}/projects/projectreport/${data._id}`
                                                             )
                                                         }>
                                                         <Box fontSize='16px'>
@@ -326,49 +414,55 @@ const GEViewStudentTable = () => {
                         </Tbody>
                     </Table>
                 </Box>
-            </Stack>
 
-            {/** Pagination */}
+                {/** Pagination */}
+                <Box>
+                    {allDisplayData.items.length > 0 && (
+                        <PaginationStack
+                            direction='row'
+                            height='56px'
+                            alignItems='center'
+                            justifyContent={'space-between'}>
+                            <Box className='pages'>
+                                <span>
+                                    {`${PaginationFirstNumber}`} -{' '}
+                                    {`${PaginationLastNumber}`} of{' '}
+                                    {`${allDisplayData.totalAllItems}`}
+                                </span>
+                            </Box>
+                            <Stack
+                                h='90%'
+                                direction='row'
+                                spacing='20px'
+                                alignItems='center'
+                                className='pagination'>
+                                <Box className='rows'>
+                                    <h1>Rows per page:</h1>
+                                    <span>{allDisplayData.itemsPerPage}</span>
+                                </Box>
 
-            <PaginationStack
-                p='0 20px'
-                direction='row'
-                height='56px'
-                alignItems='center'
-                justifyContent={'space-between'}>
-                <Box className='pages'>
-                    <span>
-                        {`${PaginationFirstNumber}`} -{' '}
-                        {`${PaginationLastNumber}`} of{' '}
-                        {`${studentData.overall_total}`}
-                    </span>
+                                {/** pagination arrows */}
+                                <Stack
+                                    direction='row'
+                                    alignItems='center'
+                                    className='arrows'>
+                                    <Box className='left' onClick={handlePrev}>
+                                        <MdKeyboardArrowLeft />
+                                    </Box>
+                                    <Box>
+                                        {' '}
+                                        {allDisplayData.currentPage}/
+                                        {allDisplayData.totalPages}
+                                    </Box>
+                                    <Box className='right' onClick={handleNext}>
+                                        <MdKeyboardArrowRight />
+                                    </Box>
+                                </Stack>
+                            </Stack>
+                        </PaginationStack>
+                    )}
                 </Box>
-                <Stack
-                    h='90%'
-                    direction='row'
-                    spacing='20px'
-                    alignItems='center'
-                    className='pagination'>
-                    <Box className='rows'>
-                        <h1>Rows per page:</h1>
-                        <span>{studentData.perPage}</span>
-                    </Box>
-
-                    {/** pagination arrows */}
-                    <Stack
-                        direction='row'
-                        alignItems='center'
-                        className='arrows'>
-                        <Box className='left' onClick={handlePrev}>
-                            <MdKeyboardArrowLeft />
-                        </Box>
-                        <Box>1</Box>
-                        <Box className='right' onClick={handleNext}>
-                            <MdKeyboardArrowRight />
-                        </Box>
-                    </Stack>
-                </Stack>
-            </PaginationStack>
+            </Stack>
         </Container>
     )
 }

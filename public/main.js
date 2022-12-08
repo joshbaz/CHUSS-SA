@@ -419,6 +419,11 @@ ipcMain.handle(
     'get-students-by-examiner',
     examinerController.allStudentsByExaminer
 )
+
+/**deletes file from the examiner */
+ipcMain.handle('delete-file-ex-app', examinerController.removeFileExaminer)
+
+ipcMain.handle('delete-examiner', examinerController.deleteExaminers)
 /** update examiner */
 ipcMain.handle('update-examiner', examinerController.updateExaminer)
 
@@ -845,6 +850,116 @@ ipcMain.handle('export-departments-csv', async (event, values) => {
                 Email: data2.email,
                 officeNumber: `${data2.officeNumber}`,
                 'Creation Date': data2.creationDate,
+            }
+        })
+
+        console.log('rows  data', rowData, rowData)
+
+        const worksheet = XLSX.utils.json_to_sheet(rowData)
+        worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
+            return { wch: 10 }
+        })
+        const workbook = XLSX.utils.book_new()
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, `${values.tableName}`)
+
+        await XLSX.writeFile(workbook, dialogSaves.filePath)
+
+        const newoptions = {
+            message: `Export Successfully Saved - ${dialogSaves.filePath}`,
+        }
+        dialog.showMessageBox(mainWindow, newoptions)
+    }
+})
+
+/** export examiners */
+
+ipcMain.handle('export-examiners-csv', async (event, values) => {
+    const options = {
+        defaultPath: app.getPath('documents') + `/${values.tableName}.${'csv'}`,
+        filters: [
+            {
+                name: 'Custom File Type',
+                extensions: ['xls', 'xlsx', 'xlsb', 'csv', 'ods'],
+            },
+        ],
+    }
+    const dialogSaves = await dialog.showSaveDialog(mainWindow, options)
+
+    if (dialogSaves.canceled) {
+        return
+    } else {
+        const rowData = await values.data.map((data2, index) => {
+            /** function to return latest registration */
+
+            return {
+                No: index + 1,
+                'Examiner Name': `${data2.jobtitle + data2.name}`,
+                Type: data2.typeOfExaminer.toUpperCase(),
+                Email: data2.email,
+                'Phone Number': data2.phoneNumber.toString(),
+                'No. of Students': data2.studentsNo,
+            }
+        })
+
+        console.log('rows  data', rowData, rowData)
+
+        const worksheet = XLSX.utils.json_to_sheet(rowData)
+        worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
+            return { wch: 10 }
+        })
+        const workbook = XLSX.utils.book_new()
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, `${values.tableName}`)
+
+        await XLSX.writeFile(workbook, dialogSaves.filePath)
+
+        const newoptions = {
+            message: `Export Successfully Saved - ${dialogSaves.filePath}`,
+        }
+        dialog.showMessageBox(mainWindow, newoptions)
+    }
+})
+
+/** export reports adv */
+/** export examiners */
+
+ipcMain.handle('export-exportedDatas-csv', async (event, values) => {
+    const options = {
+        defaultPath: app.getPath('documents') + `/${values.tableName}.${'csv'}`,
+        filters: [
+            {
+                name: 'Custom File Type',
+                extensions: ['xls', 'xlsx', 'xlsb', 'csv', 'ods'],
+            },
+        ],
+    }
+    const dialogSaves = await dialog.showSaveDialog(mainWindow, options)
+
+    if (dialogSaves.canceled) {
+        return
+    } else {
+        const rowData = await values.data.map((data2, index) => {
+            /** function to return latest registration */
+            let currentDate = Moments(new Date())
+            let pastDate = Moments(data2.creationDate)
+            let diff = data2.creationDate
+                ? currentDate.diff(pastDate, 'days')
+                : 0
+            let reportDelay = data2.submissionDate ? 0 : diff
+            return {
+                No: index + 1,
+                'Student Name': data2.projectsData.student.studentName,
+                'Student Registration No':
+                    data2.projectsData.student.registrationNumber,
+                'Student PhoneNumber': data2.projectsData.student.phoneNumber,
+                'Student Email': data2.projectsData.student.email,
+                Topic: data2.projectsData.topic,
+                Examiner: `${data2.examiner.jobtitle + data2.examiner.name}`,
+                'Examiner Email': data2.examiner.email,
+                'Examiner PhoneNumber': data2.examiner.phoneNumber,
+                'Report Status': data2.reportStatus,
+                'Report Delay': reportDelay,
             }
         })
 

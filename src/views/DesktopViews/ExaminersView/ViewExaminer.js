@@ -101,7 +101,7 @@ let params = useParams()
                                 as='button'
                                 onClick={() =>
                                     routeNavigate(
-                                        `/examiners/edit/${params.id}`
+                                        `/m-examiners/examiners/edit/${params.id}`
                                     )
                                 }>
                                 Edit Details

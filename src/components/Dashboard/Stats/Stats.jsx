@@ -10,34 +10,91 @@ import {
     SimpleGrid,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
+import { useSelector } from 'react-redux'
 
-const tiledata = [
-    {
-        title: 'Total Graded',
-        value: 12,
-        subText: 'Students that have been graded ',
-        link: '',
-        bg: '#DDF5DF',
-        color: '#1BBD2B',
-    },
-    {
-        title: 'Total Students',
-        value: 103,
-        subText: 'All students who have not graduated or pending grading.',
-        link: '',
-        bg: '#FFE2D9',
-        color: '#FF3D00',
-    },
-    {
-        title: 'Total Examiners',
-        value: 203,
-        subText: 'Examinars that have been paid this week.',
-        link: '',
-        bg: '#EDEEFF',
-        color: '#293AD1',
-    },
-]
 const Stats = () => {
+    const [tiledata, setTileData] = React.useState([
+        {
+            title: 'Total Students',
+            value: 0,
+            subText: 'All students in the system.',
+            link: '',
+            bg: '#FFE2D9',
+            color: '#FF3D00',
+        },
+        {
+            title: 'Total Examiners',
+            value: 0,
+            subText: 'Examinars in the system.',
+            link: '',
+            bg: '#EDEEFF',
+            color: '#293AD1',
+        },
+        {
+            title: 'Total Opponents',
+            value: 0,
+            subText: 'Opponents in the system',
+            link: '',
+            bg: '#DDF5DF',
+            color: '#1BBD2B',
+        },
+        {
+            title: 'Total Supervisors',
+            value: 0,
+            subText: 'supervisors in the system ',
+            link: '',
+            bg: '#DDF5DF',
+            color: '#1BBD2B',
+        },
+    ])
+
+    const { allSupervisorItems } = useSelector((state) => state.supervisor)
+    const { allprojects } = useSelector((state) => state.project)
+    const { allOpponentItems } = useSelector((state) => state.opponent)
+    const { allExaminerItems } = useSelector((state) => state.examiner)
+
+    React.useEffect(() => {
+        setTileData([
+            {
+                title: 'Total Students',
+                value: allprojects.items.length,
+                subText: 'All students in the system.',
+                link: '',
+                bg: '#FFE2D9',
+                color: '#FF3D00',
+            },
+            {
+                title: 'Total Examiners',
+                value: allExaminerItems.items.length,
+                subText: 'Examinars in the system.',
+                link: '',
+                bg: '#EDEEFF',
+                color: '#293AD1',
+            },
+            {
+                title: 'Total Opponents',
+                value: allOpponentItems.items.length,
+                subText: 'Opponents in the system',
+                link: '',
+                bg: '#DDF5DF',
+                color: '#1BBD2B',
+            },
+            {
+                title: 'Total Supervisors',
+                value: allSupervisorItems.items.length,
+                subText: 'supervisors in the system ',
+                link: '',
+                bg: '#DDF5DF',
+                color: '#1BBD2B',
+            },
+        ])
+    }, [
+        allSupervisorItems.items,
+        allprojects.items,
+        allOpponentItems.items,
+        allExaminerItems.items,
+    ])
+
     return (
         <Container>
             <SimpleGrid columns={2} spacing='20px'>

@@ -32,6 +32,8 @@ const ViewExaminerFiles = ({ values, projectValues }) => {
             console.log(values.generalAppointmentLetters, 'at again')
             setFilesList(values.generalAppointmentLetters)
             setNameValues(values.name)
+        } else {
+            setFilesList([])
         }
     }, [values])
 
@@ -108,7 +110,7 @@ const ViewExaminerFiles = ({ values, projectValues }) => {
         console.log(dataGiven, 'given', data.fileId)
         setSelectedFile([
             {
-                uri: `https://chuss-test.herokuapp.com/docs/files/${data.fileId}`,
+                uri: `http://188.166.65.21:8000/docs/files/${data.fileId}`,
                 fileType: data.fileType,
                 fileData: new ArrayBuffer(dataGiven),
             },

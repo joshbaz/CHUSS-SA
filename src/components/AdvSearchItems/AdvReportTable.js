@@ -10,20 +10,15 @@ import {
     Tr,
     Th,
     Td,
+    Tabs,
+    TabList,
+    Tab,
     Checkbox,
-    Tooltip,
-    Divider,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
+    Button,
 } from '@chakra-ui/react'
-import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
-import {
-    IoIosArrowDropright,
-    IoIosArrowDropdown,
-    IoIosStats,
-} from 'react-icons/io'
+import { BiDownload } from 'react-icons/bi'
+import { AiOutlineMinus } from 'react-icons/ai'
+
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 import {
     MdOutlineUpdate,
@@ -37,6 +32,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import AdvPagination from './AdvPagination'
 import AdvPagination2 from './AdvPagination2'
+import Moments from 'moment-timezone'
 
 const AdvReportTable = ({
     tableLists,
@@ -45,17 +41,32 @@ const AdvReportTable = ({
     searchActive,
     allTagData,
     filterInfo,
+    allProjects,
     exportData,
     setExportData,
 }) => {
     const [allDisplayItems, setAllDisplayItems] = React.useState([])
+
+    let { allprojects, isError, isSuccess, message } = useSelector(
+        (state) => state.project
+    )
+
+    let reportCollectedDatas = useSelector((state) => state.report)
+    let examinerCollectedDatas = useSelector((state) => state.examiner)
+    const [filterTabData, setfilterTabData] = React.useState([
+        {
+            title: 'All',
+            dataCount: 0,
+        },
+    ])
+
     const [allDisplayData, setAllDisplayData] = React.useState({
         currentPage: 0,
         itemsPerPage: 8,
         items: [],
-        allSearchItems: [],
+        allItems: [],
         totalItemsDisplayed: 0,
-        totalSearchedItems: 0,
+        totalAllItems: 0,
         totalPages: 0,
     })
     const [projectTagData, setProjectTagData] = React.useState([])
@@ -70,16 +81,55 @@ const AdvReportTable = ({
         totalPages: 0,
     })
 
+    React.useEffect(() => {
+        if (searchActive) {
+            setfilterTabData([
+                {
+                    title: 'All',
+                    dataCount: searchData.totalSearchedItems,
+                },
+            ])
+        } else {
+            setfilterTabData([
+                {
+                    title: 'All',
+                    dataCount: allDisplayData.totalAllItems,
+                },
+            ])
+        }
+    }, [
+        searchActive,
+        allDisplayData.totalAllItems,
+        searchData.totalSearchedItems,
+    ])
+
     //const [exportData, setExportData] = React.useState([])
     React.useEffect(() => {
-        console.log('items here', allItems.items)
+        console.log('items hereeerer', allItems.items, allProjects)
         setAllDisplayItems(allItems.items)
+
+        const filteredData = allItems.items.map((data) => {
+            for (
+                let iteration = 0;
+                iteration < allProjects.length;
+                iteration++
+            ) {
+                if (allProjects[iteration]._id === data.projectId._id) {
+                    return {
+                        ...data,
+                        projectsData: allProjects[iteration],
+                    }
+                }
+            }
+        })
+
+        console.log('Data achieved', filteredData)
 
         /** initial items  */
         //items collected
-        const allItemsCollected = allItems.items
+        const allItemsCollected = filteredData
         //total all items
-        const totalItems = allItems.items.length
+        const totalItems = filteredData.length
         let itemsPerPage = perPage
         const currentPage = 1
         const indexOfLastItem = currentPage * itemsPerPage
@@ -96,9 +146,9 @@ const AdvReportTable = ({
             currentPage: currentPage,
             itemsPerPage: itemsPerPage,
             items: currentItems,
-            allSearchItems: allItems.items,
+            allItems: filteredData,
             totalItemsDisplayed: currentItems.length,
-            totalSearchedItems: totalItems,
+            totalAllItems: totalItems,
             totalPages: pageLength,
         })
         /** export trial */
@@ -113,7 +163,7 @@ const AdvReportTable = ({
         // })
         // // console.log('newExports', newExports)
         // setExportData(newExports)
-    }, [allItems])
+    }, [allItems.items])
 
     useEffect(() => {
         let allInfoData = allTagData.filter(
@@ -125,11 +175,12 @@ const AdvReportTable = ({
 
     /** function to handle search filters */
     const handleFilters = () => {
-        const searchResults = allDisplayItems.filter((data1, index) => {
+        const searchResults = allDisplayData.allItems.filter((data1, index) => {
             /** student name */
             if (filterInfo[0].title === 'Student Name') {
                 if (filterInfo[0].queryfunction === 'is') {
-                    let name = data1.student.studentName.toLowerCase()
+                    let name =
+                        data1.projectsData.student.studentName.toLowerCase()
                     //console.log('name', name)
                     let check = filterInfo[0].searchfor.some((details) =>
                         name.includes(details)
@@ -149,8 +200,9 @@ const AdvReportTable = ({
             /** contacts */
             if (filterInfo[0].title === 'Student Contacts') {
                 if (filterInfo[0].queryfunction === 'is') {
-                    let phone = data1.student.phoneNumber.toLowerCase()
-                    let email = data1.student.email.toLowerCase()
+                    let phone =
+                        data1.projectsData.student.phoneNumber.toLowerCase()
+                    let email = data1.projectsData.student.email.toLowerCase()
                     let checkphone = filterInfo[0].searchfor.some((details) =>
                         phone.includes(details)
                     )
@@ -167,7 +219,7 @@ const AdvReportTable = ({
             /** topic */
             if (filterInfo[0].title === 'topic') {
                 if (filterInfo[0].queryfunction === 'is') {
-                    let topic = data1.topic.toLowerCase()
+                    let topic = data1.projectsData.topic.toLowerCase()
 
                     let check = filterInfo[0].searchfor.some((details) =>
                         topic.includes(details)
@@ -177,9 +229,9 @@ const AdvReportTable = ({
                 }
             }
             /** status */
-            if (filterInfo[0].title === 'status') {
+            if (filterInfo[0].title === 'Report Status') {
                 if (filterInfo[0].queryfunction === 'is') {
-                    let status = data1.activeStatus.toLowerCase()
+                    let status = data1.reportStatus.toLowerCase()
 
                     let check = filterInfo[0].searchfor.some((details) =>
                         status.includes(details)
@@ -188,28 +240,85 @@ const AdvReportTable = ({
                     return check
                 }
             }
-            /** registration */
-            if (filterInfo[0].title === 'Registration') {
-                if (filterInfo[0].queryfunction === 'is') {
-                    let status = data1.activeStatus.toLowerCase()
+            /** report delay */
+            let currentDate = Moments(new Date())
+            let pastDate = Moments(data1.creationDate)
+            let diff = data1.creationDate
+                ? currentDate.diff(pastDate, 'days')
+                : 0
+            let reportDelay = data1.submissionDate ? 0 : diff
+            if (filterInfo[0].title === 'Report Delay') {
+                if (filterInfo[0].queryfunction === 'greater than') {
+                    let status = reportDelay
 
-                    let check = filterInfo[0].searchfor.some((details) =>
-                        status.includes(details)
+                    let check = filterInfo[0].searchfor.some(
+                        (details) => status > details
+                    )
+
+                    console.log('this greater t', check, diff)
+                    return check
+                }
+
+                if (filterInfo[0].queryfunction === 'less than') {
+                    let status = reportDelay
+
+                    let check = filterInfo[0].searchfor.some(
+                        (details) => status < details
+                    )
+
+                    return check
+                }
+
+                if (filterInfo[0].queryfunction === 'equal to') {
+                    let status = reportDelay
+                    console.log('whT IS THE D', diff)
+                    let check = filterInfo[0].searchfor.some(
+                        (details) => details == status
                     )
 
                     return check
                 }
             }
-            /** resubmission */
-            if (filterInfo[0].title === 'Resubmission') {
+            /** email */
+            if (filterInfo[0].title === 'Examiner Name') {
                 if (filterInfo[0].queryfunction === 'is') {
-                    let status = data1.activeStatus.toLowerCase()
+                    let status1 = `${
+                        data1.examiner.jobtitle.toLowerCase() +
+                        ' ' +
+                        data1.examiner.name.toLowerCase()
+                    }`
+                    let status2 = data1.examiner.name.toLowerCase()
 
-                    let check = filterInfo[0].searchfor.some(({ details }) =>
-                        status.includes(details)
+                    let check = filterInfo[0].searchfor.some((details) =>
+                        status1.includes(details)
                     )
 
-                    return check
+                    let check2 = filterInfo[0].searchfor.some((details) =>
+                        status2.includes(details)
+                    )
+
+                    if (check || check2) {
+                        return true
+                    }
+                }
+            }
+
+            /** contacts */
+            if (filterInfo[0].title === 'Examiner Contacts') {
+                if (filterInfo[0].queryfunction === 'is') {
+                    let phone = data1.examiner.phoneNumber.toLowerCase()
+                    let email = data1.examiner.email.toLowerCase()
+                    let checkphone = filterInfo[0].searchfor.some((details) =>
+                        phone.includes(details)
+                    )
+
+                    let checkemail = filterInfo[0].searchfor.some((details) =>
+                        email.includes(details)
+                    )
+
+                    if (checkphone || checkemail) {
+                        return true
+                    }
                 }
             }
 
@@ -246,7 +355,7 @@ const AdvReportTable = ({
                                     'is'
                                 ) {
                                     let name =
-                                        data1.student.studentName.toLowerCase()
+                                        data1.projectsData.student.studentName.toLowerCase()
 
                                     let check = newFilterArray[
                                         iteration
@@ -269,9 +378,9 @@ const AdvReportTable = ({
                                     'is'
                                 ) {
                                     let phone =
-                                        data1.student.phoneNumber.toLowerCase()
+                                        data1.projectsData.student.phoneNumber.toLowerCase()
                                     let email =
-                                        data1.student.email.toLowerCase()
+                                        data1.projectsData.student.email.toLowerCase()
                                     let checkphone = filterInfo[
                                         iteration
                                     ].searchfor.some((details) =>
@@ -295,7 +404,8 @@ const AdvReportTable = ({
                                     newFilterArray[iteration].queryfunction ===
                                     'is'
                                 ) {
-                                    let topic = data1.topic.toLowerCase()
+                                    let topic =
+                                        data1.projectsData.topic.toLowerCase()
 
                                     let check = newFilterArray[
                                         iteration
@@ -307,13 +417,16 @@ const AdvReportTable = ({
                                 }
                             }
                             /** status */
-                            if (newFilterArray[iteration].title === 'status') {
+                            if (
+                                newFilterArray[iteration].title ===
+                                'Report Status'
+                            ) {
                                 if (
                                     newFilterArray[iteration].queryfunction ===
                                     'is'
                                 ) {
                                     let status =
-                                        data1.activeStatus.toLowerCase()
+                                        data1.reportStatus.toLowerCase()
 
                                     let check = newFilterArray[
                                         iteration
@@ -324,46 +437,127 @@ const AdvReportTable = ({
                                     return check
                                 }
                             }
-                            /** registration */
+                            /** report delay */
+                            let currentDate = Moments(new Date())
+                            let pastDate = Moments(data1.creationDate)
+                            let diff = data1.creationDate
+                                ? currentDate.diff(pastDate, 'days')
+                                : 0
+
+                            let reportDelay = data1.submissionDate ? 0 : diff
                             if (
                                 newFilterArray[iteration].title ===
-                                'Registration'
+                                'Report Delay'
+                            ) {
+                                if (
+                                    newFilterArray[iteration].queryfunction ===
+                                    'greater than'
+                                ) {
+                                    let status = reportDelay
+
+                                    let check = newFilterArray[
+                                        iteration
+                                    ].searchfor.some(
+                                        (details) => status > details
+                                    )
+
+                                    return check
+                                }
+
+                                if (
+                                    newFilterArray[iteration].queryfunction ===
+                                    'less than'
+                                ) {
+                                    let status = reportDelay
+
+                                    let check = newFilterArray[
+                                        iteration
+                                    ].searchfor.some(
+                                        (details) => status < details
+                                    )
+
+                                    return check
+                                }
+
+                                if (
+                                    newFilterArray[iteration].queryfunction ===
+                                    'equal to'
+                                ) {
+                                    let status = reportDelay
+
+                                    let check = newFilterArray[
+                                        iteration
+                                    ].searchfor.some(
+                                        (details) => status == details
+                                    )
+
+                                    return check
+                                }
+                            }
+
+                            /** Examiner Name */
+                            if (
+                                newFilterArray[iteration].title ===
+                                'Examiner Name'
                             ) {
                                 if (
                                     newFilterArray[iteration].queryfunction ===
                                     'is'
                                 ) {
-                                    let status =
-                                        data1.activeStatus.toLowerCase()
+                                    let status1 = `${
+                                        data1.examiner.jobtitle.toLowerCase() +
+                                        ' ' +
+                                        data1.examiner.name.toLowerCase()
+                                    }`
+                                    let status2 =
+                                        data1.examiner.name.toLowerCase()
 
                                     let check = newFilterArray[
                                         iteration
                                     ].searchfor.some((details) =>
-                                        status.includes(details)
+                                        status1.includes(details)
                                     )
 
-                                    return check
+                                    let check2 = newFilterArray[
+                                        iteration
+                                    ].searchfor.some((details) =>
+                                        status2.includes(details)
+                                    )
+
+                                    if (check || check2) {
+                                        return true
+                                    }
                                 }
                             }
                             /** resubmission */
                             if (
                                 newFilterArray[iteration].title ===
-                                'Resubmission'
+                                'Examiner Contacts'
                             ) {
                                 if (
                                     newFilterArray[iteration].queryfunction ===
                                     'is'
                                 ) {
-                                    let status =
-                                        data1.activeStatus.toLowerCase()
+                                    let phone =
+                                        data1.examiner.phoneNumber.toLowerCase()
+                                    let email =
+                                        data1.examiner.email.toLowerCase()
 
-                                    let check = newFilterArray[
+                                    let checkphone = newFilterArray[
                                         iteration
-                                    ].searchfor.some(({ details }) =>
-                                        status.includes(details)
+                                    ].searchfor.some((details) =>
+                                        phone.includes(details)
                                     )
 
-                                    return check
+                                    let checkemail = newFilterArray[
+                                        iteration
+                                    ].searchfor.some((details) =>
+                                        email.includes(details)
+                                    )
+
+                                    if (checkphone || checkemail) {
+                                        return true
+                                    }
                                 }
                             }
 
@@ -442,8 +636,6 @@ const AdvReportTable = ({
         }
     }, [filterInfo])
 
-    console.log(allDisplayItems, 'allDisplayItems')
-
     /** function to handle next on pagination */
     const handleNext = () => {
         if (searchActive) {
@@ -473,7 +665,7 @@ const AdvReportTable = ({
                 const indexOfFirstItem =
                     indexOfLastItem - allDisplayData.itemsPerPage
 
-                const currentItems = allDisplayData.allSearchItems.slice(
+                const currentItems = allDisplayData.allItems.slice(
                     indexOfFirstItem,
                     indexOfLastItem
                 )
@@ -517,7 +709,7 @@ const AdvReportTable = ({
                 const indexOfFirstItem =
                     indexOfLastItem - allDisplayData.itemsPerPage
 
-                const currentItems = allDisplayData.allSearchItems.slice(
+                const currentItems = allDisplayData.allItems.slice(
                     indexOfFirstItem,
                     indexOfLastItem
                 )
@@ -551,7 +743,6 @@ const AdvReportTable = ({
 
     /** function to handle checkbox on each item */
     const handleIndivCheckbox = (e, data) => {
-        console.log('checking0', e.target.checked, data)
         if (exportData.length > 0) {
             let checkData = exportData.some(
                 (datacheck, index) => data._id === datacheck._id
@@ -575,22 +766,14 @@ const AdvReportTable = ({
                 setExportData([
                     ...exportData,
                     {
-                        _id: data._id,
-                        studentName: data.student.studentName,
-                        studentContacts: data.student.phoneNumber,
-                        topic: data.topic,
-                        status: data.activeStatus,
+                        ...data,
                     },
                 ])
             }
         } else {
             setExportData([
                 {
-                    _id: data._id,
-                    studentName: data.student.studentName,
-                    studentContacts: data.student.phoneNumber,
-                    topic: data.topic,
-                    status: data.activeStatus,
+                    ...data,
                 },
             ])
         }
@@ -601,38 +784,22 @@ const AdvReportTable = ({
         if (e.target.checked) {
             if (searchActive) {
                 if (searchData.allSearchItems.length > 0) {
-                    let newDataToSave = searchData.allSearchItems.map(
+                    let newDataToSave = searchData.allSearchItems.filter(
                         (data) => {
-                            return {
-                                _id: data._id,
-                                studentName: data.student.studentName,
-                                studentContacts: data.student.phoneNumber,
-                                topic: data.topic,
-                                status: data.activeStatus,
-                            }
+                            return data
                         }
                     )
-
-                    console.log('generalss', newDataToSave)
 
                     setExportData(newDataToSave)
                 }
             } else {
-                if (allDisplayData.allSearchItems.length > 0) {
-                    let newDataToSave = allDisplayData.allSearchItems.map(
+                if (allDisplayData.allItems.length > 0) {
+                    let newDataToSave = allDisplayData.allItems.filter(
                         (data) => {
-                            console.log('allDisplayData', data.activeStatus)
-                            return {
-                                _id: data._id,
-                                studentName: data.student.studentName,
-                                studentContacts: data.student.phoneNumber,
-                                topic: data.topic,
-                                status: data.activeStatus,
-                            }
+                            return data
                         }
                     )
 
-                    console.log('generalstts', newDataToSave)
                     setExportData(newDataToSave)
                 }
             }
@@ -640,247 +807,552 @@ const AdvReportTable = ({
             setExportData([])
         }
     }
+
+    /** function to handle data exportation */
+    const handleExportation = async () => {
+        if (exportData.length > 0) {
+            let values = {
+                tableName: 'Examiners Report Table',
+                data: exportData,
+            }
+            await window.electronAPI.exportReportsAdvCSV(values)
+        }
+    }
     return (
         <Container>
-            {/** table */}
-            <Box minH='48vh'>
-                <Table size='sm'>
-                    <Thead>
-                        {tableLists.length > 0 && (
-                            <Tr>
-                                <Th w='46px'>
-                                    <Checkbox
-                                        isChecked={
-                                            exportData.length > 0 ? true : false
-                                        }
-                                        onChange={handleGeneralCheckbox}
-                                        bg='#ffffff'
-                                        icon={<AiOutlineMinus />}
-                                        colorScheme='pink'
-                                    />
-                                </Th>
-                                {tableLists.map((data, index) => {
-                                    return <Th key={index}>{data.mtitle}</Th>
-                                })}
-                            </Tr>
-                        )}
-                    </Thead>
-                    {searchActive ? (
-                        <Tbody>
-                            {tableData.length > 0 ? (
-                                <>
-                                    {tableData.map((data, index) => {
-                                        return <Tr key={index}></Tr>
-                                    })}
-                                </>
-                            ) : (
-                                <Tr
-                                    position='relative'
-                                    h='48px'
-                                    borderBottom={'1px solid #E1FCEF'}>
-                                    <Box>
-                                        <NoItems>No Records Found</NoItems>
-                                    </Box>
-                                </Tr>
-                            )}
-                        </Tbody>
-                    ) : (
-                        <Tbody>
-                            {allDisplayData.items.length > 0 ? (
-                                <>
-                                    {allDisplayData.items.map((data, index) => {
-                                        let activeStatus
-                                        let activeElementSet
-                                        let includedInExport
+            <Stack spacing='0' pb='10px'>
+                <Stack
+                    direction='row'
+                    alignItems={'flex-end'}
+                    justifyContent={'space-between'}>
+                    <Tabs variant='unstyled'>
+                        <TabList>
+                            {filterTabData.map((data, index) => {
+                                return (
+                                    <Tab
+                                        key={index}
+                                        _selected={{
+                                            color: '#F14C54',
+                                            fontWeight: '700',
+                                            borderBottom: '2px solid #DB5A5A',
+                                        }}
+                                        className='tab'>
+                                        <Stack
+                                            direction='row'
+                                            alignItems={'center'}>
+                                            <h2>{data.title}</h2>
+                                            <Text>{data.dataCount}</Text>
+                                        </Stack>
+                                    </Tab>
+                                )
+                            })}
+                        </TabList>
+                    </Tabs>
 
-                                        if (
-                                            data.projectStatus &&
-                                            data.projectStatus.length > 0 &&
-                                            projectTagData.length > 0
-                                        ) {
-                                            activeStatus =
-                                                data.projectStatus.find(
-                                                    (element) => element.active
-                                                )
-                                            if (activeStatus) {
-                                                activeElementSet =
-                                                    projectTagData.find(
-                                                        (element) =>
-                                                            element.tagName ===
-                                                            activeStatus.status
-                                                    )
-                                                console.log(
-                                                    activeElementSet,
-                                                    'eeel'
-                                                )
+                    <SearchActivity
+                        pb='5px'
+                        direction='row'
+                        alignItems='center'>
+                        <Box
+                            className='sactivity_indicator'
+                            bg={searchActive ? 'green' : 'red'}
+                        />
+                        <Box className='sactivity_text'>Search</Box>
+                        <TableButton>
+                            <Button
+                                onClick={handleExportation}
+                                leftIcon={<BiDownload />}
+                                disabled={exportData.length > 0 ? false : true}
+                                className='btn__print'>
+                                Export
+                            </Button>
+                        </TableButton>
+                    </SearchActivity>
+                </Stack>
+                {/** table */}
+                <Box minH='48vh'>
+                    <Table size='sm'>
+                        <Thead>
+                            {tableLists.length > 0 && (
+                                <Tr>
+                                    <Th w='46px'>
+                                        <Checkbox
+                                            isChecked={
+                                                exportData.length > 0
+                                                    ? true
+                                                    : false
                                             }
-                                        } else {
-                                        }
-
-                                        if (exportData.length > 0) {
-                                            let checkData = exportData.some(
-                                                (datacheck, index) =>
-                                                    data._id === datacheck._id
-                                            )
-
-                                            includedInExport = checkData
-                                        } else {
-                                            includedInExport = false
-                                        }
+                                            onChange={handleGeneralCheckbox}
+                                            bg='#ffffff'
+                                            icon={<AiOutlineMinus />}
+                                            colorScheme='pink'
+                                        />
+                                    </Th>
+                                    {tableLists.map((data, index) => {
                                         return (
-                                            <Tr
-                                                key={data._id}
-                                                className={`table_row ${
-                                                    includedInExport
-                                                        ? 'row_selected'
-                                                        : ''
-                                                }`}>
-                                                <Td w='46px'>
-                                                    <Checkbox
-                                                        isChecked={
-                                                            includedInExport
-                                                        }
-                                                        onChange={(e) =>
-                                                            handleIndivCheckbox(
-                                                                e,
-                                                                data
-                                                            )
-                                                        }
-                                                        colorScheme='pink'
-                                                    />
-                                                </Td>
-                                                <Td
-                                                    maxW='250px'
-                                                    className='studentName'>
-                                                    {'data.student.studentName'}{' '}
-                                                </Td>
-                                                <Td maxW='250px'>
-                                                    <ContactLists direction='column'>
-                                                        <Stack direction='row'>
-                                                            <Box>phone:</Box>
-                                                            <Box>
-                                                                {
-                                                                    ' data.student.phoneNumber'
-                                                                }
-                                                            </Box>
-                                                        </Stack>
-                                                        <Stack direction='row'>
-                                                            <Box>email:</Box>
-                                                            <Box>
-                                                                {`data.student
-                                                                        .email`}
-                                                            </Box>
-                                                        </Stack>
-                                                    </ContactLists>
-                                                </Td>
-                                                <Td
-                                                    maxW='250px'
-                                                    style={{
-                                                        fontWeight: 500,
-                                                        color: '#15151D',
-                                                    }}>
-                                                    {' '}
-                                                    {`data.topic`}
-                                                </Td>
-                                                <Td>
-                                                    <StatusItem
-                                                        tcolors={
-                                                            activeElementSet &&
-                                                            activeElementSet.hex
-                                                                ? activeElementSet.hex
-                                                                : ''
-                                                        }
-                                                        bcolors={
-                                                            activeElementSet &&
-                                                            activeElementSet.rgba
-                                                                ? activeElementSet.rgba
-                                                                : ''
-                                                        }
-                                                        minW='90px'
-                                                        direction='row'
-                                                        alignItems='center'>
-                                                        <div />
-                                                        <Text>
-                                                            {' '}
-                                                            {data.reportStatus}
-                                                        </Text>
-                                                    </StatusItem>
-                                                </Td>
-                                                <Td maxW='250px'>
-                                                    {' '}
-                                                    {
-                                                        data.examiner.jobtitle
-                                                    }{' '}
-                                                    {data.examiner.name}
-                                                </Td>
-                                                <Td maxW='250px'>
-                                                    <ContactLists direction='column'>
-                                                        <Stack direction='row'>
-                                                            <Box>phone:</Box>
-                                                            <Box>
-                                                                {
-                                                                    data
-                                                                        .examiner
-                                                                        .phoneNumber
-                                                                }
-                                                            </Box>
-                                                        </Stack>
-                                                        <Stack direction='row'>
-                                                            <Box>email:</Box>
-                                                            <Box>
-                                                                {
-                                                                    data
-                                                                        .examiner
-                                                                        .email
-                                                                }
-                                                            </Box>
-                                                        </Stack>
-                                                    </ContactLists>
-                                                </Td>
-                                                <Td maxW='250px'>
-                                                    {data.reportStatus}
-                                                </Td>
-                                            </Tr>
+                                            <Th
+                                                className='table_head'
+                                                key={index}>
+                                                {data.mtitle}
+                                            </Th>
                                         )
                                     })}
-                                </>
-                            ) : (
-                                <Tr
-                                    position='relative'
-                                    h='48px'
-                                    borderBottom={'1px solid #E1FCEF'}>
-                                    <Box>
-                                        <NoItems>No Records Found</NoItems>
-                                    </Box>
                                 </Tr>
                             )}
-                        </Tbody>
-                    )}
-                </Table>
-            </Box>
+                        </Thead>
+                        {searchActive ? (
+                            <Tbody>
+                                {searchData.items.length > 0 ? (
+                                    <>
+                                        {searchData.items.map((data, index) => {
+                                            let activeStatus
+                                            let activeElementSet
+                                            let includedInExport
+
+                                            if (
+                                                data.projectStatus &&
+                                                data.projectStatus.length > 0 &&
+                                                projectTagData.length > 0
+                                            ) {
+                                                activeStatus =
+                                                    data.projectStatus.find(
+                                                        (element) =>
+                                                            element.active
+                                                    )
+                                                if (activeStatus) {
+                                                    activeElementSet =
+                                                        projectTagData.find(
+                                                            (element) =>
+                                                                element.tagName ===
+                                                                activeStatus.status
+                                                        )
+                                                    console.log(
+                                                        activeElementSet,
+                                                        'eeel'
+                                                    )
+                                                }
+                                            } else {
+                                            }
+
+                                            if (exportData.length > 0) {
+                                                let checkData = exportData.some(
+                                                    (datacheck, index) =>
+                                                        data._id ===
+                                                        datacheck._id
+                                                )
+
+                                                includedInExport = checkData
+                                            } else {
+                                                includedInExport = false
+                                            }
+
+                                            let currentDate = Moments(
+                                                new Date()
+                                            )
+
+                                            let pastDate = Moments(
+                                                data.creationDate
+                                            )
+
+                                            let diff = data.creationDate
+                                                ? currentDate.diff(
+                                                      pastDate,
+                                                      'days'
+                                                  )
+                                                : 0
+
+                                            console.log('all my data', diff)
+                                            let reportDelay =
+                                                data.submissionDate ? 0 : diff
+                                            return (
+                                                <Tr
+                                                    key={data._id}
+                                                    className={`table_row ${
+                                                        includedInExport
+                                                            ? 'row_selected'
+                                                            : ''
+                                                    }`}>
+                                                    <Td w='46px'>
+                                                        <Checkbox
+                                                            isChecked={
+                                                                includedInExport
+                                                            }
+                                                            onChange={(e) =>
+                                                                handleIndivCheckbox(
+                                                                    e,
+                                                                    data
+                                                                )
+                                                            }
+                                                            colorScheme='pink'
+                                                        />
+                                                    </Td>
+                                                    <Td
+                                                        maxW='250px'
+                                                        className='studentName'>
+                                                        {data.projectsData
+                                                            ? data.projectsData
+                                                                  .student
+                                                                  .studentName
+                                                            : ''}
+                                                    </Td>
+                                                    <Td maxW='250px'>
+                                                        {data.projectsData
+                                                            ? data.projectsData
+                                                                  .student
+                                                                  .phoneNumber
+                                                            : ''}
+                                                    </Td>
+                                                    <Td
+                                                        maxW='250px'
+                                                        style={{
+                                                            fontWeight: 500,
+                                                            color: '#15151D',
+                                                        }}>
+                                                        {' '}
+                                                        {data.projectsData
+                                                            ? data.projectsData
+                                                                  .topic
+                                                            : ''}
+                                                    </Td>
+                                                    <Td>
+                                                        <StatusItem
+                                                            className={data.reportStatus.toLowerCase()}
+                                                            minW='90px'
+                                                            direction='row'
+                                                            alignItems='center'>
+                                                            <div />
+                                                            <Text>
+                                                                {' '}
+                                                                {
+                                                                    data.reportStatus
+                                                                }
+                                                            </Text>
+                                                        </StatusItem>
+                                                    </Td>
+                                                    <Td maxW='250px'>
+                                                        {' '}
+                                                        {
+                                                            data.examiner
+                                                                .jobtitle
+                                                        }{' '}
+                                                        {data.examiner.name}
+                                                    </Td>
+                                                    <Td maxW='250px'>
+                                                        {data.examiner.email}
+                                                    </Td>
+                                                    <Td maxW='250px'>
+                                                        <Stack
+                                                            w='100%'
+                                                            alignItems='center'
+                                                            justifyContent={
+                                                                'center'
+                                                            }>
+                                                            <Box className='files'>
+                                                                {reportDelay}
+                                                            </Box>
+                                                        </Stack>
+                                                    </Td>
+                                                </Tr>
+                                            )
+                                        })}
+                                    </>
+                                ) : (
+                                    <Tr
+                                        position='relative'
+                                        h='48px'
+                                        borderBottom={'1px solid #E1FCEF'}>
+                                        <Box>
+                                            <NoItems>No Records Found</NoItems>
+                                        </Box>
+                                    </Tr>
+                                )}
+                            </Tbody>
+                        ) : (
+                            <Tbody>
+                                {allDisplayData.items.length > 0 ? (
+                                    <>
+                                        {allDisplayData.items.map(
+                                            (data, index) => {
+                                                console.log('all', data)
+                                                let activeStatus
+                                                let activeElementSet
+                                                let includedInExport
+
+                                                if (
+                                                    data.projectStatus &&
+                                                    data.projectStatus.length >
+                                                        0 &&
+                                                    projectTagData.length > 0
+                                                ) {
+                                                    activeStatus =
+                                                        data.projectStatus.find(
+                                                            (element) =>
+                                                                element.active
+                                                        )
+                                                    if (activeStatus) {
+                                                        activeElementSet =
+                                                            projectTagData.find(
+                                                                (element) =>
+                                                                    element.tagName ===
+                                                                    activeStatus.status
+                                                            )
+                                                        console.log(
+                                                            activeElementSet,
+                                                            'eeel'
+                                                        )
+                                                    }
+                                                } else {
+                                                }
+
+                                                if (exportData.length > 0) {
+                                                    let checkData =
+                                                        exportData.some(
+                                                            (
+                                                                datacheck,
+                                                                index
+                                                            ) =>
+                                                                data._id ===
+                                                                datacheck._id
+                                                        )
+
+                                                    includedInExport = checkData
+                                                } else {
+                                                    includedInExport = false
+                                                }
+
+                                                let currentDate = Moments(
+                                                    new Date()
+                                                )
+
+                                                let pastDate = Moments(
+                                                    data.creationDate
+                                                )
+
+                                                let diff = data.creationDate
+                                                    ? currentDate.diff(
+                                                          pastDate,
+                                                          'days'
+                                                      )
+                                                    : 0
+
+                                                console.log('all my data', diff)
+                                                let reportDelay =
+                                                    data.submissionDate
+                                                        ? 0
+                                                        : diff
+                                                return (
+                                                    <Tr
+                                                        key={data._id}
+                                                        className={`table_row ${
+                                                            includedInExport
+                                                                ? 'row_selected'
+                                                                : ''
+                                                        }`}>
+                                                        <Td w='46px'>
+                                                            <Checkbox
+                                                                isChecked={
+                                                                    includedInExport
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleIndivCheckbox(
+                                                                        e,
+                                                                        data
+                                                                    )
+                                                                }
+                                                                colorScheme='pink'
+                                                            />
+                                                        </Td>
+                                                        <Td
+                                                            maxW='250px'
+                                                            className='studentName'>
+                                                            {data.projectsData
+                                                                ? data
+                                                                      .projectsData
+                                                                      .student
+                                                                      .studentName
+                                                                : ''}
+                                                        </Td>
+                                                        <Td maxW='250px'>
+                                                            {data.projectsData
+                                                                ? data
+                                                                      .projectsData
+                                                                      .student
+                                                                      .phoneNumber
+                                                                : ''}
+                                                        </Td>
+                                                        <Td
+                                                            maxW='250px'
+                                                            style={{
+                                                                fontWeight: 500,
+                                                                color: '#15151D',
+                                                            }}>
+                                                            {' '}
+                                                            {data.projectsData
+                                                                ? data
+                                                                      .projectsData
+                                                                      .topic
+                                                                : ''}
+                                                        </Td>
+                                                        <Td>
+                                                            <StatusItem
+                                                                className={data.reportStatus.toLowerCase()}
+                                                                minW='90px'
+                                                                direction='row'
+                                                                alignItems='center'>
+                                                                <div />
+                                                                <Text>
+                                                                    {' '}
+                                                                    {
+                                                                        data.reportStatus
+                                                                    }
+                                                                </Text>
+                                                            </StatusItem>
+                                                        </Td>
+                                                        <Td maxW='250px'>
+                                                            {' '}
+                                                            {
+                                                                data.examiner
+                                                                    .jobtitle
+                                                            }{' '}
+                                                            {data.examiner.name}
+                                                        </Td>
+                                                        <Td maxW='250px'>
+                                                            {
+                                                                data.examiner
+                                                                    .email
+                                                            }
+                                                        </Td>
+                                                        <Td maxW='250px'>
+                                                            <Stack
+                                                                w='100%'
+                                                                alignItems='center'
+                                                                justifyContent={
+                                                                    'center'
+                                                                }>
+                                                                <Box className='files'>
+                                                                    {
+                                                                        reportDelay
+                                                                    }
+                                                                </Box>
+                                                            </Stack>
+                                                        </Td>
+                                                    </Tr>
+                                                )
+                                            }
+                                        )}
+                                    </>
+                                ) : (
+                                    <Tr
+                                        position='relative'
+                                        h='48px'
+                                        borderBottom={'1px solid #E1FCEF'}>
+                                        <Box>
+                                            <NoItems>No Records Found</NoItems>
+                                        </Box>
+                                    </Tr>
+                                )}
+                            </Tbody>
+                        )}
+                    </Table>
+                </Box>
+            </Stack>
             {/** pagination */}
             {searchActive ? (
-                <AdvPagination2
-                    paginationFirstNumber={PaginationSFirstNumber}
-                    paginationLastNumber={PaginationSLastNumber}
-                    overalltotal={searchData.totalSearchedItems}
-                    perPages={perPage}
-                    currentPage={searchData.currentPage}
-                    totalPages={searchData.totalPages}
-                    handleNext={handleNext}
-                    handlePrev={handlePrev}
-                />
+                <Box>
+                    {' '}
+                    {searchData.items.length > 0 && (
+                        <PaginationStack
+                            direction='row'
+                            height='56px'
+                            alignItems='center'
+                            justifyContent={'space-between'}>
+                            <Box className='pages'>
+                                <span>
+                                    {`${PaginationSFirstNumber}`} -{' '}
+                                    {`${PaginationSLastNumber}`} of{' '}
+                                    {`${searchData.totalSearchedItems}`}
+                                </span>
+                            </Box>
+                            <Stack
+                                h='90%'
+                                direction='row'
+                                spacing='20px'
+                                alignItems='center'
+                                className='pagination'>
+                                <Box className='rows'>
+                                    <h1>Rows per page:</h1>
+                                    <span>{searchData.itemsPerPage}</span>
+                                </Box>
+
+                                {/** pagination arrows */}
+                                <Stack
+                                    direction='row'
+                                    alignItems='center'
+                                    className='arrows'>
+                                    <Box className='left' onClick={handlePrev}>
+                                        <MdKeyboardArrowLeft />
+                                    </Box>
+                                    <Box>
+                                        {' '}
+                                        {searchData.currentPage}/
+                                        {searchData.totalPages}
+                                    </Box>
+                                    <Box className='right' onClick={handleNext}>
+                                        <MdKeyboardArrowRight />
+                                    </Box>
+                                </Stack>
+                            </Stack>
+                        </PaginationStack>
+                    )}
+                </Box>
             ) : (
-                <AdvPagination
-                    paginationFirstNumber={PaginationFirstNumber}
-                    paginationLastNumber={PaginationLastNumber}
-                    overalltotal={allDisplayData.totalSearchedItems}
-                    perPages={perPage}
-                    currentPage={allDisplayData.currentPage}
-                    totalPages={allDisplayData.totalPages}
-                    handleNext={handleNext}
-                    handlePrev={handlePrev}
-                />
+                <Box>
+                    {' '}
+                    {allDisplayData.items.length > 0 && (
+                        <PaginationStack
+                            direction='row'
+                            height='56px'
+                            alignItems='center'
+                            justifyContent={'space-between'}>
+                            <Box className='pages'>
+                                <span>
+                                    {`${PaginationFirstNumber}`} -{' '}
+                                    {`${PaginationLastNumber}`} of{' '}
+                                    {`${allDisplayData.totalAllItems}`}
+                                </span>
+                            </Box>
+                            <Stack
+                                h='90%'
+                                direction='row'
+                                spacing='20px'
+                                alignItems='center'
+                                className='pagination'>
+                                <Box className='rows'>
+                                    <h1>Rows per page:</h1>
+                                    <span>{allDisplayData.itemsPerPage}</span>
+                                </Box>
+
+                                {/** pagination arrows */}
+                                <Stack
+                                    direction='row'
+                                    alignItems='center'
+                                    className='arrows'>
+                                    <Box className='left' onClick={handlePrev}>
+                                        <MdKeyboardArrowLeft />
+                                    </Box>
+                                    <Box>
+                                        {' '}
+                                        {allDisplayData.currentPage}/
+                                        {allDisplayData.totalPages}
+                                    </Box>
+                                    <Box className='right' onClick={handleNext}>
+                                        <MdKeyboardArrowRight />
+                                    </Box>
+                                </Stack>
+                            </Stack>
+                        </PaginationStack>
+                    )}
+                </Box>
             )}
         </Container>
     )
@@ -889,6 +1361,7 @@ const AdvReportTable = ({
 export default AdvReportTable
 
 const Container = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     .tab {
         font-family: 'Inter', sans-serif;
         font-style: normal;
@@ -963,8 +1436,9 @@ const Container = styled(Stack)`
         font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 400;
-        font-size: 13px;
+        font-size: 14px;
         color: #3a3a43;
+        max-width: 250px;
     }
 
     .studentName {
@@ -1026,6 +1500,56 @@ const Container = styled(Stack)`
             background: #fef9ef;
         }
     }
+
+    .row_selected {
+        background: #fef9ef !important;
+    }
+
+    .passed {
+        color: #14804a !important;
+        background: #e1fcef !important;
+
+        div {
+            background: #38a06c;
+        }
+    }
+
+    .ungraded {
+        color: #5a6376 !important;
+        background: #e9edf5 !important;
+
+        div {
+            background: #687182;
+        }
+    }
+
+    .failed {
+        color: #d1293d !important;
+        background: #ffedef !important;
+
+        div {
+            background: #ef5466;
+        }
+    }
+
+    .pending {
+        color: #faa723 !important;
+        background: #ffedef !important;
+
+        div {
+            background: #faa723;
+        }
+    }
+
+    .files {
+        background: #eeeeef;
+        border-radius: 6px;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 `
 
 const NoItems = styled(Box)`
@@ -1064,5 +1588,123 @@ const StatusItem = styled(Stack)`
         letter-spacing: 0.03em;
         text-transform: capitalize;
         color: ${({ tcolors }) => tcolors};
+    }
+`
+
+const PaginationStack = styled(Stack)`
+    .pagination {
+        color: #6b7280;
+        align-items: center;
+        justify-content: flex-end;
+
+        background: #ffffff;
+    }
+    .pages {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 166%;
+        color: #111827;
+    }
+
+    .rows {
+        display: flex;
+        align-items: center;
+        h1 {
+            font-family: 'Inter', sans-serif;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 12px;
+            line-height: 166%;
+        }
+        span {
+            margin-left: 2px;
+            font-family: 'Inter', sans-serif;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 12px;
+            line-height: 19px;
+
+            letter-spacing: 0.3px;
+            color: #111827;
+        }
+    }
+
+    .arrows {
+        width: 88px;
+        display: flex;
+        justify-content: space-between;
+
+        .left,
+        .right {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+            border-radius: 6px;
+        }
+    }
+`
+
+const SearchActivity = styled(Stack)`
+    .sactivity_indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .sactivity_text {
+        font-family: 'Inter', sans-serif;
+        font-style: italic;
+        font-weight: normal;
+        font-size: 12px;
+
+        letter-spacing: 0.3px;
+        color: #838389;
+    }
+`
+
+const TableButton = styled(Box)`
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+
+    font-size: 14px;
+    line-height: 20px;
+    .btn_table {
+        height: 32px;
+        color: #464f60;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
+            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
+        border-radius: 6px;
+        background: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__print {
+        height: 28px;
+        background: #f7f9fc;
+        box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+        border-radius: 6px;
+
+        letter-spacing: 0.02em;
+        color: #868fa0;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__rule {
+        height: 32px;
+        background: #20202a;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #33333c;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 14px;
+        line-height: 20px;
     }
 `

@@ -12,6 +12,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('export-school-csv', values),
     exportDepartmentsCSV: (values) =>
         ipcRenderer.invoke('export-departments-csv', values),
+    exportExaminersCSV: (values) =>
+        ipcRenderer.invoke('export-examiners-csv', values),
+    exportReportsAdvCSV: (values) =>
+        ipcRenderer.invoke('export-exportedDatas-csv', values),
+
     /** projects */
     projectDeletion: (values) =>
         ipcRenderer.invoke('remove-student-project', values),
@@ -110,6 +115,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     allStudentsByExaminer: (id) =>
         ipcRenderer.invoke('get-students-by-examiner', id),
     updateExaminer: (values) => ipcRenderer.invoke('update-examiner', values),
+    deletesExaminer: (values) => ipcRenderer.invoke('delete-examiner', values),
+    deletesFilesExaminer: (values) =>
+        ipcRenderer.invoke('delete-file-ex-app', values),
     /** opponent reports */
     updateOpponentReport: (values) =>
         ipcRenderer.invoke('update-opponent-report', values),
