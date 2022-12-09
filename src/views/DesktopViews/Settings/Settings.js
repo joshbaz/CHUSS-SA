@@ -131,9 +131,15 @@ const Settings = () => {
                                         <Box w='60%'>
                                             <Account />
                                         </Box>
-                                        <Box w='40%'>
+                                        {
+                                            /**
+                                             * <Box w='40%'>
                                             <LastLogin />
                                         </Box>
+                                             * 
+                                             */
+                                        }
+                                        
                                     </Stack>
                                 </TabPanel>
                                 <TabPanel>

@@ -34,9 +34,7 @@ const TopBar = ({ topbarData }) => {
             <Box>
                 <Stack direction='row' alignItems={'center'}>
                     {topbarData.backButton && (
-                        <Box
-                            fontSize='20px'
-                            onClick={() => routeNavigate(-1)}>
+                        <Box fontSize='20px' onClick={() => routeNavigate(-1)}>
                             <MdArrowBack />
                         </Box>
                     )}
@@ -56,12 +54,13 @@ const TopBar = ({ topbarData }) => {
                         <Avatar
                             size='sm'
                             name={`${user.firstname} ${user.lastname}'`}
-                            src='https://bit.ly/broken-link'
+                            src=''
                             bg='gray.400'
                         />
                     </MenuButton>
                     <MenuList>
-                        <MenuItem>Account</MenuItem>
+                        {/**<MenuItem>Account</MenuItem>  */}
+
                         <MenuItem onClick={onLogout}>Logout</MenuItem>
                     </MenuList>
                 </Menu>

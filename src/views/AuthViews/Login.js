@@ -134,6 +134,8 @@ const Login = () => {
 export default Login
 
 const Container = styled(Box)`
+    width: 100vw;
+    height: 100vh;
     .form {
         position: relative;
         display: flex;
