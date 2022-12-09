@@ -46,7 +46,6 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
         }
         if (values !== null && values.files.length > 0) {
             setFilesList(values.files)
-           
         } else {
             setFilesList([])
         }
@@ -55,7 +54,7 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
     const handleFileView = async (data) => {
         setSelectedFile([
             {
-                uri: `http://188.166.65.21:8000/docs/files/${data.fileId.fileId}`,
+                uri: `https://chuss.tk/docs/files/${data.fileId.fileId}`,
                 fileType: data.fileId.fileType,
             },
         ])
@@ -66,14 +65,12 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
         const dataGiven = await window.electronAPI.getdownloadFile(
             data.fileId.fileId
         )
-       
 
         if (!dataGiven.message) {
             let newData = {
                 ...dataGiven,
             }
             if (nameValues !== null) {
-               
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -90,9 +87,8 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
                 newData
             )
 
-           
             if (performDowload.message) {
-               // alert(performDowload.message)
+                // alert(performDowload.message)
             }
         }
     }
@@ -110,7 +106,6 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
     }
 
     const handleRemove = (fId, nam, secId) => {
-     
         if (values._id && fId) {
             let rvalues = {
                 fId: fId,

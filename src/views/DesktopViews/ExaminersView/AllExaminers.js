@@ -77,7 +77,7 @@ const AllExaminerss = () => {
 
     const handleSearchInput = (e) => {
         e.preventDefault()
-     
+
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
         // let filterSelected = {
@@ -280,7 +280,7 @@ const AllExaminerss = () => {
         let values = {
             page: page,
         }
-     
+
         dispatch(paginatedExaminer(values))
         dispatch(allExaminers())
     }, [Location])
@@ -406,11 +406,6 @@ const AllExaminerss = () => {
                                                                         onChange={(
                                                                             value
                                                                         ) => {
-                                                                            console.log(
-                                                                                'value',
-                                                                                data.title,
-                                                                                value
-                                                                            )
                                                                             checkboxesFilter(
                                                                                 data.title,
                                                                                 value
@@ -573,7 +568,9 @@ const AllExaminerss = () => {
                         <Box>
                             <Button
                                 onClick={() =>
-                                    routeNavigate(`/m-examiners/examiners/create`)
+                                    routeNavigate(
+                                        `/m-examiners/examiners/create`
+                                    )
                                 }
                                 className='add_button'
                                 leftIcon={<AiOutlinePlus />}

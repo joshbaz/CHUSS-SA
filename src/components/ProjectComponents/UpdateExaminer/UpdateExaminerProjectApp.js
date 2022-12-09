@@ -224,7 +224,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
        
         setSelectedFile([
             {
-                uri: `http://188.166.65.21:8000/docs/files/${data.fileId}`,
+                uri: `https://chuss.tk/docs/files/${data.fileId}`,
                 fileType: data.fileType,
                 fileData: new ArrayBuffer(dataGiven),
             },

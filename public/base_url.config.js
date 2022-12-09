@@ -5,4 +5,5 @@
 //  ${BASE_API_}
 //exports.BASE_API_ = "http://localhost:8000";
 //exports.BASE_API_ = "https://chuss-test.herokuapp.com";
-exports.BASE_API_ = 'http://188.166.65.21:8000'
+//exports.BASE_API_ = 'http://188.166.65.21:8000'
+exports.BASE_API_ = 'https://chuss.tk'

@@ -84,7 +84,7 @@ const ViewUpdatedFiles = ({ values }) => {
     const handleFileView = async (data) => {
         setSelectedFile([
             {
-                uri: `http://188.166.65.21:8000/docs/files/${data.files.fileId}`,
+                uri: `https://chuss.tk/docs/files/${data.files.fileId}`,
                 fileType: data.files.fileType,
             },
         ])

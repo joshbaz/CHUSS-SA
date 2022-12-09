@@ -646,13 +646,16 @@ const PaymentTable = ({
                         />
                         <Box className='sactivity_text'>Search</Box>
                         <TableButton>
-                            <Button
+                            {/**
+                    
+                    <Button
                                 onClick={handleExportation}
                                 leftIcon={<BiDownload />}
                                 disabled={exportData.length > 0 ? false : true}
                                 className='btn__print'>
                                 Export
                             </Button>
+                    */}
                         </TableButton>
                     </SearchActivity>
                 </Stack>

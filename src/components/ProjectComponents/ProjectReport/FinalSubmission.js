@@ -72,7 +72,7 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
     const handleFileView = async (data) => {
         setSelectedFile([
             {
-                uri: `http://188.166.65.21:8000/docs/files/${data.fileId.fileId}`,
+                uri: `https://chuss.tk/docs/files/${data.fileId.fileId}`,
                 fileType: data.fileId.fileType,
             },
         ])
