@@ -77,6 +77,7 @@ const Settings = () => {
     }, [tagsData.isError, tagsData.isSuccess, tagsData.message])
 
     const filterTabData = [
+        // { title: 'Administrators' },
         {
             title: 'Account',
         },
@@ -131,15 +132,12 @@ const Settings = () => {
                                         <Box w='60%'>
                                             <Account />
                                         </Box>
-                                        {
-                                            /**
+                                        {/**
                                              * <Box w='40%'>
                                             <LastLogin />
                                         </Box>
                                              * 
-                                             */
-                                        }
-                                        
+                                             */}
                                     </Stack>
                                 </TabPanel>
                                 <TabPanel>

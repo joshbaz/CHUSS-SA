@@ -37,7 +37,7 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
             enableRemoteModule: false,
-            devTools: true,
+            devTools: false,
         },
     })
 
@@ -61,6 +61,7 @@ function createWindow() {
     //mainWindow.loadURL(`file://${__dirname}/../build/index.html#`)
     mainWindow.on('closed', () => {
         mainWindow = null
+        //localStorage.removeItem('user')
     })
 
     //ipcMain.handle('dialog:openFile', handleFileOpen);
@@ -181,8 +182,8 @@ ipcMain.handle('get/file', async (event) => {
     //file type
     let fileType = fileDetails.ext.slice(1)
     fileDetails.fileType = fileType
-   // console.log('fileType', fileType)
-  //  console.log('fileDetails', fileDetails)
+    // console.log('fileType', fileType)
+    //  console.log('fileDetails', fileDetails)
     const fileBuffer = Buffer.from(results.filePaths[0], 'base64')
 
     fileDetails.buffer = fileBuffer
@@ -209,7 +210,7 @@ ipcMain.handle('login-validation', async (event, values) => {
             `${BASE_API_}/admin/v1/login`,
             values
         )
-     //   console.log('values', responseData.data)
+        //   console.log('values', responseData.data)
         let data = {
             ...responseData.data,
             type: 'success',
@@ -556,7 +557,7 @@ ipcMain.handle('download-file', async (event, values) => {
         filters: [{ name: 'Custom File Type', extensions: [values.extension] }],
     }
     const dialogSaves = await dialog.showSaveDialog(null, options)
-  //  console.log('dialogSaves', dialogSaves)
+    //  console.log('dialogSaves', dialogSaves)
 
     if (dialogSaves.canceled) {
         return
@@ -593,7 +594,7 @@ ipcMain.handle('export-csv', async (event, values) => {
         ],
     }
     const dialogSaves = await dialog.showSaveDialog(mainWindow, options)
-   // console.log('dialogSaves', dialogSaves)
+    // console.log('dialogSaves', dialogSaves)
 
     if (dialogSaves.canceled) {
         return
@@ -624,7 +625,7 @@ ipcMain.handle('export-csv', async (event, values) => {
             }
         })
 
-      //  console.log('rows  data', rowData, rowData)
+        //  console.log('rows  data', rowData, rowData)
 
         const worksheet = XLSX.utils.json_to_sheet(rowData)
         worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
@@ -656,7 +657,7 @@ ipcMain.handle('export-student-csv', async (event, values) => {
         ],
     }
     const dialogSaves = await dialog.showSaveDialog(mainWindow, options)
-   // console.log('dialogSaves', dialogSaves)
+    // console.log('dialogSaves', dialogSaves)
 
     if (dialogSaves.canceled) {
         return
@@ -737,7 +738,7 @@ ipcMain.handle('export-student-csv', async (event, values) => {
             }
         })
 
-      //  console.log('rows  data', rowData, rowData)
+        //  console.log('rows  data', rowData, rowData)
 
         const worksheet = XLSX.utils.json_to_sheet(rowData)
         worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
@@ -806,7 +807,7 @@ ipcMain.handle('export-school-csv', async (event, values) => {
             }
         })
 
-     //   console.log('rows  data', rowData, rowData)
+        //   console.log('rows  data', rowData, rowData)
 
         const worksheet = XLSX.utils.json_to_sheet(rowData)
         worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
@@ -855,7 +856,7 @@ ipcMain.handle('export-departments-csv', async (event, values) => {
             }
         })
 
-      //  console.log('rows  data', rowData, rowData)
+        //  console.log('rows  data', rowData, rowData)
 
         const worksheet = XLSX.utils.json_to_sheet(rowData)
         worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
@@ -904,7 +905,7 @@ ipcMain.handle('export-examiners-csv', async (event, values) => {
             }
         })
 
-     //   console.log('rows  data', rowData, rowData)
+        //   console.log('rows  data', rowData, rowData)
 
         const worksheet = XLSX.utils.json_to_sheet(rowData)
         worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
@@ -965,7 +966,7 @@ ipcMain.handle('export-exportedDatas-csv', async (event, values) => {
             }
         })
 
-     //   console.log('rows  data', rowData, rowData)
+        //   console.log('rows  data', rowData, rowData)
 
         const worksheet = XLSX.utils.json_to_sheet(rowData)
         worksheet['!cols'] = Array.from({ length: rowData.length }, () => {

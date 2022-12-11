@@ -1,10 +1,11 @@
 import { Fragment } from 'react'
 import { Outlet, Navigate } from 'react-router-dom'
-import Cookie from 'js-cookie'
+import Cookies from 'js-cookie'
 import Moments from 'moment-timezone'
 import authService from '../store/features/auth/authService'
 function ProtectedRoute({ children, redirectPath = '/auth/signin' }) {
-    const isAuthenticated = !!JSON.parse(localStorage.getItem('user'))
+   // const isAuthenticated = !!JSON.parse(localStorage.getItem('user'))
+     const isAuthenticated = !!Cookies.get('_tk')
     // console.log('here', isAuthenticated)
     // const getAllItems = JSON.parse(localStorage.getItem('user'))
     // console.log('getAllItems.currentDate')

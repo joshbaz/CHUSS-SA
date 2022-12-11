@@ -57,7 +57,6 @@ const ProjectTabTags = ({ allTagData }) => {
     let toast = useToast()
 
     const handleColorPicked = (color, setFieldValue) => {
-       
         let rgba = `rgba(${color.rgb.r},${color.rgb.g},${color.rgb.b}, 0.34)`
         let hex = color.hex
         setColorPicked(color)
@@ -196,6 +195,7 @@ const ProjectTabTags = ({ allTagData }) => {
                                     {projectTagData.map((data, index) => {
                                         return (
                                             <Tr
+                                                key={data._id}
                                                 w='100%'
                                                 borderBottom='0px solid red'
                                                 className='tableItems_row'>
@@ -415,7 +415,7 @@ const ProjectTabTags = ({ allTagData }) => {
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
-                             
+
                                 dispatch(tagUpdate(values))
                             }}>
                             {({

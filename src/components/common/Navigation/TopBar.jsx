@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import {
     Box,
@@ -24,6 +24,11 @@ const TopBar = ({ topbarData }) => {
         dispatch(reset())
         routeNavigate('/auth/signin', { replace: true })
     }
+
+    useEffect(() => {
+       // routeNavigate('/auth/signin', { replace: true })
+    }, [])
+
     return (
         <Container
             direction='row'
@@ -53,7 +58,7 @@ const TopBar = ({ topbarData }) => {
                     <MenuButton>
                         <Avatar
                             size='sm'
-                            name={`${user.firstname} ${user.lastname}'`}
+                            name={`${user!== null && user.firstname} ${user !== null && user.lastname}'`}
                             src=''
                             bg='gray.400'
                         />

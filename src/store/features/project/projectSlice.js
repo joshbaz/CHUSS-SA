@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import projectService from './projectService'
+//let routeNavigate = 
 const initialState = {
     pprojects: {
         items: [],
@@ -78,6 +79,9 @@ export const getAllProjects = createAsyncThunk(
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
+            // if (getAttempt.message.toLowerCase() === 'not authenticated') {
+            //     console.log('.. cretified to get here')
+            // }
             return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Box, Stack } from '@chakra-ui/react'
+import { Box, Stack, Tooltip } from '@chakra-ui/react'
 import Logo from '../../../logo.svg'
 import { NavLink, useLocation } from 'react-router-dom'
 import { RiDashboardLine, RiFoldersFill } from 'react-icons/ri'
@@ -18,41 +18,49 @@ const Navigation = () => {
             title: 'dashboard',
             icon: <RiDashboardLine />,
             link: '/',
+            name: 'Dashboard',
         },
         {
             title: 'mst',
             icon: <RiFoldersFill />,
             link: '/masters/projects',
+            name: 'Master Students',
         },
         {
             title: 'phd',
             icon: <RiFoldersFill />,
             link: '/phd/projects',
+            name: 'Phd Students',
         },
         {
             title: 'payments',
             icon: <MdOutlineAccountBalanceWallet />,
             link: '/payments',
+            name: 'Payments',
         },
         {
             title: 'examiners',
             icon: <FaChalkboardTeacher />,
             link: '/m-examiners',
+            name: 'Examiners',
         },
         {
             title: 'Schools',
             icon: <MdOutlineBusinessCenter />,
             link: '/schools',
+            name: 'Schools',
         },
         {
             title: 'advanced search',
             icon: <MdManageSearch />,
             link: '/advsearch',
+            name: 'Advanced Search',
         },
         {
             title: 'settings',
             icon: <AiOutlineSetting />,
             link: '/setting',
+            name: 'Settings',
         },
     ]
     return (
@@ -63,20 +71,43 @@ const Navigation = () => {
 
             <Stack direction='column' spacing='15px'>
                 {menuData.map((data, index) => (
-                    <NavLink
+                    <Tooltip
                         key={index}
-                        to={data.link}
-                        end={data.link === '/' ? true : false}
-                        className={({ isActive }) =>
-                            isActive ? 'menu_wrap activeItem' : 'menu_wrap'
+                        color='#fbd2d4'
+                        borderRadius={'8px'}
+                        height='30px'
+                        hasArrow
+                        label={
+                            <Box
+                                style={{
+                                    fontFamily: 'Inter',
+                                    fontSize: '14px',
+                                }}
+                                w='100%'
+                                h='100%'
+                                display='flex'
+                                alignItems={'center'}
+                                p='10px 5px 10px 5px'>
+                                {data.name}
+                            </Box>
                         }>
-                        <Stack direction='column' spacing='0px'>
-                            <Box className='menu_icon'>{data.icon}</Box>
-                            {data.title === 'mst' || data.title === 'phd' ? (
-                                <Box className='menu_title'>{data.title}</Box>
-                            ) : null}
-                        </Stack>
-                    </NavLink>
+                        <NavLink
+                            to={data.link}
+                            end={data.link === '/' ? true : false}
+                            className={({ isActive }) =>
+                                isActive ? 'menu_wrap activeItem' : 'menu_wrap'
+                            }>
+                            <Stack direction='column' spacing='0px'>
+                                <Box className='menu_icon'>{data.icon}</Box>
+                                {data.title === 'mst' ||
+                                data.title === 'phd' ? (
+                                    <Box className='menu_title'>
+                                        {data.title}
+                                    </Box>
+                                ) : null}
+                            </Stack>
+                        </NavLink>
+                    </Tooltip>
                 ))}
             </Stack>
         </Container>

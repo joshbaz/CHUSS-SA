@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { BrowserRouter, HashRouter, Routes, Route } from 'react-router-dom'
 
@@ -71,7 +71,14 @@ import AllSupervisors from '../views/DesktopViews/ESupervisorsView/AllSupervisor
 import CreateNewSupervisor from '../views/DesktopViews/ESupervisorsView/CreateNewSupervisor'
 import ViewSupervisor from '../views/DesktopViews/ESupervisorsView/ViewSupervisor'
 import EditSupervisor from '../views/DesktopViews/ESupervisorsView/EditSupervisor'
+//import Cookies from 'js-cookie'
 const AllRoutes = () => {
+  //  const getToken = Cookies.get('_tk')
+
+   // console.log('_tk', getToken)
+    useEffect(() => {
+
+    }, [])
     return (
         <HashRouter>
             <Routes>

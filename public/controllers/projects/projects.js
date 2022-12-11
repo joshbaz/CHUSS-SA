@@ -2,6 +2,7 @@ const axios = require('axios')
 const { BASE_API_ } = require('../../base_url.config')
 const FormData = require('form-data')
 const fs = require('fs')
+//const Cookies = require('js-cookie')
 //create Project
 exports.createProject = async (event, values) => {
     try {
@@ -24,7 +25,7 @@ exports.createProject = async (event, values) => {
             `${BASE_API_}/project/v1/create`,
             fd
         )
-    //    console.log('values', responseData.data)
+        //    console.log('values', responseData.data)
         let data = {
             message: responseData.data,
             type: 'success',
@@ -98,11 +99,15 @@ exports.updateProject = async (event, values) => {
 //get paginated Project
 exports.getProjects = async (event, values) => {
     try {
+        // const getToken = Cookies.get('_tk')
+        //     ? JSON.parse(Cookies.get('_tk'))
+        //     : ''
+       // console.log('cookies', getToken)
         let responseData = await axios.get(
             `${BASE_API_}/project/vl/pprojects?page=${values.page}`,
             values
         )
-    //    console.log('values', responseData.data)
+        //    console.log('values', responseData.data)
         let data = {
             ...responseData.data,
             type: 'success',
@@ -133,7 +138,7 @@ exports.getAllProjects = async (event, values) => {
             `${BASE_API_}/project/v1/allprojects`,
             values
         )
-    //    console.log('values', responseData.data)
+        //    console.log('values', responseData.data)
         let data = {
             ...responseData.data,
             type: 'success',
@@ -164,7 +169,7 @@ exports.getIndividualProjects = async (event, id) => {
         let responseData = await axios.get(
             `${BASE_API_}/project/v1/projects/${id}`
         )
-      //  console.log('values', responseData.data)
+        //  console.log('values', responseData.data)
         let data = {
             ...responseData.data,
             type: 'success',
@@ -195,7 +200,7 @@ exports.updateProjectStatuses = async (event, values) => {
             `${BASE_API_}/project/vl/status/update/${values.projectId}`,
             values
         )
-    //    console.log('values', responseData.data)
+        //    console.log('values', responseData.data)
         let data = {
             message: responseData.data,
             type: 'success',
@@ -287,7 +292,7 @@ exports.updateVivaFiles = async (event, values) => {
             `${BASE_API_}/project/v1/vivafiles/update/${values.projectId}`,
             fd
         )
-     //   console.log('values', responseData.data)
+        //   console.log('values', responseData.data)
         let data = {
             message: responseData.data,
             type: 'success',
@@ -318,7 +323,7 @@ exports.updateVivaDefenseDate = async (event, values) => {
             `${BASE_API_}/project/v1/vivadefense/update/${values.projectId}`,
             values
         )
-     //   console.log('values', responseData.data)
+        //   console.log('values', responseData.data)
         let data = {
             message: responseData.data,
             type: 'success',
@@ -365,7 +370,7 @@ exports.updateFinalSubmission = async (event, values) => {
             `${BASE_API_}/project/v1/finalsubmission/update/${values.projectId}`,
             fd
         )
-      //  console.log('values', responseData.data)
+        //  console.log('values', responseData.data)
         let data = {
             message: responseData.data,
             type: 'success',
@@ -396,7 +401,7 @@ exports.updateSubmissionDate = async (event, values) => {
             `${BASE_API_}/project/v1/dateofsubmission/update/${values.projectId}`,
             values
         )
-      //  console.log('values', responseData.data)
+        //  console.log('values', responseData.data)
         let data = {
             message: responseData.data,
             type: 'success',
@@ -427,7 +432,7 @@ exports.updateGraduationDate = async (event, values) => {
             `${BASE_API_}/project/v1/graduation/update/${values.projectId}`,
             values
         )
-       // console.log('values', responseData.data)
+        // console.log('values', responseData.data)
         let data = {
             message: responseData.data,
             type: 'success',

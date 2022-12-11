@@ -2,6 +2,7 @@ const axios = require('axios')
 const { BASE_API_ } = require('../../base_url.config')
 const FormData = require('form-data')
 const fs = require('fs')
+const Cookies = require('js-cookie')
 /** error handler */
 let errorFunction = (error) => {
     let errorArray = []
