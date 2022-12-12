@@ -5,7 +5,7 @@ const Login = async (userData) => {
     const response = await window.electronAPI.loginValidation(userData)
 
     if (response.type === 'success') {
-        Cookies.set('_tk', JSON.stringify(response.token), {
+        Cookies.set('_tk', response.token, {
             expires: 30,
         })
         Cookies.set('user', JSON.stringify({ ...response }), {
