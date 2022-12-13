@@ -370,7 +370,7 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
                                                 <>
                                                     {' '}
                                                     <Tr className='table_row'>
-                                                        <Td>1</Td>
+                                                        <Td>{index + 1}</Td>
 
                                                         <Td className='type_examiner'>
                                                             {
@@ -431,9 +431,10 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
                                                                             alignItems='center'>
                                                                             <Box className='icon_wrap '>
                                                                                 <Stack
-                                                                                    w='50px'
-                                                                                    h='50px'
-                                                                                    spacing='50x'
+                                                                                    w='30px'
+                                                                                    h='30px'
+                                                                                    p='10px'
+                                                                                    spacing='0px'
                                                                                     direction='column'
                                                                                     justifyContent='center'
                                                                                     alignItems={
@@ -455,7 +456,7 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
                                                                             </Box>
                                                                             <Stack
                                                                                 direction='column'
-                                                                                spacing='2px'>
+                                                                                spacing='0px'>
                                                                                 <Box
                                                                                     className='filename'
                                                                                     maxW='170px'>
@@ -896,7 +897,7 @@ const FileStack = styled(Box)`
 
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06);
 
-    min-height: 50px;
+    height: 50px;
     width: 100%;
     border: 1px solid #eeeeef;
     border-radius: 8px;
@@ -905,7 +906,7 @@ const FileStack = styled(Box)`
         font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
-        font-size: 13px;
+        font-size: 12px;
         line-height: 20px;
         color: #20202a;
         text-transform: capitalize;
@@ -916,27 +917,27 @@ const FileStack = styled(Box)`
 
         font-style: normal;
         font-weight: 400;
-        font-size: 13px;
+        font-size: 11px;
         line-height: 20px;
     }
 
     .icon_stack {
         border-radius: 8px;
-
+        height: 35px;
         justify-content: center;
         align-items: center;
 
         .icon_stack_text {
             font-family: 'Inter', sans-serif;
             font-style: normal;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 8px;
             text-transform: capitalize;
         }
 
         .icon_stack_icon {
             font-family: 'Inter', sans-serif;
-            font-size: 18px;
+            font-size: 13px;
         }
     }
 

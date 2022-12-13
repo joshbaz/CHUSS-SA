@@ -213,18 +213,18 @@ const ExaminerTable = ({
                         }
                     )
 
-                   // console.log('generalss', newDataToSave)
+                    // console.log('generalss', newDataToSave)
 
                     setExportData(newDataToSave)
                 }
             } else {
                 if (allDisplayData.allItems.length > 0) {
                     let newDataToSave = allDisplayData.allItems.map((data) => {
-                      //  console.log('allDisplayData', data.activeStatus)
+                        //  console.log('allDisplayData', data.activeStatus)
                         return data
                     })
 
-                  //  console.log('generalstts', newDataToSave)
+                    //  console.log('generalstts', newDataToSave)
                     setExportData(newDataToSave)
                 }
             }
@@ -235,7 +235,7 @@ const ExaminerTable = ({
 
     /** function to handle checkbox on each item */
     const handleIndivCheckbox = (e, data) => {
-      //  console.log('checking0', e.target.checked, data)
+        //  console.log('checking0', e.target.checked, data)
         if (exportData.length > 0) {
             let checkData = exportData.some(
                 (datacheck, index) => data._id === datacheck._id
@@ -484,7 +484,7 @@ const ExaminerTable = ({
                                     name.includes(details)
                                 )
 
-                              //  console.log('check', check)
+                                //  console.log('check', check)
 
                                 return check
                             }
@@ -590,7 +590,7 @@ const ExaminerTable = ({
 
     const onRemoveUpload = () => {
         if (removeDetails.exId) {
-             dispatch(examinerDeletes(removeDetails))
+            dispatch(examinerDeletes(removeDetails))
             setIsSubmittingp(true)
         }
     }
@@ -1274,7 +1274,7 @@ const ExaminerTable = ({
 export default ExaminerTable
 
 const Container = styled(Box)`
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -1316,7 +1316,7 @@ const Container = styled(Box)`
 
     .table_head {
         color: #5e5c60 !important;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px !important;
@@ -1333,7 +1333,7 @@ const Container = styled(Box)`
     }
 
     td {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 400;
         font-size: 14px;
@@ -1369,7 +1369,7 @@ const NoItems = styled(Box)`
     justify-content: center;
     align-items: center;
 
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
@@ -1384,7 +1384,7 @@ const PaginationStack = styled(Stack)`
         background: #ffffff;
     }
     .pages {
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: normal;
         font-size: 12px;
@@ -1396,7 +1396,7 @@ const PaginationStack = styled(Stack)`
         display: flex;
         align-items: center;
         h1 {
-            font-family: Inter;
+            font-family: 'Inter', sans-serif;
             font-style: normal;
             font-weight: normal;
             font-size: 12px;
@@ -1404,7 +1404,7 @@ const PaginationStack = styled(Stack)`
         }
         span {
             margin-left: 2px;
-            font-family: Inter;
+            font-family: 'Inter', sans-serif;
             font-style: normal;
             font-weight: normal;
             font-size: 12px;

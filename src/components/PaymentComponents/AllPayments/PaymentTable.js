@@ -742,7 +742,7 @@ const PaymentTable = ({
                                                                 'Africa/Kampala'
                                                             )
                                                             .format(
-                                                                'ddd DD MMM yy H:m'
+                                                                'ddd DD MMM yy H:m A'
                                                             )
 
                                                     let includedInExport
@@ -930,7 +930,7 @@ const PaymentTable = ({
                                                                 'Africa/Kampala'
                                                             )
                                                             .format(
-                                                                'ddd DD MMM yy H:m'
+                                                                'ddd DD MMM yy  H:m A'
                                                             )
 
                                                     let includedInExport
@@ -1230,8 +1230,9 @@ const PaymentTable = ({
 export default PaymentTable
 
 const Container = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     .tab {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         h2 {
@@ -1293,7 +1294,7 @@ const Container = styled(Stack)`
 
     .table_head {
         color: #5e5c60 !important;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px !important;
@@ -1301,10 +1302,11 @@ const Container = styled(Stack)`
     }
 
     td {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 400;
         font-size: 13px;
+        line-height: 20px;
         color: #3a3a43;
     }
 
@@ -1345,7 +1347,7 @@ const Container = styled(Stack)`
         align-items: center;
         background: #eeeeef;
         border-radius: 4px;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -1369,97 +1371,6 @@ const Container = styled(Stack)`
     }
 `
 
-const TableDropDown = styled(Stack)`
-    padding: 10px 0 0 52px;
-    .icon_add,
-    .icon_stat,
-    .icon_create {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: gray;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 15px;
-        z-index: 10;
-        border: 6px solid #ffffff;
-    }
-
-    .icon_add {
-        background: #fbd2d4;
-        color: #f14c54;
-    }
-
-    .icon_stat {
-        background: #ccddff;
-        color: #2264e6;
-    }
-
-    .icon_create {
-        background: #d4d4d6;
-        color: #5e5c60;
-    }
-
-    .activities {
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        color: #5e5c60;
-    }
-
-    .activity_identity {
-        color: #171c26;
-    }
-    .activity_type {
-        color: #f14c54;
-    }
-    .activity_text {
-        color: #171c26;
-    }
-`
-
-const ListStack = styled(Stack)`
-    position: relative;
-    height: 100%;
-    list-style-type: none;
-    z-index:1;
-  .list-item {
-        display: flex;
-        padding: 0px 0px;
-        flex-basis: 0;
-        -webkit-box-flex: 0
-        -ms-flex-positive: 0;
-        flex-grow: 0;
-        width: 100%;
-        min-width: 170px;
-        padding-bottom: 0px;
-
-    }
-    .list-item + .list-item:after {
-        content: '';
-        position: absolute;
-        left: 19px;
-        top: 0;
-        background: #D5DBE5;
-        width: 2px;
-        height: 100%;
-        transform: translateY(0%);
-        z-index:-2;
-       
-    }
-
-    .status_update {
-        border-left: 1px solid  #D5DBE5;
-        padding-left: 10px;
-    }
-
-  
-
-`
-
 const StatusItem = styled(Stack)`
     border-radius: 4px;
 
@@ -1480,7 +1391,7 @@ const NoItems = styled(Box)`
     justify-content: center;
     align-items: center;
 
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
@@ -1495,7 +1406,7 @@ const PaginationStack = styled(Stack)`
         background: #ffffff;
     }
     .pages {
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: normal;
         font-size: 12px;
@@ -1507,7 +1418,7 @@ const PaginationStack = styled(Stack)`
         display: flex;
         align-items: center;
         h1 {
-            font-family: Inter;
+            font-family: 'Inter', sans-serif;
             font-style: normal;
             font-weight: normal;
             font-size: 12px;
@@ -1515,7 +1426,7 @@ const PaginationStack = styled(Stack)`
         }
         span {
             margin-left: 2px;
-            font-family: Inter;
+            font-family: 'Inter', sans-serif;
             font-style: normal;
             font-weight: normal;
             font-size: 12px;

@@ -221,7 +221,6 @@ const AllPayments = () => {
         let values = {
             page: page,
         }
-     
 
         dispatch(getPaginatedPayments())
         dispatch(getAllPayments())
@@ -327,7 +326,6 @@ const AllPayments = () => {
                                                                         onChange={(
                                                                             value
                                                                         ) => {
-                                                                          
                                                                             checkboxesFilter(
                                                                                 data.title,
                                                                                 value
@@ -519,12 +517,13 @@ const AllPayments = () => {
 export default AllPayments
 
 const Container = styled(Stack)`
+    font-family: 'Inter', sans-serif;
     .add_button {
         height: 32px;
         color: #ffffff;
         background: #f4797f;
         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         letter-spacing: 0.02em;
@@ -546,6 +545,11 @@ const Container = styled(Stack)`
         box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
             0px 0px 0px 1px rgba(70, 79, 96, 0.16);
         border-radius: 6px 0px 0px 6px;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        font-size: 14px;
     }
 
     .menu_options {
@@ -575,22 +579,24 @@ const Container = styled(Stack)`
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
             0px 0px 0px 1px rgba(134, 143, 160, 0.16);
         border-radius: 0px 6px 6px 0px;
-
-        &:hover {
+        -webkit-user-select: none;
+        :hover {
             border: 0px solid transparent;
             box-shadow: 0px;
             border-radius: 0px 6px 6px 0px;
+            outline: none;
         }
 
         input {
             border: 0px solid transparent;
+            -webkit-box-shadow: none;
         }
 
         background: #ffffff;
     }
 
     .filter_num {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 14px;
@@ -599,7 +605,7 @@ const Container = styled(Stack)`
     }
 
     .clear_button {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px;
@@ -629,7 +635,7 @@ const FilterInfoStack = styled(Stack)`
     border-radius: 4px;
     h1 {
         color: #f14c54;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 12px;
@@ -638,7 +644,7 @@ const FilterInfoStack = styled(Stack)`
 
     p {
         color: #15151d;
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 12px;

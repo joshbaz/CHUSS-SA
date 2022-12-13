@@ -101,7 +101,7 @@ const Navigation = () => {
                                 <Box className='menu_icon'>{data.icon}</Box>
                                 {data.title === 'mst' ||
                                 data.title === 'phd' ? (
-                                    <Box className='menu_title'>
+                                    <Box pt='2px' className='menu_title'>
                                         {data.title}
                                     </Box>
                                 ) : null}
@@ -157,5 +157,6 @@ const Container = styled(Stack)`
         line-height: 11px;
         color: #d4d4d6;
         text-transform: uppercase;
+        font-family: 'Inter', sans-serif;
     }
 `

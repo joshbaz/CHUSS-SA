@@ -35,7 +35,6 @@ import AdvPagination2 from './AdvPagination2'
 import Moments from 'moment-timezone'
 
 const AdvReportTable = ({
-    tableLists,
     tableData = [],
     allItems,
     searchActive,
@@ -53,6 +52,32 @@ const AdvReportTable = ({
 
     let reportCollectedDatas = useSelector((state) => state.report)
     let examinerCollectedDatas = useSelector((state) => state.examiner)
+    const [tableLists, setTableLists] = React.useState([
+        {
+            mtitle: 'Student Name',
+        },
+        {
+            mtitle: 'Student Contacts',
+        },
+        {
+            mtitle: 'topic',
+        },
+        {
+            mtitle: 'Report Status',
+        },
+        {
+            mtitle: 'Examiner Name',
+        },
+        {
+            mtitle: 'Creation Date',
+        },
+        {
+            mtitle: 'Submission Date',
+        },
+        {
+            mtitle: 'Report Delay',
+        },
+    ])
     const [filterTabData, setfilterTabData] = React.useState([
         {
             title: 'All',
@@ -105,7 +130,7 @@ const AdvReportTable = ({
 
     //const [exportData, setExportData] = React.useState([])
     React.useEffect(() => {
-      //  console.log('items hereeerer', allItems.items, allProjects)
+        //  console.log('items hereeerer', allItems.items, allProjects)
         setAllDisplayItems(allItems.items)
 
         const filteredData = allItems.items.map((data) => {
@@ -123,7 +148,7 @@ const AdvReportTable = ({
             }
         })
 
-      //  console.log('Data achieved', filteredData)
+        //  console.log('Data achieved', filteredData)
 
         /** initial items  */
         //items collected
@@ -255,7 +280,7 @@ const AdvReportTable = ({
                         (details) => status > details
                     )
 
-                //    console.log('this greater t', check, diff)
+                    //    console.log('this greater t', check, diff)
                     return check
                 }
 
@@ -271,7 +296,7 @@ const AdvReportTable = ({
 
                 if (filterInfo[0].queryfunction === 'equal to') {
                     let status = reportDelay
-                  //  console.log('whT IS THE D', diff)
+                    //  console.log('whT IS THE D', diff)
                     let check = filterInfo[0].searchfor.some(
                         (details) => details == status
                     )
@@ -363,7 +388,7 @@ const AdvReportTable = ({
                                         name.includes(details)
                                     )
 
-                                 //   console.log('check', check)
+                                    //   console.log('check', check)
 
                                     return check
                                 }
@@ -926,7 +951,6 @@ const AdvReportTable = ({
                                                                 element.tagName ===
                                                                 activeStatus.status
                                                         )
-                                                 
                                                 }
                                             } else {
                                             }
@@ -958,9 +982,23 @@ const AdvReportTable = ({
                                                   )
                                                 : 0
 
-                                           
                                             let reportDelay =
                                                 data.submissionDate ? 0 : diff
+
+                                            let submissionDate =
+                                                data.submissionDate
+                                                    ? Moments(
+                                                          data.submissionDate
+                                                      )
+                                                          .tz('Africa/Kampala')
+                                                          .format('DD MMM Y')
+                                                    : '-'
+
+                                            let creationDate = data.creationDate
+                                                ? Moments(data.creationDate)
+                                                      .tz('Africa/Kampala')
+                                                      .format('DD MMM Y')
+                                                : '-'
                                             return (
                                                 <Tr
                                                     key={data._id}
@@ -1034,9 +1072,22 @@ const AdvReportTable = ({
                                                         }{' '}
                                                         {data.examiner.name}
                                                     </Td>
-                                                    <Td maxW='250px'>
+                                                    {/**<Td maxW='250px'>
                                                         {data.examiner.email}
+                                                    </Td>**/}
+
+                                                    <Td>
+                                                        <Box className='sub_date'>
+                                                            {creationDate}
+                                                        </Box>
                                                     </Td>
+
+                                                    <Td>
+                                                        <Box className='sub_date'>
+                                                            {submissionDate}
+                                                        </Box>
+                                                    </Td>
+
                                                     <Td maxW='250px'>
                                                         <Stack
                                                             w='100%'
@@ -1070,7 +1121,6 @@ const AdvReportTable = ({
                                     <>
                                         {allDisplayData.items.map(
                                             (data, index) => {
-                                              
                                                 let activeStatus
                                                 let activeElementSet
                                                 let includedInExport
@@ -1093,7 +1143,6 @@ const AdvReportTable = ({
                                                                     element.tagName ===
                                                                     activeStatus.status
                                                             )
-                                                     
                                                     }
                                                 } else {
                                                 }
@@ -1129,11 +1178,36 @@ const AdvReportTable = ({
                                                       )
                                                     : 0
 
-                                              
                                                 let reportDelay =
                                                     data.submissionDate
                                                         ? 0
                                                         : diff
+
+                                                let submissionDate =
+                                                    data.submissionDate
+                                                        ? Moments(
+                                                              data.submissionDate
+                                                          )
+                                                              .tz(
+                                                                  'Africa/Kampala'
+                                                              )
+                                                              .format(
+                                                                  'DD MMM Y'
+                                                              )
+                                                        : '-'
+
+                                                let creationDate =
+                                                    data.creationDate
+                                                        ? Moments(
+                                                              data.creationDate
+                                                          )
+                                                              .tz(
+                                                                  'Africa/Kampala'
+                                                              )
+                                                              .format(
+                                                                  'DD MMM Y'
+                                                              )
+                                                        : '-'
                                                 return (
                                                     <Tr
                                                         key={data._id}
@@ -1175,6 +1249,7 @@ const AdvReportTable = ({
                                                                 : ''}
                                                         </Td>
                                                         <Td
+                                                        className='stud_topic'
                                                             maxW='250px'
                                                             style={{
                                                                 fontWeight: 500,
@@ -1210,11 +1285,23 @@ const AdvReportTable = ({
                                                             }{' '}
                                                             {data.examiner.name}
                                                         </Td>
-                                                        <Td maxW='250px'>
+                                                        {/**<Td maxW='250px'>
                                                             {
                                                                 data.examiner
                                                                     .email
                                                             }
+                                                        </Td> */}
+
+                                                        <Td>
+                                                            <Box className='sub_date'>
+                                                                {creationDate}
+                                                            </Box>
+                                                        </Td>
+
+                                                        <Td>
+                                                            <Box className='sub_date'>
+                                                                {submissionDate}
+                                                            </Box>
                                                         </Td>
                                                         <Td maxW='250px'>
                                                             <Stack
@@ -1432,11 +1519,21 @@ const Container = styled(Stack)`
         font-weight: 400;
         font-size: 14px;
         color: #3a3a43;
-        max-width: 250px;
+        line-height: 20px;
+        max-width: 160px;
     }
 
     .studentName {
         text-transform: capitalize;
+    }
+
+    .stud_topic {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        color: #3a3a43;
+        line-height: 20px;
     }
     .add_examiners {
         width: 24px;
@@ -1540,6 +1637,22 @@ const Container = styled(Stack)`
         border-radius: 6px;
         width: 24px;
         height: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sub_date {
+        height: 20px;
+        color: #3a3a43;
+
+        font-style: normal;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 18px;
+        background: #eeeeef;
+        border-radius: 4px;
+        width: 98px;
         display: flex;
         justify-content: center;
         align-items: center;

@@ -32,7 +32,7 @@ const TableHead = [
         title: '#',
         filter: true,
     },
-    { title: '' },
+    //{ title: '' },
     {
         title: 'Type',
         filter: true,
@@ -48,6 +48,9 @@ const TableHead = [
     },
     {
         title: 'Report Status',
+    },
+    {
+        title: 'creation Date',
     },
     {
         title: 'submission Date',
@@ -208,7 +211,16 @@ const ExaminersReports = ({ values, rlink }) => {
                                                       .format('DD MMM Y')
                                                 : '-'
 
-                                            // let submissionDate 
+                                            let creationDate = data.reportId
+                                                .creationDate
+                                                ? Moments(
+                                                      data.reportId.creationDate
+                                                  )
+                                                      .tz('Africa/Kampala')
+                                                      .format('DD MMM Y')
+                                                : '-'
+
+                                            // let submissionDate
                                             // let datef= Moments('2022-10-4')
                                             // let datey =
                                             //     Moments().tz('Africa/Kampala')
@@ -217,26 +229,28 @@ const ExaminersReports = ({ values, rlink }) => {
                                             //     'months'
                                             // )
                                             return (
-                                                <Tr className='table_row'>
-                                                    <Td>1</Td>
-                                                    <Td w='36px'>
-                                                        <Box
-                                                            onClick={
-                                                                handleDropDown
-                                                            }
-                                                            ref={activeDrop}
-                                                            style={{
-                                                                color: '#5E5C60',
-                                                                fontSize:
-                                                                    '16px',
-                                                            }}>
-                                                            {activityDrpdown ? (
-                                                                <IoIosArrowDropdown />
-                                                            ) : (
-                                                                <IoIosArrowDropright />
-                                                            )}
-                                                        </Box>
-                                                    </Td>
+                                                <Tr
+                                                    key={index}
+                                                    className='table_row'>
+                                                    <Td>{index + 1}</Td>
+                                                    {/**<Td w='36px'>
+                                                    <Box
+                                                        onClick={
+                                                            handleDropDown
+                                                        }
+                                                        ref={activeDrop}
+                                                        style={{
+                                                            color: '#5E5C60',
+                                                            fontSize:
+                                                                '16px',
+                                                        }}>
+                                                        {activityDrpdown ? (
+                                                            <IoIosArrowDropdown />
+                                                        ) : (
+                                                            <IoIosArrowDropright />
+                                                        )}
+                                                    </Box>
+                                                        </Td>**/}
                                                     <Td className='type_examiner'>
                                                         {
                                                             data.examinerDetails
@@ -281,6 +295,11 @@ const ExaminersReports = ({ values, rlink }) => {
                                                                 }
                                                             </Text>
                                                         </StatusItem>
+                                                    </Td>
+                                                    <Td>
+                                                        <Box className='sub_date'>
+                                                            {creationDate}
+                                                        </Box>
                                                     </Td>
 
                                                     <Td>
@@ -421,10 +440,29 @@ const ExaminersReports = ({ values, rlink }) => {
                                                                           'DD MMM Y'
                                                                       )
                                                                 : '-'
+
+                                                        let creationDate = data
+                                                            .reportId
+                                                            .creationDate
+                                                            ? Moments(
+                                                                  data.reportId
+                                                                      .creationDate
+                                                              )
+                                                                  .tz(
+                                                                      'Africa/Kampala'
+                                                                  )
+                                                                  .format(
+                                                                      'DD MMM Y'
+                                                                  )
+                                                            : '-'
                                                         return (
-                                                            <Tr className='table_row'>
-                                                                <Td>1</Td>
-                                                                <Td w='36px'>
+                                                            <Tr
+                                                                key={index}
+                                                                className='table_row'>
+                                                                <Td>
+                                                                    {index + 1}
+                                                                </Td>
+                                                                {/**<Td w='36px'>
                                                                     <Box
                                                                         onClick={
                                                                             handleDropDown
@@ -443,7 +481,7 @@ const ExaminersReports = ({ values, rlink }) => {
                                                                             <IoIosArrowDropright />
                                                                         )}
                                                                     </Box>
-                                                                </Td>
+                                                                        </Td>**/}
                                                                 <Td className='type_examiner'>
                                                                     {
                                                                         data
@@ -498,6 +536,14 @@ const ExaminersReports = ({ values, rlink }) => {
                                                                             }
                                                                         </Text>
                                                                     </StatusItem>
+                                                                </Td>
+
+                                                                <Td>
+                                                                    <Box className='sub_date'>
+                                                                        {
+                                                                            creationDate
+                                                                        }
+                                                                    </Box>
                                                                 </Td>
 
                                                                 <Td>

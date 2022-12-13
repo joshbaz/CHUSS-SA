@@ -207,7 +207,7 @@ const ViewPaymentDetails = ({ values = null, projectValues }) => {
                         className='status_dropdown'
                         direction='row'
                         alignItems='center'>
-                        <h5>Current Project Status</h5>
+                        <h5>Current Pay Status</h5>
 
                         <Stack direction='row' alignItems='center'>
                             <StatusItem

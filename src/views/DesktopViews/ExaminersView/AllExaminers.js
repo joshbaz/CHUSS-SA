@@ -24,7 +24,7 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io'
 import { FaFilter } from 'react-icons/fa'
 import { BiSearch } from 'react-icons/bi'
-import { CgFormatSlash } from 'react-icons/cg'
+
 import { GrClose } from 'react-icons/gr'
 import ProjectTable from '../../../components/ProjectComponents/AllProjects/ProjectTable'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -55,7 +55,7 @@ const AllExaminerss = () => {
         },
     ]
 
-    const [filterActive, setFilterActive] = React.useState(false)
+    
     const [filterInfo, setFilterInfo] = React.useState([])
     const [searchStatus, setSearchStatus] = React.useState('')
     const [searchActive, setSearchActive] = React.useState(false)

@@ -26,7 +26,7 @@ const TopBar = ({ topbarData }) => {
     }
 
     useEffect(() => {
-       // routeNavigate('/auth/signin', { replace: true })
+        // routeNavigate('/auth/signin', { replace: true })
     }, [])
 
     return (
@@ -58,7 +58,9 @@ const TopBar = ({ topbarData }) => {
                     <MenuButton>
                         <Avatar
                             size='sm'
-                            name={`${user!== null && user.firstname} ${user !== null && user.lastname}'`}
+                            name={`${user !== null && user.firstname} ${
+                                user !== null && user.lastname
+                            }'`}
                             src=''
                             bg='gray.400'
                         />
@@ -80,7 +82,7 @@ const Container = styled(Stack)`
     background: #fbfbfb;
 
     h1 {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 700;
         font-size: 17px;
@@ -98,7 +100,7 @@ const Container = styled(Stack)`
         align-items: center;
         p {
             color: #f14c54;
-            font-family: 'Inter';
+            font-family: 'Inter', sans-serif;
             font-style: normal;
             font-weight: 500;
             font-size: 12px;

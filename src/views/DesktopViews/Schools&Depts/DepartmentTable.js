@@ -47,10 +47,10 @@ import {
 } from '../../../store/features/schools/schoolSlice'
 
 const TableHead = [
-    {
-        title: '#',
-        filter: true,
-    },
+    // {
+    //     title: '#',
+    //     filter: true,
+    // },
     {
         title: 'Department Name',
         filter: true,
@@ -408,7 +408,7 @@ const DepartmentTable = ({
                                                                 colorScheme='pink'
                                                             />
                                                         </Td>
-                                                        <Td>1</Td>
+                                                        {/** <Td>1</Td> */}
 
                                                         <Td>
                                                             {

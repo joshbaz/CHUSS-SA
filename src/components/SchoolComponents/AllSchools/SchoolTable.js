@@ -51,10 +51,10 @@ import {
 } from '../../../store/features/schools/schoolSlice'
 import { useDispatch, useSelector } from 'react-redux'
 const TableHead = [
-    {
-        title: '#',
-        filter: true,
-    },
+    // {
+    //     title: '#',
+    //     filter: true,
+    // },
     {
         title: 'School Name',
         filter: true,
@@ -286,8 +286,6 @@ const SchoolTable = ({
                                     name.includes(details)
                                 )
 
-                              
-
                                 return check
                             }
 
@@ -300,8 +298,6 @@ const SchoolTable = ({
                                 ].searchfor.some((details) =>
                                     name.includes(details)
                                 )
-
-                               
 
                                 return check
                             }
@@ -773,7 +769,7 @@ const SchoolTable = ({
                                                                     colorScheme='pink'
                                                                 />
                                                             </Td>
-                                                            <Td>1</Td>
+                                                            {/** <Td>1</Td> */}
 
                                                             <Td>
                                                                 {
@@ -919,7 +915,7 @@ const SchoolTable = ({
                                                                     colorScheme='pink'
                                                                 />
                                                             </Td>
-                                                            <Td>1</Td>
+                                                            {/** <Td>1</Td> */}
 
                                                             <Td>
                                                                 {

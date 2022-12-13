@@ -15,6 +15,7 @@ import {
     ModalBody,
     useToast,
     Button,
+    Grid,
 } from '@chakra-ui/react'
 import { BsListUl } from 'react-icons/bs'
 import { RiLayoutGridFill } from 'react-icons/ri'
@@ -26,6 +27,7 @@ import {
 } from '../../../store/features/project/projectSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
+import Moments from 'moment-timezone'
 
 const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
@@ -202,11 +204,20 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
                     {filesList.length > 0 ? (
                         <Box>
                             {selectedView === 'grid' ? (
-                                <Stack direction='row'>
+                                <Grid
+                                    templateColumns='repeat(3, 1fr)'
+                                    w='100%'
+                                    gap={'20px'}>
                                     {filesList.map((data, index) => {
                                         let size = formatSize(
                                             parseInt(data.fileId.fileSize)
                                         )
+
+                                        let createdDates = Moments(
+                                            data.fileId.createdAt
+                                        )
+                                            .tz('Africa/Kampala')
+                                            .format(' DD MMM, YYYY  H:M A')
                                         return (
                                             <FileStack
                                                 key={index}
@@ -236,15 +247,18 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
                                                     </Stack>
                                                 </Box>
 
-                                                <Box>
+                                                <Stack
+                                                    padding='0 20px'
+                                                    pb='10px'>
                                                     <Stack
                                                         direction='row'
                                                         justifyContent={
                                                             'space-between'
                                                         }
-                                                        padding='0 20px'
                                                         alignItems='center'>
-                                                        <Stack direction='column'>
+                                                        <Stack
+                                                            spacing='0'
+                                                            direction='column'>
                                                             <Text className='filename'>
                                                                 {
                                                                     data.fileId
@@ -306,13 +320,20 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
                                                             </MenuList>
                                                         </Menu>
                                                     </Stack>
-                                                </Box>
+
+                                                    <Box className='filedates'>
+                                                        {createdDates}
+                                                    </Box>
+                                                </Stack>
                                             </FileStack>
                                         )
                                     })}
-                                </Stack>
+                                </Grid>
                             ) : (
-                                <Stack direction='row'>
+                                <Grid
+                                    templateColumns='repeat(3, 1fr)'
+                                    w='100%'
+                                    gap={'20px'}>
                                     {filesList.map((data, index) => {
                                         let size = formatSize(
                                             parseInt(data.fileId.fileSize)
@@ -425,7 +446,7 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
                                             </FileStack>
                                         )
                                     })}
-                                </Stack>
+                                </Grid>
                             )}
                         </Box>
                     ) : (
@@ -617,6 +638,21 @@ const FormContainer = styled(Box)`
 
         border: 1px solid #eeeeef;
         border-radius: 8px;
+    }
+
+    .filedates {
+        background: #f5f5f5;
+        border-radius: 2px;
+        height: 20px;
+        color: #838389;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 10px;
+        line-height: 18px;
+        padding-left: 8px;
+        display: flex;
+        aling-items: center;
     }
 `
 

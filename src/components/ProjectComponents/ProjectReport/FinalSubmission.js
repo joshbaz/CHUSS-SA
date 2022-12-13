@@ -16,6 +16,7 @@ import {
     MenuList,
     MenuItem,
     useToast,
+    Grid,
 } from '@chakra-ui/react'
 import { BsListUl } from 'react-icons/bs'
 import { RiLayoutGridFill } from 'react-icons/ri'
@@ -83,14 +84,12 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
         const dataGiven = await window.electronAPI.getdownloadFile(
             data.fileId.fileId
         )
-     
 
         if (!dataGiven.message) {
             let newData = {
                 ...dataGiven,
             }
             if (nameValues !== null) {
-               
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -107,15 +106,13 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
                 newData
             )
 
-         
             if (performDowload.message) {
-              //  alert(performDowload.message)
+                //  alert(performDowload.message)
             }
         }
     }
 
     const handleRemove = (fId, nam, secId) => {
-      
         if (values._id && fId) {
             let rvalues = {
                 fId: fId,
@@ -357,7 +354,10 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
                                 {filesList.length > 0 ? (
                                     <Box>
                                         {selectedView === 'grid' ? (
-                                            <Stack direction='row'>
+                                            <Grid
+                                                templateColumns='repeat(3, 1fr)'
+                                                w='100%'
+                                                gap={'20px'}>
                                                 {filesList.map(
                                                     (data, index) => {
                                                         let size = formatSize(
@@ -366,6 +366,17 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
                                                                     .fileSize
                                                             )
                                                         )
+                                                        let createdDates =
+                                                            Moments(
+                                                                data.fileId
+                                                                    .createdAt
+                                                            )
+                                                                .tz(
+                                                                    'Africa/Kampala'
+                                                                )
+                                                                .format(
+                                                                    ' DD MMM, YYYY  H:M A'
+                                                                )
                                                         return (
                                                             <FileStack
                                                                 key={index}
@@ -382,7 +393,7 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
                                                                         direction='column'
                                                                         w='55px'
                                                                         h='55px'
-                                                                        className='icon_stack doc'>
+                                                                        className={`icon_stack ${data.fileId.fileExtension}`}>
                                                                         <Box>
                                                                             <BsFileEarmark />
                                                                         </Box>
@@ -396,15 +407,18 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
                                                                     </Stack>
                                                                 </Box>
 
-                                                                <Box>
+                                                                <Stack
+                                                                    padding='0 20px'
+                                                                    pb='10px'>
                                                                     <Stack
                                                                         direction='row'
                                                                         justifyContent={
                                                                             'space-between'
                                                                         }
-                                                                        padding='0 20px'
                                                                         alignItems='center'>
-                                                                        <Stack direction='column'>
+                                                                        <Stack
+                                                                            spacing='0'
+                                                                            direction='column'>
                                                                             <Text className='filename'>
                                                                                 {
                                                                                     data
@@ -471,14 +485,23 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
                                                                             </MenuList>
                                                                         </Menu>
                                                                     </Stack>
-                                                                </Box>
+
+                                                                    <Box className='filedates'>
+                                                                        {
+                                                                            createdDates
+                                                                        }
+                                                                    </Box>
+                                                                </Stack>
                                                             </FileStack>
                                                         )
                                                     }
                                                 )}
-                                            </Stack>
+                                            </Grid>
                                         ) : (
-                                            <Stack direction='row'>
+                                            <Grid
+                                                templateColumns='repeat(3, 1fr)'
+                                                w='100%'
+                                                gap={'20px'}>
                                                 {filesList.map(
                                                     (data, index) => (
                                                         <FileStack
@@ -500,7 +523,7 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
                                                                         h='45px'
                                                                         spacing='0'
                                                                         direction='column'
-                                                                        className='icon_stack doc'>
+                                                                        className={`icon_stack ${data.fileId.fileExtension}`}>
                                                                         <Box>
                                                                             <BsFileEarmark />
                                                                         </Box>
@@ -596,7 +619,7 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
                                                         </FileStack>
                                                     )
                                                 )}
-                                            </Stack>
+                                            </Grid>
                                         )}
                                     </Box>
                                 ) : (
@@ -859,6 +882,21 @@ const Container = styled(Box)`
         border: 1px solid #eeeeef;
         border-radius: 8px;
     }
+
+    .filedates {
+        background: #f5f5f5;
+        border-radius: 2px;
+        height: 20px;
+        color: #838389;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 10px;
+        line-height: 18px;
+        padding-left: 8px;
+        display: flex;
+        aling-items: center;
+    }
 `
 
 const EditIcon = styled(Box)`
@@ -898,12 +936,12 @@ const FileStack = styled(Stack)`
         }
     }
 
-    .pdf {
+    .pdf, .PDF {
         background: #fceded;
         color: #f14c54;
     }
 
-    .doc {
+    .doc,.docx {
         color: #faa723;
         background: #feecd0;
     }

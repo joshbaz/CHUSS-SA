@@ -38,8 +38,8 @@ import {
     MdKeyboardArrowRight,
 } from 'react-icons/md'
 import { TbDotsVertical } from 'react-icons/tb'
-import { RiPencilFill } from 'react-icons/ri'
-import { CgNotes } from 'react-icons/cg'
+// import { RiPencilFill } from 'react-icons/ri'
+// import { CgNotes } from 'react-icons/cg'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import Moments from 'moment-timezone'
@@ -63,11 +63,14 @@ const DashTable = () => {
         {
             title: 'EXAMINERS',
         },
+        // {
+        //     title: 'Registration',
+        // },
         {
-            title: 'Semester',
+            title: 'Submission',
         },
         {
-            title: 'SUPERVISORS',
+            title: 'Type',
         },
     ]
 
@@ -400,11 +403,11 @@ const DashTable = () => {
                                                         )}
                                                     </Box>
                                                 </Td>
-                                                <Td>
-                                                    <Box className='registration'>
-                                                        {returnedData}{' '}
-                                                    </Box>
-                                                </Td>
+                                                {/**<Td>
+                                                <Box className='registration'>
+                                                    {returnedData}{' '}
+                                                </Box>
+                                            </Td>**/}
                                                 <Td>
                                                     <Box
                                                         m='auto'
@@ -415,6 +418,19 @@ const DashTable = () => {
                                                             'center'
                                                         }>
                                                         {data.submissionStatus}
+                                                    </Box>
+                                                </Td>
+
+                                                <Td>
+                                                    <Box
+                                                        m='auto'
+                                                        w='100%'
+                                                        display='flex'
+                                                        className='subtype'
+                                                        justifyContent={
+                                                            'center'
+                                                        }>
+                                                        {rpath}
                                                     </Box>
                                                 </Td>
                                                 <Td>
@@ -488,7 +504,7 @@ const Container = styled(Stack)`
     background: #ffffff;
     border-radius: 9px;
     .tab {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         h2 {
@@ -550,7 +566,7 @@ const Container = styled(Stack)`
 
     .table_head {
         color: #5e5c60 !important;
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 12px !important;
@@ -558,7 +574,7 @@ const Container = styled(Stack)`
     }
 
     td {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 400;
         font-size: 13px;
@@ -668,7 +684,7 @@ const TableDropDown = styled(Stack)`
     }
 
     .activities {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;

@@ -20,6 +20,9 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
+    SimpleGrid,
+    Grid,
+    GridItem,
 } from '@chakra-ui/react'
 import { BsListUl } from 'react-icons/bs'
 import { RiLayoutGridFill } from 'react-icons/ri'
@@ -280,14 +283,12 @@ const MastersVivaReport = ({
         const dataGiven = await window.electronAPI.getdownloadFile(
             data.fileId.fileId
         )
-      
 
         if (!dataGiven.message) {
             let newData = {
                 ...dataGiven,
             }
             if (nameValues !== null) {
-               
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -304,15 +305,13 @@ const MastersVivaReport = ({
                 newData
             )
 
-         
             if (performDowload.message) {
-              //  alert(performDowload.message)
+                //  alert(performDowload.message)
             }
         }
     }
 
     const handleRemove = (fId, nam, secId) => {
-      
         if (values._id && fId) {
             let rvalues = {
                 fId: fId,
@@ -523,11 +522,14 @@ const MastersVivaReport = ({
                                 <h1> Files</h1>
                             </Box>
 
-                            <Stack spacing={'8px'}>
+                            <Stack spacing={'8px'} w='100%'>
                                 {filesList.length > 0 ? (
-                                    <Box>
+                                    <Box w='100%'>
                                         {selectedView === 'grid' ? (
-                                            <Stack direction='row'>
+                                            <Grid
+                                                templateColumns='repeat(3, 1fr)'
+                                                w='100%'
+                                                gap={'20px'}>
                                                 {filesList.map(
                                                     (data, index) => {
                                                         let size = formatSize(
@@ -536,119 +538,145 @@ const MastersVivaReport = ({
                                                                     .fileSize
                                                             )
                                                         )
-                                                        return (
-                                                            <FileStack
-                                                                key={index}
-                                                                w='202.6px'
-                                                                h='168px'
-                                                                direction='column'
-                                                                alignitems='space-between'
-                                                                className='filedoc'>
-                                                                <Box
-                                                                    h='96px'
-                                                                    className='icon_wrap '>
-                                                                    <Stack
-                                                                        spacing='0'
-                                                                        direction='column'
-                                                                        w='55px'
-                                                                        h='55px'
-                                                                        className='icon_stack doc'>
-                                                                        <Box>
-                                                                            <BsFileEarmark />
-                                                                        </Box>
-                                                                        <Text>
-                                                                            {
-                                                                                data
-                                                                                    .fileId
-                                                                                    .fileExtension
-                                                                            }
-                                                                        </Text>
-                                                                    </Stack>
-                                                                </Box>
 
-                                                                <Box>
-                                                                    <Stack
-                                                                        direction='row'
-                                                                        justifyContent={
-                                                                            'space-between'
-                                                                        }
-                                                                        padding='0 20px'
-                                                                        alignItems='center'>
-                                                                        <Stack direction='column'>
-                                                                            <Text className='filename'>
+                                                        let createdDates =
+                                                            Moments(
+                                                                data.fileId
+                                                                    .createdAt
+                                                            )
+                                                                .tz(
+                                                                    'Africa/Kampala'
+                                                                )
+                                                                .format(
+                                                                    ' DD MMM, YYYY  H:M A'
+                                                                )
+                                                        return (
+                                                            <GridItem>
+                                                                <FileStack
+                                                                    key={index}
+                                                                    w='202.6px'
+                                                                    h='168px'
+                                                                    direction='column'
+                                                                    alignitems='space-between'
+                                                                    className='filedoc'>
+                                                                    <Box
+                                                                        h='96px'
+                                                                        className='icon_wrap '>
+                                                                        <Stack
+                                                                            spacing='0'
+                                                                            direction='column'
+                                                                            w='55px'
+                                                                            h='55px'
+                                                                            className={`icon_stack ${data.fileId.fileExtension}`}>
+                                                                            <Box>
+                                                                                <BsFileEarmark />
+                                                                            </Box>
+                                                                            <Text>
                                                                                 {
                                                                                     data
                                                                                         .fileId
-                                                                                        .fileName
-                                                                                }
-                                                                            </Text>
-                                                                            <Text className='filesize'>
-                                                                                {
-                                                                                    size
+                                                                                        .fileExtension
                                                                                 }
                                                                             </Text>
                                                                         </Stack>
-                                                                        <Menu>
-                                                                            <MenuButton>
-                                                                                <Box color='#838389'>
-                                                                                    <BsThreeDots />
-                                                                                </Box>
-                                                                            </MenuButton>
+                                                                    </Box>
 
-                                                                            <MenuList>
-                                                                                <MenuItem
-                                                                                    onClick={() =>
-                                                                                        handleFileView(
-                                                                                            data
-                                                                                        )
+                                                                    <Stack
+                                                                        padding='0 20px'
+                                                                        pb='10px'>
+                                                                        <Stack
+                                                                            direction='row'
+                                                                            justifyContent={
+                                                                                'space-between'
+                                                                            }
+                                                                            alignItems='center'>
+                                                                            <Stack
+                                                                                spacing='0'
+                                                                                direction='column'>
+                                                                                <Text className='filename'>
+                                                                                    {
+                                                                                        data
+                                                                                            .fileId
+                                                                                            .fileName
                                                                                     }
-                                                                                    fontSize={
-                                                                                        '14px'
-                                                                                    }>
-                                                                                    View
-                                                                                    File
-                                                                                </MenuItem>
-                                                                                <MenuItem
-                                                                                    onClick={() =>
-                                                                                        handleDownloadFile(
-                                                                                            data
-                                                                                        )
+                                                                                </Text>
+                                                                                <Text className='filesize'>
+                                                                                    {
+                                                                                        size
                                                                                     }
-                                                                                    fontSize={
-                                                                                        '14px'
-                                                                                    }>
-                                                                                    Download
-                                                                                    File
-                                                                                </MenuItem>
-                                                                                <MenuItem
-                                                                                    onClick={() =>
-                                                                                        handleRemove(
-                                                                                            data
-                                                                                                .fileId
-                                                                                                .fileId,
-                                                                                            data
-                                                                                                .fileId
-                                                                                                .fileName,
-                                                                                            data._id
-                                                                                        )
-                                                                                    }
-                                                                                    fontSize={
-                                                                                        '14px'
-                                                                                    }>
-                                                                                    Delete
-                                                                                    File
-                                                                                </MenuItem>
-                                                                            </MenuList>
-                                                                        </Menu>
+                                                                                </Text>
+                                                                            </Stack>
+                                                                            <Menu>
+                                                                                <MenuButton>
+                                                                                    <Box color='#838389'>
+                                                                                        <BsThreeDots />
+                                                                                    </Box>
+                                                                                </MenuButton>
+
+                                                                                <MenuList>
+                                                                                    <MenuItem
+                                                                                        onClick={() =>
+                                                                                            handleFileView(
+                                                                                                data
+                                                                                            )
+                                                                                        }
+                                                                                        fontSize={
+                                                                                            '14px'
+                                                                                        }>
+                                                                                        View
+                                                                                        File
+                                                                                    </MenuItem>
+                                                                                    <MenuItem
+                                                                                        onClick={() =>
+                                                                                            handleDownloadFile(
+                                                                                                data
+                                                                                            )
+                                                                                        }
+                                                                                        fontSize={
+                                                                                            '14px'
+                                                                                        }>
+                                                                                        Download
+                                                                                        File
+                                                                                    </MenuItem>
+                                                                                    <MenuItem
+                                                                                        onClick={() =>
+                                                                                            handleRemove(
+                                                                                                data
+                                                                                                    .fileId
+                                                                                                    .fileId,
+                                                                                                data
+                                                                                                    .fileId
+                                                                                                    .fileName,
+                                                                                                data._id
+                                                                                            )
+                                                                                        }
+                                                                                        fontSize={
+                                                                                            '14px'
+                                                                                        }>
+                                                                                        Delete
+                                                                                        File
+                                                                                    </MenuItem>
+                                                                                </MenuList>
+                                                                            </Menu>
+                                                                        </Stack>
+
+                                                                        <Box className='filedates'>
+                                                                            {
+                                                                                createdDates
+                                                                            }
+                                                                        </Box>
                                                                     </Stack>
-                                                                </Box>
-                                                            </FileStack>
+                                                                </FileStack>
+                                                            </GridItem>
                                                         )
                                                     }
                                                 )}
-                                            </Stack>
+                                            </Grid>
                                         ) : (
-                                            <Stack direction='row'>
+                                            <Grid
+                                                templateColumns='repeat(3, 1fr)'
+                                                w='100%'
+                                                gap={'20px'}>
                                                 {filesList.map(
                                                     (data, index) => (
                                                         <FileStack
@@ -670,7 +698,7 @@ const MastersVivaReport = ({
                                                                         h='45px'
                                                                         spacing='0'
                                                                         direction='column'
-                                                                        className='icon_stack doc'>
+                                                                        className={`icon_stack ${data.fileId.fileExtension}`}>
                                                                         <Box>
                                                                             <BsFileEarmark />
                                                                         </Box>
@@ -766,7 +794,7 @@ const MastersVivaReport = ({
                                                         </FileStack>
                                                     )
                                                 )}
-                                            </Stack>
+                                            </Grid>
                                         )}
                                     </Box>
                                 ) : (
@@ -1185,6 +1213,21 @@ const Container = styled(Box)`
         border: 1px solid #eeeeef;
         border-radius: 8px;
     }
+
+    .filedates {
+        background: #f5f5f5;
+        border-radius: 2px;
+        height: 20px;
+        color: #838389;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 10px;
+        line-height: 18px;
+        padding-left: 8px;
+        display: flex;
+        aling-items: center;
+    }
 `
 
 const EditIcon = styled(Box)`
@@ -1230,7 +1273,8 @@ const FileStack = styled(Stack)`
         color: #f14c54;
     }
 
-    .doc {
+    .doc,
+    .docx {
         color: #faa723;
         background: #feecd0;
     }

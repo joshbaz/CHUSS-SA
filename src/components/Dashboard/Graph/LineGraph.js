@@ -73,7 +73,7 @@ const LineGraph = () => {
         labels: graphLineSData.labelData,
         datasets: [
             {
-                label: 'messages',
+                label: 'graduated students',
                 data: graphLineSData.DataResults,
                 fill: true,
                 backgroundColor: '#FFC043',

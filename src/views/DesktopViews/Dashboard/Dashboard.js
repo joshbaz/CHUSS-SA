@@ -431,14 +431,15 @@ const InputStack = styled(Stack)`
 const AdStack = styled(Stack)`
     color: #838389;
     .ad_icon {
+        font-family: 'Inter', sans-serif;
         font-size: 25px;
     }
 
     .ad_text {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: italic;
         font-weight: 600;
-        font-size: 17px;
+        font-size: 16px;
     }
 `
 

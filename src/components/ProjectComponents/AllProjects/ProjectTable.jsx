@@ -94,10 +94,10 @@ const ProjectTable = ({
     })
 
     const TableHead = [
-        {
-            title: '#',
-            filter: true,
-        },
+        // {
+        //     title: '#',
+        //     filter: true,
+        // },
         {
             title: 'STUDENT(SRN)',
         },
@@ -348,7 +348,7 @@ const ProjectTable = ({
             }
             /** resubmission */
             if (filterInfo[0].title === 'Submission') {
-              //  console.log('submission', data1.submissionStatus.toLowerCase())
+                //  console.log('submission', data1.submissionStatus.toLowerCase())
                 let status = data1.submissionStatus.toLowerCase()
 
                 let check = filterInfo[0].searchfor.some((details) =>
@@ -395,7 +395,7 @@ const ProjectTable = ({
                                     name.includes(details)
                                 )
 
-                              //  console.log('check', check)
+                                //  console.log('check', check)
 
                                 return check
                             }
@@ -414,7 +414,7 @@ const ProjectTable = ({
                                     name.includes(details)
                                 )
 
-                             //   console.log('check', check)
+                                //   console.log('check', check)
 
                                 return check
                             }
@@ -936,7 +936,9 @@ const ProjectTable = ({
                                                         colorScheme='pink'
                                                     />
                                                 </Td>
-                                                <Td w='36px'>
+                                                {/** <Td>{index + 1}</Td> */}
+
+                                                {/** <Td w='36px'>
                                                     <Box
                                                         onClick={handleDropDown}
                                                         ref={activeDrop}
@@ -950,7 +952,7 @@ const ProjectTable = ({
                                                             <IoIosArrowDropright />
                                                         )}
                                                     </Box>
-                                                </Td>
+                                                </Td> */}
 
                                                 <Td
                                                     style={{
@@ -1183,7 +1185,6 @@ const ProjectTable = ({
                                                             element.tagName ===
                                                             activeStatus.status
                                                     )
-                                              
                                             }
                                         } else {
                                         }
@@ -1231,7 +1232,9 @@ const ProjectTable = ({
                                                         colorScheme='pink'
                                                     />
                                                 </Td>
-                                                <Td w='36px'>
+                                                {/** <Td>{index + 1}</Td> */}
+
+                                                {/**   <Td w='36px'>
                                                     <Box
                                                         onClick={handleDropDown}
                                                         ref={activeDrop}
@@ -1245,7 +1248,7 @@ const ProjectTable = ({
                                                             <IoIosArrowDropright />
                                                         )}
                                                     </Box>
-                                                </Td>
+                                                </Td>*/}
 
                                                 <Td
                                                     style={{

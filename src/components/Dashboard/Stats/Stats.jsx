@@ -141,7 +141,7 @@ const Container = styled.div`
     }
 
     .link_text {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 17.4375px;
@@ -150,7 +150,7 @@ const Container = styled.div`
     }
 
     .link_value {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 40px;
@@ -159,10 +159,10 @@ const Container = styled.div`
     }
 
     .link_subtext {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
-        font-size: 10px;
+        font-size: 11px;
         line-height: 12px;
         color: #868fa0;
     }

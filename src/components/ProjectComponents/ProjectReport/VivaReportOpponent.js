@@ -29,11 +29,6 @@ import { RiPencilFill } from 'react-icons/ri'
 import { CgNotes } from 'react-icons/cg'
 const TableHead = [
     {
-        title: '#',
-        filter: true,
-    },
-
-    {
         title: 'Type',
         filter: true,
     },
@@ -46,6 +41,9 @@ const TableHead = [
 
     {
         title: 'Report Status',
+    },
+    {
+        title: 'Created Date',
     },
     {
         title: 'submission Date',
@@ -76,7 +74,7 @@ const VivaReportOpponent = ({ values }) => {
                         element.opponentId._id === data.reportId.opponent
                 )
                 newData.examinerDetails = examinerData2
-             
+
                 arrayData.push(newData)
             })
 
@@ -173,12 +171,19 @@ const VivaReportOpponent = ({ values }) => {
                                                       .tz('Africa/Kampala')
                                                       .format('DD MMM Y')
                                                 : '-'
+
+                                            let creationDate = data.reportId
+                                                .creationDate
+                                                ? Moments(
+                                                      data.reportId.creationDate
+                                                  )
+                                                      .tz('Africa/Kampala')
+                                                      .format('DD MMM Y')
+                                                : '-'
                                             return (
                                                 <>
                                                     {' '}
                                                     <Tr className='table_row'>
-                                                        <Td>1</Td>
-
                                                         <Td className='type_examiner'>
                                                             {
                                                                 data
@@ -226,6 +231,11 @@ const VivaReportOpponent = ({ values }) => {
                                                                     }
                                                                 </Text>
                                                             </StatusItem>
+                                                        </Td>
+                                                        <Td>
+                                                            <Box className='sub_date'>
+                                                                {creationDate}
+                                                            </Box>
                                                         </Td>
 
                                                         <Td>
