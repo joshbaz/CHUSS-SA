@@ -36,6 +36,7 @@ import {
     paginatedSchool,
 } from '../../../store/features/schools/schoolSlice'
 import SchoolTable from '../../../components/SchoolComponents/AllSchools/SchoolTable'
+import { initSocketConnection } from '../../../socketio.service'
 
 const AllSchools = () => {
     const [selectedSchools, setSelectedSchools] = React.useState([])
@@ -68,7 +69,7 @@ const AllSchools = () => {
     /** this handles search word changes */
     const handleSearchInput = (e) => {
         e.preventDefault()
-     
+
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
         // let filterSelected = {
@@ -220,10 +221,21 @@ const AllSchools = () => {
         let values = {
             page: page,
         }
-      
+
         dispatch(paginatedSchool(values))
         dispatch(allSchools())
     }, [Location])
+
+    useEffect(() => {
+        const io = initSocketConnection()
+
+        io.on('updatedepartment', (data) => {
+            if (data.actions === 'update-department') {
+                //dispatch(tagGetAll())
+                dispatch(allSchools())
+            }
+        })
+    }, [])
 
     useEffect(() => {
         if (isError) {
@@ -249,9 +261,7 @@ const AllSchools = () => {
         // }
     }, [isSuccess, isError, message])
 
-    
-        /** realtime schools */
-    
+    /** realtime schools */
 
     //    useEffect(() => {
     //        const io = initSocketConnection()
@@ -265,7 +275,6 @@ const AllSchools = () => {
     //        })
     //    }, [])
 
-   
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -341,7 +350,6 @@ const AllSchools = () => {
                                                                         onChange={(
                                                                             value
                                                                         ) => {
-                                                                          
                                                                             checkboxesFilter(
                                                                                 data.title,
                                                                                 value

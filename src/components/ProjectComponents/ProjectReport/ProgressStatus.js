@@ -53,53 +53,77 @@ const ProgressStatus = ({ values, allTagData }) => {
             step: 1,
         },
 
+        // {
+        //     title: 'Appointing Of Supervisors',
+        //     completed: false,
+        //     completeA: false,
+        //     step: 2,
+        // },
         {
-            title: 'Thesis / dessertation Approval',
+            title: 'Research Approval',
             completed: false,
             completeA: false,
             step: 2,
         },
         {
-            title: 'Looking For Examinar',
+            title: 'Data Collection',
             completed: false,
             completeA: false,
             step: 3,
         },
         {
-            title: 'Marking In Progress',
+            title: 'Thesis Writing',
             completed: false,
             completeA: false,
             step: 4,
         },
+        // {
+        //     title: 'Intention to Submit',
+        //     completed: false,
+        //     completeA: false,
+        //     step: 6,
+        // },
         {
-            title: 'Waiting For viva approval',
+            title: 'Appointing of Examiners',
             completed: false,
             completeA: false,
             step: 5,
         },
         {
-            title: 'waiting for viva minutes',
+            title: 'Marking In Progress',
             completed: false,
             completeA: false,
             step: 6,
         },
         {
-            title: 'final submission',
+            title: 'Waiting For viva approval',
             completed: false,
             completeA: false,
             step: 7,
         },
         {
-            title: 'Waiting for graduation',
+            title: 'waiting for viva minutes',
             completed: false,
             completeA: false,
             step: 8,
         },
         {
-            title: 'Graduated',
+            title: 'final submission',
             completed: false,
             completeA: false,
             step: 9,
+        },
+        {
+            title: 'Waiting for graduation',
+            completed: false,
+            completeA: false,
+            step: 10,
+        },
+        {
+            title: 'Graduated',
+            completed: false,
+            completeA: false,
+            step: 11,
         },
     ])
     // const ref = useElementSize((size, prevSize, elem) => {})
@@ -130,7 +154,7 @@ const ProgressStatus = ({ values, allTagData }) => {
                         newList[iteration].active = data.active
                         let checkStep =
                             newList[iteration].step === 1 ||
-                            newList[iteration].step === 9
+                            newList[iteration].step === 11
                                 ? false
                                 : true
 
@@ -227,9 +251,6 @@ const ProgressStatus = ({ values, allTagData }) => {
 
     let validate = (values) => {
         const errors = {}
-        if (!values.notes) {
-            errors.notes = 'notes required'
-        }
 
         return errors
     }
@@ -482,7 +503,8 @@ const ProgressStatus = ({ values, allTagData }) => {
                                         </Stack>
                                     </Stack>
 
-                                    <Stack
+                                    {/**
+                                         *  <Stack
                                         direction='column'
                                         width='100%'
                                         h='100%'>
@@ -499,6 +521,8 @@ const ProgressStatus = ({ values, allTagData }) => {
                                             />
                                         </Stack>
                                     </Stack>
+                                         * 
+                                         */}
                                 </Stack>
                                 <Stack
                                     p='0px 20px'
@@ -616,7 +640,7 @@ const StatusContainer = styled(Stack)`
         width: 100px;
         height: 100px;
         height: 7.4vw;
-        height: 100px;
+        height: 92px;
         background: #fef4e3;
         border-radius: 3.7vw;
         border-radius: 50%;
@@ -638,7 +662,7 @@ const StatusContainer = styled(Stack)`
 
         width: 100px;
         width: 7.4vw;
-        width: 100px;
+        width: 92px;
     }
 
     li:after {

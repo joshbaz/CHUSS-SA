@@ -44,6 +44,7 @@ import SchoolTable from '../../../components/SchoolComponents/AllSchools/SchoolT
 import ViewSchoolDetails from '../../../components/SchoolComponents/ViewSchools/ViewSchoolDetails'
 import ViewDepartments from '../../../components/SchoolComponents/ViewSchools/ViewDepartments'
 import EditSchool from './EditSchool'
+import { initSocketConnection } from '../../../socketio.service'
 
 const ViewSchool = (props) => {
     const [schoolId, setSchoolId] = React.useState('')
@@ -78,16 +79,25 @@ const ViewSchool = (props) => {
         let values = {
             page: page,
         }
-     
+
         dispatch(allSchools(values))
     }, [Location])
+
+    useEffect(() => {
+        const io = initSocketConnection()
+
+         io.on('updatedepartment', (data) => {
+             if (data.actions === 'update-department') {
+                 //dispatch(tagGetAll())
+                 dispatch(allSchools())
+             }
+         })
+    }, [])
 
     let { paginatedSchools, allSchoolItems, isSuccess, isError, message } =
         useSelector((state) => state.school)
 
     useEffect(() => {
-      
-
         if (allSchoolItems.items.length > 0) {
             let checkItem = allSchoolItems.items.filter(
                 (data, index) => data._id === params.id
@@ -96,8 +106,6 @@ const ViewSchool = (props) => {
             if (checkItem.length > 0) {
                 setValues(...checkItem)
                 setSchoolId(checkItem[0]._id)
-
-               
             }
         }
     }, [params, allSchoolItems])
@@ -194,13 +202,11 @@ const ViewSchool = (props) => {
     }, [isError, isSuccess, message])
 
     React.useEffect(() => {
-     
         if (
             Object.keys(errors).length === 0 &&
             isSubmittingedits &&
             changeMade
         ) {
-          
             let values2 = {
                 ...editValues,
                 schoolId: editValues._id,

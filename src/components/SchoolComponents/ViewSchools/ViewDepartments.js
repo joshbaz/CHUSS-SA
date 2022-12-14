@@ -31,7 +31,7 @@ const ViewDepartments = ({ indivdualValues }) => {
 
     const [exportData, setExportData] = React.useState([])
     const [changeMade, setChnageMade] = React.useState(false)
-    const [perPage, setPerPage] = React.useState(3)
+    const [perPage, setPerPage] = React.useState(7)
     const [errors, setErrors] = React.useState({})
     const [allDisplayData, setAllDisplayData] = React.useState({
         currentPage: 0,
@@ -276,13 +276,11 @@ const ViewDepartments = ({ indivdualValues }) => {
     }
 
     React.useEffect(() => {
-     
         if (
             Object.keys(errors).length === 0 &&
             isSubmittingedits &&
             changeMade
         ) {
-         
             let values2 = {
                 ...editValues,
                 schoolId: editValues.id,
@@ -424,6 +422,7 @@ const ViewDepartments = ({ indivdualValues }) => {
                             editValues={editValues}
                             handleChange={handleEditChange}
                             handleEditSubmit={handleEditSubmit}
+                            isSubmittingedits={isSubmittingedits}
                         />
                     </ModalBody>{' '}
                 </ModalContent>{' '}

@@ -17,6 +17,7 @@ const EditIndividualDept = ({
     editValues,
     handleChange,
     handleEditSubmit,
+    isSubmittingedits,
 }) => {
     return (
         <PopupForm p='0px' justifyContent='space-between'>
@@ -88,6 +89,7 @@ const EditIndividualDept = ({
                 </Button>
                 <Button
                     colorScheme={'red'}
+                    isLoading={isSubmittingedits ? true : false}
                     onClick={handleEditSubmit}
                     className='apply_button'>
                     {' '}
