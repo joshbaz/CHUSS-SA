@@ -1,16 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import {
-    Box,
-    Stack,
-    Input,
-    Button,
-    useToast,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalBody,
-} from '@chakra-ui/react'
+import { Box, Stack, Input, Button } from '@chakra-ui/react'
 
 const ViewIndividualDept = ({ onClose, viewValues }) => {
     return (
@@ -48,12 +38,22 @@ const ViewIndividualDept = ({ onClose, viewValues }) => {
 
                 <Stack spacing={'10px'}>
                     <label>
-                        Phone number <span>*</span>
+                        Office number <span>*</span>
                     </label>
                     <Input
                         type='text'
                         name='officeNumber'
                         value={viewValues.officeNumber}
+                        readOnly
+                    />
+                </Stack>
+
+                <Stack spacing={'10px'}>
+                    <label>Mobile number</label>
+                    <Input
+                        type='text'
+                        name='mobileNumber'
+                        value={viewValues.mobileNumber}
                         readOnly
                     />
                 </Stack>
@@ -66,6 +66,16 @@ const ViewIndividualDept = ({ onClose, viewValues }) => {
                         type='email'
                         name='email'
                         value={viewValues.email}
+                        readOnly
+                    />
+                </Stack>
+
+                <Stack spacing={'10px'}>
+                    <label>Other Email</label>
+                    <Input
+                        type='email'
+                        name='email'
+                        value={viewValues.otherEmail}
                         readOnly
                     />
                 </Stack>

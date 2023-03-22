@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -8,50 +9,61 @@ import TopBar from '../../../components/common/Navigation/TopBar'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-    getIndividualExaminer,
-    getStudentsByExaminer,
-    reset as eReset,
-} from '../../../store/features/Examiner/examinerSlice'
+    allSupervisors,
+    reset,
+} from '../../../store/features/supervisors/supervisorSlice'
 
-import GEViewExaminerDetail from '../../../components/ExaminerComponents/ViewExaminer/GEViewExaminerDetail'
-import GEViewPayInfo from '../../../components/ExaminerComponents/ViewExaminer/GEViewPayInfo'
-import GEViewStudentTable from '../../../components/ExaminerComponents/ViewExaminer/GEViewStudentTable'
-import GEViewSupportFiles from '../../../components/ExaminerComponents/ViewExaminer/GEViewSupportFiles'
-import GEViewVerification from '../../../components/ExaminerComponents/ViewExaminer/GEViewVerification'
+import ViewSupervisorADetailForm from '../../../components/ProjectComponents/AssignSupervisors/ViewSupervisorADetailForm'
 
 const ViewSupervisor = () => {
+    let routeNavigate = useNavigate()
+    let params = useParams()
+    let dispatch = useDispatch()
+    let toast = useToast()
+    const [individual, setIndividual] = React.useState(null)
 
-        let routeNavigate = useNavigate()
-        let params = useParams()
-        let dispatch = useDispatch()
-        let projectCase = useSelector((state) => state.project)
+    useEffect(() => {
+        dispatch(allSupervisors())
+    }, [])
 
-        let examinerCase = useSelector((state) => state.examiner)
-        useEffect(() => {
-          
+    let { allSupervisorItems, isSuccess, isError, message } = useSelector(
+        (state) => state.supervisor
+    )
+    useEffect(() => {
+        if (isError) {
+            toast({
+                position: 'top',
+                title: message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+        }
 
-            /** dispatch to get project */
-            // dispatch(getIndividualProject(params.p_id))
-            /** dispatch to get examiner */
-            dispatch(getIndividualExaminer(params.id))
-            /** dispatch to get all students by examiner */
-            dispatch(getStudentsByExaminer(params.id))
-        }, [params.id, dispatch])
+        if (isSuccess && message) {
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
 
-     
-        let toast = useToast()
-        useEffect(() => {
-            if (examinerCase.isError) {
-                toast({
-                    position: 'top',
-                    title: examinerCase.message,
-                    status: 'error',
-                    duration: 10000,
-                    isClosable: true,
-                })
-                dispatch(eReset())
-            }
-        }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
+            dispatch(reset())
+        }
+
+        dispatch(reset())
+    }, [isSuccess, isError, message])
+
+    useEffect(() => {
+        let findSupervisor = allSupervisorItems.items.find(
+            (element) => element._id === params.id
+        )
+
+        if (findSupervisor) {
+            setIndividual(findSupervisor)
+        }
+    }, [allSupervisorItems, params.id])
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -61,7 +73,7 @@ const ViewSupervisor = () => {
             <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
                 <TopBar
                     topbarData={{
-                        title: 'Examiners',
+                        title: 'View Supervisor',
                         count: null,
                     }}
                 />
@@ -69,7 +81,9 @@ const ViewSupervisor = () => {
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Stack
                         direction='column'
+                        borderRadius={'6px'}
                         bg='#FBFBFB'
+                        minH='83vh'
                         spacing={'20px'}
                         padding={'20px 20px 30px 20px'}>
                         {/** title head */}
@@ -86,23 +100,14 @@ const ViewSupervisor = () => {
                                     onClick={() => routeNavigate(-1)}>
                                     <MdArrowBack />
                                 </Box>
-                                <Text>
-                                    {' '}
-                                    {examinerCase.individualExaminer !== null &&
-                                    examinerCase.individualExaminer
-                                        .typeOfExaminer
-                                        ? examinerCase.individualExaminer
-                                              .typeOfExaminer
-                                        : ''}{' '}
-                                    Examiner
-                                </Text>
+                                <Text>Supervisor</Text>
                             </BackButtonStack>
 
                             <SubmitButton
                                 as='button'
                                 onClick={() =>
                                     routeNavigate(
-                                        `/examiners/edit/${params.id}`
+                                        `/m-examiners/supervisors/edit/${params.id}`
                                     )
                                 }>
                                 Edit Details
@@ -111,46 +116,16 @@ const ViewSupervisor = () => {
 
                         {/** forms */}
                         <Stack direction='column' w='100%'>
-                            {/** first set */}
                             <Stack direction='row'>
-                                {/** candidate details & Project details */}
+                                {/** Details & files */}
                                 <Stack
                                     direction='column'
                                     w='70%'
                                     spacing='20px'>
-                                    <GEViewExaminerDetail
-                                        values={examinerCase.individualExaminer}
+                                    <ViewSupervisorADetailForm
+                                        values={individual}
                                     />
                                 </Stack>
-
-                                {/** Grading Progress & Assigned Examiners */}
-                                <Stack
-                                    direction='column'
-                                    w='30%'
-                                    spacing='20px'>
-                                    <GEViewVerification
-                                        values={examinerCase.individualExaminer}
-                                        projectValues={projectCase.individual}
-                                    />
-
-                                    <GEViewSupportFiles
-                                        values={examinerCase.individualExaminer}
-                                    />
-                                </Stack>
-                            </Stack>
-
-                            <Stack direction='column'>
-                                {examinerCase.individualExaminer !== null &&
-                                examinerCase.individualExaminer
-                                    .typeOfExaminer === 'External' ? (
-                                    <GEViewPayInfo
-                                        values={examinerCase.individualExaminer}
-                                    />
-                                ) : null}
-
-                                <GEViewStudentTable
-                                    values={examinerCase.studentData}
-                                />
                             </Stack>
                         </Stack>
                     </Stack>
@@ -166,7 +141,7 @@ const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 17px;
@@ -182,10 +157,9 @@ const SubmitButton = styled(Box)`
     border-radius: 6px;
 
     color: #868fa0;
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
 `
-

@@ -1,23 +1,15 @@
 import React from 'react'
 import styled from 'styled-components'
-import {
-    Box,
-    Stack,
-    Input,
-    Button,
-    useToast,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalBody,
-} from '@chakra-ui/react'
-
+import { Box, Stack, Input, Button } from '@chakra-ui/react'
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 const EditIndividualDept = ({
     onClose,
     editValues,
     handleChange,
     handleEditSubmit,
     isSubmittingedits,
+    handleEditPhoneChange,
 }) => {
     return (
         <PopupForm p='0px' justifyContent='space-between'>
@@ -54,13 +46,55 @@ const EditIndividualDept = ({
 
                 <Stack spacing={'10px'}>
                     <label>
-                        Phone number <span>*</span>
+                        Office number <span>*</span>
                     </label>
-                    <Input
-                        type='text'
-                        name='officeNumber'
+                    <PhoneInput
+                        inputStyle={{
+                            width: '100%',
+                        }}
+                        inputProps={{
+                            name: 'officeNumber',
+                        }}
+                        country={'ug'}
                         value={editValues.officeNumber}
-                        onChange={handleChange}
+                        name='officeNumber'
+                        onChange={(phone, e, formatedVal) => {
+                            if (formatedVal.target.value === '+') {
+                                handleEditPhoneChange('officeNumber', '')
+                            } else {
+                                handleEditPhoneChange(
+                                    'officeNumber',
+                                    formatedVal.target.value
+                                )
+                            }
+                        }}
+                        placeholder={'office number'}
+                    />
+                </Stack>
+
+                <Stack spacing={'10px'}>
+                    <label>Mobile number</label>
+                    <PhoneInput
+                        inputStyle={{
+                            width: '100%',
+                        }}
+                        inputProps={{
+                            name: 'mobileNumber',
+                        }}
+                        country={'ug'}
+                        value={editValues.mobileNumber}
+                        name='mobileNumber'
+                        onChange={(phone, e, formatedVal) => {
+                            if (formatedVal.target.value === '+') {
+                                handleEditPhoneChange('mobileNumber', '')
+                            } else {
+                                handleEditPhoneChange(
+                                    'mobileNumber',
+                                    formatedVal.target.value
+                                )
+                            }
+                        }}
+                        placeholder={'mobile number'}
                     />
                 </Stack>
 
@@ -72,6 +106,16 @@ const EditIndividualDept = ({
                         type='email'
                         name='email'
                         value={editValues.email}
+                        onChange={handleChange}
+                    />
+                </Stack>
+
+                <Stack spacing={'10px'}>
+                    <label>Other Email</label>
+                    <Input
+                        type='email'
+                        name='otherEmail'
+                        value={editValues.otherEmail}
                         onChange={handleChange}
                     />
                 </Stack>

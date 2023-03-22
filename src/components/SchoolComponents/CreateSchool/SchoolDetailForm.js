@@ -1,8 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
-
-const SchoolDetailForm = ({ values, handleChange }) => {
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
+const SchoolDetailForm = ({ values, handleChange, setFieldValue }) => {
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -71,8 +72,12 @@ const SchoolDetailForm = ({ values, handleChange }) => {
                         </Stack>
                     </Stack>
 
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
+                    {/** emails */}
+                    <Stack direction='row' className=''>
+                        <Stack
+                            direction='column'
+                            spacing='8px'
+                            className='form_wrap formfields__Dfieldset'>
                             <label>
                                 Email <span>*</span>
                             </label>
@@ -86,23 +91,78 @@ const SchoolDetailForm = ({ values, handleChange }) => {
                                 />
                             </fieldset>
                         </Stack>
-                    </Box>
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
+                        <Stack
+                            spacing='8px'
+                            className='form_wrap formfields__Dfieldset'>
+                            <label>Other Email</label>
+                            <fieldset>
+                                <Input
+                                    type='email'
+                                    value={values.otherEmail}
+                                    name='otherEmail'
+                                    onChange={handleChange}
+                                    placeholder={'other email'}
+                                />
+                            </fieldset>
+                        </Stack>
+                    </Stack>
+
+                    {/** phoneNumbers */}
+                    <Stack direction='row' className=''>
+                        <Stack
+                            direction='column'
+                            spacing='8px'
+                            className='form_wrap formfields__Dfieldset'>
                             <label>
                                 Office Number <span>*</span>
                             </label>
                             <fieldset>
-                                <Input
-                                    type='text'
+                                <PhoneInput
+                                    inputStyle={{
+                                        width: '100%',
+                                    }}
+                                    inputProps={{
+                                        name: 'officeNumber',
+                                    }}
+                                    country={'ug'}
                                     value={values.officeNumber}
                                     name='officeNumber'
-                                    onChange={handleChange}
+                                    onChange={(phone, e, formatedVal) =>
+                                        setFieldValue(
+                                            'officeNumber',
+                                            formatedVal.target.value
+                                        )
+                                    }
                                     placeholder={'office number'}
                                 />
                             </fieldset>
                         </Stack>
-                    </Box>
+                        <Stack
+                            spacing='8px'
+                            className='form_wrap formfields__Dfieldset'>
+                            <label>Mobile Number</label>
+                            <fieldset>
+                                <PhoneInput
+                                    inputStyle={{
+                                        width: '100%',
+                                    }}
+                                    inputProps={{
+                                        name: 'mobileNumber',
+
+                                        autoFocus: true,
+                                    }}
+                                    country={'ug'}
+                                    value={values.mobileNumber}
+                                    name='mobileNumber'
+                                    onChange={(number) => {
+                                        //console.log('number', number)
+                                        setFieldValue('mobileNumber', number)
+                                    }}
+                                    placeholder={'mobile number'}
+                                />
+                            </fieldset>
+                        </Stack>
+                    </Stack>
                 </Stack>
             </Box>
         </FormContainer>

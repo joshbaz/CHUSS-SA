@@ -1,34 +1,65 @@
+import Cookies from 'js-cookie'
 /** program type */
 /** create program */
 const createProgramType = async (values) => {
-    const response = await window.electronAPI.createProgramType(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.createProgramType(allValues)
     return response
 }
 /** edit program */
 const updateProgramType = async (values) => {
-    const response = await window.electronAPI.updateProgramType(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.updateProgramType(allValues)
     return response
 }
 /** get all program */
 const getProgramType = async (values) => {
-    const response = await window.electronAPI.getProgramType()
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.getProgramType(allValues)
     return response
 }
 
 /** academic year */
 /** create academic year */
 const createAcademicYear = async (values) => {
-    const response = await window.electronAPI.createAcademicYear(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.createAcademicYear(allValues)
     return response
 }
 /** edit academic year */
 const updateAcademicYear = async (values) => {
-    const response = await window.electronAPI.updateAcademicYear(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.updateAcademicYear(allValues)
     return response
 }
 /** get all academic year */
 const getAcademicYear = async (values) => {
-    const response = await window.electronAPI.getAcademicYear()
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.getAcademicYear(allValues)
     return response
 }
 

@@ -1,15 +1,31 @@
+import Cookies from 'js-cookie'
 const createRegistration = async (values) => {
-    const response = await window.electronAPI.createRegistration(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.createRegistration(allValues)
     return response
 }
 
 const updateRegistration = async (values) => {
-    const response = await window.electronAPI.updateRegistration(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.updateRegistration(allValues)
     return response
 }
 
 const removeRegistration = async (values) => {
-    const response = await window.electronAPI.removeRegistration(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.removeRegistration(allValues)
     return response
 }
 

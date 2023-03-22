@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import supervisorService from './supervisorService'
+import authService from '../auth/authService'
+const getToken = localStorage.getItem('_tk')
 
 /** initial State for examiners */
 const initialState = {
@@ -25,13 +27,27 @@ const initialState = {
 export const projectSupervisorCreate = createAsyncThunk(
     'supervisor/project/create',
     async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
         const creationAttempt = await supervisorService.projectSupervisorCreate(
-            values
+            allValues
         )
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -39,11 +55,27 @@ export const projectSupervisorCreate = createAsyncThunk(
 export const assignSupervisor = createAsyncThunk(
     'supervisor/project/assign',
     async (values, thunkAPI) => {
-        const assignAttempt = await supervisorService.assignSupervisor(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const assignAttempt = await supervisorService.assignSupervisor(
+            allValues
+        )
         if (assignAttempt.type === 'success') {
             return assignAttempt
         } else {
-            return thunkAPI.rejectWithValue(assignAttempt.message)
+            if (
+                assignAttempt.message === 'jwt expired' ||
+                assignAttempt.message === 'Not authenticated' ||
+                assignAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(assignAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(assignAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(assignAttempt.message)
         }
     }
 )
@@ -51,11 +83,27 @@ export const assignSupervisor = createAsyncThunk(
 export const paginatedSupervisor = createAsyncThunk(
     'supervisor/paginated',
     async (values, thunkAPI) => {
-        const getAttempt = await supervisorService.paginatedSupervisor(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const getAttempt = await supervisorService.paginatedSupervisor(
+            allValues
+        )
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -63,11 +111,25 @@ export const paginatedSupervisor = createAsyncThunk(
 export const allSupervisors = createAsyncThunk(
     'supervisor/all',
     async (values, thunkAPI) => {
-        const allAttempt = await supervisorService.allSupervisors(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const allAttempt = await supervisorService.allSupervisors(allValues)
         if (allAttempt.type === 'success') {
             return allAttempt
         } else {
-            return thunkAPI.rejectWithValue(allAttempt.message)
+            if (
+                allAttempt.message === 'jwt expired' ||
+                allAttempt.message === 'Not authenticated' ||
+                allAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(allAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(allAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(allAttempt.message)
         }
     }
 )
@@ -75,12 +137,26 @@ export const allSupervisors = createAsyncThunk(
 export const getIndividualSupervisor = createAsyncThunk(
     'supervisor/individual',
     async (id, thunkAPI) => {
+        let allValues = {
+            id: id,
+            getToken,
+        }
         const individualAttempt =
-            await supervisorService.getIndividualSupervisor(id)
+            await supervisorService.getIndividualSupervisor(allValues)
         if (individualAttempt.type === 'success') {
             return individualAttempt
         } else {
-            return thunkAPI.rejectWithValue(individualAttempt.message)
+            if (
+                individualAttempt.message === 'jwt expired' ||
+                individualAttempt.message === 'Not authenticated' ||
+                individualAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(individualAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(individualAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(individualAttempt.message)
         }
     }
 )
@@ -89,11 +165,27 @@ export const getIndividualSupervisor = createAsyncThunk(
 export const supervisorUpdate = createAsyncThunk(
     'supervisor/update',
     async (values, thunkAPI) => {
-        const creationAttempt = await supervisorService.supervisorUpdate(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const creationAttempt = await supervisorService.supervisorUpdate(
+            allValues
+        )
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -102,11 +194,57 @@ export const supervisorUpdate = createAsyncThunk(
 export const supervisorRemove = createAsyncThunk(
     'supervisor/remove',
     async (values, thunkAPI) => {
-        const creationAttempt = await supervisorService.supervisorRemove(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const creationAttempt = await supervisorService.supervisorRemove(
+            allValues
+        )
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(creationAttempt.message)
+        }
+    }
+)
+
+
+/** supervisor main */
+export const SupervisorCreate = createAsyncThunk(
+    'supervisor/main/create',
+    async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const creationAttempt = await supervisorService.SupervisorCreate(
+            allValues
+        )
+        if (creationAttempt.type === 'success') {
+            return creationAttempt
+        } else {
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -219,6 +357,20 @@ export const supervisorSlice = createSlice({
                 state.message = action.payload
             })
 
+            /** main create supervisor */
+            .addCase(SupervisorCreate.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(SupervisorCreate.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(SupervisorCreate.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
     },
 })
 

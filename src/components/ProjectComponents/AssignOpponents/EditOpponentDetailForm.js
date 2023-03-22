@@ -39,9 +39,21 @@ const EditOpponentDetailForm = ({ values, handleChange, errors }) => {
 
                         <Box className='form_input'>
                             <Input
-                                readOnly
-                                value={values !== null && values.jobtitle}
+                                type='text'
+                                value={
+                                    values !== null && values.jobtitle
+                                        ? values.jobtitle
+                                        : ''
+                                }
+                                name='jobtitle'
+                                onChange={handleChange}
+                                placeholder={'i.e Prof. or Assoc.Prof.'}
                             />
+                            {errors && errors.jobtitle ? (
+                                <ErrorMsg className='filesError'>
+                                    {errors.jobtitle}
+                                </ErrorMsg>
+                            ) : null}
                         </Box>
                     </Stack>
 
@@ -57,9 +69,21 @@ const EditOpponentDetailForm = ({ values, handleChange, errors }) => {
 
                         <Box className='form_input'>
                             <Input
-                                readOnly
-                                value={values !== null && values.name}
+                                type='text'
+                                value={
+                                    values !== null && values.name
+                                        ? values.name
+                                        : ''
+                                }
+                                name='name'
+                                onChange={handleChange}
+                                placeholder={'i.e Apollo Kimani'}
                             />
+                            {errors && errors.name ? (
+                                <ErrorMsg className='filesError'>
+                                    {errors.name}
+                                </ErrorMsg>
+                            ) : null}
                         </Box>
                     </Stack>
 
@@ -81,17 +105,30 @@ const EditOpponentDetailForm = ({ values, handleChange, errors }) => {
 
                                     <Box className='form_input'>
                                         <Input
-                                            readOnly
+                                            type='text'
                                             value={
                                                 values !== null && values.email
+                                                    ? values.email
+                                                    : null
+                                            }
+                                            name='email'
+                                            onChange={handleChange}
+                                            placeholder={
+                                                'email i.e apollo@yahoo.com'
                                             }
                                         />
+
+                                        {errors && errors.email ? (
+                                            <ErrorMsg className='filesError'>
+                                                {errors.email}
+                                            </ErrorMsg>
+                                        ) : null}
                                     </Box>
                                 </Stack>
                             </Stack>
                         </Stack>
 
-                        {/** academic details */}
+                        {/** phone number */}
                         <Stack direction='column' w='50%'>
                             <Stack spacing={'8px'}>
                                 <Stack
@@ -109,12 +146,23 @@ const EditOpponentDetailForm = ({ values, handleChange, errors }) => {
 
                                     <Box className='form_input'>
                                         <Input
-                                            readOnly
+                                            type='text'
                                             value={
                                                 values !== null &&
                                                 values.phoneNumber
+                                                    ? values.phoneNumber
+                                                    : ''
                                             }
+                                            name='phoneNumber'
+                                            onChange={handleChange}
+                                            placeholder={'e.g 256787785114'}
                                         />
+
+                                        {errors && errors.phoneNumber ? (
+                                            <ErrorMsg className='filesError'>
+                                                {errors.phoneNumber}
+                                            </ErrorMsg>
+                                        ) : null}
                                     </Box>
                                 </Stack>
                             </Stack>
@@ -133,8 +181,15 @@ const EditOpponentDetailForm = ({ values, handleChange, errors }) => {
 
                         <Box className='form_input'>
                             <Input
-                                readOnly
-                                value={values !== null && values.postalAddress}
+                                type='text'
+                                value={
+                                    values !== null && values.postalAddress
+                                        ? values.postalAddress
+                                        : ''
+                                }
+                                name='postalAddress'
+                                onChange={handleChange}
+                                placeholder={'postalAddress'}
                             />
                         </Box>
                     </Stack>
@@ -151,10 +206,15 @@ const EditOpponentDetailForm = ({ values, handleChange, errors }) => {
 
                         <Box className='form_input'>
                             <Input
-                                readOnly
+                                type='text'
                                 value={
                                     values !== null && values.countryOfResidence
+                                        ? values.countryOfResidence
+                                        : ''
                                 }
+                                name='countryOfResidence'
+                                onChange={handleChange}
+                                placeholder={'i.e Uganda'}
                             />
                         </Box>
                     </Stack>
@@ -171,9 +231,22 @@ const EditOpponentDetailForm = ({ values, handleChange, errors }) => {
 
                         <Box className='form_input'>
                             <Input
-                                readOnly
-                                value={values !== null && values.placeOfWork}
+                                type='text'
+                                value={
+                                    values !== null && values.placeOfWork
+                                        ? values.placeOfWork
+                                        : ''
+                                }
+                                name='placeOfWork'
+                                onChange={handleChange}
+                                placeholder={'i.e Makerere University'}
                             />
+
+                            {errors && errors.placeOfWork ? (
+                                <ErrorMsg className='filesError'>
+                                    {errors.placeOfWork}
+                                </ErrorMsg>
+                            ) : null}
                         </Box>
                     </Stack>
 
@@ -191,8 +264,14 @@ const EditOpponentDetailForm = ({ values, handleChange, errors }) => {
 
                         <Box className='form_input'>
                             <Input
-                                readOnly
-                                value={values !== null && values.otherTitles}
+                                type='text'
+                                value={
+                                    values !== null && values.otherTitles
+                                        ? values.otherTitles
+                                        : ''
+                                }
+                                name='otherTitles'
+                                onChange={handleChange}
                             />
                         </Box>
                     </Stack>
@@ -305,5 +384,17 @@ const Container = styled(Box)`
         font-weight: 500;
         font-size: 13px;
         line-height: 20px;
+    }
+`
+
+const ErrorMsg = styled(Box)`
+    font-size: 13px;
+    line-height: 20px;
+    padding: 5px 10px;
+    color: #f14c54;
+    font-family: 'Inter', sans-serif;
+
+    .filesError {
+        padding: 0;
     }
 `

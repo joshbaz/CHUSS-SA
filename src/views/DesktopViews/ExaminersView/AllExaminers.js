@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import {
     Box,
@@ -26,8 +27,8 @@ import { FaFilter } from 'react-icons/fa'
 import { BiSearch } from 'react-icons/bi'
 
 import { GrClose } from 'react-icons/gr'
-import ProjectTable from '../../../components/ProjectComponents/AllProjects/ProjectTable'
-import { useNavigate, useLocation } from 'react-router-dom'
+
+import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 import ExaminerTable from '../../../components/ExaminerComponents/AllExaminers/ExaminerTable'
@@ -35,10 +36,8 @@ import ExaminerTable from '../../../components/ExaminerComponents/AllExaminers/E
 import {
     reset,
     allExaminers,
-    paginatedExaminer,
 } from '../../../store/features/Examiner/examinerSlice'
 const AllExaminerss = () => {
-    const [selectedExaminers, setSelectedExaminers] = React.useState([])
     const [filterSearchOption, setFilterSearchOption] =
         React.useState('Examiner Name')
     const [searchWord, setSearchWord] = React.useState('')
@@ -55,7 +54,6 @@ const AllExaminerss = () => {
         },
     ]
 
-    
     const [filterInfo, setFilterInfo] = React.useState([])
     const [searchStatus, setSearchStatus] = React.useState('')
     const [searchActive, setSearchActive] = React.useState(false)
@@ -269,21 +267,13 @@ const AllExaminerss = () => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
 
-    let { paginatedExaminers, allExaminerItems, isSuccess, isError, message } =
-        useSelector((state) => state.examiner)
+    let { isSuccess, isError, message } = useSelector((state) => state.examiner)
 
-    let Location = useLocation()
     let toast = useToast()
 
     useEffect(() => {
-        let page = Location.search.split('').slice(3).join('')
-        let values = {
-            page: page,
-        }
-
-        dispatch(paginatedExaminer(values))
         dispatch(allExaminers())
-    }, [Location])
+    }, [])
 
     useEffect(() => {
         if (isError) {
@@ -653,10 +643,6 @@ const AllExaminerss = () => {
 
                         <Box>
                             <ExaminerTable
-                                allExaminerItems={paginatedExaminers}
-                                paginatedExaminers={paginatedExaminers}
-                                selectedExaminers={selectedExaminers}
-                                setSelectedExaminers={setSelectedExaminers}
                                 setExportData={setExportData}
                                 exportData={exportData}
                                 searchActive={searchActive}

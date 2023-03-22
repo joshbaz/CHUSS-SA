@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import projectService from './projectService'
+import authService from '../auth/authService'
+const getToken = localStorage.getItem('_tk')
+
 const initialState = {
     pprojects: {
         items: [],
@@ -19,11 +22,27 @@ const initialState = {
 export const updateProjectStatus = createAsyncThunk(
     'projects/statues/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateProjectStatus(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateProjectStatus(
+            allValues
+        )
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -32,11 +51,25 @@ export const updateProjectStatus = createAsyncThunk(
 export const updateVivaFiles = createAsyncThunk(
     'projects/vivafiles/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateVivaFiles(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateVivaFiles(allValues)
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -45,11 +78,25 @@ export const updateVivaFiles = createAsyncThunk(
 export const updateVivaDefense = createAsyncThunk(
     'projects/vivadefense/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateVivaDefense(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateVivaDefense(allValues)
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -58,11 +105,25 @@ export const updateVivaDefense = createAsyncThunk(
 export const updateFinalSubmission = createAsyncThunk(
     'projects/finalsubmission/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateVivaDefense(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateVivaDefense(allValues)
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -71,11 +132,27 @@ export const updateFinalSubmission = createAsyncThunk(
 export const updateSubmissionDate = createAsyncThunk(
     'projects/submissiondate/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateSubmissionDate(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateSubmissionDate(
+            allValues
+        )
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -84,11 +161,27 @@ export const updateSubmissionDate = createAsyncThunk(
 export const updateGraduationDate = createAsyncThunk(
     'projects/graduation/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateGraduationDate(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateGraduationDate(
+            allValues
+        )
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )

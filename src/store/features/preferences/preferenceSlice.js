@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import preferenceService from './preferenceService'
+import authService from '../auth/authService'
+const getToken = localStorage.getItem('_tk')
 
 /** initial State for examiners */
 const initialState = {
@@ -20,12 +22,28 @@ const initialState = {
 export const programTypeCreate = createAsyncThunk(
     'preference/program/create',
     async (values, thunkAPI) => {
-        const createAttempt = await preferenceService.createProgramType(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const createAttempt = await preferenceService.createProgramType(
+            allValues
+        )
 
         if (createAttempt.type === 'success') {
             return createAttempt
         } else {
-            return thunkAPI.rejectWithValue(createAttempt.message)
+            if (
+                createAttempt.message === 'jwt expired' ||
+                createAttempt.message === 'Not authenticated' ||
+                createAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(createAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(createAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(createAttempt.message)
         }
     }
 )
@@ -33,12 +51,28 @@ export const programTypeCreate = createAsyncThunk(
 export const programTypeUpdate = createAsyncThunk(
     'preference/program/update',
     async (values, thunkAPI) => {
-        const updateAttempt = await preferenceService.updateProgramType(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const updateAttempt = await preferenceService.updateProgramType(
+            allValues
+        )
 
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -46,12 +80,26 @@ export const programTypeUpdate = createAsyncThunk(
 export const programTypeGetAll = createAsyncThunk(
     'preference/program/getall',
     async (values, thunkAPI) => {
-        const getAttempt = await preferenceService.getProgramType(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const getAttempt = await preferenceService.getProgramType(allValues)
 
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -61,12 +109,28 @@ export const programTypeGetAll = createAsyncThunk(
 export const academicYearCreate = createAsyncThunk(
     'preference/academicYear/create',
     async (values, thunkAPI) => {
-        const createAttempt = await preferenceService.createAcademicYear(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const createAttempt = await preferenceService.createAcademicYear(
+            allValues
+        )
 
         if (createAttempt.type === 'success') {
             return createAttempt
         } else {
-            return thunkAPI.rejectWithValue(createAttempt.message)
+            if (
+                createAttempt.message === 'jwt expired' ||
+                createAttempt.message === 'Not authenticated' ||
+                createAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(createAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(createAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(createAttempt.message)
         }
     }
 )
@@ -74,12 +138,28 @@ export const academicYearCreate = createAsyncThunk(
 export const academicYearUpdate = createAsyncThunk(
     'preference/academicYear/update',
     async (values, thunkAPI) => {
-        const updateAttempt = await preferenceService.updateAcademicYear(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const updateAttempt = await preferenceService.updateAcademicYear(
+            allValues
+        )
 
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -88,12 +168,26 @@ export const academicYearUpdate = createAsyncThunk(
 export const academicYearGetAll = createAsyncThunk(
     'preference/academicYear/getall',
     async (values, thunkAPI) => {
-        const getAttempt = await preferenceService.getAcademicYear(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const getAttempt = await preferenceService.getAcademicYear(allValues)
 
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )

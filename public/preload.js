@@ -4,6 +4,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     openFile: () => ipcRenderer.send('dialog-openFile'),
     oppDetail: () => ipcRenderer.invoke('get/file'),
     loginValidation: (values) => ipcRenderer.invoke('login-validation', values),
+    /** reload the entire application */
+    reloadApp: () => ipcRenderer.invoke('reload-app'),
     /** bridge for csv exportation */
     exportCSV: (values) => ipcRenderer.invoke('export-csv', values),
     exportStudentCSV: (values) =>
@@ -76,6 +78,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('update-supervisor', values),
     removeSupervisor: (values) =>
         ipcRenderer.invoke('remove-supervisor', values),
+    createSupervisor: (values) =>
+        ipcRenderer.invoke('create-supervisor', values),
     /** doctoral committee members */
     createProjectDCMember: (values) =>
         ipcRenderer.invoke('create-dcmember-project', values),
@@ -102,6 +106,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('add-fileproject-Opponent', values),
     removeProjectOpponent: (values) =>
         ipcRenderer.invoke('remove-project-Opponent', values),
+    opponentUpdate: (values) => ipcRenderer.invoke('update-Opponent', values),
+    OpponentMainCreate: (values) =>
+        ipcRenderer.invoke('create-main-opponent', values),
+
     /** examiners */
     createProjectExaminer: (values) =>
         ipcRenderer.invoke('create-examiner-project', values),
@@ -153,7 +161,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('paginated-payments', values),
     updatePayments: (values) => ipcRenderer.invoke('update-payment', values),
     /** file retrival */
-    getViewFile: (id) => ipcRenderer.invoke('get-view-file', id),
+    //getViewFile: (id) => ipcRenderer.invoke('get-view-file', id),
     getdownloadFile: (values) =>
         ipcRenderer.invoke('get-download-file', values),
     downloadFile: (values) => ipcRenderer.invoke('download-file', values),
@@ -161,7 +169,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     paginatedSchools: (values) =>
         ipcRenderer.invoke('paginated-schools', values),
     allSchools: (values) => ipcRenderer.invoke('all-schools', values),
-    getIndividualSchool: (id) => ipcRenderer.invoke('individual-school', id),
+    getIndividualSchool: (values) =>
+        ipcRenderer.invoke('individual-school', values),
     createSchool: (values) => ipcRenderer.invoke('create-school', values),
     updateSchool: (values) => ipcRenderer.invoke('update-school', values),
     deleteSchool: (values) => ipcRenderer.invoke('delete-school', values),

@@ -1,6 +1,12 @@
+import Cookies from 'js-cookie'
 /** service to create school */
 const schoolCreate = async (values) => {
-    const response = await window.electronAPI.createSchool(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.createSchool(allValues)
 
     return response
 }
@@ -8,56 +14,96 @@ const schoolCreate = async (values) => {
 
 /** service to get all paginated examiners  */
 const paginatedSchools = async (values) => {
-    const response = await window.electronAPI.paginatedSchools(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.paginatedSchools(allValues)
 
     return response
 }
 
 /** service to get allSchools  */
 const allSchools = async (values) => {
-    const response = await window.electronAPI.allSchools(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.allSchools(allValues)
 
     return response
 }
 
 /** service to get individual  examiners  */
-const getIndividualSchool = async (id) => {
-    const response = await window.electronAPI.getIndividualSchool(id)
+const getIndividualSchool = async (values) => {
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.getIndividualSchool(allValues)
 
     return response
 }
 
 /** service to create examiner from project */
 const schoolUpdate = async (values) => {
-    const response = await window.electronAPI.updateSchool(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.updateSchool(allValues)
 
     return response
 }
 
 /** service to create examiner from project */
 const deleteSchool = async (values) => {
-    const response = await window.electronAPI.deleteSchool(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.deleteSchool(allValues)
 
     return response
 }
 
 /** service to create examiner from project */
 const deleteDepartment = async (values) => {
-    const response = await window.electronAPI.deleteDepartment(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.deleteDepartment(allValues)
 
     return response
 }
 
 /** add department */
 const departmentCreate = async (values) => {
-    const response = await window.electronAPI.createDepartment(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.createDepartment(allValues)
 
     return response
 }
 
 /** update department */
 const departmentUpdate = async (values) => {
-    const response = await window.electronAPI.updateDepartment(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.updateDepartment(allValues)
 
     return response
 }

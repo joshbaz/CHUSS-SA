@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import opponentService from './opponentService'
+import authService from '../auth/authService'
+const getToken = localStorage.getItem('_tk')
 
 /** initial State for examiners */
 const initialState = {
@@ -31,13 +33,27 @@ const initialState = {
 export const projectOpponentCreate = createAsyncThunk(
     'opponent/project/create',
     async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
         const creationAttempt = await opponentService.projectOpponentCreate(
-            values
+            allValues
         )
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -45,11 +61,24 @@ export const projectOpponentCreate = createAsyncThunk(
 export const assignOpponent = createAsyncThunk(
     'opponent/project/assign',
     async (values, thunkAPI) => {
-        const assignAttempt = await opponentService.assignOpponent(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const assignAttempt = await opponentService.assignOpponent(allValues)
         if (assignAttempt.type === 'success') {
             return assignAttempt
         } else {
-            return thunkAPI.rejectWithValue(assignAttempt.message)
+            if (
+                assignAttempt.message === 'jwt expired' ||
+                assignAttempt.message === 'Not authenticated'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(assignAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(assignAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(assignAttempt.message)
         }
     }
 )
@@ -57,11 +86,24 @@ export const assignOpponent = createAsyncThunk(
 export const paginatedOpponent = createAsyncThunk(
     'opponent/paginated',
     async (values, thunkAPI) => {
-        const getAttempt = await opponentService.paginatedOpponent(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const getAttempt = await opponentService.paginatedOpponent(allValues)
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -69,11 +111,24 @@ export const paginatedOpponent = createAsyncThunk(
 export const allOpponents = createAsyncThunk(
     'opponent/all',
     async (values, thunkAPI) => {
-        const allAttempt = await opponentService.allOpponent(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const allAttempt = await opponentService.allOpponent(allValues)
         if (allAttempt.type === 'success') {
             return allAttempt
         } else {
-            return thunkAPI.rejectWithValue(allAttempt.message)
+            if (
+                allAttempt.message === 'jwt expired' ||
+                allAttempt.message === 'Not authenticated'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(allAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(allAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(allAttempt.message)
         }
     }
 )
@@ -81,13 +136,26 @@ export const allOpponents = createAsyncThunk(
 export const getIndividualOpponent = createAsyncThunk(
     'opponent/individual',
     async (id, thunkAPI) => {
+        let allValues = {
+            id: id,
+            getToken,
+        }
         const individualAttempt = await opponentService.getIndividualOpponent(
-            id
+            allValues
         )
         if (individualAttempt.type === 'success') {
             return individualAttempt
         } else {
-            return thunkAPI.rejectWithValue(individualAttempt.message)
+            if (
+                individualAttempt.message === 'jwt expired' ||
+                individualAttempt.message === 'Not authenticated'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(individualAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(individualAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(individualAttempt.message)
         }
     }
 )
@@ -96,11 +164,24 @@ export const getIndividualOpponent = createAsyncThunk(
 export const opponentUpdate = createAsyncThunk(
     'opponent/update',
     async (values, thunkAPI) => {
-        const creationAttempt = await opponentService.opponentUpdate(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const creationAttempt = await opponentService.opponentUpdate(allValues)
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -109,11 +190,26 @@ export const opponentUpdate = createAsyncThunk(
 export const deleteFileOpponent = createAsyncThunk(
     'opponent/projectOpponentApp/delete',
     async (Info, thunkAPI) => {
-        const deleteAttempt = await opponentService.deleteFileOpponent(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const deleteAttempt = await opponentService.deleteFileOpponent(
+            allValues
+        )
         if (deleteAttempt.type === 'success') {
             return deleteAttempt
         } else {
-            return thunkAPI.rejectWithValue(deleteAttempt.message)
+            if (
+                deleteAttempt.message === 'jwt expired' ||
+                deleteAttempt.message === 'Not authenticated'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(deleteAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(deleteAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(deleteAttempt.message)
         }
     }
 )
@@ -122,11 +218,24 @@ export const deleteFileOpponent = createAsyncThunk(
 export const addFileOpponent = createAsyncThunk(
     'opponents/projectOpponentApp/add',
     async (Info, thunkAPI) => {
-        const addAttempt = await opponentService.addFileOpponent(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const addAttempt = await opponentService.addFileOpponent(allValues)
         if (addAttempt.type === 'success') {
             return addAttempt
         } else {
-            return thunkAPI.rejectWithValue(addAttempt.message)
+            if (
+                addAttempt.message === 'jwt expired' ||
+                addAttempt.message === 'Not authenticated'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(addAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(addAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(addAttempt.message)
         }
     }
 )
@@ -135,11 +244,55 @@ export const addFileOpponent = createAsyncThunk(
 export const removeProjectOpponent = createAsyncThunk(
     'opponents/removeOpponent',
     async (Info, thunkAPI) => {
-        const removeAttempt = await opponentService.removeProjectOpponent(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const removeAttempt = await opponentService.removeProjectOpponent(
+            allValues
+        )
         if (removeAttempt.type === 'success') {
             return removeAttempt
         } else {
-            return thunkAPI.rejectWithValue(removeAttempt.message)
+            if (
+                removeAttempt.message === 'jwt expired' ||
+                removeAttempt.message === 'Not authenticated'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(removeAttempt.message)
+        }
+    }
+)
+
+/** project create opponent */
+export const OpponentMainCreate = createAsyncThunk(
+    'opponent/main/create',
+    async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const creationAttempt = await opponentService.OpponentMainCreate(
+            allValues
+        )
+        if (creationAttempt.type === 'success') {
+            return creationAttempt
+        } else {
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -277,6 +430,21 @@ export const opponentSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(removeProjectOpponent.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            /** main opponent create */
+            .addCase(OpponentMainCreate.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(OpponentMainCreate.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(OpponentMainCreate.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

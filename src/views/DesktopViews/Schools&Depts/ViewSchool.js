@@ -1,21 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import {
     Box,
     Stack,
     Button,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    MenuOptionGroup,
-    MenuItemOption,
-    InputGroup,
-    Input,
-    InputRightElement,
-    InputLeftElement,
-    Grid,
     Text,
-    GridItem,
     useToast,
     Modal,
     ModalOverlay,
@@ -25,11 +14,6 @@ import {
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
-import { AiOutlinePlus } from 'react-icons/ai'
-import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io'
-import { FaFilter } from 'react-icons/fa'
-import { BiSearch } from 'react-icons/bi'
-import { GrClose } from 'react-icons/gr'
 import { MdArrowBack } from 'react-icons/md'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
@@ -38,9 +22,7 @@ import {
     reset,
     allSchools,
     schoolUpdate,
-    paginatedSchool,
 } from '../../../store/features/schools/schoolSlice'
-import SchoolTable from '../../../components/SchoolComponents/AllSchools/SchoolTable'
 import ViewSchoolDetails from '../../../components/SchoolComponents/ViewSchools/ViewSchoolDetails'
 import ViewDepartments from '../../../components/SchoolComponents/ViewSchools/ViewDepartments'
 import EditSchool from './EditSchool'
@@ -65,7 +47,9 @@ const ViewSchool = (props) => {
         deanName: '',
         deanDesignation: '',
         email: '',
+        otherEmail: '',
         officeNumber: '',
+        mobileNumber: '',
     })
 
     let dispatch = useDispatch()
@@ -86,16 +70,35 @@ const ViewSchool = (props) => {
     useEffect(() => {
         const io = initSocketConnection()
 
-         io.on('updatedepartment', (data) => {
-             if (data.actions === 'update-department') {
-                 //dispatch(tagGetAll())
-                 dispatch(allSchools())
-             }
-         })
+        io.on('updatedepartment', (data) => {
+            if (
+                data.actions === 'add-department' &&
+                data.data === params.id
+            ) {
+                //dispatch(tagGetAll())
+                dispatch(allSchools())
+            }
+        })
+
+        io.on('updatedepartment', (data) => {
+            if (
+                data.actions === 'update-department' 
+            ) {
+                //dispatch(tagGetAll())
+                dispatch(allSchools())
+            }
+        })
+
+        io.on('school-entity', (data) => {
+            if (data.actions === 'update-school' && data.data === params.id) {
+                dispatch(allSchools())
+            }
+        })
     }, [])
 
-    let { paginatedSchools, allSchoolItems, isSuccess, isError, message } =
-        useSelector((state) => state.school)
+    let { allSchoolItems, isSuccess, isError, message } = useSelector(
+        (state) => state.school
+    )
 
     useEffect(() => {
         if (allSchoolItems.items.length > 0) {
@@ -146,6 +149,15 @@ const ViewSchool = (props) => {
         })
     }
 
+    /** function to handle phone change */
+    const handleEditPhoneChange = (name, phoneValue) => {
+        setChnageMade(true)
+        setEditValues({
+            ...editValues,
+            [name]: phoneValue,
+        })
+    }
+
     let validate = (values) => {
         const errors = {}
         if (!values.schoolName) {
@@ -184,7 +196,7 @@ const ViewSchool = (props) => {
             dispatch(reset())
         }
 
-        if (isSuccess) {
+        if (isSuccess && message) {
             if (isSubmittingedits) {
                 toast({
                     position: 'top',
@@ -301,6 +313,7 @@ const ViewSchool = (props) => {
                             handleChange={handleEditChange}
                             handleEditSubmit={handleEditSubmit}
                             isSubmittingp={isSubmittingedits}
+                            handleEditPhoneChange={handleEditPhoneChange}
                         />
                     </ModalBody>{' '}
                 </ModalContent>{' '}
@@ -341,100 +354,6 @@ const Container = styled(Stack)`
     }
 `
 
-const InputStack = styled(Stack)`
-    .button {
-        min-width: 73px;
-        height: 32px;
-        background: #f4797f;
-        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
-        border-radius: 6px;
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        color: #ffffff;
-        padding: 0px 12px;
-    }
-`
-
-const AdStack = styled(Stack)`
-    color: #838389;
-    .ad_icon {
-        font-size: 25px;
-    }
-
-    .ad_text {
-        font-family: 'Inter', sans-serif;
-        font-style: italic;
-        font-weight: 600;
-        font-size: 17px;
-    }
-`
-
-const LinksStack = styled(Stack)`
-    h1 {
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 17px;
-        line-height: 21px;
-        color: #1a2240;
-    }
-
-    .link_icon {
-        width: 34.88px;
-        height: 34.88px;
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 17px;
-        border-radius: 6.975px;
-    }
-
-    .link_text {
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 17.4375px;
-        line-height: 21px;
-        color: #000000;
-    }
-`
-
-const StatStack = styled(Stack)``
-
-const FilterInfoStack = styled(Stack)`
-    position: relative;
-    width: 100%;
-    height: 22px;
-    padding: 0 8px;
-    background: #fceded;
-    border-radius: 4px;
-    h1 {
-        color: #f14c54;
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 600;
-        font-size: 12px;
-        line-height: 18px;
-    }
-
-    p {
-        color: #15151d;
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 600;
-        font-size: 12px;
-        line-height: 18px;
-    }
-
-    .close_icon {
-        color: #838389;
-        font-size: 12px;
-    }
-`
 
 const BackButtonStack = styled(Stack)`
     p {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import {
     Box,
@@ -11,11 +12,8 @@ import {
     MenuItemOption,
     InputGroup,
     Input,
-    InputRightElement,
     InputLeftElement,
-    Grid,
     Text,
-    GridItem,
     useToast,
     SimpleGrid,
 } from '@chakra-ui/react'
@@ -30,11 +28,7 @@ import { GrClose } from 'react-icons/gr'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
-import {
-    reset,
-    allSchools,
-    paginatedSchool,
-} from '../../../store/features/schools/schoolSlice'
+import { reset, allSchools } from '../../../store/features/schools/schoolSlice'
 import SchoolTable from '../../../components/SchoolComponents/AllSchools/SchoolTable'
 import { initSocketConnection } from '../../../socketio.service'
 
@@ -56,7 +50,7 @@ const AllSchools = () => {
         },
     ]
 
-    const [filterActive, setFilterActive] = React.useState(false)
+    //const [filterActive, setFilterActive] = React.useState(false)
     const [filterInfo, setFilterInfo] = React.useState([])
     const [searchActive, setSearchActive] = React.useState(false)
 
@@ -210,19 +204,14 @@ const AllSchools = () => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
 
-    let { paginatedSchools, allSchoolItems, isSuccess, isError, message } =
-        useSelector((state) => state.school)
+    let { allSchoolItems, isSuccess, isError, message } = useSelector(
+        (state) => state.school
+    )
 
     let Location = useLocation()
     let toast = useToast()
 
     useEffect(() => {
-        let page = Location.search.split('').slice(3).join('')
-        let values = {
-            page: page,
-        }
-
-        dispatch(paginatedSchool(values))
         dispatch(allSchools())
     }, [Location])
 
@@ -230,8 +219,24 @@ const AllSchools = () => {
         const io = initSocketConnection()
 
         io.on('updatedepartment', (data) => {
-            if (data.actions === 'update-department') {
+            if (data.actions === 'add-department') {
                 //dispatch(tagGetAll())
+                dispatch(allSchools())
+            }
+        })
+
+          io.on('updatedepartment', (data) => {
+              if (data.actions === 'update-department') {
+                  //dispatch(tagGetAll())
+                  dispatch(allSchools())
+              }
+          })
+
+        io.on('school-entity', (data) => {
+            if (data.actions === 'add-school') {
+                dispatch(allSchools())
+            }
+            if (data.actions === 'update-school') {
                 dispatch(allSchools())
             }
         })
@@ -543,7 +548,6 @@ const AllSchools = () => {
                                 searchActive={searchActive}
                                 filterInfo={filterInfo}
                                 allItems={allSchoolItems}
-                                paginatedItems={paginatedSchools}
                                 selectedItems={selectedSchools}
                                 setSelectedItems={setSelectedSchools}
                             />

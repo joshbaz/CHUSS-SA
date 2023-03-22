@@ -8,8 +8,8 @@ const os = require('os')
 const axios = require('axios')
 const { BASE_API_ } = require('./base_url.config')
 const Moments = require('moment-timezone')
-const projectController = require('./controllers/projects/projects')
-const examinerController = require('./controllers/Examiners/Examiners')
+const projectController = require('./controllers/projects')
+const examinerController = require('./controllers/Examiners')
 const supervisorController = require('./controllers/supervisors')
 const doctoralMController = require('./controllers/doctoralMembers')
 const opponentController = require('./controllers/opponents')
@@ -18,11 +18,12 @@ const preferenceController = require('./controllers/preferences')
 const reportController = require('./controllers/reports')
 const opponentReportController = require('./controllers/opponentReport')
 const paymentController = require('./controllers/payments')
-const fileController = require('./controllers/files')
+
 const schoolController = require('./controllers/schools')
 const registrationController = require('./controllers/registration')
 
 let mainWindow = null
+
 require('@electron/remote/main').initialize()
 
 function createWindow() {
@@ -37,7 +38,7 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
             enableRemoteModule: false,
-            devTools: false,
+            devTools: true,
         },
     })
 
@@ -48,6 +49,7 @@ function createWindow() {
             ? 'http://localhost:3000#'
             : `file://${path.join(__dirname, '../build/index.html#')}`
     )
+
     // mainWindow.loadURL(
     //     isDev
     //         ? 'http://localhost:3000'
@@ -203,6 +205,9 @@ app.on('activate', () => {
 })
 
 /** handle API Calls */
+ipcMain.handle('reload-app', () => {
+    mainWindow.webContents.reloadIgnoringCache()
+})
 //handle login
 ipcMain.handle('login-validation', async (event, values) => {
     try {
@@ -257,7 +262,7 @@ ipcMain.handle('create-project', projectController.createProject)
 ipcMain.handle('update-project', projectController.updateProject)
 
 //handle paginatedProjects
-ipcMain.handle('get-p-project', projectController.getProjects)
+ipcMain.handle('get-p-project', projectController.getPProjects)
 
 //handle all Projects
 ipcMain.handle('get-all-projects', projectController.getAllProjects)
@@ -346,7 +351,8 @@ ipcMain.handle('paginated-opponents', opponentController.paginatedOpponents)
 ipcMain.handle('all-opponents', opponentController.allOpponents)
 //handle individual opponent
 ipcMain.handle('individual-opponent', opponentController.getIndividualOpponent)
-
+ipcMain.handle('update-Opponent', opponentController.updateOpponent)
+ipcMain.handle('create-main-opponent', opponentController.OpponentMainCreate)
 /*
  * Supervisors
  *
@@ -375,6 +381,7 @@ ipcMain.handle(
 ipcMain.handle('update-supervisor', supervisorController.updateSupervisor)
 /** remove Supervisors */
 ipcMain.handle('remove-supervisor', supervisorController.removeSupervisor)
+ipcMain.handle('create-supervisor', supervisorController.createSupervisor)
 /*
  * Doctoral Members
  *
@@ -512,7 +519,7 @@ ipcMain.handle('update-department', schoolController.updateDepartment)
 
 /** files */
 //handle
-ipcMain.handle('get-view-file', fileController.getFiles)
+//ipcMain.handle('get-view-file', fileController.getFiles)
 
 /** error handler */
 let errorFunction = (error) => {

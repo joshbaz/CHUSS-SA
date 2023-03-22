@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import tagService from './tagService'
+import authService from '../auth/authService'
+const getToken = localStorage.getItem('_tk')
 
 /** initial State for examiners */
 const initialState = {
@@ -16,12 +18,26 @@ const initialState = {
 export const tagCreate = createAsyncThunk(
     'tag/create',
     async (values, thunkAPI) => {
-        const createAttempt = await tagService.createTag(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const createAttempt = await tagService.createTag(allValues)
 
         if (createAttempt.type === 'success') {
             return createAttempt
         } else {
-            return thunkAPI.rejectWithValue(createAttempt.message)
+            if (
+                createAttempt.message === 'jwt expired' ||
+                createAttempt.message === 'Not authenticated' ||
+                createAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(createAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(createAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(createAttempt.message)
         }
     }
 )
@@ -29,12 +45,26 @@ export const tagCreate = createAsyncThunk(
 export const tagGetAll = createAsyncThunk(
     'tag/getall',
     async (values, thunkAPI) => {
-        const getAttempt = await tagService.getTags(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const getAttempt = await tagService.getTags(allValues)
 
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -42,12 +72,26 @@ export const tagGetAll = createAsyncThunk(
 export const tagUpdate = createAsyncThunk(
     'tag/update',
     async (values, thunkAPI) => {
-        const updateAttempt = await tagService.updateTags(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const updateAttempt = await tagService.updateTags(allValues)
 
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )

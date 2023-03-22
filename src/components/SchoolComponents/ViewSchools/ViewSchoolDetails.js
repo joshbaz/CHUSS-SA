@@ -71,24 +71,47 @@ const ViewSchoolDetails = ({ values }) => {
                         </Stack>
                     </Stack>
 
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
+                    {/** emails */}
+                    <Stack direction='row' className=''>
+                        <Stack
+                            direction='column'
+                            spacing='8px'
+                            className='form_wrap formfields__Dfieldset'>
                             <label>
                                 Email <span>*</span>
                             </label>
                             <fieldset>
                                 <Input
-                                    type='email'
+                                    type='text'
                                     value={values.email}
-                                    name='email'
+                                    name='deanName'
                                     readOnly
                                     placeholder={'email'}
                                 />
                             </fieldset>
                         </Stack>
-                    </Box>
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
+                        <Stack
+                            spacing='8px'
+                            className='form_wrap formfields__Dfieldset'>
+                            <label>Other Email</label>
+                            <fieldset>
+                                <Input
+                                    type='text'
+                                    value={values.otherEmail}
+                                    name='otherEmail'
+                                    readOnly
+                                    placeholder={'Other email'}
+                                />
+                            </fieldset>
+                        </Stack>
+                    </Stack>
+
+                    {/** phoneNumbers */}
+                    <Stack direction='row' className=''>
+                        <Stack
+                            direction='column'
+                            spacing='8px'
+                            className='form_wrap formfields__Dfieldset'>
                             <label>
                                 Office Number <span>*</span>
                             </label>
@@ -102,7 +125,24 @@ const ViewSchoolDetails = ({ values }) => {
                                 />
                             </fieldset>
                         </Stack>
-                    </Box>
+                        <Stack
+                            direction='column'
+                            spacing='8px'
+                            className='form_wrap formfields__Dfieldset'>
+                            <label>
+                                Mobile Number <span>*</span>
+                            </label>
+                            <fieldset>
+                                <Input
+                                    type='text'
+                                    value={values.mobileNumber}
+                                    name='mobileNumber'
+                                    readOnly
+                                    placeholder={'mobile number'}
+                                />
+                            </fieldset>
+                        </Stack>
+                    </Stack>
                 </Stack>
             </Box>
         </FormContainer>

@@ -1,8 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
-
-const SupervisorADetailForm = ({ values, handleChange, errors }) => {
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
+const SupervisorADetailForm = ({
+    values,
+    handleChange,
+    errors,
+    setFieldValue,
+}) => {
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -107,18 +113,25 @@ const SupervisorADetailForm = ({ values, handleChange, errors }) => {
                                 Phone Number <span>*</span>
                             </label>
                             <fieldset>
-                                <Input
-                                    className={
-                                        errors && errors.phoneNumber
-                                            ? 'input_error'
-                                            : ''
-                                    }
-                                    type='text'
+                                <PhoneInput
+                                    inputStyle={{
+                                        width: '100%',
+                                    }}
+                                    inputProps={{
+                                        name: 'phoneNumber',
+                                    }}
+                                    country={'ug'}
                                     value={values.phoneNumber}
                                     name='phoneNumber'
-                                    onChange={handleChange}
+                                    onChange={(phone, e, formatedVal) =>
+                                        setFieldValue(
+                                            'phoneNumber',
+                                            formatedVal.target.value
+                                        )
+                                    }
                                     placeholder={'e.g 256787785114'}
                                 />
+
                                 {errors && errors.phoneNumber ? (
                                     <ErrorMsg className='filesError'>
                                         {errors.phoneNumber}

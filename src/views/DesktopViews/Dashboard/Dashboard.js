@@ -32,6 +32,7 @@ import {
     getAllProjects,
     reset,
 } from '../../../store/features/project/projectSlice'
+import { Logout, reset as areset } from '../../../store/features/auth/authSlice'
 import { allOpponents } from '../../../store/features/opponents/opponentSlice'
 import { allExaminers } from '../../../store/features/Examiner/examinerSlice'
 import { allSupervisors } from '../../../store/features/supervisors/supervisorSlice'
@@ -75,6 +76,15 @@ const Dashboard = () => {
     const [allSearchedData, setAllSearchedData] = React.useState({
         items: [],
     })
+    const [windowloading, setwindowloading] = React.useState(false)
+
+    useEffect(() => {
+        if (document.readyState === 'loading') {
+            setwindowloading(true)
+        } else if (document.readyState === 'complete') {
+            setwindowloading(false)
+        }
+    }, [])
 
     //websocket trial
     React.useEffect(() => {
@@ -99,7 +109,7 @@ const Dashboard = () => {
         let values = {
             page: page,
         }
-       
+
         dispatch(getPProjects(values))
         dispatch(getAllProjects())
     }, [Location])
@@ -113,6 +123,13 @@ const Dashboard = () => {
                 duration: 10000,
                 isClosable: true,
             })
+
+            if (message === 'Not authenticated') {
+                dispatch(Logout())
+                dispatch(areset())
+                routeNavigate('/auth/signin', { replace: true })
+            } else {
+            }
 
             dispatch(reset())
         }
@@ -167,6 +184,9 @@ const Dashboard = () => {
 
             <Stack direction='column' w='100%' spacing='20px'>
                 <TopBar topbarData={{ title: 'Dashboard', count: null }} />
+
+                {/** loading effect */}
+                {windowloading && <h1>Loading...</h1>}
 
                 <Stack direction='column' padding={'0 20px'}>
                     <Stack

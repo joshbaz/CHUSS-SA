@@ -1,6 +1,7 @@
 const axios = require('axios')
 const { BASE_API_ } = require('../base_url.config')
 const fs = require('fs')
+
 /** error handler */
 let errorFunction = (error) => {
     let errorArray = []
@@ -19,6 +20,8 @@ let errorFunction = (error) => {
     return response
 }
 
+
+
 /** Reports */
 /** update Opponent Report */
 exports.updateOpponentReport = async (event, values) => {
@@ -35,7 +38,12 @@ exports.updateOpponentReport = async (event, values) => {
           
             let responseData = await axios.patch(
                 `${BASE_API_}/opponentreports/v1/update/${values._id}`,
-                fd
+                fd,
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + values.getToken,
+                    },
+                }
             )
 
             let data = {
@@ -46,7 +54,12 @@ exports.updateOpponentReport = async (event, values) => {
         } else {
             let responseData = await axios.patch(
                 `${BASE_API_}/opponentreports/v1/update/${values._id}`,
-                values
+                values,
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + values.getToken,
+                    },
+                }
             )
 
             let data = {
@@ -62,10 +75,15 @@ exports.updateOpponentReport = async (event, values) => {
 }
 
 /** get opponent reports */
-exports.getOpponentReport = async (event, id) => {
+exports.getOpponentReport = async (event, values) => {
     try {
         let responseData = await axios.get(
-            `${BASE_API_}/opponentreports/v1/getReport/${id}`
+            `${BASE_API_}/opponentreports/v1/getReport/${values.id}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {

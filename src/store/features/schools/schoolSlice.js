@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import schoolService from './schoolService'
+import authService from '../auth/authService'
 
 const initialState = {
     paginatedSchools: {
@@ -29,7 +30,17 @@ export const schoolCreate = createAsyncThunk(
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -42,22 +53,42 @@ export const schoolUpdate = createAsyncThunk(
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
 
-export const paginatedSchool = createAsyncThunk(
-    'school/paginated',
-    async (values, thunkAPI) => {
-        const getAttempt = await schoolService.paginatedSchools(values)
-        if (getAttempt.type === 'success') {
-            return getAttempt
-        } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
-        }
-    }
-)
+// export const paginatedSchool = createAsyncThunk(
+//     'school/paginated',
+//     async (values, thunkAPI) => {
+//         const getAttempt = await schoolService.paginatedSchools(values)
+//         if (getAttempt.type === 'success') {
+//             return getAttempt
+//         } else {
+//             if (
+//                 getAttempt.message === 'jwt expired' ||
+//                 getAttempt.message === 'Not authenticated' ||
+//                 getAttempt.message === 'jwt malformed'
+//             ) {
+//                 authService.logout()
+//                 return thunkAPI.rejectWithValue(getAttempt.message)
+//             } else {
+//                 return thunkAPI.rejectWithValue(getAttempt.message)
+//             }
+//             // return thunkAPI.rejectWithValue(getAttempt.message)
+//         }
+//     }
+// )
 
 export const allSchools = createAsyncThunk(
     'school/all',
@@ -66,7 +97,17 @@ export const allSchools = createAsyncThunk(
         if (allAttempt.type === 'success') {
             return allAttempt
         } else {
-            return thunkAPI.rejectWithValue(allAttempt.message)
+            if (
+                allAttempt.message === 'jwt expired' ||
+                allAttempt.message === 'Not authenticated' ||
+                allAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(allAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(allAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(allAttempt.message)
         }
     }
 )
@@ -74,11 +115,26 @@ export const allSchools = createAsyncThunk(
 export const getIndividualSchool = createAsyncThunk(
     'school/individual',
     async (id, thunkAPI) => {
-        const individualAttempt = await schoolService.getIndividualSchool(id)
+        let allValues = {
+            id: id,
+        }
+        const individualAttempt = await schoolService.getIndividualSchool(
+            allValues
+        )
         if (individualAttempt.type === 'success') {
             return individualAttempt
         } else {
-            return thunkAPI.rejectWithValue(individualAttempt.message)
+            if (
+                individualAttempt.message === 'jwt expired' ||
+                individualAttempt.message === 'Not authenticated' ||
+                individualAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(individualAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(individualAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(individualAttempt.message)
         }
     }
 )
@@ -91,7 +147,17 @@ export const deleteSchool = createAsyncThunk(
         if (deleteAttempt.type === 'success') {
             return deleteAttempt
         } else {
-            return thunkAPI.rejectWithValue(deleteAttempt.message)
+            if (
+                deleteAttempt.message === 'jwt expired' ||
+                deleteAttempt.message === 'Not authenticated' ||
+                deleteAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(deleteAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(deleteAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(deleteAttempt.message)
         }
     }
 )
@@ -104,7 +170,17 @@ export const departmentCreate = createAsyncThunk(
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -117,7 +193,17 @@ export const departmentUpdate = createAsyncThunk(
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -129,7 +215,17 @@ export const deleteDepartment = createAsyncThunk(
         if (deleteAttempt.type === 'success') {
             return deleteAttempt
         } else {
-            return thunkAPI.rejectWithValue(deleteAttempt.message)
+            if (
+                deleteAttempt.message === 'jwt expired' ||
+                deleteAttempt.message === 'Not authenticated' ||
+                deleteAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(deleteAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(deleteAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(deleteAttempt.message)
         }
     }
 )
@@ -148,19 +244,19 @@ export const schoolSlice = createSlice({
     extraReducers: (builder) => {
         builder
 
-            .addCase(paginatedSchool.pending, (state) => {
-                state.isLoading = true
-            })
-            .addCase(paginatedSchool.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
-                state.paginatedSchools = action.payload
-            })
-            .addCase(paginatedSchool.rejected, (state, action) => {
-                state.isLoading = false
-                state.isError = true
-                state.message = action.payload
-            })
+            // .addCase(paginatedSchool.pending, (state) => {
+            //     state.isLoading = true
+            // })
+            // .addCase(paginatedSchool.fulfilled, (state, action) => {
+            //     state.isLoading = false
+            //     state.isSuccess = true
+            //     state.paginatedSchools = action.payload
+            // })
+            // .addCase(paginatedSchool.rejected, (state, action) => {
+            //     state.isLoading = false
+            //     state.isError = true
+            //     state.message = action.payload
+            // })
             .addCase(allSchools.pending, (state) => {
                 state.isLoading = true
             })

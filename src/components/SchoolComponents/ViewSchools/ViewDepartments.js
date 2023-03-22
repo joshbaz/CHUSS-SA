@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import styled from 'styled-components'
 import {
     Box,
     Stack,
-    Input,
     Button,
     useToast,
     Modal,
@@ -14,7 +14,7 @@ import {
 import DepartmentTable from '../../../views/DesktopViews/Schools&Depts/DepartmentTable'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
-import { useNavigate } from 'react-router-dom'
+//import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
     departmentCreate,
@@ -31,6 +31,7 @@ const ViewDepartments = ({ indivdualValues }) => {
 
     const [exportData, setExportData] = React.useState([])
     const [changeMade, setChnageMade] = React.useState(false)
+    // eslint-disable-next-line no-unused-vars
     const [perPage, setPerPage] = React.useState(7)
     const [errors, setErrors] = React.useState({})
     const [allDisplayData, setAllDisplayData] = React.useState({
@@ -51,23 +52,25 @@ const ViewDepartments = ({ indivdualValues }) => {
         deptName: '',
         deptHead: '',
         email: '',
+        otherEmail: '',
         officeNumber: '',
+        mobileNumber: ''
     })
 
     const [editValues, setEditValues] = React.useState({
         deptName: '',
         deptHead: '',
         email: '',
+        otherEmail: '',
         officeNumber: '',
+        mobileNumber: '',
     })
 
-    let routeNavigate = useNavigate()
+    //let routeNavigate = useNavigate()
     let toast = useToast()
     let dispatch = useDispatch()
 
-    const { isLoading, isError, isSuccess, message } = useSelector(
-        (state) => state.school
-    )
+    const { isError, isSuccess, message } = useSelector((state) => state.school)
 
     React.useEffect(() => {
         /** initial items  */
@@ -122,6 +125,8 @@ const ViewDepartments = ({ indivdualValues }) => {
             deptName: data.departmentId.deptName,
             deptHead: data.departmentId.deptHead,
             email: data.departmentId.email,
+            otherEmail: data.departmentId.otherEmail,
+            mobileNumber: data.departmentId.mobileNumber,
             officeNumber: data.departmentId.officeNumber,
         })
         setViewActive(true)
@@ -133,7 +138,9 @@ const ViewDepartments = ({ indivdualValues }) => {
             deptName: data.departmentId.deptName,
             deptHead: data.departmentId.deptHead,
             email: data.departmentId.email,
+            otherEmail: data.departmentId.otherEmail,
             officeNumber: data.departmentId.officeNumber,
+            mobileNumber: data.departmentId.mobileNumber,
             id: data.departmentId._id,
         })
         setEditActive(true)
@@ -150,7 +157,9 @@ const ViewDepartments = ({ indivdualValues }) => {
             deptName: '',
             deptHead: '',
             email: '',
+            otherEmail: '',
             officeNumber: '',
+            mobileNumber: '',
         })
         setViewActive(false)
     }
@@ -172,7 +181,9 @@ const ViewDepartments = ({ indivdualValues }) => {
         deptName: '',
         deptHead: '',
         email: '',
+        otherEmail: '',
         officeNumber: '',
+        mobileNumber: '',
     }
 
     const validationSchema = yup.object().shape({
@@ -201,7 +212,7 @@ const ViewDepartments = ({ indivdualValues }) => {
             dispatch(reset())
         }
 
-        if (isSuccess) {
+        if (isSuccess && message) {
             if (helperFunctions !== null) {
                 toast({
                     position: 'top',
@@ -246,6 +257,16 @@ const ViewDepartments = ({ indivdualValues }) => {
             [e.target.name]: e.target.value,
         })
     }
+
+    /** handle phone change */
+     const handleEditPhoneChange = (name, phoneVal) => {
+         
+         setChnageMade(true)
+         setEditValues({
+             ...editValues,
+             [name]: phoneVal,
+         })
+     }
 
     let validate = (values) => {
         const errors = {}
@@ -388,6 +409,7 @@ const ViewDepartments = ({ indivdualValues }) => {
                                         values={values}
                                         handleChange={handleChange}
                                         isSubmittingp={isSubmittingp}
+                                        setFieldValue={setFieldValue}
                                     />
                                 </Form>
                             )}
@@ -421,6 +443,7 @@ const ViewDepartments = ({ indivdualValues }) => {
                             onClose={closeEdit}
                             editValues={editValues}
                             handleChange={handleEditChange}
+                            handleEditPhoneChange={handleEditPhoneChange}
                             handleEditSubmit={handleEditSubmit}
                             isSubmittingedits={isSubmittingedits}
                         />

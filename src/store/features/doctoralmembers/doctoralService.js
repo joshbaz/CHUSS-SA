@@ -1,48 +1,84 @@
+import Cookies from 'js-cookie'
 /** service to create examiner from project */
 const projectDCMemberCreate = async (values) => {
-    const response = await window.electronAPI.createProjectDCMember(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.createProjectDCMember(allValues)
 
     return response
 }
 
 /** service to assign examiner from project */
 const assignDCMember = async (values) => {
-    const response = await window.electronAPI.assignDCMember(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.assignDCMember(allValues)
 
     return response
 }
 
 /** service to get all paginated examiners  */
 const paginatedDCMember = async (values) => {
-    const response = await window.electronAPI.paginatedDCMember(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.paginatedDCMember(allValues)
 
     return response
 }
 
 /** service to get all  examiners  */
 const allDCMembers = async (values) => {
-    const response = await window.electronAPI.allDCMembers(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.allDCMembers(allValues)
 
     return response
 }
 
 /** service to get individual  examiners  */
-const getIndividualDCMember = async (id) => {
-    const response = await window.electronAPI.getIndividualDCMember(id)
+const getIndividualDCMember = async (values) => {
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.getIndividualDCMember(allValues)
 
     return response
 }
 
 /** service to create examiner from project */
 const dcmemberUpdate = async (values) => {
-    const response = await window.electronAPI.updateDCmember(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updateDCmember(allValues)
 
     return response
 }
 
 /** service to remove supervisor from project */
 const removeDCMember = async (values) => {
-    const response = await window.electronAPI.removeDCMember(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.removeDCMember(allValues)
 
     return response
 }

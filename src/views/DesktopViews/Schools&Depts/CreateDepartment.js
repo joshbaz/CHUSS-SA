@@ -1,18 +1,16 @@
 import React from 'react'
 import styled from 'styled-components'
-import {
-    Box,
-    Stack,
-    Input,
-    Button,
-    useToast,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalBody,
-} from '@chakra-ui/react'
+import { Box, Stack, Input, Button } from '@chakra-ui/react'
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
-const CreateDepartment = ({ onClose, values, handleChange, isSubmittingp }) => {
+const CreateDepartment = ({
+    onClose,
+    values,
+    handleChange,
+    isSubmittingp,
+    setFieldValue,
+}) => {
     return (
         <PopupForm p='0px' justifyContent='space-between'>
             <Stack
@@ -48,13 +46,49 @@ const CreateDepartment = ({ onClose, values, handleChange, isSubmittingp }) => {
 
                 <Stack spacing={'10px'}>
                     <label>
-                        Phone number <span>*</span>
+                        Office number <span>*</span>
                     </label>
-                    <Input
-                        type='text'
-                        name='officeNumber'
+                    <PhoneInput
+                        inputStyle={{
+                            width: '100%',
+                        }}
+                        inputProps={{
+                            name: 'officeNumber',
+                        }}
+                        country={'ug'}
                         value={values.officeNumber}
-                        onChange={handleChange}
+                        name='officeNumber'
+                        onChange={(phone, e, formatedVal) =>
+                            setFieldValue(
+                                'officeNumber',
+                                formatedVal.target.value
+                            )
+                        }
+                        placeholder={'office number'}
+                    />
+                </Stack>
+
+                <Stack spacing={'10px'}>
+                    <label>
+                        Mobile number <span>*</span>
+                    </label>
+                    <PhoneInput
+                        inputStyle={{
+                            width: '100%',
+                        }}
+                        inputProps={{
+                            name: 'mobileNumber',
+                        }}
+                        country={'ug'}
+                        value={values.mobileNumber}
+                        name='officeNumber'
+                        onChange={(phone, e, formatedVal) =>
+                            setFieldValue(
+                                'mobileNumber',
+                                formatedVal.target.value
+                            )
+                        }
+                        placeholder={'mobile number'}
                     />
                 </Stack>
 
@@ -66,6 +100,15 @@ const CreateDepartment = ({ onClose, values, handleChange, isSubmittingp }) => {
                         type='email'
                         name='email'
                         value={values.email}
+                        onChange={handleChange}
+                    />
+                </Stack>
+                <Stack spacing={'10px'}>
+                    <label>Other Email</label>
+                    <Input
+                        type='email'
+                        name='otherEmail'
+                        value={values.otherEmail}
                         onChange={handleChange}
                     />
                 </Stack>

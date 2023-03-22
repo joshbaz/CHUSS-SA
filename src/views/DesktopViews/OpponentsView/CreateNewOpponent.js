@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Button, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -6,27 +7,28 @@ import TopBar from '../../../components/common/Navigation/TopBar'
 import { MdArrowBack } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 
-import ExaminerADetailForm from '../../../components/ProjectComponents/AssignExaminer/ExaminerA_DetailForm'
-import ExaminerAPayInfo from '../../../components/ProjectComponents/AssignExaminer/ExaminerA_PayInfo'
-import ExaminerAAppointmentUpload from '../../../components/ProjectComponents/AssignExaminer/ExaminerA_AppointmentUpload'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     reset,
-    examinerCreate,
-} from '../../../store/features/Examiner/examinerSlice'
-import ExaminerATypeForm2 from '../../../components/ExaminerComponents/CreateExaminer/ExaminerATypeForm2'
+    OpponentMainCreate,
+} from '../../../store/features/opponents/opponentSlice'
+
+import OpponentAPayInfo from '../../../components/ProjectComponents/AssignOpponents/OpponentA_PayInfo'
+import OpponentADetailForm from '../../../components/ProjectComponents/AssignOpponents/OpponentA_DetailForm'
 
 const CreateNewOpponent = () => {
     const [helperFunctions, setHelperFunctions] = React.useState(null)
-
+    // eslint-disable-next-line no-unused-vars
+    const [projectId, setProjectId] = React.useState('')
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let routeNavigate = useNavigate()
+
     let toast = useToast()
     let dispatch = useDispatch()
-    const { isLoading, isError, isSuccess, message } = useSelector(
-        (state) => state.examiner
+    const { isError, isSuccess, message } = useSelector(
+        (state) => state.opponent
     )
 
     useEffect(() => {
@@ -46,7 +48,7 @@ const CreateNewOpponent = () => {
             dispatch(reset())
         }
 
-        if (isSuccess) {
+        if (isSuccess && message) {
             if (helperFunctions !== null) {
                 toast({
                     position: 'top',
@@ -73,7 +75,7 @@ const CreateNewOpponent = () => {
         countryOfResidence: '',
         placeOfWork: '',
         otherTitles: '',
-        typeOfExaminer: '',
+        typeOfExaminer: 'Opponent',
         preferredPayment: 'mobileMoney',
         mobileOperator: '',
         mobileSubscriberName: '',
@@ -106,7 +108,9 @@ const CreateNewOpponent = () => {
             </Box>
 
             <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar topbarData={{ title: 'Examiners', count: null }} />
+                <TopBar
+                    topbarData={{ title: 'Create Opponent', count: null }}
+                />
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Formik
@@ -117,8 +121,9 @@ const CreateNewOpponent = () => {
                             setIsSubmittingp(true)
                             let values2 = {
                                 ...values,
+                                projectId,
                             }
-                            dispatch(examinerCreate(values2))
+                            dispatch(OpponentMainCreate(values2))
                         }}>
                         {({
                             values,
@@ -126,9 +131,7 @@ const CreateNewOpponent = () => {
                             errors,
                             isValid,
                             dirty,
-                            touched,
-                            isSubmitting,
-                            setFieldValue,
+                         
                         }) => (
                             <Form>
                                 <Stack
@@ -152,18 +155,14 @@ const CreateNewOpponent = () => {
                                                 }>
                                                 <MdArrowBack />
                                             </Box>
-                                            <Text>Add New Examiners</Text>
+                                            <Text>Add New Opponent</Text>
                                         </BackButtonStack>
 
                                         <SubmitButton
                                             disabledb={!(isValid && dirty)}>
                                             <Button
                                                 type='submit'
-                                                disabled={
-                                                    isSubmittingp
-                                                        ? true
-                                                        : !(isValid && dirty)
-                                                }
+                                                disabled={!(isValid && dirty)}
                                                 isLoading={
                                                     isSubmittingp ? true : false
                                                 }
@@ -181,7 +180,7 @@ const CreateNewOpponent = () => {
                                                 direction='column'
                                                 w='70%'
                                                 spacing='20px'>
-                                                <ExaminerADetailForm
+                                                <OpponentADetailForm
                                                     values={values}
                                                     errors={errors}
                                                     handleChange={handleChange}
@@ -193,29 +192,10 @@ const CreateNewOpponent = () => {
                                                 direction='column'
                                                 w='30%'
                                                 spacing='20px'>
-                                                <ExaminerATypeForm2
+                                                <OpponentAPayInfo
                                                     values={values}
                                                     errors={errors}
                                                     handleChange={handleChange}
-                                                />
-                                                {values.typeOfExaminer ===
-                                                    'External' && (
-                                                    <ExaminerAPayInfo
-                                                        values={values}
-                                                        errors={errors}
-                                                        handleChange={
-                                                            handleChange
-                                                        }
-                                                    />
-                                                )}
-
-                                                <ExaminerAAppointmentUpload
-                                                    values={values}
-                                                    errors={errors}
-                                                    handleChange={handleChange}
-                                                    setFieldValue={
-                                                        setFieldValue
-                                                    }
                                                 />
                                             </Stack>
                                         </Stack>

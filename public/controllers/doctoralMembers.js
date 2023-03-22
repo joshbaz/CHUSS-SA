@@ -1,7 +1,6 @@
 const axios = require('axios')
 const { BASE_API_ } = require('../base_url.config')
-const FormData = require('form-data')
-const fs = require('fs')
+
 /** error handler */
 let errorFunction = (error) => {
     let errorArray = []
@@ -44,7 +43,12 @@ exports.createProjectDCMember = async (event, values) => {
     try {
         let responseData = await axios.post(
             `${BASE_API_}/doctoralmember/v1/project/create/${values.projectId}`,
-           values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -63,7 +67,12 @@ exports.assignDCMember = async (event, values) => {
     try {
         let responseData = await axios.post(
             `${BASE_API_}/doctoralmember/v1/project/assign/${values.projectId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -81,8 +90,13 @@ exports.assignDCMember = async (event, values) => {
 exports.paginatedDCMembers = async (event, values) => {
     try {
         let responseData = await axios.get(
-            `${BASE_API_}/doctoralmember/v1/pdcmembers`,
-            values
+            `${BASE_API_}/doctoralmember/v1/pdcmembers/${values.perPage}/${values.page}`,
+
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -111,24 +125,13 @@ exports.paginatedDCMembers = async (event, values) => {
 /** all examiners */
 exports.allDCMembers = async (event, values) => {
     try {
-        let responseData = await axios.get(`${BASE_API_}/doctoralmember/v1/getall`)
-
-        let data = {
-            ...responseData.data,
-            type: 'success',
-        }
-        return data
-    } catch (error) {
-        let errorResult = errorFunction(error)
-        return errorResult
-    }
-}
-
-/** individual examiners */
-exports.getIndividualDCMember = async (event, id) => {
-    try {
         let responseData = await axios.get(
-            `${BASE_API_}/doctoralmember/v1/individual/${id}`
+            `${BASE_API_}/doctoralmember/v1/getall`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -142,13 +145,40 @@ exports.getIndividualDCMember = async (event, id) => {
     }
 }
 
+/** individual examiners */
+exports.getIndividualDCMember = async (event, values) => {
+    try {
+        let responseData = await axios.get(
+            `${BASE_API_}/doctoralmember/v1/individual/${values.id}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
+        )
+
+        let data = {
+            ...responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
 
 /** update examiner */
 exports.updateDCMember = async (event, values) => {
     try {
         let responseData = await axios.patch(
             `${BASE_API_}/doctoralmember/v1/update/${values.examinerId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -167,7 +197,12 @@ exports.removeDCMember = async (event, values) => {
     try {
         let responseData = await axios.patch(
             `${BASE_API_}/doctoralmember/v1/project/remove/${values.projectId}/${values.supId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {

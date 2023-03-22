@@ -1,60 +1,119 @@
+import Cookies from 'js-cookie'
 /** service to create examiner from project */
 const projectOpponentCreate = async (values) => {
-    const response = await window.electronAPI.createProjectOpponent(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.createProjectOpponent(allValues)
 
     return response
 }
 
 /** service to assign examiner from project */
 const assignOpponent = async (values) => {
-    const response = await window.electronAPI.assignOpponent(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.assignOpponent(allValues)
 
     return response
 }
 
 /** service to get all paginated examiners  */
 const paginatedOpponent = async (values) => {
-    const response = await window.electronAPI.paginatedOpponents(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.paginatedOpponents(allValues)
 
     return response
 }
 
 /** service to get all  examiners  */
 const allOpponent = async (values) => {
-    const response = await window.electronAPI.allOpponents(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.allOpponents(allValues)
 
     return response
 }
 
 /** service to get individual  examiners  */
 const getIndividualOpponent = async (id) => {
-    const response = await window.electronAPI.getIndividualOpponent(id)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...id,
+         getToken,
+     }
+    const response = await window.electronAPI.getIndividualOpponent(allValues)
 
     return response
 }
 
 /** service to create examiner from project */
 const opponentUpdate = async (values) => {
-    const response = await window.electronAPI.updateExaminer(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.opponentUpdate(allValues)
 
     return response
 }
 
 //delete file opponent
 const deleteFileOpponent = async (values) => {
-    const response = await window.electronAPI.deleteFileOpponent(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.deleteFileOpponent(allValues)
     return response
 }
 
 //add file opponent
 const addFileOpponent = async (values) => {
-    const response = await window.electronAPI.addFileOpponent(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.addFileOpponent(allValues)
     return response
 }
 
 //remove project opponent
 const removeProjectOpponent = async (values) => {
-    const response = await window.electronAPI.removeProjectOpponent(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.removeProjectOpponent(allValues)
+    return response
+}
+
+
+/** service to create examiner from project */
+const OpponentMainCreate = async (values) => {
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.OpponentMainCreate(allValues)
+
     return response
 }
 let examinerService = {
@@ -68,6 +127,7 @@ let examinerService = {
     deleteFileOpponent,
     addFileOpponent,
     removeProjectOpponent,
+    OpponentMainCreate,
 }
 
 export default examinerService

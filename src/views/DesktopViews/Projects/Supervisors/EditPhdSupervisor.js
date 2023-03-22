@@ -47,7 +47,7 @@ const EditPhdSupervisor = () => {
              dispatch(reset())
          }
 
-         if (isSuccess && isSubmittingp) {
+         if (isSuccess && isSubmittingp && message) {
              toast({
                  position: 'top',
                  title: message.message,

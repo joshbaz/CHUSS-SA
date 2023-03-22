@@ -1,9 +1,11 @@
 const axios = require('axios')
-const { BASE_API_ } = require('../../base_url.config')
+const { BASE_API_ } = require('../base_url.config')
 const FormData = require('form-data')
 const fs = require('fs')
+
 //const Cookies = require('js-cookie')
 //create Project
+
 exports.createProject = async (event, values) => {
     try {
         const fd = new FormData()
@@ -23,7 +25,12 @@ exports.createProject = async (event, values) => {
 
         let responseData = await axios.post(
             `${BASE_API_}/project/v1/create`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         //    console.log('values', responseData.data)
         let data = {
@@ -70,7 +77,12 @@ exports.updateProject = async (event, values) => {
 
         let responseData = await axios.patch(
             `${BASE_API_}/project/v1/update/${values.id}`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -97,15 +109,19 @@ exports.updateProject = async (event, values) => {
 }
 
 //get paginated Project
-exports.getProjects = async (event, values) => {
+exports.getPProjects = async (event, values) => {
     try {
         // const getToken = Cookies.get('_tk')
         //     ? JSON.parse(Cookies.get('_tk'))
         //     : ''
-       // console.log('cookies', getToken)
+
         let responseData = await axios.get(
-            `${BASE_API_}/project/vl/pprojects?page=${values.page}`,
-            values
+            `${BASE_API_}/project/vl/pprojects`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         //    console.log('values', responseData.data)
         let data = {
@@ -136,7 +152,11 @@ exports.getAllProjects = async (event, values) => {
     try {
         let responseData = await axios.get(
             `${BASE_API_}/project/v1/allprojects`,
-            values
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         //    console.log('values', responseData.data)
         let data = {
@@ -164,10 +184,15 @@ exports.getAllProjects = async (event, values) => {
 
 /** get individual project */
 
-exports.getIndividualProjects = async (event, id) => {
+exports.getIndividualProjects = async (event, values) => {
     try {
         let responseData = await axios.get(
-            `${BASE_API_}/project/v1/projects/${id}`
+            `${BASE_API_}/project/v1/projects/${values.id}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         //  console.log('values', responseData.data)
         let data = {
@@ -198,7 +223,12 @@ exports.updateProjectStatuses = async (event, values) => {
     try {
         let responseData = await axios.put(
             `${BASE_API_}/project/vl/status/update/${values.projectId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         //    console.log('values', responseData.data)
         let data = {
@@ -244,7 +274,12 @@ exports.updateCandidateFiles = async (event, values) => {
 
         let responseData = await axios.put(
             `${BASE_API_}/project/v1/candidatefiles/update/${values.projectId}`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         //console.log("values", responseData.data);
         let data = {
@@ -290,7 +325,12 @@ exports.updateVivaFiles = async (event, values) => {
 
         let responseData = await axios.put(
             `${BASE_API_}/project/v1/vivafiles/update/${values.projectId}`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         //   console.log('values', responseData.data)
         let data = {
@@ -321,7 +361,12 @@ exports.updateVivaDefenseDate = async (event, values) => {
     try {
         let responseData = await axios.put(
             `${BASE_API_}/project/v1/vivadefense/update/${values.projectId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         //   console.log('values', responseData.data)
         let data = {
@@ -368,7 +413,12 @@ exports.updateFinalSubmission = async (event, values) => {
 
         let responseData = await axios.put(
             `${BASE_API_}/project/v1/finalsubmission/update/${values.projectId}`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         //  console.log('values', responseData.data)
         let data = {
@@ -399,7 +449,12 @@ exports.updateSubmissionDate = async (event, values) => {
     try {
         let responseData = await axios.put(
             `${BASE_API_}/project/v1/dateofsubmission/update/${values.projectId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         //  console.log('values', responseData.data)
         let data = {
@@ -430,7 +485,12 @@ exports.updateGraduationDate = async (event, values) => {
     try {
         let responseData = await axios.put(
             `${BASE_API_}/project/v1/graduation/update/${values.projectId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         // console.log('values', responseData.data)
         let data = {
@@ -459,7 +519,12 @@ exports.updateGraduationDate = async (event, values) => {
 exports.removeProjectFileExaminer = async (event, values) => {
     try {
         let responseData = await axios.patch(
-            `${BASE_API_}/examiner/v1/letter/projectexaminer/delete/${values.projectId}/${values.fileId}`
+            `${BASE_API_}/examiner/v1/letter/projectexaminer/delete/${values.projectId}/${values.fileId}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -498,7 +563,12 @@ exports.addProjectFileExaminer = async (event, values) => {
         }
         let responseData = await axios.patch(
             `${BASE_API_}/examiner/v1/letter/projectexaminer/add/${values.projectId}/${values.examinerId}`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -529,7 +599,12 @@ exports.removeProjectExaminersR = async (event, values) => {
     try {
         let responseData = await axios.patch(
             `${BASE_API_}/examiner/v1/projectexaminers/remove/${values.projectId}/${values.exId}/${values.secId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -560,7 +635,12 @@ exports.updateResubmission = async (event, values) => {
     try {
         let responseData = await axios.patch(
             `${BASE_API_}/project/v1/resubmission/update/${values.projectId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -603,7 +683,12 @@ exports.createNewExUpdate = async (event, values) => {
         fd.append('remarks', values.remarks)
         let responseData = await axios.patch(
             `${BASE_API_}/reports/v1/update/${values.reportId}`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -633,7 +718,12 @@ exports.createNewExUpdate = async (event, values) => {
 exports.removeCaFiles = async (event, values) => {
     try {
         let responseData = await axios.delete(
-            `${BASE_API_}/project/v1/remove/cfiles/${values.projectId}/${values.fId}/${values.secId}`
+            `${BASE_API_}/project/v1/remove/cfiles/${values.projectId}/${values.fId}/${values.secId}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -663,7 +753,12 @@ exports.removeCaFiles = async (event, values) => {
 exports.removeViFiles = async (event, values) => {
     try {
         let responseData = await axios.delete(
-            `${BASE_API_}/project/v1/remove/vfiles/${values.projectId}/${values.fId}/${values.secId}`
+            `${BASE_API_}/project/v1/remove/vfiles/${values.projectId}/${values.fId}/${values.secId}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
         let data = {
             message: responseData.data,
@@ -692,7 +787,12 @@ exports.removeViFiles = async (event, values) => {
 exports.removeFinalSFiles = async (event, values) => {
     try {
         let responseData = await axios.delete(
-            `${BASE_API_}/project/v1/remove/sfiles/${values.projectId}/${values.fId}/${values.secId}`
+            `${BASE_API_}/project/v1/remove/sfiles/${values.projectId}/${values.fId}/${values.secId}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -722,7 +822,12 @@ exports.removeFinalSFiles = async (event, values) => {
 exports.deleteProject = async (event, values) => {
     try {
         let responseData = await axios.delete(
-            `${BASE_API_}/project/v1/student/remove/${values.projectId}`
+            `${BASE_API_}/project/v1/student/remove/${values.projectId}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {

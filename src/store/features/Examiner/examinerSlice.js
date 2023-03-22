@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import examinerService from './examinerService'
+import authService from '../auth/authService'
+const getToken = localStorage.getItem('_tk')
 
 /** initial State for examiners */
 const initialState = {
@@ -31,11 +33,25 @@ const initialState = {
 export const examinerCreate = createAsyncThunk(
     'examiner/create',
     async (values, thunkAPI) => {
-        const creationAttempt = await examinerService.examinerCreate(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const creationAttempt = await examinerService.examinerCreate(allValues)
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -43,13 +59,27 @@ export const examinerCreate = createAsyncThunk(
 export const projectExaminerCreate = createAsyncThunk(
     'examiner/project/create',
     async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
         const creationAttempt = await examinerService.projectExaminerCreate(
-            values
+            allValues
         )
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -57,11 +87,25 @@ export const projectExaminerCreate = createAsyncThunk(
 export const assignExaminer = createAsyncThunk(
     'examiner/project/assign',
     async (values, thunkAPI) => {
-        const assignAttempt = await examinerService.assignExaminer(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const assignAttempt = await examinerService.assignExaminer(allValues)
         if (assignAttempt.type === 'success') {
             return assignAttempt
         } else {
-            return thunkAPI.rejectWithValue(assignAttempt.message)
+            if (
+                assignAttempt.message === 'jwt expired' ||
+                assignAttempt.message === 'Not authenticated' ||
+                assignAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(assignAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(assignAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(assignAttempt.message)
         }
     }
 )
@@ -69,11 +113,25 @@ export const assignExaminer = createAsyncThunk(
 export const paginatedExaminer = createAsyncThunk(
     'examiner/paginated',
     async (values, thunkAPI) => {
-        const getAttempt = await examinerService.paginatedExaminer(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const getAttempt = await examinerService.paginatedExaminer(allValues)
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -81,11 +139,25 @@ export const paginatedExaminer = createAsyncThunk(
 export const allExaminers = createAsyncThunk(
     'examiner/all',
     async (values, thunkAPI) => {
-        const allAttempt = await examinerService.allExaminer(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const allAttempt = await examinerService.allExaminer(allValues)
         if (allAttempt.type === 'success') {
             return allAttempt
         } else {
-            return thunkAPI.rejectWithValue(allAttempt.message)
+            if (
+                allAttempt.message === 'jwt expired' ||
+                allAttempt.message === 'Not authenticated' ||
+                allAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(allAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(allAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(allAttempt.message)
         }
     }
 )
@@ -93,13 +165,27 @@ export const allExaminers = createAsyncThunk(
 export const getIndividualExaminer = createAsyncThunk(
     'examiner/individual',
     async (id, thunkAPI) => {
+        let allValues = {
+            id: id,
+            getToken,
+        }
         const individualAttempt = await examinerService.getIndividualExaminer(
-            id
+            allValues
         )
         if (individualAttempt.type === 'success') {
             return individualAttempt
         } else {
-            return thunkAPI.rejectWithValue(individualAttempt.message)
+            if (
+                individualAttempt.message === 'jwt expired' ||
+                individualAttempt.message === 'Not authenticated' ||
+                individualAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(individualAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(individualAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(individualAttempt.message)
         }
     }
 )
@@ -108,11 +194,27 @@ export const getIndividualExaminer = createAsyncThunk(
 export const getStudentsByExaminer = createAsyncThunk(
     'examiner/getstudents',
     async (id, thunkAPI) => {
-        const getAttempt = await examinerService.getStudentsByExaminer(id)
+        let allValues = {
+            id: id,
+            getToken,
+        }
+        const getAttempt = await examinerService.getStudentsByExaminer(
+            allValues
+        )
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -121,11 +223,25 @@ export const getStudentsByExaminer = createAsyncThunk(
 export const examinerUpdate = createAsyncThunk(
     'examiner/update',
     async (values, thunkAPI) => {
-        const creationAttempt = await examinerService.examinerUpdate(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const creationAttempt = await examinerService.examinerUpdate(allValues)
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -134,11 +250,25 @@ export const examinerUpdate = createAsyncThunk(
 export const examinerDeletes = createAsyncThunk(
     'examiner/delete',
     async (values, thunkAPI) => {
-        const creationAttempt = await examinerService.examinerDeletes(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const creationAttempt = await examinerService.examinerDeletes(allValues)
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -147,17 +277,30 @@ export const examinerDeletes = createAsyncThunk(
 export const examinerDeletesFiles = createAsyncThunk(
     'examiner/deletesfiles',
     async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
         const creationAttempt = await examinerService.examinerDeletesFiles(
-            values
+            allValues
         )
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
-
 
 export const examinerSlice = createSlice({
     name: 'examiner',

@@ -2,6 +2,7 @@ const axios = require('axios')
 const { BASE_API_ } = require('../base_url.config')
 const FormData = require('form-data')
 const fs = require('fs')
+
 /** error handler */
 let errorFunction = (error) => {
     let errorArray = []
@@ -66,7 +67,12 @@ exports.createProjectOpponent = async (event, values) => {
 
         let responseData = await axios.post(
             `${BASE_API_}/opponent/v1/project/create/${values.projectId}`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -85,7 +91,12 @@ exports.assignOpponent = async (event, values) => {
     try {
         let responseData = await axios.post(
             `${BASE_API_}/opponent/v1/project/assign/${values.projectId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -103,8 +114,13 @@ exports.assignOpponent = async (event, values) => {
 exports.paginatedOpponents = async (event, values) => {
     try {
         let responseData = await axios.get(
-            `${BASE_API_}/opponent/v1/popponents`,
-            values
+            `${BASE_API_}/opponent/v1/popponents/${values.perPage}/${values.page}`,
+
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -133,7 +149,11 @@ exports.paginatedOpponents = async (event, values) => {
 /** all examiners */
 exports.allOpponents = async (event, values) => {
     try {
-        let responseData = await axios.get(`${BASE_API_}/opponent/v1/getall`)
+        let responseData = await axios.get(`${BASE_API_}/opponent/v1/getall`, {
+            headers: {
+                Authorization: 'Bearer ' + values.getToken,
+            },
+        })
 
         let data = {
             ...responseData.data,
@@ -147,10 +167,15 @@ exports.allOpponents = async (event, values) => {
 }
 
 /** individual examiners */
-exports.getIndividualOpponent = async (event, id) => {
+exports.getIndividualOpponent = async (event, values) => {
     try {
         let responseData = await axios.get(
-            `${BASE_API_}/opponent/v1/individual/${id}`
+            `${BASE_API_}/opponent/v1/individual/${values.id}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -168,8 +193,37 @@ exports.getIndividualOpponent = async (event, id) => {
 exports.updateOpponent = async (event, values) => {
     try {
         let responseData = await axios.patch(
-            `${BASE_API_}/opponent/v1/update/${values.examinerId}`,
-            values
+            `${BASE_API_}/opponent/v1/projectopponent/update/${values._id}`,
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
+
+/** update opponent */
+exports.OpponentMainCreate = async (event, values) => {
+    try {
+        let responseData = await axios.post(
+            `${BASE_API_}/opponent/v1/opponent/maincreate`,
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -187,7 +241,12 @@ exports.updateOpponent = async (event, values) => {
 exports.removeProjectFileOpponent = async (event, values) => {
     try {
         let responseData = await axios.patch(
-            `${BASE_API_}/opponent/v1/letter/projectopponent/delete/${values.projectId}/${values.fileId}`
+            `${BASE_API_}/opponent/v1/letter/projectopponent/delete/${values.projectId}/${values.fileId}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -227,7 +286,12 @@ exports.addProjectFileOpponent = async (event, values) => {
         }
         let responseData = await axios.patch(
             `${BASE_API_}/opponent/v1/letter/projectopponent/add/${values.projectId}/${values.examinerId}`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -259,7 +323,12 @@ exports.removeProjectOpponentsR = async (event, values) => {
     try {
         let responseData = await axios.patch(
             `${BASE_API_}/opponent/v1/projectopponent/remove/${values.projectId}/${values.exId}/${values.secId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {

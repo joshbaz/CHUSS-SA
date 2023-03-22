@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import projectService from './projectService'
-//let routeNavigate = 
+import authService from '../auth/authService'
+const getToken = localStorage.getItem('_tk')
+
+//let routeNavigate =
 const initialState = {
     pprojects: {
         items: [],
@@ -24,11 +27,25 @@ const initialState = {
 export const projectDeletion = createAsyncThunk(
     'projects/delete/student',
     async (Info, thunkAPI) => {
-        const deleteAttempt = await projectService.projectDeletion(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const deleteAttempt = await projectService.projectDeletion(allValues)
         if (deleteAttempt.type === 'success') {
             return deleteAttempt
         } else {
-            return thunkAPI.rejectWithValue(deleteAttempt.message)
+            if (
+                deleteAttempt.message === 'jwt expired' ||
+                deleteAttempt.message === 'Not authenticated' ||
+                deleteAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(deleteAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(deleteAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(deleteAttempt.message)
         }
     }
 )
@@ -36,11 +53,25 @@ export const projectDeletion = createAsyncThunk(
 export const projectCreate = createAsyncThunk(
     'projects/create',
     async (Info, thunkAPI) => {
-        const createAttempt = await projectService.projectCreate(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const createAttempt = await projectService.projectCreate(allValues)
         if (createAttempt.type === 'success') {
             return createAttempt
         } else {
-            return thunkAPI.rejectWithValue(createAttempt.message)
+            if (
+                createAttempt.message === 'jwt expired' ||
+                createAttempt.message === 'Not authenticated' ||
+                createAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(createAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(createAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(createAttempt.message)
         }
     }
 )
@@ -49,11 +80,25 @@ export const projectCreate = createAsyncThunk(
 export const projectUpdate = createAsyncThunk(
     'projects/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.projectUpdate(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.projectUpdate(allValues)
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -62,11 +107,25 @@ export const projectUpdate = createAsyncThunk(
 export const getPProjects = createAsyncThunk(
     'projects/getPProjects',
     async (Info, thunkAPI) => {
-        const getPProjectAttempt = await projectService.getPProjects(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const getPProjectAttempt = await projectService.getPProjects(allValues)
         if (getPProjectAttempt.type === 'success') {
             return getPProjectAttempt
         } else {
-            return thunkAPI.rejectWithValue(getPProjectAttempt.message)
+            if (
+                getPProjectAttempt.message === 'jwt expired' ||
+                getPProjectAttempt.message === 'Not authenticated' ||
+                getPProjectAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getPProjectAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getPProjectAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getPProjectAttempt.message)
         }
     }
 )
@@ -75,14 +134,28 @@ export const getPProjects = createAsyncThunk(
 export const getAllProjects = createAsyncThunk(
     'projects/allProjects',
     async (Info, thunkAPI) => {
-        const getAttempt = await projectService.getAllProjects(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const getAttempt = await projectService.getAllProjects(allValues)
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
             // if (getAttempt.message.toLowerCase() === 'not authenticated') {
             //     console.log('.. cretified to get here')
             // }
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -91,14 +164,29 @@ export const getAllProjects = createAsyncThunk(
 export const getIndividualProject = createAsyncThunk(
     'projects/individual',
     async (Info, thunkAPI) => {
+        let allValues = {
+            id: Info,
+            getToken,
+        }
         const getIndividualAttempt = await projectService.getIndividualProject(
-            Info
+            allValues
         )
 
         if (getIndividualAttempt.type === 'success') {
             return getIndividualAttempt
         } else {
-            return thunkAPI.rejectWithValue(getIndividualAttempt.message)
+            /** not authenticated / jwt expired */
+            if (
+                getIndividualAttempt.message === 'jwt expired' ||
+                getIndividualAttempt.message === 'Not authenticated' ||
+                getIndividualAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getIndividualAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getIndividualAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getIndividualAttempt.message)
         }
     }
 )
@@ -107,11 +195,27 @@ export const getIndividualProject = createAsyncThunk(
 export const updateProjectStatus = createAsyncThunk(
     'projects/statues/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateProjectStatus(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateProjectStatus(
+            allValues
+        )
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -120,11 +224,27 @@ export const updateProjectStatus = createAsyncThunk(
 export const updateCandidateFiles = createAsyncThunk(
     'projects/candidatefiles/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateCandidateFiles(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateCandidateFiles(
+            allValues
+        )
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -133,11 +253,25 @@ export const updateCandidateFiles = createAsyncThunk(
 export const updateVivaFiles = createAsyncThunk(
     'projects/vivafiles/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateVivaFiles(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateVivaFiles(allValues)
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -146,11 +280,25 @@ export const updateVivaFiles = createAsyncThunk(
 export const updateVivaDefense = createAsyncThunk(
     'projects/vivadefense/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateVivaDefense(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateVivaDefense(allValues)
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -159,11 +307,27 @@ export const updateVivaDefense = createAsyncThunk(
 export const updateFinalSubmission = createAsyncThunk(
     'projects/finalsubmission/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateFinalSubmission(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateFinalSubmission(
+            allValues
+        )
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -172,11 +336,27 @@ export const updateFinalSubmission = createAsyncThunk(
 export const updateSubmissionDate = createAsyncThunk(
     'projects/submissiondate/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateSubmissionDate(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateSubmissionDate(
+            allValues
+        )
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -185,11 +365,27 @@ export const updateSubmissionDate = createAsyncThunk(
 export const updateGraduationDate = createAsyncThunk(
     'projects/graduation/update',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateGraduationDate(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateGraduationDate(
+            allValues
+        )
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -198,11 +394,25 @@ export const updateGraduationDate = createAsyncThunk(
 export const deleteFileExaminer = createAsyncThunk(
     'projects/projectExaminerApp/delete',
     async (Info, thunkAPI) => {
-        const deleteAttempt = await projectService.deleteFileExaminer(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const deleteAttempt = await projectService.deleteFileExaminer(allValues)
         if (deleteAttempt.type === 'success') {
             return deleteAttempt
         } else {
-            return thunkAPI.rejectWithValue(deleteAttempt.message)
+            if (
+                deleteAttempt.message === 'jwt expired' ||
+                deleteAttempt.message === 'Not authenticated' ||
+                deleteAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(deleteAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(deleteAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(deleteAttempt.message)
         }
     }
 )
@@ -211,11 +421,25 @@ export const deleteFileExaminer = createAsyncThunk(
 export const addFileExaminer = createAsyncThunk(
     'projects/projectExaminerApp/add',
     async (Info, thunkAPI) => {
-        const addAttempt = await projectService.addFileExaminer(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const addAttempt = await projectService.addFileExaminer(allValues)
         if (addAttempt.type === 'success') {
             return addAttempt
         } else {
-            return thunkAPI.rejectWithValue(addAttempt.message)
+            if (
+                addAttempt.message === 'jwt expired' ||
+                addAttempt.message === 'Not authenticated' ||
+                addAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(addAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(addAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(addAttempt.message)
         }
     }
 )
@@ -224,11 +448,27 @@ export const addFileExaminer = createAsyncThunk(
 export const removeProjectExaminer = createAsyncThunk(
     'projects/removeExaminer',
     async (Info, thunkAPI) => {
-        const removeAttempt = await projectService.removeProjectExaminer(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const removeAttempt = await projectService.removeProjectExaminer(
+            allValues
+        )
         if (removeAttempt.type === 'success') {
             return removeAttempt
         } else {
-            return thunkAPI.rejectWithValue(removeAttempt.message)
+            if (
+                removeAttempt.message === 'jwt expired' ||
+                removeAttempt.message === 'Not authenticated' ||
+                removeAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(removeAttempt.message)
         }
     }
 )
@@ -237,11 +477,25 @@ export const removeProjectExaminer = createAsyncThunk(
 export const updateResubmission = createAsyncThunk(
     'projects/updates/resubmissions',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateResubmission(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateResubmission(allValues)
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -250,11 +504,25 @@ export const updateResubmission = createAsyncThunk(
 export const updateRRport = createAsyncThunk(
     'projects/updates/doingbest',
     async (Info, thunkAPI) => {
-        const updateAttempt = await projectService.updateRrrport(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const updateAttempt = await projectService.updateRrrport(allValues)
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -263,11 +531,25 @@ export const updateRRport = createAsyncThunk(
 export const removeCaFiles = createAsyncThunk(
     'projects/removedfiles/candfiles',
     async (Info, thunkAPI) => {
-        const removeAttempt = await projectService.removeCaFiles(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const removeAttempt = await projectService.removeCaFiles(allValues)
         if (removeAttempt.type === 'success') {
             return removeAttempt
         } else {
-            return thunkAPI.rejectWithValue(removeAttempt.message)
+            if (
+                removeAttempt.message === 'jwt expired' ||
+                removeAttempt.message === 'Not authenticated' ||
+                removeAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(removeAttempt.message)
         }
     }
 )
@@ -276,11 +558,24 @@ export const removeCaFiles = createAsyncThunk(
 export const removeViFiles = createAsyncThunk(
     'projects/removefiles/vivaFiles',
     async (Info, thunkAPI) => {
-        const removeAttempt = await projectService.removeViFiles(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const removeAttempt = await projectService.removeViFiles(allValues)
         if (removeAttempt.type === 'success') {
             return removeAttempt
         } else {
-            return thunkAPI.rejectWithValue(removeAttempt.message)
+            if (
+                removeAttempt.message === 'jwt expired' ||
+                removeAttempt.message === 'Not authenticated' ||
+                removeAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            }
         }
     }
 )
@@ -288,11 +583,25 @@ export const removeViFiles = createAsyncThunk(
 export const removeFinalSFiles = createAsyncThunk(
     'projects/removeefiles/finalS',
     async (Info, thunkAPI) => {
-        const removeAttempt = await projectService.removeFinalSFiles(Info)
+        let allValues = {
+            ...Info,
+            getToken,
+        }
+        const removeAttempt = await projectService.removeFinalSFiles(allValues)
         if (removeAttempt.type === 'success') {
             return removeAttempt
         } else {
-            return thunkAPI.rejectWithValue(removeAttempt.message)
+            if (
+                removeAttempt.message === 'jwt expired' ||
+                removeAttempt.message === 'Not authenticated' ||
+                removeAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(removeAttempt.message)
         }
     }
 )

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import authService from './authService'
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user'))
 //const user = Cookies.get('user') ? JSON.parse(Cookies.get('user')) : null
@@ -13,32 +13,6 @@ const initialState = {
     message: '',
 }
 
-// //Login User
-// export const Login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
-//     try {
-//         return await authService.Login(user)
-//     } catch (error) {
-//         // const message =
-//         //     (error.response &&
-//         //         error.response.data &&
-//         //         error.response.data.message) ||
-//         //     error.message ||
-//         //     error.toString()
-
-//         let errorArray = []
-//         errorArray.push(error)
-
-//         let message
-//         if (errorArray.length !== 0 && errorArray[0].response) {
-//             message = errorArray[0].response.data
-//         } else if (errorArray.length !== 0 && !errorArray[0].response) {
-//             message = errorArray[0].message
-//         }
-
-//         return thunkAPI.rejectWithValue(message)
-//     }
-// })
-
 //Login User
 export const Login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
     const LoginAttempt = await authService.Login(user)
@@ -46,6 +20,7 @@ export const Login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
     if (LoginAttempt.type === 'success') {
         return LoginAttempt
     } else {
+        //console.log('login failed')
         return thunkAPI.rejectWithValue(LoginAttempt.message)
     }
 })

@@ -1,20 +1,15 @@
-import React, { useEffect } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React from 'react'
 import { Box, Stack, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
-import { AiOutlinePlus } from 'react-icons/ai'
-import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io'
+
 import { RiFoldersFill } from 'react-icons/ri'
-import { FaFilter } from 'react-icons/fa'
-import { BiSearch } from 'react-icons/bi'
-import { CgFormatSlash } from 'react-icons/cg'
-import { GrClose } from 'react-icons/gr'
-import ProjectTable from '../../../components/ProjectComponents/AllProjects/ProjectTable'
-import { useNavigate, useLocation } from 'react-router-dom'
+
+import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
-import ExaminerTable from '../../../components/ExaminerComponents/AllExaminers/ExaminerTable'
 
 import {
     reset,
@@ -38,23 +33,21 @@ const tiledata = [
         bg: '#DDF5DF',
         color: '#1BBD2B',
     },
-  
+    {
+        title: 'Manage Supervisors',
+        icon: <RiFoldersFill />,
+        link: '/m-examiners/supervisors',
+        bg: '#FFE2D9',
+        color: '#FF3D00',
+    },
+    {
+        title: 'Manage Opponents',
+        icon: <RiFoldersFill />,
+        link: '/m-examiners/opponents',
+        bg: '#EDEEFF',
+        color: '#293AD1',
+    },
 ]
-
-//   {
-//         title: 'Manage Supervisors',
-//         icon: <RiFoldersFill />,
-//         link: '/m-examiners/supervisors',
-//         bg: '#FFE2D9',
-//         color: '#FF3D00',
-//     },
-//     {
-//         title: 'Manage Opponents',
-//         icon: <RiFoldersFill />,
-//         link: '/m-examiners/opponents',
-//         bg: '#EDEEFF',
-//         color: '#293AD1',
-//     },
 
 const ManageExaminers = () => {
     let routeNavigate = useNavigate()
@@ -72,7 +65,7 @@ const ManageExaminers = () => {
             title: 'Total Supervisors',
             value: 0,
             subText: 'Cumulative of supervisors in the system.',
-            link: '',
+            link: '/m-examiners/supervisors',
             bg: '#FFE2D9',
             color: '#FF3D00',
         },
@@ -80,7 +73,7 @@ const ManageExaminers = () => {
             title: 'Total Opponents',
             value: 0,
             subText: 'Cumulative of opponents in the system.',
-            link: '',
+            link: '/m-examiners/opponents',
             bg: '#EDEEFF',
             color: '#293AD1',
         },

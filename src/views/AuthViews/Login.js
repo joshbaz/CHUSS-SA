@@ -28,7 +28,7 @@ const Login = () => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
 
-    const { user, isLoading, isError, isSuccess, message } = useSelector(
+    const { user,isError, isSuccess, message } = useSelector(
         (state) => state.auth
     )
 
@@ -90,6 +90,7 @@ const Login = () => {
                         initialValues={{
                             email: '',
                             password: '',
+                            staySigned: false,
                         }}
                         validationSchema={validationSchema}
                         onSubmit={async (values, helpers) => {
@@ -107,6 +108,7 @@ const Login = () => {
                             isValid,
                             dirty,
                             touched,
+                            setFieldValue,
                         }) => (
                             <Form>
                                 <LoginForm
@@ -119,6 +121,7 @@ const Login = () => {
                                     passError={passError}
                                     usernameError={usernameError}
                                     isSubmittingp={isSubmittingp}
+                                    setFieldValue={setFieldValue}
                                 />
                             </Form>
                         )}

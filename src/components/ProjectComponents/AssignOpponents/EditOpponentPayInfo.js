@@ -1,25 +1,15 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Select, Input } from '@chakra-ui/react'
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
-const EditOpponentPayInfo = ({ values, projectValues }) => {
-    const [payInfo, setPayInfo] = React.useState(null)
-    React.useEffect(() => {
-        if (values !== null && values.paymentInfo.length > 0) {
-            projectValues.opponents.find((element) => {
-                if (element.opponentId._id === values._id) {
-                    values.paymentInfo.find((element2) => {
-                        if (
-                            element2.preferredPayment ===
-                            element.preferredPayment
-                        ) {
-                            setPayInfo(element2)
-                        }
-                    })
-                }
-            })
-        }
-    }, [values])
+const EditOpponentPayInfo = ({
+    values,
+
+    handleChange,
+    handleEditPhoneChange,
+}) => {
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -41,9 +31,12 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                             <fieldset>
                                 <Select
                                     name='preferredPayment'
+                                    onChange={handleChange}
                                     value={
-                                        payInfo !== null &&
-                                        payInfo.preferredPayment
+                                        values !== null &&
+                                        values.preferredPayment
+                                            ? values.preferredPayment
+                                            : 'mobileMoney'
                                     }>
                                     <option value='mobileMoney'>
                                         Mobile Money
@@ -68,8 +61,8 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                         </Stack>
                     </Box>
                   */}
-                    {payInfo !== null &&
-                    payInfo.preferredPayment === 'mobileMoney' ? (
+                    {values !== null &&
+                    values.preferredPayment === 'mobileMoney' ? (
                         <>
                             {' '}
                             <Box className='formfields__Sfieldset'>
@@ -80,14 +73,14 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                                     <fieldset>
                                         <Input
                                             type='text'
-                                            readOnly
                                             value={
-                                                payInfo !== null &&
-                                                payInfo.mobileOperator
-                                                    ? payInfo.mobileOperator
+                                                values !== null &&
+                                                values.mobileOperator
+                                                    ? values.mobileOperator
                                                     : ''
                                             }
                                             name='mobileOperator'
+                                            onChange={handleChange}
                                             placeholder={
                                                 'i.e MTN, Airtel Uganda, Safricom, Airtel Kenya'
                                             }
@@ -104,14 +97,14 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                                     <fieldset>
                                         <Input
                                             type='text'
-                                            readOnly
                                             value={
-                                                payInfo !== null &&
-                                                payInfo.mobileSubscriberName
-                                                    ? payInfo.mobileSubscriberName
+                                                values !== null &&
+                                                values.mobileSubscriberName
+                                                    ? values.mobileSubscriberName
                                                     : ''
                                             }
                                             name='mobileSubscriberName'
+                                            onChange={handleChange}
                                             placeholder={
                                                 'Registered mobile subscriber name'
                                             }
@@ -126,20 +119,45 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                                         Mobile Number <span>*</span>
                                     </label>
                                     <fieldset>
-                                        <Input
-                                            type='text'
-                                            readOnly
+                                        <PhoneInput
+                                            inputStyle={{
+                                                width: '100%',
+                                            }}
+                                            inputProps={{
+                                                name: 'mobileNumber',
+                                            }}
+                                            className='input1'
+                                            country={'ug'}
                                             value={
-                                                payInfo !== null &&
-                                                payInfo.mobileNumber
-                                                    ? payInfo.mobileNumber
+                                                values !== null &&
+                                                values.mobileNumber
+                                                    ? values.mobileNumber
                                                     : ''
                                             }
                                             name='mobileNumber'
+                                            onChange={(
+                                                phone,
+                                                e,
+                                                formatedVal
+                                            ) => {
+                                                if (
+                                                    formatedVal.target.value ===
+                                                    '+'
+                                                ) {
+                                                    handleEditPhoneChange(
+                                                        'mobileNumber',
+                                                        ''
+                                                    )
+                                                } else {
+                                                    handleEditPhoneChange(
+                                                        'mobileNumber',
+                                                        formatedVal.target.value
+                                                    )
+                                                }
+                                            }}
                                             placeholder={
                                                 'Registered mobile subscriber Number'
                                             }
-                                            className='input1'
                                         />
                                     </fieldset>
                                 </Stack>
@@ -154,12 +172,12 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                                     <fieldset>
                                         <Input
                                             type='text'
-                                            readOnly
                                             value={
-                                                payInfo !== null && payInfo.bank
-                                                    ? payInfo.bank
+                                                values !== null && values.bank
+                                                    ? values.bank
                                                     : ''
                                             }
+                                            onChange={handleChange}
                                             name='bank'
                                             placeholder={
                                                 'Name of Commercial Banks'
@@ -175,14 +193,14 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                                     <fieldset>
                                         <Input
                                             type='text'
-                                            readOnly
                                             value={
-                                                payInfo !== null &&
-                                                payInfo.AccountName
-                                                    ? payInfo.AccountName
+                                                values !== null &&
+                                                values.AccountName
+                                                    ? values.AccountName
                                                     : ''
                                             }
-                                            name='AccName'
+                                            onChange={handleChange}
+                                            name='AccountName'
                                             placeholder={
                                                 'Name of the bank account holder'
                                             }
@@ -197,14 +215,14 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                                     <fieldset>
                                         <Input
                                             type='text'
-                                            readOnly
                                             value={
-                                                payInfo !== null &&
-                                                payInfo.AccountNumber
-                                                    ? payInfo.AccountNumber
+                                                values !== null &&
+                                                values.AccountNumber
+                                                    ? values.AccountNumber
                                                     : ''
                                             }
-                                            name='AccNumber'
+                                            onChange={handleChange}
+                                            name='AccountNumber'
                                             placeholder={'Bank Account Number'}
                                             className='input1'
                                         />
@@ -217,13 +235,13 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                                     <fieldset>
                                         <Input
                                             type='text'
-                                            readOnly
                                             value={
-                                                payInfo !== null &&
-                                                payInfo.swift_bicCode
-                                                    ? payInfo.swift_bicCode
+                                                values !== null &&
+                                                values.swift_bicCode
+                                                    ? values.swift_bicCode
                                                     : ''
                                             }
+                                            onChange={handleChange}
                                             name='swift_bicCode'
                                             placeholder={
                                                 'Find SWIFT/BIC code on bank Website'
@@ -239,14 +257,14 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                                     <fieldset>
                                         <Input
                                             type='text'
-                                            readOnly
                                             value={
-                                                payInfo !== null &&
-                                                payInfo.bankCode
-                                                    ? payInfo.bankCode
+                                                values !== null &&
+                                                values.bankCode
+                                                    ? values.bankCode
                                                     : ''
                                             }
                                             name='bankCode'
+                                            onChange={handleChange}
                                             placeholder={'bank code'}
                                             className='input1'
                                         />
@@ -259,14 +277,14 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                                     <fieldset>
                                         <Input
                                             type='text'
-                                            readOnly
                                             value={
-                                                payInfo !== null &&
-                                                payInfo.branchCode
-                                                    ? payInfo.branchCode
+                                                values !== null &&
+                                                values.branchCode
+                                                    ? values.branchCode
                                                     : ''
                                             }
                                             name='branchCode'
+                                            onChange={handleChange}
                                             placeholder={
                                                 'Find Branch Code on Bank Website'
                                             }
@@ -282,12 +300,13 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                                         <Input
                                             type='text'
                                             value={
-                                                payInfo !== null &&
-                                                payInfo.bankAddress
-                                                    ? payInfo.bankAddress
+                                                values !== null &&
+                                                values.bankAddress
+                                                    ? values.bankAddress
                                                     : ''
                                             }
                                             name='bankAddress'
+                                            onChange={handleChange}
                                             placeholder={'bank address'}
                                             className='input1'
                                         />
@@ -300,17 +319,17 @@ const EditOpponentPayInfo = ({ values, projectValues }) => {
                                     <fieldset>
                                         <Input
                                             type='text'
-                                            readOnly
                                             value={
-                                                payInfo !== null &&
-                                                payInfo.bankCity
-                                                    ? payInfo.bankCity
+                                                values !== null &&
+                                                values.bankCity
+                                                    ? values.bankCity
                                                     : ''
                                             }
                                             name='bankCity'
                                             placeholder={
                                                 'Bank city i.e Nairobi'
                                             }
+                                            onChange={handleChange}
                                             className='input1'
                                         />
                                     </fieldset>

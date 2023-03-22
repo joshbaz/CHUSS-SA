@@ -1,21 +1,17 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
-import { Box, Stack, Button, Text, GridItem, useToast } from '@chakra-ui/react'
+import { Box, Stack, Text, useToast, Button } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
-import { MdArrowBack } from 'react-icons/md'
-import { useNavigate, useParams } from 'react-router-dom'
 
-import UpdateExaminerDetail from '../../../../components/ProjectComponents/UpdateExaminer/UpdateExaminerDetail'
-import UpdateExamineInfo from '../../../../components/ProjectComponents/UpdateExaminer/UpdateExamineInfo'
-import UpdatePaymentInfo from '../../../../components/ProjectComponents/UpdateExaminer/UpdatePaymentInfo'
+import { useParams } from 'react-router-dom'
 
-import { Formik, Form } from 'formik'
-import * as yup from 'yup'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     getIndividualOpponent,
     allOpponents,
+    opponentUpdate,
     reset as eReset,
 } from '../../../../store/features/opponents/opponentSlice'
 import {
@@ -30,17 +26,19 @@ import ViewUpdatedOpponentFiles from '../../../../components/ProjectComponents/A
 import { initSocketConnection } from '../../../../socketio.service'
 
 const PhdEditProjectOpponent = () => {
+    let params = useParams()
     const [projectValues, setProjectValues] = React.useState(null)
     const [examinerValues, setExaminerValues] = React.useState(null)
-    let routeNavigate = useNavigate()
-    let params = useParams()
+
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+    const [changeMade, setChnageMade] = React.useState(false)
+    const [errors, setErrors] = React.useState({})
+
     let dispatch = useDispatch()
     let projectCase = useSelector((state) => state.project)
 
     let examinerCase = useSelector((state) => state.opponent)
     useEffect(() => {
-     
-
         /** dispatch to get project */
         dispatch(getIndividualProject(params.p_id))
         /** dispatch to get examiner */
@@ -48,9 +46,8 @@ const PhdEditProjectOpponent = () => {
     }, [params.o_id, params.p_id, dispatch])
 
     useEffect(() => {
-         const io = initSocketConnection()
+        const io = initSocketConnection()
         dispatch(allOpponents(params.p_id))
-       
 
         io.on('updateop-project', (data) => {
             if (
@@ -72,10 +69,13 @@ const PhdEditProjectOpponent = () => {
             (element) => element._id === params.o_id
         )
 
-      
-
         if (findExaminer) {
-            setExaminerValues(findExaminer)
+            let allVal = {
+                ...findExaminer,
+                ...findExaminer.paymentInfo[0],
+            }
+
+            setExaminerValues(allVal)
         }
     }, [examinerCase.allOpponentItems, params.o_id])
 
@@ -84,14 +84,11 @@ const PhdEditProjectOpponent = () => {
             (element) => element._id === params.p_id
         )
 
-      
-
         if (findProject) {
             setProjectValues(findProject)
         }
     }, [projectCase.allprojects, params.p_id])
 
-  
     let toast = useToast()
     useEffect(() => {
         if (projectCase.isError) {
@@ -118,8 +115,94 @@ const PhdEditProjectOpponent = () => {
             })
             dispatch(eReset())
         }
+
+        if (examinerCase.isSuccess && examinerCase.message) {
+            toast({
+                position: 'top',
+                title: examinerCase.message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            setChnageMade(false)
+            dispatch(eReset())
+        }
         dispatch(eReset())
     }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
+
+    /** function to handle value changes */
+    const handleChange = (e) => {
+        e.preventDefault()
+        setIsSubmittingp(() => false)
+        setErrors({})
+        setChnageMade(true)
+
+        setExaminerValues((prevState) => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+        }))
+    }
+
+    /** function to handle phone change */
+    const handleEditPhoneChange = (name, phoneValue) => {
+        setIsSubmittingp(() => false)
+        setErrors({})
+        setChnageMade(true)
+        setExaminerValues((prevState) => ({
+            ...prevState,
+            [name]: phoneValue,
+        }))
+    }
+
+    let validate = (values) => {
+        const errors = {}
+        if (!values.jobtitle) {
+            errors.jobtitle = 'jobtitle required'
+        }
+
+        if (!values.name) {
+            errors.name = ' Name required'
+        }
+
+        if (!values.email) {
+            errors.email = 'Email required'
+        }
+
+        if (!values.phoneNumber) {
+            errors.phoneNumber = 'Phone Number required'
+        }
+
+        if (!values.countryOfResidence) {
+            errors.countryOfResidence = 'countryOfResidence required'
+        }
+
+        if (!values.placeOfWork) {
+            errors.placeOfWork = 'Place Of Work required'
+        }
+
+        return errors
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        setErrors(validate(examinerValues))
+        setIsSubmittingp(true)
+    }
+
+    React.useEffect(() => {
+        if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
+            dispatch(opponentUpdate(examinerValues))
+        } else if (
+            Object.keys(errors).length > 0 &&
+            isSubmittingp &&
+            changeMade
+        ) {
+            setIsSubmittingp(false)
+            setChnageMade(false)
+        }
+    }, [isSubmittingp])
+
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -141,55 +224,85 @@ const PhdEditProjectOpponent = () => {
                 />
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
-                    <Stack
-                        direction='column'
-                        bg='#FBFBFB'
-                        spacing={'20px'}
-                        padding={'20px 20px 30px 20px'}>
-                        {/** title head */}
+                    <form onSubmit={''}>
                         <Stack
-                            direction='row'
-                            alignItems='center'
-                            justifyContent='space-between'>
-                            <BackButtonStack
-                                className='back_button'
+                            direction='column'
+                            bg='#FBFBFB'
+                            spacing={'20px'}
+                            padding={'20px 20px 30px 20px'}>
+                            {/** title head */}
+                            <Stack
                                 direction='row'
-                                alignItems='center'>
-                                <Text>Edit Project Opponent</Text>
-                            </BackButtonStack>
-                        </Stack>
+                                alignItems='center'
+                                justifyContent='space-between'>
+                                <BackButtonStack
+                                    className='back_button'
+                                    direction='row'
+                                    alignItems='center'>
+                                    <Text>Edit Project Opponent</Text>
+                                </BackButtonStack>
 
-                        {/** forms */}
-                        <Stack direction='column' w='100%'>
-                            <Stack direction='row'>
-                                {/** Details & files */}
-                                <Stack
-                                    direction='column'
-                                    w='70%'
-                                    spacing='20px'>
-                                    <EditOpponentDetailForm
-                                        values={examinerValues}
-                                    />
-                                </Stack>
+                                <SubmitButton
+                                    disabledb={
+                                        isSubmittingp || !changeMade
+                                            ? true
+                                            : false
+                                    }
+                                    onClick={handleSubmit}>
+                                    <Button
+                                        type='submit'
+                                        disabled={
+                                            isSubmittingp || !changeMade
+                                                ? true
+                                                : false
+                                        }
+                                        isLoading={isSubmittingp ? true : false}
+                                        className='button'>
+                                        Submit Update
+                                    </Button>
+                                </SubmitButton>
+                            </Stack>
 
-                                {/** Details & files */}
-                                <Stack
-                                    direction='column'
-                                    w='30%'
-                                    spacing='20px'>
-                                    <EditOpponentPayInfo
-                                        values={examinerValues}
-                                        projectValues={projectValues}
-                                    />
+                            {/** forms */}
+                            <Stack direction='column' w='100%'>
+                                <Stack direction='row'>
+                                    {/** Details & files */}
+                                    <Stack
+                                        direction='column'
+                                        w='70%'
+                                        spacing='20px'>
+                                        <EditOpponentDetailForm
+                                            values={examinerValues}
+                                            handleChange={handleChange}
+                                            errors={errors}
+                                        />
+                                    </Stack>
 
-                                    <ViewUpdatedOpponentFiles
-                                        values={examinerValues}
-                                        projectValues={projectValues}
-                                    />
+                                    {/** Details & files */}
+                                    <Stack
+                                        direction='column'
+                                        w='30%'
+                                        spacing='20px'>
+                                        <EditOpponentPayInfo
+                                            values={examinerValues}
+                                            handleChange={handleChange}
+                                            errors={errors}
+                                            handleEditPhoneChange={
+                                                handleEditPhoneChange
+                                            }
+                                        />
+
+                                        <ViewUpdatedOpponentFiles
+                                            values={examinerValues}
+                                            projectValues={projectValues}
+                                            handleChange={handleChange}
+                                            errors={errors}
+                                        />
+                                    </Stack>
                                 </Stack>
                             </Stack>
                         </Stack>
-                    </Stack>
+                    </form>
                 </Stack>
             </Stack>
         </Container>

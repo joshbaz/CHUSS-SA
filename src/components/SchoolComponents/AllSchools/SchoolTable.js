@@ -69,6 +69,9 @@ const TableHead = [
         title: 'Office Number',
     },
     {
+        title: 'Mobile Number',
+    },
+    {
         title: 'Email',
     },
     {
@@ -790,7 +793,16 @@ const SchoolTable = ({
                                                                 }
                                                             </Td>
                                                             <Td>
-                                                                {data.email}
+                                                                {data.mobileNumber
+                                                                    ? data.mobileNumber
+                                                                    : '-'}
+                                                            </Td>
+                                                            <Td>
+                                                                {data.email}{' '}
+                                                                <br />{' '}
+                                                                {
+                                                                    data.otherEmail
+                                                                }
                                                             </Td>
                                                             <Td>
                                                                 <Box
@@ -935,8 +947,18 @@ const SchoolTable = ({
                                                                     data.officeNumber
                                                                 }
                                                             </Td>
+
                                                             <Td>
-                                                                {data.email}
+                                                                {data.mobileNumber
+                                                                    ? data.mobileNumber
+                                                                    : '-'}
+                                                            </Td>
+                                                            <Td>
+                                                                {data.email}{' '}
+                                                                <br />{' '}
+                                                                {
+                                                                    data.otherEmail
+                                                                }
                                                             </Td>
                                                             <Td>
                                                                 <Box

@@ -1,6 +1,6 @@
 const axios = require('axios')
 const { BASE_API_ } = require('../base_url.config')
-const fs = require('fs')
+
 /** error handler */
 let errorFunction = (error) => {
     let errorArray = []
@@ -26,24 +26,29 @@ exports.updateExaminerssReport = async (event, values) => {
         const FormData = require('form-data')
         const fd = new FormData()
 
-       // console.log('report values values', values)
+        // console.log('report values values', values)
 
-      //  console.log('before report values values', values.reportFile)
+        //  console.log('before report values values', values.reportFile)
         // fd.append(
         //     'reportssFiles',
         //     fs.createReadStream(values.reportFile.url),
         //     `${'reportfile'}${values.reportFile.ext}`
         // )
-       // console.log('after report values values', values.reportFile)
+        // console.log('after report values values', values.reportFile)
         fd.append('score', values.score)
         fd.append('ungraded', values.ungraded)
         fd.append('remarks', values.remarks)
         //console.log('great pp', values.reportFile)
 
         let responseData = await axios.patch(
-            `${BASE_API_}/reporrts/v1/update/${values._id}`
+            `${BASE_API_}/reporrts/v1/update/${values._id}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
-      //  console.log('after report values values', values._id)
+        //  console.log('after report values values', values._id)
         let data = {
             message: responseData.data,
             type: 'success',
@@ -56,10 +61,15 @@ exports.updateExaminerssReport = async (event, values) => {
 }
 
 /** get examiner reports */
-exports.getExaminerReport = async (event, id) => {
+exports.getExaminerReport = async (event, values) => {
     try {
         let responseData = await axios.get(
-            `${BASE_API_}/reports/v1/getReport/${id}`
+            `${BASE_API_}/reports/v1/getReport/${values.id}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -74,10 +84,15 @@ exports.getExaminerReport = async (event, id) => {
 }
 
 /** get all examiner reports */
-exports.getAllExaminerReports = async (event, id) => {
+exports.getAllExaminerReports = async (event, values) => {
     try {
         let responseData = await axios.get(
-            `${BASE_API_}/reports/v1/allexaminerReports`
+            `${BASE_API_}/reports/v1/allexaminerReports`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -96,7 +111,12 @@ exports.getAllExaminerReports = async (event, id) => {
 exports.removeExRpFiles = async (event, values) => {
     try {
         let responseData = await axios.delete(
-            `${BASE_API_}/reports/v1/remove/ExFiles/${values.reportId}/${values.fId}/${values.secId}`
+            `${BASE_API_}/reports/v1/remove/ExFiles/${values.reportId}/${values.fId}/${values.secId}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {

@@ -1,15 +1,31 @@
+import Cookies from 'js-cookie'
 const createTag = async (values) => {
-    const response = await window.electronAPI.createTags(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken
+    }
+    const response = await window.electronAPI.createTags(allValues)
     return response
 }
 
 const getTags = async (values) => {
-    const response = await window.electronAPI.getAllTags()
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.getAllTags(allValues)
     return response
 }
 
 const updateTags = async (values) => {
-    const response = await window.electronAPI.updateTags(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updateTags(allValues)
     return response
 }
 let tagService = { createTag, getTags, updateTags }

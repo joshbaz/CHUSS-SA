@@ -2,6 +2,7 @@ const axios = require('axios')
 const { BASE_API_ } = require('../base_url.config')
 const FormData = require('form-data')
 const fs = require('fs')
+
 /** error handler */
 let errorFunction = (error) => {
     let errorArray = []
@@ -19,6 +20,7 @@ let errorFunction = (error) => {
 
     return response
 }
+
 
 /** Reports Registration */
 /** create Registration */
@@ -43,7 +45,12 @@ exports.createRegistration = async (event, values) => {
 
             let responseData = await axios.post(
                 `${BASE_API_}/registration/v1/create/${values.projectId}`,
-                fd
+                fd,
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + values.getToken,
+                    },
+                }
             )
 
             let data = {
@@ -54,7 +61,12 @@ exports.createRegistration = async (event, values) => {
         } else {
             let responseData = await axios.post(
                 `${BASE_API_}/registration/v1/create/${values.projectId}`,
-                values
+                values,
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + values.getToken,
+                    },
+                }
             )
 
             let data = {
@@ -91,7 +103,12 @@ exports.updateRegistration = async (event, values) => {
 
             let responseData = await axios.post(
                 `${BASE_API_}/registration/v1/create/${values.projectId}`,
-                fd
+                fd,
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + values.getToken,
+                    },
+                }
             )
 
             let data = {
@@ -102,7 +119,12 @@ exports.updateRegistration = async (event, values) => {
         } else {
             let responseData = await axios.post(
                 `${BASE_API_}/registration/v1/create/${values.projectId}`,
-                values
+                values,
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + values.getToken,
+                    },
+                }
             )
 
             let data = {
@@ -120,7 +142,12 @@ exports.updateRegistration = async (event, values) => {
 exports.removeRegistration = async (event, values) => {
     try {
         let responseData = await axios.delete(
-            `${BASE_API_}/registration/v1/remove/${values.projectId}/${values.regId}`
+            `${BASE_API_}/registration/v1/remove/${values.projectId}/${values.regId}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {

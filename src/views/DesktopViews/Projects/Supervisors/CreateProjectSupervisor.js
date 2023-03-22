@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Box, Stack, Button, Text, GridItem, useToast } from '@chakra-ui/react'
+import { Box, Stack, Button, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
@@ -55,7 +55,7 @@ const CreateProjectSupervisor = () => {
           dispatch(reset())
       }
 
-      if (isSuccess) {
+      if (isSuccess && message) {
           if (helperFunctions !== null) {
               toast({
                   position: 'top',
@@ -185,6 +185,9 @@ const CreateProjectSupervisor = () => {
                                                     values={values}
                                                     errors={errors}
                                                     handleChange={handleChange}
+                                                    setFieldValue={
+                                                        setFieldValue
+                                                    }
                                                 />
                                             </Stack>
                                         </Stack>

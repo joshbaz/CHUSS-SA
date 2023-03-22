@@ -12,6 +12,7 @@ const LoginForm = ({
     passError,
     usernameError,
     isSubmittingp,
+    setFieldValue,
 }) => {
     return (
         <Container disabledB={!(isValid && dirty)}>
@@ -95,7 +96,15 @@ const LoginForm = ({
                     <Stack direction='column' spacing={'40px'}>
                         {/** remember passkey */}
                         <Box className='checkbox'>
-                            <Checkbox colorScheme='gray'>
+                            <Checkbox
+                                colorScheme='gray'
+                                onChange={(e) => {
+                                    setFieldValue(
+                                        'staySigned',
+                                        e.target.checked
+                                    )
+                                }}
+                                isChecked={values.staySigned}>
                                 Remember password
                             </Checkbox>
                         </Box>

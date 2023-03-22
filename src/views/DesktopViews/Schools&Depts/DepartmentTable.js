@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React from 'react'
 import styled from 'styled-components'
 import { BiDownload } from 'react-icons/bi'
 import {
@@ -23,22 +24,13 @@ import {
     ModalContent,
     ModalBody,
 } from '@chakra-ui/react'
-import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
+import { AiOutlineMinus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
-import {
-    IoIosArrowDropright,
-    IoIosArrowDropdown,
-    IoIosStats,
-} from 'react-icons/io'
+
 import { TbDotsVertical } from 'react-icons/tb'
-import { useNavigate } from 'react-router-dom'
-import { RiPencilFill } from 'react-icons/ri'
-import { CgNotes } from 'react-icons/cg'
-import {
-    MdKeyboardArrowLeft,
-    MdKeyboardArrowRight,
-    MdVerified,
-} from 'react-icons/md'
+//import { useNavigate } from 'react-router-dom'
+
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 import Moments from 'moment-timezone'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -59,7 +51,10 @@ const TableHead = [
         title: 'Dept Head',
     },
     {
-        title: 'Number',
+        title: 'Office Number',
+    },
+    {
+        title: 'Mobile Number',
     },
     {
         title: 'Email',
@@ -84,7 +79,7 @@ const DepartmentTable = ({
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let dispatch = useDispatch()
     let toast = useToast()
-    let routeNavigate = useNavigate()
+    //let routeNavigate = useNavigate()
     let { message, isSuccess, isError } = useSelector((state) => state.school)
     /** pagination */
     let PaginationFirstNumber =
@@ -152,7 +147,6 @@ const DepartmentTable = ({
 
     /** function to handle checkbox on each item */
     const handleIndivCheckbox = (e, data) => {
-       
         if (exportData.length > 0) {
             let checkData = exportData.some(
                 (datacheck, index) => data.departmentId._id === datacheck._id
@@ -216,7 +210,6 @@ const DepartmentTable = ({
                     }
                 })
 
-               
                 setExportData(newDataToSave)
             }
         } else {
@@ -230,7 +223,7 @@ const DepartmentTable = ({
             let rvalues = {
                 name: name,
                 deptId: ppId,
-                schoolId: schoolId
+                schoolId: schoolId,
             }
             setRemoveDetails(() => rvalues)
             setRemoveActive(true)
@@ -436,7 +429,20 @@ const DepartmentTable = ({
                                                             {
                                                                 data
                                                                     .departmentId
+                                                                    .mobileNumber
+                                                            }
+                                                        </Td>
+                                                        <Td>
+                                                            {
+                                                                data
+                                                                    .departmentId
                                                                     .email
+                                                            }
+                                                            <br />
+                                                            {
+                                                                data
+                                                                    .departmentId
+                                                                    .otherEmail
                                                             }
                                                         </Td>
                                                         <Td>

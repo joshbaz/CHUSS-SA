@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Button, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -6,99 +7,84 @@ import TopBar from '../../../components/common/Navigation/TopBar'
 import { MdArrowBack } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 
-import ExaminerADetailForm from '../../../components/ProjectComponents/AssignExaminer/ExaminerA_DetailForm'
-import ExaminerAPayInfo from '../../../components/ProjectComponents/AssignExaminer/ExaminerA_PayInfo'
-import ExaminerAAppointmentUpload from '../../../components/ProjectComponents/AssignExaminer/ExaminerA_AppointmentUpload'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     reset,
-    examinerCreate,
-} from '../../../store/features/Examiner/examinerSlice'
-import ExaminerATypeForm2 from '../../../components/ExaminerComponents/CreateExaminer/ExaminerATypeForm2'
+    SupervisorCreate,
+} from '../../../store/features/supervisors/supervisorSlice'
+
+import SupervisorADetailForm from '../../../components/ProjectComponents/AssignSupervisors/SupervisorA_DetailForm'
 
 const CreateNewSupervisor = () => {
-     const [helperFunctions, setHelperFunctions] = React.useState(null)
+    const [helperFunctions, setHelperFunctions] = React.useState(null)
 
-     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
-     let routeNavigate = useNavigate()
-     let toast = useToast()
-     let dispatch = useDispatch()
-     const { isLoading, isError, isSuccess, message } = useSelector(
-         (state) => state.examiner
-     )
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+    let routeNavigate = useNavigate()
 
-     useEffect(() => {
-         if (isError) {
-             if (helperFunctions !== null) {
-                 helperFunctions.setSubmitting(false)
-                 setIsSubmittingp(false)
-             }
-             toast({
-                 position: 'top',
-                 title: message,
-                 status: 'error',
-                 duration: 10000,
-                 isClosable: true,
-             })
+    let toast = useToast()
+    let dispatch = useDispatch()
+    const { isError, isSuccess, message } = useSelector(
+        (state) => state.supervisor
+    )
 
-             dispatch(reset())
-         }
+    useEffect(() => {
+        if (isError) {
+            if (helperFunctions !== null) {
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
+            }
+            toast({
+                position: 'top',
+                title: message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
 
-         if (isSuccess) {
-             if (helperFunctions !== null) {
-                 toast({
-                     position: 'top',
-                     title: message.message,
-                     status: 'success',
-                     duration: 10000,
-                     isClosable: true,
-                 })
-                 helperFunctions.resetForm()
-                 helperFunctions.setSubmitting(false)
-                 setIsSubmittingp(false)
-                 setHelperFunctions(null)
-             }
-             dispatch(reset())
-         }
-     }, [isError, isSuccess, message])
+            dispatch(reset())
+        }
 
-     const initialValues = {
-         jobtitle: '',
-         name: '',
-         email: '',
-         phoneNumber: '',
-         postalAddress: '',
-         countryOfResidence: '',
-         placeOfWork: '',
-         otherTitles: '',
-         typeOfExaminer: '',
-         preferredPayment: 'mobileMoney',
-         mobileOperator: '',
-         mobileSubscriberName: '',
-         mobileNumber: '',
-         bank: '',
-         AccName: '',
-         AccNumber: '',
-         swift_bicCode: '',
-         bankCode: '',
-         branchCode: '',
-         bankAddress: '',
-         bankCity: '',
-         examinerAppLetter: null,
-     }
+        if (isSuccess && message) {
+            if (helperFunctions !== null) {
+                toast({
+                    position: 'top',
+                    title: message.message,
+                    status: 'success',
+                    duration: 10000,
+                    isClosable: true,
+                })
+                helperFunctions.resetForm()
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
 
-     const validationSchema = yup.object().shape({
-         jobtitle: yup.string().required('required'),
-         name: yup.string().required('required'),
-         phoneNumber: yup.string().required('required'),
-         postalAddress: yup.string().required('required'),
-         countryOfResidence: yup.string().required('required'),
-         placeOfWork: yup.string().required('required'),
-         typeOfExaminer: yup.string().required('required'),
-         email: yup.string().email('Invalid email').required('required'),
-     })
+                setHelperFunctions(null)
+            }
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message])
+
+    const initialValues = {
+        jobtitle: '',
+        name: '',
+        email: '',
+        phoneNumber: '',
+        postalAddress: '',
+        countryOfResidence: '',
+        placeOfWork: '',
+        otherTitles: '',
+    }
+
+    const validationSchema = yup.object().shape({
+        jobtitle: yup.string().required('required'),
+        name: yup.string().required('required'),
+        phoneNumber: yup.string().required('required'),
+        postalAddress: yup.string().required('required'),
+        countryOfResidence: yup.string().required('required'),
+        placeOfWork: yup.string().required('required'),
+        email: yup.string().email('Invalid email').required('required'),
+    })
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>
@@ -106,7 +92,9 @@ const CreateNewSupervisor = () => {
             </Box>
 
             <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar topbarData={{ title: 'Examiners', count: null }} />
+                <TopBar
+                    topbarData={{ title: 'Create New Supervisor', count: null }}
+                />
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Formik
@@ -118,7 +106,7 @@ const CreateNewSupervisor = () => {
                             let values2 = {
                                 ...values,
                             }
-                            dispatch(examinerCreate(values2))
+                            dispatch(SupervisorCreate(values2))
                         }}>
                         {({
                             values,
@@ -152,18 +140,14 @@ const CreateNewSupervisor = () => {
                                                 }>
                                                 <MdArrowBack />
                                             </Box>
-                                            <Text>Add New Examiners</Text>
+                                            <Text>Add New Supervisor</Text>
                                         </BackButtonStack>
 
                                         <SubmitButton
                                             disabledb={!(isValid && dirty)}>
                                             <Button
                                                 type='submit'
-                                                disabled={
-                                                    isSubmittingp
-                                                        ? true
-                                                        : !(isValid && dirty)
-                                                }
+                                                disabled={!(isValid && dirty)}
                                                 isLoading={
                                                     isSubmittingp ? true : false
                                                 }
@@ -181,35 +165,7 @@ const CreateNewSupervisor = () => {
                                                 direction='column'
                                                 w='70%'
                                                 spacing='20px'>
-                                                <ExaminerADetailForm
-                                                    values={values}
-                                                    errors={errors}
-                                                    handleChange={handleChange}
-                                                />
-                                            </Stack>
-
-                                            {/** Details & files */}
-                                            <Stack
-                                                direction='column'
-                                                w='30%'
-                                                spacing='20px'>
-                                                <ExaminerATypeForm2
-                                                    values={values}
-                                                    errors={errors}
-                                                    handleChange={handleChange}
-                                                />
-                                                {values.typeOfExaminer ===
-                                                    'External' && (
-                                                    <ExaminerAPayInfo
-                                                        values={values}
-                                                        errors={errors}
-                                                        handleChange={
-                                                            handleChange
-                                                        }
-                                                    />
-                                                )}
-
-                                                <ExaminerAAppointmentUpload
+                                                <SupervisorADetailForm
                                                     values={values}
                                                     errors={errors}
                                                     handleChange={handleChange}
@@ -236,7 +192,7 @@ const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 17px;
@@ -253,7 +209,7 @@ const SubmitButton = styled(Box)`
         border-radius: 6px;
 
         color: ${({ disabledb }) => (disabledb ? '#868fa0' : '#ffffff')};
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: 14px;
@@ -265,4 +221,3 @@ const SubmitButton = styled(Box)`
         }
     }
 `
-

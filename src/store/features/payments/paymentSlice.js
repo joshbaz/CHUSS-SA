@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import paymentService from './paymentService'
+import authService from '../auth/authService'
+const getToken = localStorage.getItem('_tk')
 
 /** initial State */
 const initialState = {
@@ -23,12 +25,26 @@ const initialState = {
 export const updatePayment = createAsyncThunk(
     'payment/update',
     async (values, thunkAPI) => {
-        const updateAttempt = await paymentService.updatePayment(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const updateAttempt = await paymentService.updatePayment(allValues)
 
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -36,12 +52,26 @@ export const updatePayment = createAsyncThunk(
 export const getPaginatedPayments = createAsyncThunk(
     'payment/paginated',
     async (values, thunkAPI) => {
-        const getAttempt = await paymentService.getPaginatedPayments(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const getAttempt = await paymentService.getPaginatedPayments(allValues)
 
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -49,12 +79,26 @@ export const getPaginatedPayments = createAsyncThunk(
 export const getSinglePayment = createAsyncThunk(
     'payment/individual',
     async (values, thunkAPI) => {
-        const getAttempt = await paymentService.getSinglePayment(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const getAttempt = await paymentService.getSinglePayment(allValues)
 
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -62,12 +106,26 @@ export const getSinglePayment = createAsyncThunk(
 export const getAllPayments = createAsyncThunk(
     'payment/allPayments',
     async (values, thunkAPI) => {
-        const getAttempt = await paymentService.getAllPayments(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const getAttempt = await paymentService.getAllPayments(allValues)
 
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+           // return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )

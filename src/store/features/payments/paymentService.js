@@ -1,26 +1,47 @@
+import Cookies from 'js-cookie'
 /** update payment */
 const updatePayment = async (values) => {
-     const response = await window.electronAPI.updatePayments(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updatePayments(allValues)
 
-     return response
+    return response
 }
 /** getPaginatedPayments */
 const getPaginatedPayments = async (values) => {
-     const response = await window.electronAPI.getPaginatedPayment(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.getPaginatedPayment(allValues)
 
-     return response
+    return response
 }
 /** getSinglePayment */
 const getSinglePayment = async (values) => {
-     const response = await window.electronAPI.getSinglePayment(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        id: values,
+        getToken,
+    }
+    const response = await window.electronAPI.getSinglePayment(allValues)
 
-     return response
+    return response
 }
 /** update payment */
 const getAllPayments = async (values) => {
-     const response = await window.electronAPI.getAllPayments(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.getAllPayments(allValues)
 
-     return response
+    return response
 }
 
 let paymentService = {

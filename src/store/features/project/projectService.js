@@ -1,116 +1,222 @@
-const projectDeletion = async (InfoData)=> {
-   const response = await window.electronAPI.projectDeletion(InfoData)
+import Cookies from 'js-cookie'
+const projectDeletion = async (values)=> {
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+   const response = await window.electronAPI.projectDeletion(allValues)
 
    return response 
 }
 
-const projectCreate = async (InfoData) => {
-    const response = await window.electronAPI.projectCreation(InfoData)
+const projectCreate = async (values) => {
+      let getToken = Cookies.get('_tk')
+      let allValues = {
+          ...values,
+          getToken,
+      }
+    const response = await window.electronAPI.projectCreation(allValues)
 
     return response
 }
 
-const projectUpdate = async (InfoData) => {
-    const response = await window.electronAPI.projectUpdate(InfoData)
+const projectUpdate = async (values) => {
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.projectUpdate(allValues)
 
     return response
 }
 
 const getPProjects = async (values) => {
-    const response = await window.electronAPI.getPProjects(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.getPProjects(allValues)
     return response
 }
 
 const getAllProjects = async (values) => {
-    const response = await window.electronAPI.getAllProjects(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.getAllProjects(allValues)
     return response
 }
 
-const getIndividualProject = async (id) => {
-    const response = await window.electronAPI.getIndividualProject(id)
+const getIndividualProject = async (values) => {
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.getIndividualProject(allValues)
     return response
 }
 
 //project status update
 const updateProjectStatus = async (values) => {
-    const response = await window.electronAPI.updateProjectStatus(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updateProjectStatus(allValues)
     return response
 }
 
 //candidate files
 const updateCandidateFiles = async (values) => {
-    const response = await window.electronAPI.updateCandidateFiles(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updateCandidateFiles(allValues)
     return response
 }
 //viva files
 const updateVivaFiles = async (values) => {
-    const response = await window.electronAPI.updateVivaFiles(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updateVivaFiles(allValues)
     return response
 }
 
 //viva defense
 const updateVivaDefense = async (values) => {
-    const response = await window.electronAPI.updateVivaDefense(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updateVivaDefense(allValues)
     return response
 }
 
 //final submission files
 const updateFinalSubmission = async (values) => {
-    const response = await window.electronAPI.updateFinalSubmission(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updateFinalSubmission(allValues)
     return response
 }
 
 //final submission date
 const updateSubmissionDate = async (values) => {
-    const response = await window.electronAPI.updateSubmissionDate(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updateSubmissionDate(allValues)
     return response
 }
 
 //final graduation date
 const updateGraduationDate = async (values) => {
-    const response = await window.electronAPI.updateGraduationDate(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updateGraduationDate(allValues)
     return response
 }
 
 const updateResubmission = async (values) => {
-    const response = await window.electronAPI.updateResubmission(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updateResubmission(allValues)
     return response
 }
 
 //final graduation date
 const deleteFileExaminer = async (values) => {
-    const response = await window.electronAPI.deleteFileExaminer(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.deleteFileExaminer(allValues)
     return response
 }
 
 //final graduation date
 const addFileExaminer = async (values) => {
-    const response = await window.electronAPI.addFileExaminer(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.addFileExaminer(allValues)
     return response
 }
 
 //remove Examiner
 const removeProjectExaminer = async (values) => {
-    const response = await window.electronAPI.removeProjectExaminer(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.removeProjectExaminer(allValues)
     return response
 }
 
 //remove Examiner
 const updateRrrport = async (values) => {
-    const response = await window.electronAPI.updatesAllRedone(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.updatesAllRedone(allValues)
     return response
 }
 
 const removeCaFiles = async (values) => {
-    const response = await window.electronAPI.removeCaFiles(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.removeCaFiles(allValues)
     return response
 }
 const removeViFiles = async (values) => {
-    const response = await window.electronAPI.removeViFiles(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.removeViFiles(allValues)
     return response
 }
 const removeFinalSFiles = async (values) => {
-    const response = await window.electronAPI.removeFinalSFiles(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.removeFinalSFiles(allValues)
     return response
 }
 

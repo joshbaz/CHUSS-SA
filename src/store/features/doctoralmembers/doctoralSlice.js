@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import doctoralService from './doctoralService'
+import authService from '../auth/authService'
+const getToken = localStorage.getItem('_tk')
 
 /** initial State for examiners */
 const initialState = {
@@ -25,13 +27,27 @@ const initialState = {
 export const projectDCMemberCreate = createAsyncThunk(
     'dcmember/project/create',
     async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
         const creationAttempt = await doctoralService.projectDCMemberCreate(
-            values
+            allValues
         )
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -39,11 +55,25 @@ export const projectDCMemberCreate = createAsyncThunk(
 export const assignDCMember = createAsyncThunk(
     'dcmember/project/assign',
     async (values, thunkAPI) => {
-        const assignAttempt = await doctoralService.assignDCMember(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const assignAttempt = await doctoralService.assignDCMember(allValues)
         if (assignAttempt.type === 'success') {
             return assignAttempt
         } else {
-            return thunkAPI.rejectWithValue(assignAttempt.message)
+            if (
+                assignAttempt.message === 'jwt expired' ||
+                assignAttempt.message === 'Not authenticated' ||
+                assignAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(assignAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(assignAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(assignAttempt.message)
         }
     }
 )
@@ -51,11 +81,25 @@ export const assignDCMember = createAsyncThunk(
 export const paginatedDCMember = createAsyncThunk(
     'dcmember/paginated',
     async (values, thunkAPI) => {
-        const getAttempt = await doctoralService.paginatedDCMember(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const getAttempt = await doctoralService.paginatedDCMember(allValues)
         if (getAttempt.type === 'success') {
             return getAttempt
         } else {
-            return thunkAPI.rejectWithValue(getAttempt.message)
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -63,11 +107,25 @@ export const paginatedDCMember = createAsyncThunk(
 export const allDCMembers = createAsyncThunk(
     'dcmember/all',
     async (values, thunkAPI) => {
-        const allAttempt = await doctoralService.allDCMembers(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const allAttempt = await doctoralService.allDCMembers(allValues)
         if (allAttempt.type === 'success') {
             return allAttempt
         } else {
-            return thunkAPI.rejectWithValue(allAttempt.message)
+            if (
+                allAttempt.message === 'jwt expired' ||
+                allAttempt.message === 'Not authenticated' ||
+                allAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(allAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(allAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(allAttempt.message)
         }
     }
 )
@@ -75,13 +133,27 @@ export const allDCMembers = createAsyncThunk(
 export const getIndividualDCMember = createAsyncThunk(
     'dcmember/individual',
     async (id, thunkAPI) => {
+        let allValues = {
+            id: id,
+            getToken,
+        }
         const individualAttempt = await doctoralService.getIndividualDCMember(
-            id
+            allValues
         )
         if (individualAttempt.type === 'success') {
             return individualAttempt
         } else {
-            return thunkAPI.rejectWithValue(individualAttempt.message)
+            if (
+                individualAttempt.message === 'jwt expired' ||
+                individualAttempt.message === 'Not authenticated' ||
+                individualAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(individualAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(individualAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(individualAttempt.message)
         }
     }
 )
@@ -90,11 +162,25 @@ export const getIndividualDCMember = createAsyncThunk(
 export const dcmemberUpdate = createAsyncThunk(
     'dcmember/update',
     async (values, thunkAPI) => {
-        const creationAttempt = await doctoralService.dcmemberUpdate(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const creationAttempt = await doctoralService.dcmemberUpdate(allValues)
         if (creationAttempt.type === 'success') {
             return creationAttempt
         } else {
-            return thunkAPI.rejectWithValue(creationAttempt.message)
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(creationAttempt.message)
         }
     }
 )
@@ -102,11 +188,25 @@ export const dcmemberUpdate = createAsyncThunk(
 export const removeDCMember = createAsyncThunk(
     'dcmember/remove/c',
     async (values, thunkAPI) => {
-        const removeAttempt = await doctoralService.removeDCMember(values)
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const removeAttempt = await doctoralService.removeDCMember(allValues)
         if (removeAttempt.type === 'success') {
             return removeAttempt
         } else {
-            return thunkAPI.rejectWithValue(removeAttempt.message)
+            if (
+                removeAttempt.message === 'jwt expired' ||
+                removeAttempt.message === 'Not authenticated' ||
+                removeAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(removeAttempt.message)
         }
     }
 )

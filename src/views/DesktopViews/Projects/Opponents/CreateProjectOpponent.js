@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
-import { Box, Stack, Button, Text, GridItem, useToast } from '@chakra-ui/react'
+import { Box, Stack, Button, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
@@ -31,7 +32,7 @@ const CreateProjectOpponent = ({ ...props }) => {
     let params = useParams()
     let toast = useToast()
     let dispatch = useDispatch()
-    const { isLoading, isError, isSuccess, message } = useSelector(
+    const { isError, isSuccess, message } = useSelector(
         (state) => state.opponent
     )
     let IndividualProject = useSelector((state) => state.project)
@@ -41,6 +42,30 @@ const CreateProjectOpponent = ({ ...props }) => {
             dispatch(getIndividualProject(params.pid))
         }
     }, [])
+
+    useEffect(() => {
+        if (IndividualProject.isError) {
+            if (helperFunctions !== null) {
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
+            }
+            toast({
+                position: 'top',
+                title: IndividualProject.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            dispatch(preset())
+        }
+
+        dispatch(preset())
+    }, [
+        IndividualProject.isError,
+        IndividualProject.isSuccess,
+        IndividualProject.message,
+    ])
 
     useEffect(() => {
         if (isError) {
@@ -59,7 +84,7 @@ const CreateProjectOpponent = ({ ...props }) => {
             dispatch(reset())
         }
 
-        if (isSuccess) {
+        if (isSuccess && message) {
             if (helperFunctions !== null) {
                 toast({
                     position: 'top',

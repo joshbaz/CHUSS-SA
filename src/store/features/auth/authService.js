@@ -5,15 +5,13 @@ const Login = async (userData) => {
     const response = await window.electronAPI.loginValidation(userData)
 
     if (response.type === 'success') {
-        Cookies.set('_tk', response.token, {
-            expires: 30,
-        })
-        Cookies.set('user', JSON.stringify({ ...response }), {
-            expires: 30,
-        })
+        Cookies.set('_tk', response.token)
+        Cookies.set('user', JSON.stringify({ ...response }))
 
         let newDate = Moments(new Date())
-
+        //token
+        localStorage.setItem('_tk', response.token)
+        //user
         localStorage.setItem(
             'user',
             JSON.stringify({ ...response, currentDate: newDate, type: null })
@@ -27,6 +25,9 @@ const logout = async () => {
     Cookies.remove('_tk')
     Cookies.remove('user')
     localStorage.removeItem('user')
+    localStorage.removeItem('_tk')
+
+    window.electronAPI.reloadApp()
 }
 
 const authService = {

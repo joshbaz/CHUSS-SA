@@ -1,48 +1,96 @@
+import Cookies from 'js-cookie'
 /** service to create examiner from project */
 const projectSupervisorCreate = async (values) => {
-    const response = await window.electronAPI.createProjectSupervisor(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.createProjectSupervisor(allValues)
 
     return response
 }
 
 /** service to assign examiner from project */
 const assignSupervisor = async (values) => {
-    const response = await window.electronAPI.assignSupervisor(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.assignSupervisor(allValues)
 
     return response
 }
 
 /** service to get all paginated examiners  */
 const paginatedSupervisor = async (values) => {
-    const response = await window.electronAPI.paginatedSupervisor(values)
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.paginatedSupervisor(allValues)
 
     return response
 }
 
 /** service to get all  examiners  */
 const allSupervisors = async (values) => {
-    const response = await window.electronAPI.allSupervisors(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.allSupervisors(allValues)
 
     return response
 }
 
 /** service to get individual  examiners  */
-const getIndividualSupervisor = async (id) => {
-    const response = await window.electronAPI.getIndividualSupervisor(id)
+const getIndividualSupervisor = async (values) => {
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.getIndividualSupervisor(allValues)
 
     return response
 }
 
 /** service to create examiner from project */
 const supervisorUpdate = async (values) => {
-    const response = await window.electronAPI.updateSupervisor(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.updateSupervisor(allValues)
 
     return response
 }
 
 /** service to remove supervisor from project */
 const supervisorRemove = async (values) => {
-    const response = await window.electronAPI.removeSupervisor(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.removeSupervisor(allValues)
+
+    return response
+}
+
+/** service to create examiner from project */
+const SupervisorCreate = async (values) => {
+    let getToken = Cookies.get('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.createSupervisor(allValues)
 
     return response
 }
@@ -55,6 +103,7 @@ let supervisorService = {
 
     supervisorUpdate,
     supervisorRemove,
+    SupervisorCreate,
 }
 
 export default supervisorService

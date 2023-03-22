@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -8,37 +9,39 @@ import TopBar from '../../../components/common/Navigation/TopBar'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-    getIndividualExaminer,
-    getStudentsByExaminer,
+    allOpponents,
     reset as eReset,
-} from '../../../store/features/Examiner/examinerSlice'
+} from '../../../store/features/opponents/opponentSlice'
 
-import GEViewExaminerDetail from '../../../components/ExaminerComponents/ViewExaminer/GEViewExaminerDetail'
-import GEViewPayInfo from '../../../components/ExaminerComponents/ViewExaminer/GEViewPayInfo'
-import GEViewStudentTable from '../../../components/ExaminerComponents/ViewExaminer/GEViewStudentTable'
-import GEViewSupportFiles from '../../../components/ExaminerComponents/ViewExaminer/GEViewSupportFiles'
-import GEViewVerification from '../../../components/ExaminerComponents/ViewExaminer/GEViewVerification'
+import ViewOpponentDetailForm from '../../../components/ProjectComponents/AssignOpponents/ViewOpponentDetailForm'
+import ViewOpponentFiles from '../../../components/ProjectComponents/AssignOpponents/ViewOpponentFiles'
+import ViewOpponentPayInfo from '../../../components/ProjectComponents/AssignOpponents/ViewOpponentPayInfo'
 
 const ViewOpponent = () => {
+    const [projectValues, setProjectValues] = React.useState(null)
+    const [examinerValues, setExaminerValues] = React.useState(null)
     let routeNavigate = useNavigate()
     let params = useParams()
     let dispatch = useDispatch()
-    let projectCase = useSelector((state) => state.project)
 
-    let examinerCase = useSelector((state) => state.examiner)
+    let examinerCase = useSelector((state) => state.opponent)
+
     useEffect(() => {
-      
+        dispatch(allOpponents(params.id))
+    }, [])
 
-        /** dispatch to get project */
-        // dispatch(getIndividualProject(params.p_id))
-        /** dispatch to get examiner */
-        dispatch(getIndividualExaminer(params.id))
-        /** dispatch to get all students by examiner */
-        dispatch(getStudentsByExaminer(params.id))
-    }, [params.id, dispatch])
+    useEffect(() => {
+        let findExaminer = examinerCase.allOpponentItems.items.find(
+            (element) => element._id === params.id
+        )
 
-  
+        if (findExaminer) {
+            setExaminerValues(findExaminer)
+        }
+    }, [examinerCase.allOpponentItems, params.id])
+
     let toast = useToast()
+
     useEffect(() => {
         if (examinerCase.isError) {
             toast({
@@ -50,6 +53,7 @@ const ViewOpponent = () => {
             })
             dispatch(eReset())
         }
+        dispatch(eReset())
     }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
     return (
         <Container direction='row' w='100vw'>
@@ -59,10 +63,7 @@ const ViewOpponent = () => {
 
             <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
                 <TopBar
-                    topbarData={{
-                        title: 'Examiners',
-                        count: null,
-                    }}
+                    topbarData={{ title: 'Main View Opponent', count: null }}
                 />
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
@@ -85,23 +86,14 @@ const ViewOpponent = () => {
                                     onClick={() => routeNavigate(-1)}>
                                     <MdArrowBack />
                                 </Box>
-                                <Text>
-                                    {' '}
-                                    {examinerCase.individualExaminer !== null &&
-                                    examinerCase.individualExaminer
-                                        .typeOfExaminer
-                                        ? examinerCase.individualExaminer
-                                              .typeOfExaminer
-                                        : ''}{' '}
-                                    Examiner
-                                </Text>
+                                <Text> Opponent</Text>
                             </BackButtonStack>
 
                             <SubmitButton
                                 as='button'
                                 onClick={() =>
                                     routeNavigate(
-                                        `/examiners/edit/${params.id}`
+                                        `/m-examiners/opponents/edit/${params.id}`
                                     )
                                 }>
                                 Edit Details
@@ -117,8 +109,12 @@ const ViewOpponent = () => {
                                     direction='column'
                                     w='70%'
                                     spacing='20px'>
-                                    <GEViewExaminerDetail
-                                        values={examinerCase.individualExaminer}
+                                    <ViewOpponentDetailForm
+                                        values={examinerValues}
+                                    />
+                                    <ViewOpponentFiles
+                                        values={examinerValues}
+                                        projectValues={projectValues}
                                     />
                                 </Stack>
 
@@ -127,29 +123,14 @@ const ViewOpponent = () => {
                                     direction='column'
                                     w='30%'
                                     spacing='20px'>
-                                    <GEViewVerification
-                                        values={examinerCase.individualExaminer}
-                                        projectValues={projectCase.individual}
+                                    {/**
+                                         * <ViewOpponentPayInfo
+                                        values={examinerValues}
+                                        projectValues={projectValues}
                                     />
-
-                                    <GEViewSupportFiles
-                                        values={examinerCase.individualExaminer}
-                                    />
+                                         * 
+                                         */}
                                 </Stack>
-                            </Stack>
-
-                            <Stack direction='column'>
-                                {examinerCase.individualExaminer !== null &&
-                                examinerCase.individualExaminer
-                                    .typeOfExaminer === 'External' ? (
-                                    <GEViewPayInfo
-                                        values={examinerCase.individualExaminer}
-                                    />
-                                ) : null}
-
-                                <GEViewStudentTable
-                                    values={examinerCase.studentData}
-                                />
                             </Stack>
                         </Stack>
                     </Stack>
@@ -165,7 +146,7 @@ const Container = styled(Stack)``
 
 const BackButtonStack = styled(Stack)`
     p {
-        font-family: 'Inter';
+        font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;
         font-size: 17px;
@@ -181,7 +162,7 @@ const SubmitButton = styled(Box)`
     border-radius: 6px;
 
     color: #868fa0;
-    font-family: 'Inter';
+    font-family: 'Inter', sans-serif;
     font-style: normal;
     font-weight: 500;
     font-size: 14px;

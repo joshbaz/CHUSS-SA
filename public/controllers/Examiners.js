@@ -1,8 +1,8 @@
 const axios = require('axios')
-const { BASE_API_ } = require('../../base_url.config')
+const { BASE_API_ } = require('../base_url.config')
 const FormData = require('form-data')
 const fs = require('fs')
-const Cookies = require('js-cookie')
+
 /** error handler */
 let errorFunction = (error) => {
     let errorArray = []
@@ -59,7 +59,12 @@ exports.createExaminer = async (event, values) => {
 
         let responseData = await axios.post(
             `${BASE_API_}/examiner/v1/create`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -119,7 +124,12 @@ exports.createProjectExaminer = async (event, values) => {
 
         let responseData = await axios.post(
             `${BASE_API_}/examiner/v1/project/create/${values.projectId}`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -138,7 +148,12 @@ exports.assignExaminer = async (event, values) => {
     try {
         let responseData = await axios.post(
             `${BASE_API_}/examiner/v1/project/assign/${values.projectId}`,
-            values
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -156,8 +171,13 @@ exports.assignExaminer = async (event, values) => {
 exports.paginatedExaminers = async (event, values) => {
     try {
         let responseData = await axios.get(
-            `${BASE_API_}/examiner/v1/pexaminers`,
-            values
+            `${BASE_API_}/examiner/v1/pexaminers/${values.perPage}/${values.page}`,
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -186,7 +206,11 @@ exports.paginatedExaminers = async (event, values) => {
 /** all examiners */
 exports.allExaminers = async (event, values) => {
     try {
-        let responseData = await axios.get(`${BASE_API_}/examiner/v1/getall`)
+        let responseData = await axios.get(`${BASE_API_}/examiner/v1/getall`, {
+            headers: {
+                Authorization: 'Bearer ' + values.getToken,
+            },
+        })
 
         let data = {
             ...responseData.data,
@@ -200,10 +224,15 @@ exports.allExaminers = async (event, values) => {
 }
 
 /** individual examiners */
-exports.getIndividualExaminer = async (event, id) => {
+exports.getIndividualExaminer = async (event, values) => {
     try {
         let responseData = await axios.get(
-            `${BASE_API_}/examiner/v1/individual/${id}`
+            `${BASE_API_}/examiner/v1/individual/${values.id}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -218,10 +247,15 @@ exports.getIndividualExaminer = async (event, id) => {
 }
 
 /** all examiners */
-exports.allStudentsByExaminer = async (event, id) => {
+exports.allStudentsByExaminer = async (event, values) => {
     try {
         let responseData = await axios.get(
-            `${BASE_API_}/examiner/v1/students/${id}`
+            `${BASE_API_}/examiner/v1/students/${values.id}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -292,7 +326,12 @@ exports.updateExaminer = async (event, values) => {
 
         let responseData = await axios.patch(
             `${BASE_API_}/examiner/v1/update/${values.examinerId}`,
-            fd
+            fd,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -310,7 +349,12 @@ exports.updateExaminer = async (event, values) => {
 exports.deleteExaminers = async (event, values) => {
     try {
         let responseData = await axios.delete(
-            `${BASE_API_}/examiner/v1/examiners/remove/${values.exId}`
+            `${BASE_API_}/examiner/v1/examiners/remove/${values.exId}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {
@@ -327,7 +371,12 @@ exports.deleteExaminers = async (event, values) => {
 exports.removeFileExaminer = async (event, values) => {
     try {
         let responseData = await axios.delete(
-            `${BASE_API_}/examiner/v1/examiners/files/removes/${values.exId}/${values.fileId}`
+            `${BASE_API_}/examiner/v1/examiners/files/removes/${values.exId}/${values.fileId}`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
         )
 
         let data = {

@@ -1,69 +1,120 @@
+import Cookies from 'js-cookie'
 /** service to create examiner from project */
 const examinerCreate = async (values) => {
-    const response = await window.electronAPI.createExaminer(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.createExaminer(allValues)
 
     return response
 }
 
 /** service to create examiner from project */
 const projectExaminerCreate = async (values) => {
-    const response = await window.electronAPI.createProjectExaminer(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.createProjectExaminer(allValues)
 
     return response
 }
 
 /** service to assign examiner from project */
 const assignExaminer = async (values) => {
-    const response = await window.electronAPI.assignExaminer(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.assignExaminer(allValues)
 
     return response
 }
 
 /** service to get all paginated examiners  */
 const paginatedExaminer = async (values) => {
-    const response = await window.electronAPI.paginatedExaminers(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.paginatedExaminers(allValues)
 
     return response
 }
 
 /** service to get all  examiners  */
 const allExaminer = async (values) => {
-    const response = await window.electronAPI.allExaminers(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.allExaminers(allValues)
 
     return response
 }
 
 /** service to get individual  examiners  */
-const getIndividualExaminer = async (id) => {
-    const response = await window.electronAPI.getIndividualExaminer(id)
+const getIndividualExaminer = async (values) => {
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.getIndividualExaminer(allValues)
 
     return response
 }
 
 /** service to get students by  examiners  */
-const getStudentsByExaminer = async (id) => {
-    const response = await window.electronAPI.allStudentsByExaminer(id)
+const getStudentsByExaminer = async (values) => {
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.allStudentsByExaminer(allValues)
 
     return response
 }
 
 /** service to create examiner from project */
 const examinerUpdate = async (values) => {
-    const response = await window.electronAPI.updateExaminer(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.updateExaminer(allValues)
 
     return response
 }
 
 /** service to create examiner from project */
 const examinerDeletes = async (values) => {
-    const response = await window.electronAPI.deletesExaminer(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.deletesExaminer(allValues)
 
     return response
 }
 
 /** service to create examiner from project */
 const examinerDeletesFiles = async (values) => {
-    const response = await window.electronAPI.deletesFilesExaminer(values)
+     let getToken = Cookies.get('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.deletesFilesExaminer(allValues)
 
     return response
 }

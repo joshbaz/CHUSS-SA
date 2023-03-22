@@ -50,7 +50,7 @@ import {
     reset,
 } from '../../../store/features/Examiner/examinerSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { from } from 'form-data'
+
 const TableHead = [
     {
         title: 'Type',
@@ -76,9 +76,6 @@ const TableHead = [
 ]
 
 const ExaminerTable = ({
-    paginatedExaminers,
-    setSelectedExaminers,
-    selectedExaminers,
     searchActive,
     filterInfo,
     exportData,
@@ -113,16 +110,6 @@ const ExaminerTable = ({
         totalSearchedItems: 0,
         totalPages: 0,
     })
-
-    const [pexaminers, setPExaminers] = React.useState({
-        currentPage: 0,
-        perPage: 8,
-        current_total: 0,
-        overall_total: 0,
-        items: [],
-        allItems: [],
-    })
-    const [examinerLists, setExaminerLists] = React.useState([])
 
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()

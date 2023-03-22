@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import registrationService from './registrationService'
+import authService from '../auth/authService'
+const getToken = localStorage.getItem('_tk')
 
 let initialState = {
     isSuccess: false,
@@ -12,14 +14,28 @@ let initialState = {
 export const createPRegistration = createAsyncThunk(
     'registration/create',
     async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
         const createAttempt = await registrationService.createRegistration(
-            values
+            allValues
         )
 
         if (createAttempt.type === 'success') {
             return createAttempt
         } else {
-            return thunkAPI.rejectWithValue(createAttempt.message)
+            if (
+                createAttempt.message === 'jwt expired' ||
+                createAttempt.message === 'Not authenticated' ||
+                createAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(createAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(createAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(createAttempt.message)
         }
     }
 )
@@ -28,14 +44,28 @@ export const createPRegistration = createAsyncThunk(
 export const updateRegistration = createAsyncThunk(
     'registration/update',
     async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
         const updateAttempt = await registrationService.updateRegistration(
-            values
+            allValues
         )
 
         if (updateAttempt.type === 'success') {
             return updateAttempt
         } else {
-            return thunkAPI.rejectWithValue(updateAttempt.message)
+            if (
+                updateAttempt.message === 'jwt expired' ||
+                updateAttempt.message === 'Not authenticated' ||
+                updateAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(updateAttempt.message)
+            }
+            // return thunkAPI.rejectWithValue(updateAttempt.message)
         }
     }
 )
@@ -44,14 +74,28 @@ export const updateRegistration = createAsyncThunk(
 export const removeRegistration = createAsyncThunk(
     'registration/remove',
     async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
         const removeAttempt = await registrationService.removeRegistration(
-            values
+            allValues
         )
 
         if (removeAttempt.type === 'success') {
             return removeAttempt
         } else {
-            return thunkAPI.rejectWithValue(removeAttempt.message)
+            if (
+                removeAttempt.message === 'jwt expired' ||
+                removeAttempt.message === 'Not authenticated' ||
+                removeAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(removeAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(removeAttempt.message)
         }
     }
 )
