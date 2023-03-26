@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import {
     Box,
@@ -58,7 +59,7 @@ const AllPayments = () => {
         },
     ]
 
-    const [filterActive, setFilterActive] = React.useState(false)
+   // const [filterActive, setFilterActive] = React.useState(false)
     const [filterInfo, setFilterInfo] = React.useState([])
 
     /** handle search option change */
@@ -209,7 +210,7 @@ const AllPayments = () => {
         })
     }
 
-    let routeNavigate = useNavigate()
+   // let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let { isError, isSuccess, message } = useSelector((state) => state.payment)
 
@@ -217,13 +218,14 @@ const AllPayments = () => {
     let toast = useToast()
 
     useEffect(() => {
-        let page = Location.search.split('').slice(3).join('')
-        let values = {
-            page: page,
-        }
+       // let page = Location.search.split('').slice(3).join('')
+        // let values = {
+        //     page: page,
+        // }
 
         dispatch(getPaginatedPayments())
         dispatch(getAllPayments())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [Location])
 
     useEffect(() => {

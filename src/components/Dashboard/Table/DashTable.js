@@ -4,11 +4,6 @@ import styled from 'styled-components'
 import {
     Stack,
     Box,
-    Tabs,
-    TabList,
-    TabPanels,
-    Tab,
-    TabPanel,
     Text,
     Table,
     Thead,
@@ -16,27 +11,15 @@ import {
     Tr,
     Th,
     Td,
-    Checkbox,
     Tooltip,
     Divider,
     Menu,
     MenuButton,
     MenuList,
     MenuItem,
-    Button,
 } from '@chakra-ui/react'
-import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
-import {
-    IoIosArrowDropright,
-    IoIosArrowDropdown,
-    IoIosStats,
-} from 'react-icons/io'
+import { AiOutlinePlus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
-import {
-    MdOutlineUpdate,
-    MdKeyboardArrowLeft,
-    MdKeyboardArrowRight,
-} from 'react-icons/md'
 import { TbDotsVertical } from 'react-icons/tb'
 // import { RiPencilFill } from 'react-icons/ri'
 // import { CgNotes } from 'react-icons/cg'
@@ -74,18 +57,12 @@ const DashTable = () => {
         },
     ]
 
-    const [activityDrpdown, setActivityDropDown] = React.useState(false)
     const [projectTagData, setProjectTagData] = React.useState([])
     const [displayDataRecent, setDisplayRecentData] = React.useState([])
-    let activeDrop = React.useRef(null)
-
-    const handleDropDown = () => {
-        setActivityDropDown(!activityDrpdown)
-    }
 
     let routeNavigate = useNavigate()
 
-    let { pprojects, allprojects } = useSelector((state) => state.project)
+    let { allprojects } = useSelector((state) => state.project)
     const tagsData = useSelector((state) => state.tag)
 
     React.useEffect(() => {
@@ -96,6 +73,7 @@ const DashTable = () => {
     }, [allprojects.items])
 
     const getLatestRegistration = (dataArray) => {
+        // eslint-disable-next-line array-callback-return
         let filDatas = dataArray.filter((data) => {
             if (
                 data.registrationId.registrationtype.toLowerCase() ===
@@ -225,14 +203,18 @@ const DashTable = () => {
                                         ) {
                                             activeStatus =
                                                 data.projectStatus.find(
-                                                    (element) => element.active
+                                                    (element) =>
+                                                        element.projectStatusId
+                                                            .active
                                                 )
                                             if (activeStatus) {
                                                 activeElementSet =
                                                     projectTagData.find(
                                                         (element) =>
                                                             element.tagName ===
-                                                            activeStatus.status
+                                                            activeStatus
+                                                                .projectStatusId
+                                                                .status
                                                     )
                                             }
                                         } else {
@@ -651,96 +633,7 @@ const Container = styled(Stack)`
     }
 `
 
-const TableDropDown = styled(Stack)`
-    padding: 10px 0 0 52px;
-    .icon_add,
-    .icon_stat,
-    .icon_create {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: gray;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 15px;
-        z-index: 10;
-        border: 6px solid #ffffff;
-    }
 
-    .icon_add {
-        background: #fbd2d4;
-        color: #f14c54;
-    }
-
-    .icon_stat {
-        background: #ccddff;
-        color: #2264e6;
-    }
-
-    .icon_create {
-        background: #d4d4d6;
-        color: #5e5c60;
-    }
-
-    .activities {
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        color: #5e5c60;
-    }
-
-    .activity_identity {
-        color: #171c26;
-    }
-    .activity_type {
-        color: #f14c54;
-    }
-    .activity_text {
-        color: #171c26;
-    }
-`
-
-const ListStack = styled(Stack)`
-    position: relative;
-    height: 100%;
-    list-style-type: none;
-    z-index:10;
-  .list-item {
-        display: flex;
-        padding: 0px 0px;
-        flex-basis: 0;
-        -webkit-box-flex: 0
-        -ms-flex-positive: 0;
-        flex-grow: 0;
-        width: 100%;
-        min-width: 170px;
-        padding-bottom: 0px;
-
-    }
-    .list-item + .list-item:after {
-        content: '';
-        position: absolute;
-        left: 19px;
-        top: 0;
-        background: #D5DBE5;
-        width: 2px;
-        height: 100%;
-        transform: translateY(0%);
-        z-index:-2;
-       
-    }
-
-    .status_update {
-        border-left: 1px solid  #D5DBE5;
-        padding-left: 10px;
-    }
-
-  
-
-`
 
 const StatusItem = styled(Stack)`
     border-radius: 4px;
@@ -766,66 +659,6 @@ const StatusItem = styled(Stack)`
     }
 `
 
-const PaginationStack = styled(Stack)`
-    .pagination {
-        color: #6b7280;
-        align-items: center;
-        justify-content: flex-end;
-        padding-right: 42px;
-        background: #ffffff;
-        border-radius: 0px 0px 10px 10px;
-    }
-    .pages {
-        font-family: Inter;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 12px;
-        line-height: 166%;
-        color: #111827;
-    }
-
-    .rows {
-        display: flex;
-        align-items: center;
-        h1 {
-            font-family: Inter;
-            font-style: normal;
-            font-weight: normal;
-            font-size: 12px;
-            line-height: 166%;
-        }
-        span {
-            margin-left: 2px;
-            font-family: Inter;
-            font-style: normal;
-            font-weight: normal;
-            font-size: 12px;
-            line-height: 19px;
-
-            letter-spacing: 0.3px;
-            color: #111827;
-        }
-    }
-
-    .arrows {
-        width: 88px;
-        display: flex;
-        justify-content: space-between;
-
-        .left,
-        .right {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
-            border-radius: 6px;
-        }
-    }
-`
-
 const NoItems = styled(Box)`
     position: absolute;
     height: 100%;
@@ -838,16 +671,4 @@ const NoItems = styled(Box)`
     font-style: normal;
     font-weight: 500;
     font-size: 14px;
-`
-
-const SeeMoreButton = styled(Box)`
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    button {
-        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
-            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
-        border-radius: 6px;
-        background: #ffffff;
-    }
 `

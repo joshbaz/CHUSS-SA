@@ -5,7 +5,6 @@ import {
     Stack,
     Input,
     Button,
-  
     useDisclosure,
     Modal,
     ModalOverlay,
@@ -41,7 +40,7 @@ const AcademicYear = ({ handleChange, yearData }) => {
         academicYear: yup.string().required('academic year is required'),
     })
 
-    const { isLoading, isError, isSuccess, message } = useSelector(
+    const { isError, isSuccess, message } = useSelector(
         (state) => state.preference
     )
     useEffect(() => {

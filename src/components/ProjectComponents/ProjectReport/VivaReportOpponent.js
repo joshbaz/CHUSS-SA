@@ -15,18 +15,13 @@ import {
     MenuList,
     MenuItem,
 } from '@chakra-ui/react'
-import { AiOutlinePlus } from 'react-icons/ai'
+
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 import Moments from 'moment-timezone'
-import {
-    IoIosArrowDropright,
-    IoIosArrowDropdown,
-    IoIosStats,
-} from 'react-icons/io'
+
 import { TbDotsVertical } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
-import { RiPencilFill } from 'react-icons/ri'
-import { CgNotes } from 'react-icons/cg'
+
 const TableHead = [
     {
         title: 'Type',
@@ -55,17 +50,14 @@ const TableHead = [
 ]
 
 const VivaReportOpponent = ({ values }) => {
-    const [activityDrpdown, setActivityDropDown] = React.useState(false)
     const [reportLists, setReportLists] = React.useState([])
-    let activeDrop = React.useRef(null)
-    const handleDropDown = () => {
-        setActivityDropDown(!activityDrpdown)
-    }
+
     let routeNavigate = useNavigate()
 
     useEffect(() => {
         if (values !== null && values.opponentReports.length > 0) {
             let arrayData = []
+            // eslint-disable-next-line array-callback-return
             values.opponentReports.filter((data, index) => {
                 let newData = { ...data }
 
@@ -460,97 +452,9 @@ const StatusItem = styled(Stack)`
     }
 `
 
-const TableDropDown = styled(Stack)`
-    font-family: 'Inter', sans-serif;
-    padding: 10px 0 0 52px;
-    .icon_add,
-    .icon_stat,
-    .icon_create {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: gray;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 15px;
-        z-index: 10;
-        border: 6px solid #ffffff;
-    }
 
-    .icon_add {
-        background: #fbd2d4;
-        color: #f14c54;
-    }
 
-    .icon_stat {
-        background: #ccddff;
-        color: #2264e6;
-    }
 
-    .icon_create {
-        background: #d4d4d6;
-        color: #5e5c60;
-    }
-
-    .activities {
-        font-style: normal;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        color: #5e5c60;
-    }
-
-    .activity_identity {
-        color: #171c26;
-    }
-    .activity_type {
-        color: #f14c54;
-    }
-    .activity_text {
-        color: #171c26;
-    }
-`
-
-const ListStack = styled(Stack)`
-font-family: 'Inter', sans-serif;
-    position: relative;
-    height: 100%;
-    list-style-type: none;
-    z-index:10;
-  .list-item {
-        display: flex;
-        padding: 0px 0px;
-        flex-basis: 0;
-        -webkit-box-flex: 0
-        -ms-flex-positive: 0;
-        flex-grow: 0;
-        width: 100%;
-        min-width: 170px;
-        padding-bottom: 0px;
-
-    }
-    .list-item + .list-item:after {
-        content: '';
-        position: absolute;
-        left: 19px;
-        top: 0;
-        background: #D5DBE5;
-        width: 2px;
-        height: 100%;
-        transform: translateY(0%);
-        z-index:-2;
-       
-    }
-
-    .status_update {
-        border-left: 1px solid  #D5DBE5;
-        padding-left: 10px;
-    }
-
-  
-
-`
 
 const NoItems = styled(Box)`
     font-family: 'Inter', sans-serif;

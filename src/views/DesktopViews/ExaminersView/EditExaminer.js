@@ -1,31 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
-import {
-    Box,
-    Stack,
-    Button,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    MenuOptionGroup,
-    MenuItemOption,
-    InputGroup,
-    Input,
-    InputRightElement,
-    InputLeftElement,
-    Grid,
-    Text,
-    GridItem,
-    useToast,
-} from '@chakra-ui/react'
+import { Box, Stack, Button, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
 import { MdArrowBack } from 'react-icons/md'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { Formik, Form, useFormik } from 'formik'
-import * as yup from 'yup'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     getIndividualExaminer,
@@ -39,12 +20,12 @@ import GEEditTypeForm from '../../../components/ExaminerComponents/EditExaminer/
 import GEEditExaminerDetail from '../../../components/ExaminerComponents/EditExaminer/GEEditExaminerDetail'
 
 const EditExaminer = (props) => {
-    const [helperFunctions, setHelperFunctions] = React.useState(null)
+   // const [helperFunctions, setHelperFunctions] = React.useState(null)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [changeMade, setChnageMade] = React.useState(false)
     const [initials, setInitials] = React.useState(null)
     const [errors, setErrors] = React.useState({})
-    const [loadingComponent, setloadingComponent] = React.useState(false)
+   // const [loadingComponent, setloadingComponent] = React.useState(false)
     let routeNavigate = useNavigate()
     let params = useParams()
     let dispatch = useDispatch()
@@ -52,7 +33,6 @@ const EditExaminer = (props) => {
     const { individualExaminer, isLoading, isError, isSuccess, message } =
         useSelector((state) => state.examiner)
     useEffect(() => {
-     
         /** dispatch to get project */
         // dispatch(getIndividualProject(params.p_id))
         /** dispatch to get examiner */
@@ -62,10 +42,10 @@ const EditExaminer = (props) => {
     let toast = useToast()
     useEffect(() => {
         if (isError) {
-            if (helperFunctions !== null) {
-                helperFunctions.setSubmitting(false)
-                setIsSubmittingp(false)
-            }
+            // if (helperFunctions !== null) {
+            //     helperFunctions.setSubmitting(false)
+            //     setIsSubmittingp(false)
+            // }
             toast({
                 position: 'top',
                 title: message,
@@ -96,7 +76,7 @@ const EditExaminer = (props) => {
     useEffect(() => {
         if (initials === null) {
             if (individualExaminer == null) {
-                setloadingComponent(true)
+                //setloadingComponent(true)
             } else {
                 let paymentDetails
                 if (
@@ -137,14 +117,12 @@ const EditExaminer = (props) => {
                     examinerAppLetter: null,
                     examinerId: params.id,
                 })
-                setloadingComponent(false)
+              //  setloadingComponent(false)
             }
         } else {
-            setloadingComponent(false)
+            //setloadingComponent(false)
         }
     }, [individualExaminer, initials])
-
-  
 
     const handleChange = (e) => {
         e.preventDefault()
@@ -211,17 +189,18 @@ const EditExaminer = (props) => {
     }
 
     useEffect(() => {
-     
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-          
             dispatch(examinerUpdate(initials))
-        } else if (Object.keys(errors).length > 0 && isSubmittingp && changeMade) {
+        } else if (
+            Object.keys(errors).length > 0 &&
+            isSubmittingp &&
+            changeMade
+        ) {
             setIsSubmittingp(false)
             setChnageMade(false)
         }
     }, [errors, isSubmittingp])
 
-   
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px'>

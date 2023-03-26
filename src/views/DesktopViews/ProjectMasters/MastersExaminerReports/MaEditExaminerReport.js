@@ -1,12 +1,5 @@
 import React, { useEffect } from 'react'
-import {
-    Box,
-    Stack,
-    Text,
-    useToast,
-    Button,
-    useDisclosure,
-} from '@chakra-ui/react'
+import { Box, Stack, Text, useToast, Button } from '@chakra-ui/react'
 import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../../components/common/Navigation/Navigation'
@@ -31,11 +24,11 @@ import { initSocketConnection } from '../../../../socketio.service.js'
 const MaEditExaminerReport = () => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [changeMade, setChnageMade] = React.useState(false)
-    const [initials, setInitials] = React.useState(null)
+   // const [initials, setInitials] = React.useState(null)
     const [newRDeat, setnewRDeat] = React.useState(null)
 
     const [errors, setErrors] = React.useState({})
-    const [loadingComponen, setloadingComponent] = React.useState(false)
+   // const [loadingComponen, setloadingComponent] = React.useState(false)
 
     let routeNavigate = useNavigate()
     let params = useParams()
@@ -53,20 +46,18 @@ const MaEditExaminerReport = () => {
                 data.actions === 'update-report' &&
                 data.data === params.rp_id
             ) {
-                 dispatch(getAllExaminerReports())
-                 dispatch(getExaminerReport(params.rp_id))
+                dispatch(getAllExaminerReports())
+                dispatch(getExaminerReport(params.rp_id))
             }
         })
     }, [dispatch, params.rp_id])
 
     useEffect(() => {
-      
-
         if (allreports.items.length > 0) {
             let allDetails = allreports.items.find(
                 (data) => data._id === params.rp_id
             )
-          
+
             if (allDetails) {
                 let saveDeta = {
                     ...allDetails,
@@ -174,7 +165,7 @@ const MaEditExaminerReport = () => {
         setErrors({})
         setChnageMade(() => true)
         //console.log(InputFile.url, 'InputFile')
-     
+
         let vv = {
             ...newRDeat,
             reportFile: InputFile,
@@ -201,7 +192,6 @@ const MaEditExaminerReport = () => {
 
     useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-       
             let newInitals = {
                 ...newRDeat,
                 reportId: newRDeat._id,

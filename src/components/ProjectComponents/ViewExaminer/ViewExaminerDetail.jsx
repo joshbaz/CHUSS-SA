@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Text, Input } from '@chakra-ui/react'
-import { BsInfoCircleFill } from 'react-icons/bs'
+
 
 const ViewExaminerDetail = ({ values }) => {
     return (

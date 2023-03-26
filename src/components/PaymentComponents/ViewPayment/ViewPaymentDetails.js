@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import {
@@ -13,7 +14,7 @@ import {
     Button,
     useToast,
 } from '@chakra-ui/react'
-import { BsInfoCircleFill } from 'react-icons/bs'
+
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux'
 import { FiCheck } from 'react-icons/fi'

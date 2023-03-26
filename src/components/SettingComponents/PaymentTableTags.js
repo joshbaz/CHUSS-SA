@@ -57,7 +57,6 @@ const PaymentTableTags = ({ allTagData }) => {
     let toast = useToast()
 
     const handleColorPicked = (color, setFieldValue) => {
-       
         let rgba = `rbga(${color.rgb.r},${color.rgb.g},${color.rgb.b}, 0.34)`
         let hex = color.hex
         setColorPicked(color)
@@ -80,9 +79,7 @@ const PaymentTableTags = ({ allTagData }) => {
         setProjectTagData(allInfoData)
     }, [allTagData])
 
-    const { isLoading, isError, isSuccess, message } = useSelector(
-        (state) => state.tag
-    )
+    const { isError, isSuccess, message } = useSelector((state) => state.tag)
     useEffect(() => {
         if (isError) {
             if (helperFunctions !== null) {
@@ -414,7 +411,7 @@ const PaymentTableTags = ({ allTagData }) => {
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
-                              
+
                                 dispatch(tagUpdate(values))
                             }}>
                             {({

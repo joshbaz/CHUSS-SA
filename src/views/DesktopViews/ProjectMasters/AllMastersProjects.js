@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import {
     Box,
@@ -11,11 +12,8 @@ import {
     MenuItemOption,
     InputGroup,
     Input,
-    InputRightElement,
     InputLeftElement,
-    Grid,
     Text,
-    GridItem,
     SimpleGrid,
     useToast,
     Select,
@@ -27,7 +25,6 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io'
 import { FaFilter } from 'react-icons/fa'
 import { BiSearch } from 'react-icons/bi'
-import { CgFormatSlash } from 'react-icons/cg'
 import { GrClose } from 'react-icons/gr'
 import ProjectTable from '../../../components/ProjectComponents/AllProjects/ProjectTable'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -284,9 +281,7 @@ const AllMastersProjects = () => {
 
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let { pprojects, isError, isSuccess, message } = useSelector(
-        (state) => state.project
-    )
+    let { isError, isSuccess, message } = useSelector((state) => state.project)
 
     let Location = useLocation()
     let toast = useToast()
@@ -296,8 +291,9 @@ const AllMastersProjects = () => {
         let values = {
             page: page,
         }
-       
+
         dispatch(getPProjects(values))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [Location])
 
     useEffect(() => {
@@ -308,6 +304,12 @@ const AllMastersProjects = () => {
             if (data.actions === 'update-all-student') {
                 dispatch(tagGetAll())
                 dispatch(getAllProjects())
+            }
+        })
+
+        io.on('updatetag', (data) => {
+            if (data.actions === 'update-tag') {
+                dispatch(tagGetAll())
             }
         })
     }, [])
@@ -356,7 +358,7 @@ const AllMastersProjects = () => {
         if (filterSearchOption) {
             if (filterSearchOption === 'Status') {
                 let allInfoData = tagsData.allTagItems.items.filter(
-                    (data, index) => data.table === 'project'
+                    (data, index) => data.table === 'project' && data.projectType === 'Masters'
                 )
 
                 return allInfoData
@@ -470,7 +472,6 @@ const AllMastersProjects = () => {
                                                                         onChange={(
                                                                             value
                                                                         ) => {
-                                                                         
                                                                             checkboxesFilter(
                                                                                 data.title,
                                                                                 value

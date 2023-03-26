@@ -1,18 +1,6 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import {
-    Box,
-    Stack,
-    Text,
-    useDisclosure,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalBody,
-    Button,
-    Textarea,
-    useToast,
-} from '@chakra-ui/react'
+import { Box, Stack, Text, Button, Textarea } from '@chakra-ui/react'
 import { FiCheck } from 'react-icons/fi'
 const PopupEditStatus = ({
     projectTagData,
@@ -132,7 +120,7 @@ const PopupEditStatus = ({
                     Cancel
                 </div>
                 <Button
-                    disabled={isSubmittingp  ? true : false}
+                    disabled={isSubmittingp ? true : false}
                     type='submit'
                     isLoading={isSubmittingp ? true : false}
                     className='apply_button'>

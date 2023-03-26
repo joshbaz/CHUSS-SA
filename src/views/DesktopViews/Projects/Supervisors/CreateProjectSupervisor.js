@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Button, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
-import { MdArrowBack } from 'react-icons/md'
+//import { MdArrowBack } from 'react-icons/md'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { Formik, Form } from 'formik'
@@ -20,83 +21,82 @@ import {
 import SupervisorADetailForm from '../../../../components/ProjectComponents/AssignSupervisors/SupervisorA_DetailForm'
 
 const CreateProjectSupervisor = () => {
-  const [helperFunctions, setHelperFunctions] = React.useState(null)
-  const [projectId, setProjectId] = React.useState('')
-  const [isSubmittingp, setIsSubmittingp] = React.useState(false)
-  let routeNavigate = useNavigate()
-  let params = useParams()
-  let toast = useToast()
-  let dispatch = useDispatch()
-  const { isError, isSuccess, message } = useSelector(
-      (state) => state.supervisor
-  )
-  let IndividualProject = useSelector((state) => state.project)
-  useEffect(() => {
-      if (params.pid) {
-          setProjectId(params.pid)
-          dispatch(getIndividualProject(params.pid))
-      }
-  }, [])
+    const [helperFunctions, setHelperFunctions] = React.useState(null)
+    const [projectId, setProjectId] = React.useState('')
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+    let routeNavigate = useNavigate()
+    let params = useParams()
+    let toast = useToast()
+    let dispatch = useDispatch()
+    const { isError, isSuccess, message } = useSelector(
+        (state) => state.supervisor
+    )
+    let IndividualProject = useSelector((state) => state.project)
+    useEffect(() => {
+        if (params.pid) {
+            setProjectId(params.pid)
+            dispatch(getIndividualProject(params.pid))
+        }
+    }, [])
 
-  useEffect(() => {
-      if (isError) {
-          if (helperFunctions !== null) {
-              helperFunctions.setSubmitting(false)
-              setIsSubmittingp(false)
-          }
-          toast({
-              position: 'top',
-              title: message,
-              status: 'error',
-              duration: 10000,
-              isClosable: true,
-          })
+    useEffect(() => {
+        if (isError) {
+            if (helperFunctions !== null) {
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
+            }
+            toast({
+                position: 'top',
+                title: message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
 
-          dispatch(reset())
-      }
+            dispatch(reset())
+        }
 
-      if (isSuccess && message) {
-          if (helperFunctions !== null) {
-              toast({
-                  position: 'top',
-                  title: message.message,
-                  status: 'success',
-                  duration: 10000,
-                  isClosable: true,
-              })
-              helperFunctions.resetForm()
-              helperFunctions.setSubmitting(false)
-              setIsSubmittingp(false)
-              routeNavigate(`/phd/projects/projectreport/${params.pid}`, {
-                  replace: true,
-              })
-              setHelperFunctions(null)
-          }
-          dispatch(reset())
-      }
-  }, [isError, isSuccess, message])
+        if (isSuccess && message) {
+            if (helperFunctions !== null) {
+                toast({
+                    position: 'top',
+                    title: message.message,
+                    status: 'success',
+                    duration: 10000,
+                    isClosable: true,
+                })
+                helperFunctions.resetForm()
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
+                routeNavigate(`/phd/projects/projectreport/${params.pid}`, {
+                    replace: true,
+                })
+                setHelperFunctions(null)
+            }
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message])
 
-  const initialValues = {
-      jobtitle: '',
-      name: '',
-      email: '',
-      phoneNumber: '',
-      postalAddress: '',
-      countryOfResidence: '',
-      placeOfWork: '',
-      otherTitles: '',
-  }
+    const initialValues = {
+        jobtitle: '',
+        name: '',
+        email: '',
+        phoneNumber: '',
+        postalAddress: '',
+        countryOfResidence: '',
+        placeOfWork: '',
+        otherTitles: '',
+    }
 
-  const validationSchema = yup.object().shape({
-      jobtitle: yup.string().required('required'),
-      name: yup.string().required('required'),
-      phoneNumber: yup.string().required('required'),
-      postalAddress: yup.string().required('required'),
-      countryOfResidence: yup.string().required('required'),
-      placeOfWork: yup.string().required('required'),
-      email: yup.string().email('Invalid email').required('required'),
-  })
-
+    const validationSchema = yup.object().shape({
+        jobtitle: yup.string().required('required'),
+        name: yup.string().required('required'),
+        phoneNumber: yup.string().required('required'),
+        postalAddress: yup.string().required('required'),
+        countryOfResidence: yup.string().required('required'),
+        placeOfWork: yup.string().required('required'),
+        email: yup.string().email('Invalid email').required('required'),
+    })
 
     return (
         <Container direction='row' w='100vw'>

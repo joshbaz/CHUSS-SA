@@ -15,9 +15,10 @@ import {
 
 import ViewOpponentDetailForm from '../../../components/ProjectComponents/AssignOpponents/ViewOpponentDetailForm'
 import ViewOpponentFiles from '../../../components/ProjectComponents/AssignOpponents/ViewOpponentFiles'
-import ViewOpponentPayInfo from '../../../components/ProjectComponents/AssignOpponents/ViewOpponentPayInfo'
+//import ViewOpponentPayInfo from '../../../components/ProjectComponents/AssignOpponents/ViewOpponentPayInfo'
 
 const ViewOpponent = () => {
+    // eslint-disable-next-line no-unused-vars
     const [projectValues, setProjectValues] = React.useState(null)
     const [examinerValues, setExaminerValues] = React.useState(null)
     let routeNavigate = useNavigate()

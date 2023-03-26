@@ -91,7 +91,7 @@ const AllPhdProjects = () => {
     /** this handles search word changes */
     const handleSearchInput = (e) => {
         e.preventDefault()
-      
+
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
         // let filterSelected = {
@@ -282,9 +282,7 @@ const AllPhdProjects = () => {
 
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let { pprojects, isError, isSuccess, message } = useSelector(
-        (state) => state.project
-    )
+    let { isError, isSuccess, message } = useSelector((state) => state.project)
 
     let Location = useLocation()
     let toast = useToast()
@@ -294,8 +292,9 @@ const AllPhdProjects = () => {
         let values = {
             page: page,
         }
-       
+
         dispatch(getPProjects(values))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [Location])
 
     useEffect(() => {
@@ -308,6 +307,13 @@ const AllPhdProjects = () => {
                 dispatch(getAllProjects())
             }
         })
+
+        io.on('updatetag', (data) => {
+            if (data.actions === 'update-tag') {
+                dispatch(tagGetAll())
+            }
+        })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -347,6 +353,7 @@ const AllPhdProjects = () => {
         //         isClosable: true,
         //     })
         // }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, isError, message])
 
     /** function to select statuses */
@@ -354,7 +361,8 @@ const AllPhdProjects = () => {
         if (filterSearchOption) {
             if (filterSearchOption === 'Status') {
                 let allInfoData = tagsData.allTagItems.items.filter(
-                    (data, index) => data.table === 'project'
+                    (data, index) =>
+                        data.table === 'project' && data.projectType === 'Phd'
                 )
 
                 return allInfoData
@@ -466,7 +474,6 @@ const AllPhdProjects = () => {
                                                                         onChange={(
                                                                             value
                                                                         ) => {
-                                                                          
                                                                             checkboxesFilter(
                                                                                 data.title,
                                                                                 value

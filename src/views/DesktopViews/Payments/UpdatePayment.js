@@ -1,18 +1,18 @@
-import React, { useEffect } from 'react'
-import { Box, Button, Stack, Text, useToast } from '@chakra-ui/react'
+import React from 'react'
+import { Box, Stack, Text } from '@chakra-ui/react'
 import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
-import ViewExaminerDetail from '../../../components/ProjectComponents/ViewExaminer/ViewExaminerDetail'
-import ViewInfoForm from '../../../components/ProjectComponents/ViewExaminer/ViewInfoForm'
-import ViewPaymentInfo from '../../../components/ProjectComponents/ViewExaminer/ViewPaymentInfo'
+// import ViewExaminerDetail from '../../../components/ProjectComponents/ViewExaminer/ViewExaminerDetail'
+// import ViewInfoForm from '../../../components/ProjectComponents/ViewExaminer/ViewInfoForm'
+// import ViewPaymentInfo from '../../../components/ProjectComponents/ViewExaminer/ViewPaymentInfo'
 import { useNavigate } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import {
-    getIndividualExaminer,
-    reset as eReset,
-} from '../../../store/features/Examiner/examinerSlice'
+//import { useSelector, useDispatch } from 'react-redux'
+// import {
+//     getIndividualExaminer,
+//     reset as eReset,
+// } from '../../../store/features/Examiner/examinerSlice'
 import ViewPaymentDetails from '../../../components/PaymentComponents/ViewPayment/ViewPaymentDetails'
 import ViewPayExaminerDetails from '../../../components/PaymentComponents/ViewPayment/ViewPayExaminerDetails'
 import ViewPayFiles from '../../../components/PaymentComponents/ViewPayment/ViewPayFiles'

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -24,12 +25,13 @@ import {
     academicYearGetAll,
     reset as acreset,
 } from '../../../store/features/preferences/preferenceSlice'
-import ProgressStatus from '../../../components/ProjectComponents/ProjectReport/ProgressStatus'
+
 import VivaReport from '../../../components/ProjectComponents/ProjectReport/VivaReport'
 import FinalSubmission from '../../../components/ProjectComponents/ProjectReport/FinalSubmission'
 import AdmissionStatus from '../../../components/ProjectComponents/ProjectReport/AdmissionStatus'
 import RegistrationReports from '../../../components/ProjectComponents/ProjectReport/RegistrationReports'
 import { initSocketConnection } from '../../../socketio.service.js'
+import ProgressStatus2 from '../../../components/ProjectComponents/ProjectReport/ProgressStatus2'
 const PageLinks = [
     {
         title: 'Registration',
@@ -60,24 +62,29 @@ const PhDProjectReport = ({ ...props }) => {
 
     let toast = useToast()
     let dispatch = useDispatch()
-    let { individual, isLoading, isSuccess, isError, message } = useSelector(
+    let { individual, isSuccess, isError, message } = useSelector(
         (state) => state.project
     )
     const tagsData = useSelector((state) => state.tag)
     const preferenceData = useSelector((state) => state.preference)
     useEffect(() => {
         let id = params.id
-       
-        const io = initSocketConnection()
         dispatch(getIndividualProject(id))
         dispatch(tagGetAll())
         dispatch(academicYearGetAll())
+        const io = initSocketConnection()
 
         io.on('updatestudent', (data) => {
             if (data.actions === 'update-student' && data.data === params.id) {
                 dispatch(getIndividualProject(id))
                 dispatch(tagGetAll())
                 dispatch(academicYearGetAll())
+            }
+        })
+
+        io.on('updatetag', (data) => {
+            if (data.actions === 'update-tag') {
+                dispatch(tagGetAll())
             }
         })
     }, [params.id, dispatch])
@@ -219,9 +226,10 @@ const PhDProjectReport = ({ ...props }) => {
                         <Stack direction='column' w='100%' spacing='30px'>
                             {/** first set */}
                             <Stack h='100%'>
-                                <ProgressStatus
+                                <ProgressStatus2
                                     values={individual}
                                     allTagData={tagsData.allTagItems.items}
+                                    type={'Phd'}
                                 />
                             </Stack>
 
@@ -285,6 +293,7 @@ const PhDProjectReport = ({ ...props }) => {
                                     <VivaReport
                                         values={individual}
                                         allTagData={tagsData.allTagItems.items}
+                                        type={'Phd'}
                                     />
                                 </Box>
                                 <Box id='finalsubmissionss'>

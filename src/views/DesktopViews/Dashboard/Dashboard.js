@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import {
     Box,
@@ -21,7 +22,7 @@ import TopBar from '../../../components/common/Navigation/TopBar'
 import { BiSearch } from 'react-icons/bi'
 import { MdManageSearch } from 'react-icons/md'
 import { RiFoldersFill } from 'react-icons/ri'
-import { MdOutlineAccountBalanceWallet } from 'react-icons/md'
+
 import LineGraph from '../../../components/Dashboard/Graph/LineGraph'
 import DashTable from '../../../components/Dashboard/Table/DashTable'
 import Stats from '../../../components/Dashboard/Stats/Stats'
@@ -112,6 +113,7 @@ const Dashboard = () => {
 
         dispatch(getPProjects(values))
         dispatch(getAllProjects())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [Location])
 
     useEffect(() => {
@@ -143,6 +145,7 @@ const Dashboard = () => {
         //         isClosable: true,
         //     })
         // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, isError, message])
 
     useEffect(() => {}, [])

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import {
@@ -15,12 +16,9 @@ import {
     MenuList,
     MenuItem,
     Checkbox,
-    Flex,
     Tabs,
     TabList,
-    TabPanels,
     Tab,
-    TabPanel,
     Button,
     Modal,
     ModalOverlay,
@@ -29,22 +27,13 @@ import {
     useToast,
 } from '@chakra-ui/react'
 import { BiDownload } from 'react-icons/bi'
-import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
+import { AiOutlineMinus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
-import {
-    IoIosArrowDropright,
-    IoIosArrowDropdown,
-    IoIosStats,
-} from 'react-icons/io'
+
 import { TbDotsVertical } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
-import { RiPencilFill } from 'react-icons/ri'
-import { CgNotes } from 'react-icons/cg'
-import {
-    MdKeyboardArrowLeft,
-    MdKeyboardArrowRight,
-    MdVerified,
-} from 'react-icons/md'
+
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 import {
     deleteSchool,
     reset,
@@ -92,6 +81,7 @@ const SchoolTable = ({
     const [removeActive, setRemoveActive] = React.useState(false)
     const [removeDetails, setRemoveDetails] = React.useState(null)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+    // eslint-disable-next-line no-unused-vars
     const [perPage, setPerPage] = React.useState(10)
 
     let { message, isSuccess, isError } = useSelector((state) => state.school)
@@ -176,6 +166,7 @@ const SchoolTable = ({
             totalAllItems: totalItems,
             totalPages: pageLength,
         })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allItems.items])
     /** pagination */
     let PaginationFirstNumber =
@@ -1378,120 +1369,11 @@ const Container = styled(Stack)`
     }
 `
 
-const TableDropDown = styled(Stack)`
-    padding: 10px 0 0 52px;
-    .icon_add,
-    .icon_stat,
-    .icon_create {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: gray;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 15px;
-        z-index: 10;
-        border: 6px solid #ffffff;
-    }
 
-    .icon_add {
-        background: #fbd2d4;
-        color: #f14c54;
-    }
 
-    .icon_stat {
-        background: #ccddff;
-        color: #2264e6;
-    }
 
-    .icon_create {
-        background: #d4d4d6;
-        color: #5e5c60;
-    }
 
-    .activities {
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        color: #5e5c60;
-    }
 
-    .activity_identity {
-        color: #171c26;
-    }
-    .activity_type {
-        color: #f14c54;
-    }
-    .activity_text {
-        color: #171c26;
-    }
-`
-
-const ListStack = styled(Stack)`
-    position: relative;
-    height: 100%;
-    list-style-type: none;
-    z-index:1;
-  .list-item {
-        display: flex;
-        padding: 0px 0px;
-        flex-basis: 0;
-        -webkit-box-flex: 0
-        -ms-flex-positive: 0;
-        flex-grow: 0;
-        width: 100%;
-        min-width: 170px;
-        padding-bottom: 0px;
-
-    }
-    .list-item + .list-item:after {
-        content: '';
-        position: absolute;
-        left: 19px;
-        top: 0;
-        background: #D5DBE5;
-        width: 2px;
-        height: 100%;
-        transform: translateY(0%);
-        z-index:-2;
-       
-    }
-
-    .status_update {
-        border-left: 1px solid  #D5DBE5;
-        padding-left: 10px;
-    }
-
-  
-
-`
-
-const StatusItem = styled(Stack)`
-    border-radius: 4px;
-
-    padding: 3px 8px 3px 8px;
-    background: ${({ bcolors }) => bcolors};
-    div {
-        border-radius: 2px;
-        width: 6px;
-        height: 6px;
-        background: ${({ tcolors }) => tcolors};
-    }
-
-    p {
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 12px;
-        line-height: 18px;
-        letter-spacing: 0.03em;
-        text-transform: capitalize;
-        color: ${({ tcolors }) => tcolors};
-    }
-`
 
 const NoItems = styled(Box)`
     position: absolute;

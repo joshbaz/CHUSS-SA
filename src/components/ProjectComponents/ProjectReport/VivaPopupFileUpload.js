@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import styled from 'styled-components'
 import {
@@ -10,23 +11,19 @@ import {
     ModalBody,
     Input,
     Button,
-    InputGroup,
-    InputRightElement,
-    useDisclosure,
     Select,
     useToast,
-    Textarea,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
     updateVivaFiles,
     reset,
 } from '../../../store/features/project/projectSlice'
-import { useNavigate } from 'react-router-dom'
+//import { useNavigate } from 'react-router-dom'
 import { ImBin2 } from 'react-icons/im'
 
-import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
-import { MdOutlineFilePresent } from 'react-icons/md'
+import { BsFileEarmark } from 'react-icons/bs'
+
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 /**
@@ -52,8 +49,8 @@ const VivaPopupFileUpload = ({
 }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [helperFunctions, setHelperFunctions] = React.useState(null)
-    const [filesList, setFilesList] = React.useState([])
-    let routeNavigate = useNavigate()
+   // const [filesList, setFilesList] = React.useState([])
+   // let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
     let { isSuccess, isError, message } = useSelector((state) => state.project)
@@ -84,14 +81,14 @@ const VivaPopupFileUpload = ({
     }
 
     //size format
-    const formatSize = (size) => {
-        var i = Math.floor(Math.log(size) / Math.log(1024))
-        return (
-            (size / Math.pow(1024, i)).toFixed(2) * 1 +
-            ' ' +
-            ['B', 'KB', 'MB', 'GB', 'TB'][i]
-        )
-    }
+    // const formatSize = (size) => {
+    //     var i = Math.floor(Math.log(size) / Math.log(1024))
+    //     return (
+    //         (size / Math.pow(1024, i)).toFixed(2) * 1 +
+    //         ' ' +
+    //         ['B', 'KB', 'MB', 'GB', 'TB'][i]
+    //     )
+    // }
 
     const validationSchema = yup.object().shape({
         vivafiles: yup.mixed().required('file is required'),

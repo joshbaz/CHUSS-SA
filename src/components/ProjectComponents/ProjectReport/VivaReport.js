@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import styled from 'styled-components'
 import {
@@ -14,7 +15,6 @@ import {
     InputRightElement,
     useDisclosure,
     useToast,
-    Textarea,
     Menu,
     MenuButton,
     MenuList,
@@ -41,25 +41,45 @@ import {
     reset as rpreset,
 } from '../../../store/features/opponents/opponentSlice'
 
+import {
+    reset as treset,
+    tagCreate,
+} from '../../../store/features/tags/tagSlice'
+
 import { FiCheck } from 'react-icons/fi'
 import VivaPopupFileUpload from './VivaPopupFileUpload'
 import VivaPopupDefense from './VivaPopupDefense'
 import VivaReportOpponent from './VivaReportOpponent'
 import Moments from 'moment-timezone'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
+import { Formik, Form } from 'formik'
+import * as yup from 'yup'
+import { SketchPicker } from 'react-color'
 
-const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
+const VivaReport = ({
+    values = null,
+    allTagData,
+    nameValues = 'joshua',
+    type,
+}) => {
+    const [helperFunctions, setHelperFunctions] = React.useState(null)
     const [selectedView, setSelectedView] = React.useState('grid')
+    const [colorPicked, setColorPicked] = React.useState({ hex: '' })
     const [filesList, setFilesList] = React.useState([])
     const [fileUploadActive, setFileUploadActive] = React.useState(false)
     const [defenseUploadActive, setDefenseUploadActive] = React.useState(false)
     const [projectTagData, setProjectTagData] = React.useState([])
+    const [newStatusPopup, setNewStatusPopup] = React.useState(false)
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [activeStatusE, setActiveStatus] = React.useState(null)
-    const [activeDataStatus, setActiveDataStatus] = React.useState('')
+    //  const [activeDataStatus, setActiveDataStatus] = React.useState('')
     const [newActiveStatus, setNewActiveStatus] = React.useState({
         status: '',
-        notes: '',
+        startDate: '',
+        expectedEnd: '',
+        statusEntryType: '',
+        endDate: '',
+        dateOfGraduation: '',
     })
     const [errors, setErrors] = React.useState({})
     const [changeMade, setChangeMade] = React.useState(false)
@@ -76,10 +96,9 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
-    let { isLoading, isSuccess, isError, message } = useSelector(
-        (state) => state.project
-    )
+    let { isSuccess, isError, message } = useSelector((state) => state.project)
     let opponentCase = useSelector((state) => state.opponent)
+    let tagGStates = useSelector((state) => state.tag)
 
     React.useEffect(() => {
         if (values !== null && values._id) {
@@ -94,7 +113,8 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
 
     React.useEffect(() => {
         let allInfoData = allTagData.filter(
-            (data, index) => data.table === 'project'
+            (data, index) =>
+                data.table === 'project' && data.projectType === type
         )
 
         if (
@@ -104,16 +124,17 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
             allInfoData.length > 0
         ) {
             let activeStatus = values.projectStatus.find(
-                (element) => element.active
+                (element) => element.projectStatusId.active
             )
             if (activeStatus) {
                 setNewActiveStatus({
-                    status: activeStatus.status,
-                    notes: activeStatus.notes,
+                    status: activeStatus.projectStatusId.status,
+                    ...activeStatus.projectStatusId,
                 })
-                setActiveDataStatus(activeStatus)
+                // setActiveDataStatus(activeStatus)
                 let activeElementSet = allInfoData.find(
-                    (element) => element.tagName === activeStatus.status
+                    (element) =>
+                        element.tagName === activeStatus.projectStatusId.status
                 )
 
                 if (activeElementSet) {
@@ -126,34 +147,34 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
     }, [allTagData, values])
 
     /** handle popup defense submit */
-    const handleDefenseSubmit = () => {
-        setIsSubmittingp(true)
-        let allValues = {
-            //items: selectedExaminers,
-            projectId,
-        }
-        //dispatch(assignOpponent(allValues))
-    }
+    // const handleDefenseSubmit = () => {
+    //     setIsSubmittingp(true)
+    //     let allValues = {
+    //         //items: selectedExaminers,
+    //         projectId,
+    //     }
+    //     //dispatch(assignOpponent(allValues))
+    // }
 
     /** handle popup viva files submit */
-    const handleFilesSubmit = () => {
-        setIsSubmittingp(true)
-        let allValues = {
-            //items: selectedExaminers,
-            projectId,
-        }
-        // dispatch(assignOpponent(allValues))
-    }
+    // const handleFilesSubmit = () => {
+    //     setIsSubmittingp(true)
+    //     let allValues = {
+    //         //items: selectedExaminers,
+    //         projectId,
+    //     }
+    //     // dispatch(assignOpponent(allValues))
+    // }
 
     /** handle popup status submit */
-    const handleStatusSubmit = () => {
-        setIsSubmittingp(true)
-        let allValues = {
-            // items: selectedExaminers,
-            projectId,
-        }
-        //dispatch(assignOpponent(allValues))
-    }
+    // const handleStatusSubmit = () => {
+    //     setIsSubmittingp(true)
+    //     let allValues = {
+    //         // items: selectedExaminers,
+    //         projectId,
+    //     }
+    //     //dispatch(assignOpponent(allValues))
+    // }
 
     /**
      * function to update status change
@@ -165,26 +186,23 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
             setChangeMade(true)
             setNewActiveStatus({
                 status: data.tagName,
-                notes: '',
+                statusId: data._id,
             })
         }
     }
 
-    const statusNotesUpdate = (e) => {
+    const statusUpdateDetailsChange = (e) => {
         e.preventDefault()
         setIsSubmittingp(false)
         setChangeMade(true)
         setNewActiveStatus({
             ...newActiveStatus,
-            notes: e.target.value,
+            [e.target.name]: e.target.value,
         })
     }
 
     let validate = (values) => {
         const errors = {}
-        if (!values.notes) {
-            errors.notes = 'notes required'
-        }
 
         return errors
     }
@@ -204,8 +222,6 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
      */
 
     const cancelStatusChange = () => {
-        setNewActiveStatus(activeDataStatus)
-
         setChangeMade(false)
         setIsSubmittingp(false)
         onClose()
@@ -227,7 +243,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
             dispatch(reset())
         }
 
-        if (isSuccess && isSubmittingp) {
+        if (isSuccess && isSubmittingp && message) {
             toast({
                 position: 'top',
                 title: message.message,
@@ -244,6 +260,53 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
         }
         dispatch(reset())
     }, [isError, isSuccess, message, dispatch])
+
+    //tag responses
+    React.useEffect(() => {
+        if (tagGStates.isError && isSubmittingp) {
+            // toast({
+            //     position: 'top',
+            //     title: message.message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
+            setIsSubmittingp(false)
+            setChangeMade(false)
+
+            dispatch(treset())
+
+            if (helperFunctions !== null) {
+                helperFunctions.setSubmitting(false)
+            }
+        }
+
+        if (tagGStates.isSuccess && tagGStates.message) {
+            toast({
+                position: 'top',
+                title: tagGStates.message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            setChangeMade(false)
+            onClose()
+            dispatch(treset())
+
+            if (newStatusPopup) {
+                handleCloseNewStatusPopup()
+            }
+
+            if (helperFunctions !== null) {
+                helperFunctions.resetForm()
+                helperFunctions.setSubmitting(false)
+                setHelperFunctions(null)
+            }
+        }
+        dispatch(treset())
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tagGStates.isError, tagGStates.isSuccess, tagGStates.message, dispatch])
 
     /** submittion of the changes */
     /** submittion of the changes */
@@ -387,7 +450,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
             dispatch(rpreset())
         }
 
-        if (opponentCase.isSuccess && isSubmittingp) {
+        if (opponentCase.isSuccess && isSubmittingp && opponentCase.message) {
             toast({
                 position: 'top',
                 title: opponentCase.message.message,
@@ -409,6 +472,31 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
         opponentCase.message,
         dispatch,
     ])
+
+    const handleOpenNewStatusPopup = () => {
+        setNewStatusPopup(() => true)
+        cancelStatusChange()
+    }
+
+    const handleCloseNewStatusPopup = () => {
+        setNewStatusPopup(() => false)
+        onOpen()
+    }
+
+    const handleColorPicked = (color, setFieldValue) => {
+        let rgba = `rgba(${color.rgb.r},${color.rgb.g},${color.rgb.b}, 0.34)`
+        let hex = color.hex
+        setColorPicked(color)
+        setFieldValue('rgba', rgba)
+        setFieldValue('hex', hex)
+        setFieldValue('fullColor', color)
+    }
+
+    const validationSchema = yup.object().shape({
+        tagName: yup.string().required('tagName is required'),
+        rgba: yup.string().required('please select a color'),
+        hex: yup.string().required('color missing too'),
+    })
 
     return (
         <Container>
@@ -1037,7 +1125,7 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                 </ModalContent>
             </Modal>
             {/** change project status */}
-            <Modal w='100vw' isOpen={isOpen} p='0' onClose={onClose}>
+            <Modal w='100vw' isOpen={isOpen} p='0' onClose={cancelStatusChange}>
                 <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
                 <ModalContent p='0'>
                     <ModalBody p='0'>
@@ -1053,10 +1141,10 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                     spacing={'10px'}
                                     h='50%'>
                                     <Box className='pop_title'>
-                                        Change Project Status Update
+                                        Change Status
                                     </Box>
 
-                                    <Stack direction='column'>
+                                    <Stack direction='column' spacing='20px'>
                                         <Stack>
                                             <label>
                                                 Status <span>*</span>
@@ -1121,29 +1209,178 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                                                     </StatusChangeItem>
                                                                 )
                                                             }
-                                                        )}{' '}
+                                                        )}
                                                     </>
                                                 ) : null}
                                             </Stack>
                                         </Stack>
-                                    </Stack>
 
-                                    <Stack
-                                        direction='column'
-                                        width='100%'
-                                        h='100%'>
-                                        <Stack width='100%'>
-                                            <label>
-                                                Notes <span>*</span>
-                                            </label>
+                                        {/** new status button */}
+                                        <NewStatusBtnStack
+                                            direction='row'
+                                            alignItems='center'
+                                            spacing='20px'>
+                                            <Button
+                                                onClick={
+                                                    handleOpenNewStatusPopup
+                                                }>
+                                                Add new status
+                                            </Button>
 
-                                            <StatusNotesArea
-                                                type='text'
-                                                placeholder='Please add a note'
-                                                value={newActiveStatus.notes}
-                                                onChange={statusNotesUpdate}
-                                            />
-                                        </Stack>
+                                            <Text>
+                                                If status does not exist in the
+                                                list above
+                                            </Text>
+                                        </NewStatusBtnStack>
+                                        {/** timelines */}
+
+                                        {newActiveStatus.status ===
+                                        'Graduated' ? (
+                                            <Stack>
+                                                <Stack direction='column'>
+                                                    <Stack>
+                                                        <label>
+                                                            graduation Date
+                                                            <span>*</span>
+                                                        </label>
+
+                                                        <fieldset>
+                                                            <Input
+                                                                placeholder='Select Date and Time'
+                                                                size='md'
+                                                                type='date'
+                                                                name='graduationDate'
+                                                                value={
+                                                                    newActiveStatus !==
+                                                                        null &&
+                                                                    newActiveStatus.graduationDate
+                                                                        ? newActiveStatus.graduationDate
+                                                                        : ''
+                                                                }
+                                                                onChange={
+                                                                    statusUpdateDetailsChange
+                                                                }
+                                                            />
+                                                        </fieldset>
+                                                    </Stack>
+                                                </Stack>
+                                            </Stack>
+                                        ) : (
+                                            <Stack>
+                                                <Stack direction='column'>
+                                                    <Stack>
+                                                        <label>
+                                                            Start Date{' '}
+                                                            <span>*</span>
+                                                        </label>
+
+                                                        <fieldset>
+                                                            <Input
+                                                                placeholder='Select Date and Time'
+                                                                size='md'
+                                                                type='date'
+                                                                name='startDate'
+                                                                value={
+                                                                    newActiveStatus !==
+                                                                        null &&
+                                                                    newActiveStatus.startDate
+                                                                        ? newActiveStatus.startDate
+                                                                        : ''
+                                                                }
+                                                                onChange={
+                                                                    statusUpdateDetailsChange
+                                                                }
+                                                            />
+                                                        </fieldset>
+                                                    </Stack>
+                                                </Stack>
+
+                                                <Stack direction='column'>
+                                                    <Stack>
+                                                        <label>
+                                                            Expected End{' '}
+                                                            <span>*</span>
+                                                        </label>
+
+                                                        <fieldset>
+                                                            <Input
+                                                                placeholder='Select Date and Time'
+                                                                size='md'
+                                                                type='date'
+                                                                name='expectedEnd'
+                                                                value={
+                                                                    newActiveStatus !==
+                                                                        null &&
+                                                                    newActiveStatus.expectedEnd
+                                                                        ? newActiveStatus.expectedEnd
+                                                                        : ''
+                                                                }
+                                                                onChange={
+                                                                    statusUpdateDetailsChange
+                                                                }
+                                                            />
+                                                        </fieldset>
+                                                    </Stack>
+                                                </Stack>
+
+                                                <Stack direction='column'>
+                                                    <Stack>
+                                                        <label>
+                                                            Entry Type{' '}
+                                                            <span>*</span>
+                                                        </label>
+
+                                                        <fieldset>
+                                                            <Input
+                                                                type='text'
+                                                                value={
+                                                                    newActiveStatus !==
+                                                                        null &&
+                                                                    newActiveStatus.endDate
+                                                                        ? newActiveStatus.endDate
+                                                                        : ''
+                                                                }
+                                                                name='tagName'
+                                                                onChange={
+                                                                    statusUpdateDetailsChange
+                                                                }
+                                                                placeholder={
+                                                                    'i.e In Review'
+                                                                }
+                                                            />
+                                                        </fieldset>
+                                                    </Stack>
+                                                </Stack>
+
+                                                <Stack direction='column'>
+                                                    <Stack>
+                                                        <label>
+                                                            End Date{' '}
+                                                            <span>*</span>
+                                                        </label>
+
+                                                        <fieldset>
+                                                            <Input
+                                                                placeholder='Select Date and Time'
+                                                                size='md'
+                                                                type='date'
+                                                                name='endDate'
+                                                                value={
+                                                                    newActiveStatus !==
+                                                                        null &&
+                                                                    newActiveStatus.endDate
+                                                                        ? newActiveStatus.endDate
+                                                                        : ''
+                                                                }
+                                                                onChange={
+                                                                    statusUpdateDetailsChange
+                                                                }
+                                                            />
+                                                        </fieldset>
+                                                    </Stack>
+                                                </Stack>
+                                            </Stack>
+                                        )}
                                     </Stack>
                                 </Stack>
                                 <Stack
@@ -1175,6 +1412,149 @@ const VivaReport = ({ values = null, allTagData, nameValues = 'joshua' }) => {
                                 </Stack>
                             </PopupForm>
                         </form>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+            {/** create new status */}
+            <Modal
+                w='100vw'
+                isOpen={newStatusPopup}
+                p='0'
+                onClose={handleCloseNewStatusPopup}>
+                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
+                <ModalContent p='0'>
+                    <ModalBody p='0'>
+                        <Formik
+                            initialValues={{
+                                table: 'project',
+                                tagName: '',
+                                rgba: '',
+                                hex: '',
+                                fullColor: '',
+                                projectType: type,
+                            }}
+                            validationSchema={validationSchema}
+                            onSubmit={(values, helpers) => {
+                                setHelperFunctions(helpers)
+                                setIsSubmittingp(true)
+                                dispatch(tagCreate(values))
+                            }}>
+                            {({
+                                values,
+                                handleChange,
+                                setFieldValue,
+                                isValid,
+                                dirty,
+                            }) => (
+                                <Form>
+                                    <PopupForm
+                                        p='0px'
+                                        direction='column'
+                                        spacing='0'
+                                        justifyContent='space-between'>
+                                        <Stack
+                                            p='10px 20px 10px 20px'
+                                            direction='column'
+                                            spacing={'10px'}
+                                            h='50%'>
+                                            <Box className='pop_title'>
+                                                Create New Status
+                                            </Box>
+
+                                            <Stack direction='column'>
+                                                <Stack>
+                                                    <label>
+                                                        Status name{' '}
+                                                        <span>*</span>
+                                                    </label>
+
+                                                    <fieldset>
+                                                        <Input
+                                                            type='text'
+                                                            value={
+                                                                values.tagName
+                                                            }
+                                                            name='tagName'
+                                                            onChange={
+                                                                handleChange
+                                                            }
+                                                            placeholder={
+                                                                'i.e In Review'
+                                                            }
+                                                        />
+                                                    </fieldset>
+                                                </Stack>
+                                            </Stack>
+
+                                            <Stack
+                                                direction='column'
+                                                width='100%'
+                                                h='100%'>
+                                                <Stack width='100%'>
+                                                    <label>
+                                                        Status color{' '}
+                                                        <span>*</span>
+                                                    </label>
+
+                                                    <Box
+                                                        width='100%'
+                                                        display='flex'
+                                                        minH='450px'
+                                                        height='100%'>
+                                                        <SketchPicker
+                                                            color={
+                                                                colorPicked.rgb
+                                                            }
+                                                            onChange={(color) =>
+                                                                handleColorPicked(
+                                                                    color,
+                                                                    setFieldValue
+                                                                )
+                                                            }
+                                                            width='100%'
+                                                            height='100%'
+                                                            padding='0'
+                                                            presetColors={[
+                                                                '#C97A20',
+                                                                '#38A06C',
+                                                                '#EF5466',
+                                                            ]}
+                                                        />
+                                                    </Box>
+                                                </Stack>
+                                            </Stack>
+                                        </Stack>
+                                        <Stack
+                                            p='0px 20px'
+                                            h='65px'
+                                            bg='#ffffff'
+                                            direction='row'
+                                            borderTop='1px solid #E9EDF5'
+                                            borderRadius='0 0 8px 8px'
+                                            justifyContent='flex-end'
+                                            alignItems='center'>
+                                            <Button
+                                                variant='outline'
+                                                className='cancel_button'
+                                                onClick={() =>
+                                                    handleCloseNewStatusPopup()
+                                                }>
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                disabled={!(isValid && dirty)}
+                                                type='submit'
+                                                isLoading={
+                                                    isSubmittingp ? true : false
+                                                }
+                                                className='apply_button'>
+                                                Confirm
+                                            </Button>
+                                        </Stack>
+                                    </PopupForm>
+                                </Form>
+                            )}
+                        </Formik>
                     </ModalBody>
                 </ModalContent>
             </Modal>
@@ -1724,10 +2104,6 @@ const StatusChangeItem = styled(Stack)`
     }
 `
 
-const StatusNotesArea = styled(Textarea)`
-    background: #ffffff !important;
-`
-
 const SubmitButton = styled(Box)`
     width: 126px;
     height: 32px;
@@ -1742,4 +2118,24 @@ const SubmitButton = styled(Box)`
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
+`
+
+const NewStatusBtnStack = styled(Stack)`
+    button {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        color: #ffffff;
+        background: #f4797f;
+        border-radius: 6px;
+    }
+
+    p {
+        font-family: 'Inter', sans-serif;
+        font-style: italic;
+        font-weight: 500;
+        font-size: 14px;
+        color: #db0000;
+    }
 `

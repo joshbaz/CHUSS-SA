@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Box, Button, Stack, Text, useToast } from '@chakra-ui/react'
+import { Box, Stack, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -14,7 +14,7 @@ import {
 } from '../../../store/features/payments/paymentSlice'
 import ViewPaymentDetails from '../../../components/PaymentComponents/ViewPayment/ViewPaymentDetails'
 import ViewPayExaminerDetails from '../../../components/PaymentComponents/ViewPayment/ViewPayExaminerDetails'
-import ViewPayFiles from '../../../components/PaymentComponents/ViewPayment/ViewPayFiles'
+//import ViewPayFiles from '../../../components/PaymentComponents/ViewPayment/ViewPayFiles'
 import ViewPayStudent from '../../../components/PaymentComponents/ViewPayment/ViewPayStudent'
 
 const ViewPayment = (props) => {
@@ -24,8 +24,6 @@ const ViewPayment = (props) => {
     let toast = useToast()
 
     useEffect(() => {
-       
-
         /** dispatch to getSinglePayment */
         dispatch(getSinglePayment(params.id))
     }, [params.id, dispatch])
@@ -42,6 +40,7 @@ const ViewPayment = (props) => {
             })
             dispatch(reset())
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [paymentCase.isError, paymentCase.isSuccess, paymentCase.message])
 
     return (
@@ -110,13 +109,10 @@ const ViewPayment = (props) => {
                                         values={paymentCase.individualPayment}
                                     />
 
-                                    {
-                                        /**
-                                         * <ViewPayFiles />
-                                         * 
-                                         */
-                                    }
-                                    
+                                    {/**
+                                     * <ViewPayFiles />
+                                     *
+                                     */}
                                 </Stack>
 
                                 <Stack
@@ -152,33 +148,4 @@ const BackButtonStack = styled(Stack)`
         font-size: 17px;
         line-height: 20px;
     }
-`
-
-const SubmitButton = styled(Box)`
-    background: #f7f9fc;
-    width: 126px;
-    height: 32px;
-    box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
-    border-radius: 6px;
-
-    color: #868fa0;
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 20px;
-`
-
-const PrintButton = styled(Box)`
-    height: 32px;
-    background: #f4797f !important;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
-    border-radius: 6px;
-    padding: 6px 12px;
-    color: #ffffff;
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 20px;
 `

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 const Account = ({ handleChange }) => {
     let user = JSON.parse(localStorage.getItem('user'))
     //let user = JSON.parse(Cookies.get('user'))

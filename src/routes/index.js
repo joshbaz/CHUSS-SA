@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react'
 
-import { BrowserRouter, HashRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 
 import ProtectedRoute from './protectedRoutes'
 import Reset from '../views/AuthViews/Reset'
-import AllProjects from '../views/DesktopViews/Projects/AllPhdProjects'
-import CreateProject from '../views/DesktopViews/Projects/CreatePhdProject'
-import ProjectReport from '../views/DesktopViews/Projects/PhDProjectReport'
-import EditProject from '../views/DesktopViews/Projects/EditPhdProject'
+//to remove
+// import AllProjects from '../views/DesktopViews/Projects/AllPhdProjects'
+// import CreateProject from '../views/DesktopViews/Projects/CreatePhdProject'
+// import ProjectReport from '../views/DesktopViews/Projects/PhDProjectReport'
+// import EditProject from '../views/DesktopViews/Projects/EditPhdProject'
 
 import AssignExaminer from '../views/DesktopViews/Projects/Examiners/AssignExaminer'
 import CreateProjectExaminer from '../views/DesktopViews/Projects/Examiners/CreateProjectExaminer'

@@ -93,11 +93,9 @@ const LineGraph = () => {
     const { allprojects } = useSelector((state) => state.project)
 
     React.useEffect(() => {
+        // eslint-disable-next-line array-callback-return
         let filteredData = allprojects.items.filter((data) => {
-            if (
-                data.activeStatus.toLowerCase() === 'graduated' &&
-                data.GraduationDate
-            ) {
+            if (data.activeStatus === 'Graduated' && data.GraduationDate) {
                 return data
             } else {
             }
@@ -106,7 +104,8 @@ const LineGraph = () => {
         const arrayofDates = []
         const arrayofDateData = []
 
-        let filtData = filteredData.filter((data) => {
+        // eslint-disable-next-line array-callback-return
+        filteredData.filter((data) => {
             if (arrayofDates.length === 0) {
                 let newDate = Moments(data.GraduationDate)
                     .tz('Africa/Kampala')
@@ -160,6 +159,7 @@ const LineGraph = () => {
             DataResults: [],
         }
 
+        // eslint-disable-next-line array-callback-return
         sortedarray.filter((data) => {
             DatesToset.labelData.push(data.Date)
             DatesToset.DataResults.push(data.NoOfStudents)

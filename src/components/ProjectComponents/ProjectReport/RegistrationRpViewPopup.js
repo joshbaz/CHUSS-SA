@@ -8,20 +8,12 @@ import {
     ModalOverlay,
     ModalContent,
     ModalBody,
-    useToast,
     Button,
-    Checkbox,
     Radio,
     RadioGroup,
     Input,
-    Select,
 } from '@chakra-ui/react'
-import { HiPencil } from 'react-icons/hi'
-import { useDispatch, useSelector } from 'react-redux'
-import { Formik, Form } from 'formik'
-import * as yup from 'yup'
-import { MdOutlineFilePresent } from 'react-icons/md'
-import { ImBin2 } from 'react-icons/im'
+
 import { BsFileEarmark } from 'react-icons/bs'
 
 const typeArray = [
@@ -54,8 +46,6 @@ const semArray = [
     },
 ]
 
-
-
 const RegistrationRpViewPopup = ({
     yearData,
     viewData,
@@ -64,9 +54,6 @@ const RegistrationRpViewPopup = ({
     createRegister,
     cancelSubmissionUpload,
 }) => {
-   
-
-
     //size format
     const formatSize = (size) => {
         var i = Math.floor(Math.log(size) / Math.log(1024))
@@ -178,7 +165,7 @@ const RegistrationRpViewPopup = ({
                                                     (data, index) => {
                                                         return (
                                                             <Radio
-                                                                key={ data.value}
+                                                                key={data.value}
                                                                 value={
                                                                     data.value
                                                                 }
@@ -389,45 +376,6 @@ const RegistrationRpViewPopup = ({
 
 export default RegistrationRpViewPopup
 
-const Container = styled(Stack)`
-    width: 100%;
-    height: 100px;
-
-    background: #ffffff;
-    border-radius: 9px;
-    font-family: 'Inter', sans-serif;
-    .st_title {
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 17px;
-        line-height: 21px;
-        color: #1a2240;
-    }
-
-    .st_text {
-        font-style: normal;
-        font-weight: 500;
-        font-size: 18px;
-        line-height: 24px;
-        color: #1a2240;
-        text-transform: uppercase;
-        color: #f14c54;
-    }
-`
-
-const EditIcon = styled(Box)`
-    width: 24px;
-    height: 24px;
-    background: #eeeeef;
-    border: 1px dashed #f4797f;
-    border-radius: 6px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #464f60;
-    font-size: 14px;
-`
 const PopupForm = styled(Stack)`
     width: 100%;
     min-height: 182px;
@@ -608,17 +556,6 @@ const PopupForm = styled(Stack)`
         &:hover {
             background: #f4797f;
         }
-    }
-`
-
-const ErrorMsg = styled(Text)`
-    font-size: 13px;
-    line-height: 20px;
-    padding: 5px 10px;
-    color: #f14c54;
-
-    .filesError {
-        padding: 0;
     }
 `
 

@@ -1,12 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Text, Input } from '@chakra-ui/react'
-import { BsInfoCircleFill } from 'react-icons/bs'
-import {
-    MdKeyboardArrowLeft,
-    MdKeyboardArrowRight,
-    MdVerified,
-} from 'react-icons/md'
+
+import { MdVerified } from 'react-icons/md'
 
 const ViewInfoForm = ({ values, projectValues }) => {
     return (

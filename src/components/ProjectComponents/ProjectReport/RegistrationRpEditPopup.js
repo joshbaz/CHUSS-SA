@@ -8,19 +8,16 @@ import {
     ModalOverlay,
     ModalContent,
     ModalBody,
-    useToast,
     Button,
-    Checkbox,
     Radio,
     RadioGroup,
     Input,
     Select,
 } from '@chakra-ui/react'
-import { HiPencil } from 'react-icons/hi'
-import { useDispatch, useSelector } from 'react-redux'
+
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
-import { MdOutlineFilePresent } from 'react-icons/md'
+
 import { ImBin2 } from 'react-icons/im'
 import { BsFileEarmark } from 'react-icons/bs'
 
@@ -72,6 +69,7 @@ const RegistrationRpEditPopup = ({
     createRegister,
     cancelSubmissionUpload,
 }) => {
+    // eslint-disable-next-line no-unused-vars
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
 
     const validationSchema = yup.object().shape({
@@ -597,33 +595,6 @@ const RegistrationRpEditPopup = ({
 }
 
 export default RegistrationRpEditPopup
-
-const Container = styled(Stack)`
-    width: 100%;
-    height: 100px;
-
-    background: #ffffff;
-    border-radius: 9px;
-    font-family: 'Inter', sans-serif;
-    .st_title {
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 17px;
-        line-height: 21px;
-        color: #1a2240;
-    }
-
-    .st_text {
-        font-style: normal;
-        font-weight: 500;
-        font-size: 18px;
-        line-height: 24px;
-        color: #1a2240;
-        text-transform: uppercase;
-        color: #f14c54;
-    }
-`
 
 const EditIcon = styled(Box)`
     width: 24px;

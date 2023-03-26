@@ -17,8 +17,7 @@ import {
     useToast,
 } from '@chakra-ui/react'
 import { MdOutlineFilePresent } from 'react-icons/md'
-import { BsListUl } from 'react-icons/bs'
-import { RiLayoutGridFill } from 'react-icons/ri'
+
 import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 import { useDispatch, useSelector } from 'react-redux'
@@ -30,7 +29,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 
 const UpdateExaminerProjectApp = ({ values, projectValues }) => {
-    const [filesList, setFilesList] = React.useState([])
+   // const [filesList, setFilesList] = React.useState([])
     const [filesList2, setFilesList2] = React.useState([])
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [selectedFile, setSelectedFile] = React.useState(null)
@@ -135,6 +134,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
         }
 
         dispatch(reset())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, message, isSubmittingp, updateSubmitting])
 
     const handlefile = async () => {
@@ -202,6 +202,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
             } else {
             }
 
+            // eslint-disable-next-line no-unused-vars
             const performDowload = await window.electronAPI.downloadFile(
                 newData
             )

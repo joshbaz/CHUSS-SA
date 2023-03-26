@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import styled from 'styled-components'
 import {
@@ -10,12 +11,7 @@ import {
     ModalBody,
     Input,
     Button,
-    InputGroup,
-    InputRightElement,
-    useDisclosure,
-    Select,
     useToast,
-    Textarea,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -34,9 +30,9 @@ const VivaPopupDefense = ({
 }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [helperFunctions, setHelperFunctions] = React.useState(null)
-    const [filesList, setFilesList] = React.useState([])
+   // const [filesList, setFilesList] = React.useState([])
     const [dateOfDefense, setDateOfDefense] = React.useState('')
-    let routeNavigate = useNavigate()
+    //let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
     let { isSuccess, isError, message } = useSelector((state) => state.project)
@@ -93,7 +89,7 @@ const VivaPopupDefense = ({
             dispatch(reset())
         }
 
-        if (isSuccess && isSubmittingp) {
+        if (isSuccess && isSubmittingp && message) {
             if (helperFunctions !== null) {
                 toast({
                     position: 'top',

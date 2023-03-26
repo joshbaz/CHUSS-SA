@@ -87,6 +87,7 @@ const ViewExaminerFiles = ({ values, projectValues }) => {
             } else {
             }
 
+            // eslint-disable-next-line no-unused-vars
             const performDowload = await window.electronAPI.downloadFile(
                 newData
             )

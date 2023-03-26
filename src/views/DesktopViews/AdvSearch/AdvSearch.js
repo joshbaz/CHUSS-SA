@@ -1,29 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import {
     Box,
     Stack,
     Button,
     Select,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    MenuOptionGroup,
-    MenuItemOption,
     InputGroup,
     Input,
-    InputRightElement,
     InputLeftElement,
-    Grid,
     Text,
-    GridItem,
     useToast,
     Modal,
     ModalOverlay,
     ModalContent,
     ModalBody,
     useDisclosure,
-    Checkbox,
     Radio,
     RadioGroup,
     SimpleGrid,
@@ -32,35 +23,30 @@ import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
 import { AiOutlinePlus } from 'react-icons/ai'
-import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io'
-import { RiArrowRightSLine, RiArrowDownSLine } from 'react-icons/ri'
 
-import { IoMdClose } from 'react-icons/io'
-import { FaFilter } from 'react-icons/fa'
 import { BiSearch } from 'react-icons/bi'
-import { CgFormatSlash } from 'react-icons/cg'
+
 import { GrClose } from 'react-icons/gr'
-import ProjectTable from '../../../components/ProjectComponents/AllProjects/ProjectTable'
-import { useNavigate, useLocation } from 'react-router-dom'
+//import ProjectTable from '../../../components/ProjectComponents/AllProjects/ProjectTable'
+//import { useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-    getPProjects,
     getAllProjects,
-    reset,
+    // reset,
 } from '../../../store/features/project/projectSlice'
 import {
     allExaminers,
-    reset as eReset,
+    // reset as eReset,
 } from '../../../store/features/Examiner/examinerSlice'
 import {
     getAllExaminerReports,
-    reset as rpReset,
+    // reset as rpReset,
 } from '../../../store/features/reports/reportSlice'
 import {
     reset as treset,
     tagGetAll,
 } from '../../../store/features/tags/tagSlice'
-import { MdTableView, MdPrint } from 'react-icons/md'
+import { MdTableView } from 'react-icons/md'
 import AdvStudentTable from '../../../components/AdvSearchItems/AdvStudentTable'
 import AdvReportTable from '../../../components/AdvSearchItems/AdvReportTable'
 import AdvExaminerTable from '../../../components/AdvSearchItems/AdvExaminerTable'
@@ -109,24 +95,24 @@ const QuerySets = [
     },
 ]
 
-const studentHeaders = [
-    {
-        label: 'Student Name',
-        key: 'studentName',
-    },
-    {
-        label: 'Student Contacts',
-        key: 'studentContacts',
-    },
-    {
-        label: 'topic',
-        key: 'topic',
-    },
-    {
-        label: 'status',
-        key: 'status',
-    },
-]
+// const studentHeaders = [
+//     {
+//         label: 'Student Name',
+//         key: 'studentName',
+//     },
+//     {
+//         label: 'Student Contacts',
+//         key: 'studentContacts',
+//     },
+//     {
+//         label: 'topic',
+//         key: 'topic',
+//     },
+//     {
+//         label: 'status',
+//         key: 'status',
+//     },
+// ]
 
 const AdvSearch = () => {
     const [selectedTable, setSelectedTable] = React.useState('')
@@ -139,17 +125,17 @@ const AdvSearch = () => {
     const [filterInfo, setFilterInfo] = React.useState([])
     const [exportData, setExportData] = React.useState([])
 
-    const [allDisplayData, setAllDisplayData] = React.useState({
-        currentPage: 0,
-        itemsPerPage: 8,
-        items: [],
-        allSearchItems: [],
-        totalItemsDisplayed: 0,
-        totalSearchedItems: 0,
-        totalPages: 0,
-    })
+    // const [allDisplayData, setAllDisplayData] = React.useState({
+    //     currentPage: 0,
+    //     itemsPerPage: 8,
+    //     items: [],
+    //     allSearchItems: [],
+    //     totalItemsDisplayed: 0,
+    //     totalSearchedItems: 0,
+    //     totalPages: 0,
+    // })
 
-    const [dropDownActive, setDropDownActive] = React.useState(false)
+    // const [dropDownActive, setDropDownActive] = React.useState(false)
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     let dispatch = useDispatch()
@@ -161,9 +147,7 @@ const AdvSearch = () => {
         dispatch(tagGetAll())
     }, [])
 
-    let { allprojects, isError, isSuccess, message } = useSelector(
-        (state) => state.project
-    )
+    let { allprojects } = useSelector((state) => state.project)
 
     let examinerCollectedDatas = useSelector((state) => state.examiner)
     let reportCollectedDatas = useSelector((state) => state.report)
@@ -217,6 +201,7 @@ const AdvSearch = () => {
     /** function to select the table list */
     const TableLists = React.useMemo(() => {
         if (selectedTable) {
+            // eslint-disable-next-line array-callback-return
             const newdataArray = dataModels.filter((data, index) => {
                 if (data.title === selectedTable) {
                     return data
@@ -228,8 +213,6 @@ const AdvSearch = () => {
             return []
         }
     }, [selectedTable])
-
-   
 
     /** function to select statuses */
     const TableStatuses = React.useMemo(() => {
@@ -298,7 +281,6 @@ const AdvSearch = () => {
     const handleFilterSearchOption = (e) => {
         e.preventDefault()
 
-      
         setSearchWord('')
         setSearchStatus('')
         setSearchWordOption(e.target.value)
@@ -308,7 +290,6 @@ const AdvSearch = () => {
     const handleQueryChange = (e) => {
         e.preventDefault()
 
-      
         setSearchWordQuery(e.target.value)
     }
 
@@ -525,29 +506,29 @@ const AdvSearch = () => {
     }
 
     /** memo for headers of csv */
-    const headerSetting = React.useMemo(() => {
-        if (selectedTable) {
-            if (selectedTable === 'Student Table') {
-                return studentHeaders
-            } else {
-                return []
-            }
-        } else {
-            return []
-        }
-    }, [selectedTable])
+    // const headerSetting = React.useMemo(() => {
+    //     if (selectedTable) {
+    //         if (selectedTable === 'Student Table') {
+    //             return studentHeaders
+    //         } else {
+    //             return []
+    //         }
+    //     } else {
+    //         return []
+    //     }
+    // }, [selectedTable])
 
     /** function to handle data exportation */
-    const handleExportation = async () => {
-        if (exportData.length > 0) {
-            let values = {
-                tableName: selectedTable,
-                data: exportData,
-                headers: studentHeaders,
-            }
-            await window.electronAPI.exportCSV(values)
-        }
-    }
+    // const handleExportation = async () => {
+    //     if (exportData.length > 0) {
+    //         let values = {
+    //             tableName: selectedTable,
+    //             data: exportData,
+    //             headers: studentHeaders,
+    //         }
+    //         await window.electronAPI.exportCSV(values)
+    //     }
+    // }
 
     const handleRemoveFilter = (Info, indexA) => {
         let newFilterInfo = [...filterInfo]
@@ -1204,25 +1185,6 @@ const FilterInfoStack = styled(Stack)`
     .close_icon {
         color: #838389;
         font-size: 12px;
-    }
-`
-const FilterKey = styled(Stack)`
-    font-family: 'Inter', sans-serif;
-    min-width: 152px;
-    height: 32px;
-
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06),
-        0px 0px 0px 1px rgba(134, 143, 160, 0.16);
-    border-radius: 6px;
-    padding: 7px 10px;
-
-    .filterKey__text {
-        color: #464f60;
-        letter-spacing: 0.02em;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
     }
 `
 

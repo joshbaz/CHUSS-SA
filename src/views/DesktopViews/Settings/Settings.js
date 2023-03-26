@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import {
     Stack,
@@ -25,7 +26,7 @@ import {
     academicYearGetAll,
 } from '../../../store/features/preferences/preferenceSlice'
 import Account from '../../../components/SettingComponents/Account'
-import LastLogin from '../../../components/SettingComponents/LastLogin'
+//import LastLogin from '../../../components/SettingComponents/LastLogin'
 import ProposedFees from '../../../components/SettingComponents/ProposedFees'
 import AcademicYear from '../../../components/SettingComponents/AcademicYear'
 import ProjectTabTags from '../../../components/SettingComponents/ProjectTabTags'
@@ -314,36 +315,5 @@ const Container = styled(Stack)`
         font-size: 12px;
         line-height: 18px;
         color: #838389;
-    }
-`
-
-const FilterInfoStack = styled(Stack)`
-    position: relative;
-    width: 100%;
-    height: 22px;
-    padding: 0 8px;
-    background: #fceded;
-    border-radius: 4px;
-    h1 {
-        color: #f14c54;
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 600;
-        font-size: 12px;
-        line-height: 18px;
-    }
-
-    p {
-        color: #15151d;
-        font-family: Inter;
-        font-style: normal;
-        font-weight: 600;
-        font-size: 12px;
-        line-height: 18px;
-    }
-
-    .close_icon {
-        color: #838389;
-        font-size: 12px;
     }
 `

@@ -22,21 +22,14 @@ import {
     useToast,
     Button,
 } from '@chakra-ui/react'
-import { AiOutlinePlus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
-import {
-    IoIosArrowDropright,
-    IoIosArrowDropdown,
-    IoIosStats,
-} from 'react-icons/io'
+
 import { TbDotsVertical } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
-import { RiPencilFill } from 'react-icons/ri'
-import { CgNotes } from 'react-icons/cg'
-import { ImBin2 } from 'react-icons/im'
+
 import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
 import RegistrationRpCreatePopup from './RegistrationRpCreatePopup'
-import RegistrationRpEditPopup from './RegistrationRpEditPopup'
+//import RegistrationRpEditPopup from './RegistrationRpEditPopup'
 import RegistrationRpViewPopup from './RegistrationRpViewPopup'
 import Moments from 'moment-timezone'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
@@ -85,7 +78,7 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
     const [removeDetails, setRemoveDetails] = React.useState(null)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
 
-    let routeNavigate = useNavigate()
+    // let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
     let { isSuccess, message, isError } = useSelector(
@@ -247,6 +240,7 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
         }
 
         dispatch(reset())
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, message, isSubmittingp, isError])
     return (
         <Container>
@@ -870,27 +864,6 @@ const Container = styled(Box)`
     }
 `
 
-const StatusItem = styled(Stack)`
-    border-radius: 4px;
-
-    padding: 3px 8px 3px 8px;
-
-    div {
-        border-radius: 2px;
-        width: 6px;
-        height: 6px;
-    }
-    p {
-        font-family: 'Inter', sans-serif;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 12px;
-        line-height: 18px;
-        letter-spacing: 0.03em;
-        text-transform: capitalize;
-    }
-`
-
 const FileStack = styled(Box)`
     font-family: 'Inter', sans-serif;
     background: #ffffff;
@@ -952,19 +925,6 @@ const FileStack = styled(Box)`
         color: #faa723;
         background: #feecd0;
     }
-`
-
-const EditIcon = styled(Box)`
-    width: 24px;
-    height: 24px;
-    background: #eeeeef;
-    border: 1px dashed #f4797f;
-    border-radius: 6px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #464f60;
-    font-size: 14px;
 `
 
 const NoItems = styled(Box)`

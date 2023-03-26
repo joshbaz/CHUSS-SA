@@ -1,7 +1,8 @@
+/* eslint-disable array-callback-return */
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Text, Input } from '@chakra-ui/react'
-import { BsInfoCircleFill } from 'react-icons/bs'
+
 
 const UpdatePaymentInfo = ({ values, projectValues }) => {
     const [payInfo, setPayInfo] = React.useState(null)
@@ -20,6 +21,7 @@ const UpdatePaymentInfo = ({ values, projectValues }) => {
                 }
             })
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values])
     return (
         <Container>

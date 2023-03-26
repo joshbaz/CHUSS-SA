@@ -5,13 +5,6 @@ import {
     Stack,
     Input,
     Button,
-    Table,
-    Thead,
-    Tbody,
-    Tr,
-    Th,
-    Td,
-    Text,
     useDisclosure,
     Modal,
     ModalOverlay,
@@ -49,7 +42,7 @@ const ProposedFees = ({ handleChange, programData }) => {
         programFee: yup.number().required('valid number needed '),
     })
 
-    const { isLoading, isError, isSuccess, message } = useSelector(
+    const { isError, isSuccess, message } = useSelector(
         (state) => state.preference
     )
     useEffect(() => {
@@ -317,7 +310,7 @@ const ProposedFees = ({ handleChange, programData }) => {
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
-                              
+
                                 dispatch(programTypeUpdate(values))
                             }}>
                             {({

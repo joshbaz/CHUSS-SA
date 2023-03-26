@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import { Box, Stack, Text, useToast, Button } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -36,13 +37,13 @@ const EditMastersProject = (props) => {
 
     React.useEffect(() => {
         let id = params.id
-       
+
         dispatch(getIndividualProject(id))
         dispatch(programTypeGetAll())
         dispatch(academicYearGetAll())
     }, [params.id, dispatch])
 
-    let { individual, isLoading, isSuccess, isError, message } = useSelector(
+    let { individual, isSuccess, isError, message } = useSelector(
         (state) => state.project
     )
     const preferencesData = useSelector((state) => state.preference)
@@ -64,7 +65,7 @@ const EditMastersProject = (props) => {
             dispatch(reset())
         }
 
-        if (isSuccess && isSubmittingp) {
+        if (isSuccess && isSubmittingp && message) {
             toast({
                 position: 'top',
                 title: message.message,
@@ -239,7 +240,6 @@ const EditMastersProject = (props) => {
 
     React.useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-         
             dispatch(projectUpdate(initials))
         } else if (
             Object.keys(errors).length > 0 &&

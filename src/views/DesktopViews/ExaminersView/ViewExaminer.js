@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'

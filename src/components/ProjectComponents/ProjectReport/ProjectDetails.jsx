@@ -17,8 +17,7 @@ import {
 import { BsInfoCircleFill } from 'react-icons/bs'
 import Moments from 'moment-timezone'
 import { AiOutlinePlus } from 'react-icons/ai'
-import { HiPencil } from 'react-icons/hi'
-import { ImBin2 } from 'react-icons/im'
+
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
@@ -109,7 +108,7 @@ const ProjectDetails = ({ values, rlink }) => {
             setIsSubmittingp(false)
             dispatch(reset())
         }
-        if (isSuccess && isSubmittingp) {
+        if (isSuccess && isSubmittingp && message) {
             toast({
                 position: 'top',
                 title: message.message,
@@ -125,6 +124,7 @@ const ProjectDetails = ({ values, rlink }) => {
         }
 
         dispatch(reset())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, message])
 
     /** dc member */
@@ -134,7 +134,7 @@ const ProjectDetails = ({ values, rlink }) => {
             setIsSubmittingp(false)
             dispatch(dreset())
         }
-        if (dcMState.isSuccess && isSubmittingp) {
+        if (dcMState.isSuccess && isSubmittingp && dcMState.message) {
             toast({
                 position: 'top',
                 title: dcMState.message.message,
@@ -150,6 +150,7 @@ const ProjectDetails = ({ values, rlink }) => {
         }
 
         dispatch(dreset())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dcMState.isSuccess, dcMState.message, dcMState.isError])
 
     React.useEffect(() => {

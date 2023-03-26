@@ -24,7 +24,7 @@ import { ImBin2 } from 'react-icons/im'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { useSelector, useDispatch } from 'react-redux'
 import { reset, tagCreate, tagUpdate } from '../../store/features/tags/tagSlice'
-import { SketchPicker, SwatchesPicker } from 'react-color'
+import { SketchPicker } from 'react-color'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 
@@ -79,9 +79,7 @@ const ProjectTabTags = ({ allTagData }) => {
         setProjectTagData(allInfoData)
     }, [allTagData])
 
-    const { isLoading, isError, isSuccess, message } = useSelector(
-        (state) => state.tag
-    )
+    const { isError, isSuccess, message } = useSelector((state) => state.tag)
     useEffect(() => {
         if (isError) {
             if (helperFunctions !== null) {
@@ -99,7 +97,7 @@ const ProjectTabTags = ({ allTagData }) => {
             dispatch(reset())
         }
 
-        if (isSuccess) {
+        if (isSuccess && message) {
             if (helperFunctions !== null) {
                 toast({
                     position: 'top',
