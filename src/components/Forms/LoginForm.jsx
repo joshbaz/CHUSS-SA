@@ -1,7 +1,16 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Box, Stack, Text, Checkbox, Button } from '@chakra-ui/react'
+import {
+    Box,
+    Stack,
+    Text,
+    Checkbox,
+    Button,
+    InputGroup,
+    InputRightElement,
+} from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
+import { BsEyeSlash, BsEye } from 'react-icons/bs'
 const LoginForm = ({
     values,
     handleChange,
@@ -14,6 +23,11 @@ const LoginForm = ({
     isSubmittingp,
     setFieldValue,
 }) => {
+    const [textSecure, setTextSecure] = React.useState(true)
+
+    const handleTextSecure = () => {
+        setTextSecure(() => !textSecure)
+    }
     return (
         <Container disabledB={!(isValid && dirty)}>
             <Stack direction='column' spacing='60px'>
@@ -53,13 +67,47 @@ const LoginForm = ({
                                 Password <span>*</span>
                             </label>
                             <Box>
-                                <input
-                                    type='password'
-                                    placeholder='Enter your secret passkey'
-                                    value={values.password}
-                                    onChange={handleChange}
-                                    name='password'
-                                />
+                                <InputGroup h='32px'>
+                                    <input
+                                        type={textSecure ? 'password' : 'text'}
+                                        placeholder='Enter your secret passkey'
+                                        value={values.password}
+                                        onChange={handleChange}
+                                        name='password'
+                                    />
+                                    <InputRightElement
+                                        h='32px'
+                                        children={
+                                            textSecure ? (
+                                                <Box
+                                                    onClick={handleTextSecure}
+                                                    h='100%'
+                                                    m='0'
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent:
+                                                            'center',
+                                                    }}>
+                                                    <BsEye color='green.500' />
+                                                </Box>
+                                            ) : (
+                                                <Box
+                                                    h='100%'
+                                                    m='0'
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent:
+                                                            'center',
+                                                    }}
+                                                    onClick={handleTextSecure}>
+                                                    <BsEyeSlash color='green.500' />
+                                                </Box>
+                                            )
+                                        }
+                                    />
+                                </InputGroup>
                             </Box>
                         </FieldStack>
 
@@ -70,7 +118,7 @@ const LoginForm = ({
                                     <Text>
                                         Sorry, that password isn't right.
                                         <br /> We can help you{' '}
-                                        <Link to='/reset'>
+                                        <Link to='/auth/reset'>
                                             <span>recover your password</span>
                                         </Link>
                                     </Text>
@@ -83,7 +131,7 @@ const LoginForm = ({
                                         <br />
                                         We can help you{' '}
                                         <span>
-                                            <Link to='/reset'>
+                                            <Link to='/auth/reset'>
                                                 recover your username
                                             </Link>
                                         </span>
@@ -129,7 +177,7 @@ const LoginForm = ({
 export default LoginForm
 
 const Container = styled(Box)`
-    font-family: Inter;
+    font-family: 'Inter';
 
     .checkbox {
         font-family: 'Inter';

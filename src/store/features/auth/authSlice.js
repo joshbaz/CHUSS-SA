@@ -29,6 +29,34 @@ export const Logout = createAsyncThunk('auth/logout', async () => {
     authService.logout()
 })
 
+/** supervisor update */
+export const facilitatorNewPasskey = createAsyncThunk(
+    'auth/newpassword/update',
+    async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+        }
+        const creationAttempt = await authService.facilitatorNewPasskey(
+            allValues
+        )
+        if (creationAttempt.type === 'success') {
+            return creationAttempt
+        } else {
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                authService.logout()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
+        }
+    }
+)
+
 /**
  * Note: the reducers are not asynchronous functions
  * The async goes in extraReducers
@@ -64,6 +92,21 @@ export const authSlice = createSlice({
                 state.user = null
                 state.isSuccess = false
                 state.message = 'logout success'
+            })
+
+            /**  facilitator new password */
+            .addCase(facilitatorNewPasskey.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(facilitatorNewPasskey.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(facilitatorNewPasskey.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
             })
     },
 })

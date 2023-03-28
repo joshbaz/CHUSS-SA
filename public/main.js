@@ -18,6 +18,7 @@ const preferenceController = require('./controllers/preferences')
 const reportController = require('./controllers/reports')
 const opponentReportController = require('./controllers/opponentReport')
 const paymentController = require('./controllers/payments')
+const facilitatorController = require('./controllers/facilitators')
 
 const schoolController = require('./controllers/schools')
 const registrationController = require('./controllers/registration')
@@ -516,6 +517,25 @@ ipcMain.handle('delete-school', schoolController.deleteSchool)
 /** create department */
 ipcMain.handle('create-department', schoolController.createDepartment)
 ipcMain.handle('update-department', schoolController.updateDepartment)
+
+/*
+ * facilitators
+ *
+ */
+
+ipcMain.handle('create-facilitator', facilitatorController.createfacilitator)
+ipcMain.handle('all-facilitators', facilitatorController.allFacilitators)
+ipcMain.handle('all-loginActivities', facilitatorController.allLoginActivities)
+ipcMain.handle('update-facilitator', facilitatorController.updatefacilitator)
+ipcMain.handle(
+    'reset-facilitator-password',
+    facilitatorController.resetfacilitatorPassword
+)
+
+ipcMain.handle(
+    'new-facilitator-passkey',
+    facilitatorController.newfacilitatorPasskey
+)
 
 /** files */
 //handle

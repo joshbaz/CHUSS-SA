@@ -1,14 +1,5 @@
 import React from 'react'
-import {
-    Box,
-    Stack,
-    Text,
-    Button,
-    Input,
-    InputGroup,
-    InputLeftElement,
-    SimpleGrid,
-} from '@chakra-ui/react'
+import { Box, Stack, SimpleGrid } from '@chakra-ui/react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 

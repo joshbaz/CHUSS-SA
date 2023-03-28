@@ -180,4 +180,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('create-department', values),
     updateDepartment: (values) =>
         ipcRenderer.invoke('update-department', values),
+
+    /** facilitators */
+    createfacilitator: (values) =>
+        ipcRenderer.invoke('create-facilitator', values),
+
+    allFacilitators: (values) => ipcRenderer.invoke('all-facilitators', values),
+    allLoginActivities: (values) =>
+        ipcRenderer.invoke('all-loginActivities', values),
+    updatefacilitator: (values) =>
+        ipcRenderer.invoke('update-facilitator', values),
+    resetfacilitatorPassword: (values) =>
+        ipcRenderer.invoke('reset-facilitator-password', values),
+    newfacilitatorPasskey: (values) =>
+        ipcRenderer.invoke('new-facilitator-passkey', values),
 })

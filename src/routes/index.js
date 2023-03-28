@@ -72,21 +72,74 @@ import AllSupervisors from '../views/DesktopViews/ESupervisorsView/AllSupervisor
 import CreateNewSupervisor from '../views/DesktopViews/ESupervisorsView/CreateNewSupervisor'
 import ViewSupervisor from '../views/DesktopViews/ESupervisorsView/ViewSupervisor'
 import EditSupervisor from '../views/DesktopViews/ESupervisorsView/EditSupervisor'
-//import Cookies from 'js-cookie'
+import Cookies from 'js-cookie'
+import { useSelector } from 'react-redux'
+import AdminDashboard from '../views/DesktopViews/Dashboard/AdminDashboard'
+import AllFacilitators from '../views/DesktopViews/Facilitators/AllFacilitators'
+import CreateNewFacilitators from '../views/DesktopViews/Facilitators/CreateNewFacilitators'
+import UpdateFacilitators from '../views/DesktopViews/Facilitators/UpdateFacilitators'
+import ViewFacilitator from '../views/DesktopViews/Facilitators/ViewFacilitator'
+
 const AllRoutes = () => {
-  //  const getToken = Cookies.get('_tk')
+    const isAuthenticated = !!Cookies.get('_tk')
+    //let user = isAuthenticated ? JSON.parse(Cookies.get('user')) : null
+    //  const getToken = Cookies.get('_tk')
+    const [previledges, setPreviledges] = React.useState('Administrator')
 
-   // console.log('_tk', getToken)
+    const { user, isSuccess } = useSelector((state) => state.auth)
+    // console.log('_tk', getToken)
     useEffect(() => {
+        if (user !== null) {
+            setPreviledges(() => user.privileges)
+        } else {
+            setPreviledges(() => 'Administrator')
+        }
+    }, [user, isAuthenticated, isSuccess])
 
-    }, [])
     return (
         <HashRouter>
             <Routes>
-                <Route exact path='/reset' component={Reset} />
+                <Route exact path='/auth/reset' element={<Reset />} />
                 <Route exact path='/auth/signin' element={<Login />} />
                 <Route element={<ProtectedRoute />}>
-                    <Route exact path='/' element={<Dashboard />} />
+                    {previledges === 'Super Administrator' ? (
+                        <Route exact path='/' element={<AdminDashboard />} />
+                    ) : (
+                        <Route exact path='/' element={<Dashboard />} />
+                    )}
+
+                    {previledges === 'Super Administrator' && (
+                        <Route
+                            exact
+                            path='/facilitators'
+                            element={<AllFacilitators />}
+                        />
+                    )}
+
+                    {previledges === 'Super Administrator' && (
+                        <Route
+                            exact
+                            path='/facilitators/create'
+                            element={<CreateNewFacilitators />}
+                        />
+                    )}
+
+                    {previledges === 'Super Administrator' && (
+                        <Route
+                            exact
+                            path='/facilitators/update/:id'
+                            element={<UpdateFacilitators />}
+                        />
+                    )}
+
+                    {previledges === 'Super Administrator' && (
+                        <Route
+                            exact
+                            path='/facilitators/view/:id'
+                            element={<ViewFacilitator />}
+                        />
+                    )}
+
                     {/** masters student projects */}
                     {/** All Master student projects */}
                     <Route

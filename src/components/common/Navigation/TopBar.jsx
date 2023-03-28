@@ -22,7 +22,7 @@ const TopBar = ({ topbarData }) => {
     const onLogout = () => {
         dispatch(Logout())
         dispatch(reset())
-        routeNavigate('/auth/signin', { replace: true })
+         routeNavigate('/auth/signin', { replace: true })
     }
 
     useEffect(() => {

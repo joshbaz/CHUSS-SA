@@ -2,67 +2,142 @@ import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Tooltip } from '@chakra-ui/react'
 import Logo from '../../../logo.svg'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { RiDashboardLine, RiFoldersFill } from 'react-icons/ri'
 import {
     MdOutlineAccountBalanceWallet,
     MdManageSearch,
     MdOutlineBusinessCenter,
+    MdOutlineSupervisedUserCircle,
 } from 'react-icons/md'
 import { AiOutlineSetting } from 'react-icons/ai'
 import { FaChalkboardTeacher } from 'react-icons/fa'
+
+import { useSelector } from 'react-redux'
+import Cookies from 'js-cookie'
 const Navigation = () => {
-    let location = useLocation()
-    const menuData = [
-        {
-            title: 'dashboard',
-            icon: <RiDashboardLine />,
-            link: '/',
-            name: 'Dashboard',
-        },
-        {
-            title: 'mst',
-            icon: <RiFoldersFill />,
-            link: '/masters/projects',
-            name: 'Master Students',
-        },
-        {
-            title: 'phd',
-            icon: <RiFoldersFill />,
-            link: '/phd/projects',
-            name: 'Phd Students',
-        },
-        {
-            title: 'payments',
-            icon: <MdOutlineAccountBalanceWallet />,
-            link: '/payments',
-            name: 'Payments',
-        },
-        {
-            title: 'examiners',
-            icon: <FaChalkboardTeacher />,
-            link: '/m-examiners',
-            name: 'Examiners',
-        },
-        {
-            title: 'Schools',
-            icon: <MdOutlineBusinessCenter />,
-            link: '/schools',
-            name: 'Schools',
-        },
-        {
-            title: 'advanced search',
-            icon: <MdManageSearch />,
-            link: '/advsearch',
-            name: 'Advanced Search',
-        },
-        {
-            title: 'settings',
-            icon: <AiOutlineSetting />,
-            link: '/setting',
-            name: 'Settings',
-        },
-    ]
+    const isAuthenticated = !!Cookies.get('_tk')
+    // const [previledges, setPreviledges] = React.useState('Administrator')
+    const { user, isSuccess } = useSelector((state) => state.auth)
+
+    const [menuData, setMenuData] = React.useState([])
+    // let location = useLocation()
+
+    React.useEffect(() => {
+        if (user !== null) {
+            if (user.privileges === 'Super Administrator') {
+                setMenuData(() => [
+                    {
+                        title: 'dashboard',
+                        icon: <RiDashboardLine />,
+                        link: '/',
+                        name: 'Dashboard',
+                    },
+                    {
+                        title: 'FAC',
+                        icon: <MdOutlineSupervisedUserCircle />,
+                        link: '/facilitators',
+                        name: 'Facilitators',
+                    },
+                    {
+                        title: 'mst',
+                        icon: <RiFoldersFill />,
+                        link: '/masters/projects',
+                        name: 'Master Students',
+                    },
+                    {
+                        title: 'phd',
+                        icon: <RiFoldersFill />,
+                        link: '/phd/projects',
+                        name: 'Phd Students',
+                    },
+                    {
+                        title: 'payments',
+                        icon: <MdOutlineAccountBalanceWallet />,
+                        link: '/payments',
+                        name: 'Payments',
+                    },
+                    {
+                        title: 'examiners',
+                        icon: <FaChalkboardTeacher />,
+                        link: '/m-examiners',
+                        name: 'Examiners',
+                    },
+                    {
+                        title: 'Schools',
+                        icon: <MdOutlineBusinessCenter />,
+                        link: '/schools',
+                        name: 'Schools',
+                    },
+                    {
+                        title: 'advanced search',
+                        icon: <MdManageSearch />,
+                        link: '/advsearch',
+                        name: 'Advanced Search',
+                    },
+                    {
+                        title: 'settings',
+                        icon: <AiOutlineSetting />,
+                        link: '/setting',
+                        name: 'Settings',
+                    },
+                ])
+            } else {
+                setMenuData(() => [
+                    {
+                        title: 'dashboard',
+                        icon: <RiDashboardLine />,
+                        link: '/',
+                        name: 'Dashboard',
+                    },
+
+                    {
+                        title: 'mst',
+                        icon: <RiFoldersFill />,
+                        link: '/masters/projects',
+                        name: 'Master Students',
+                    },
+                    {
+                        title: 'phd',
+                        icon: <RiFoldersFill />,
+                        link: '/phd/projects',
+                        name: 'Phd Students',
+                    },
+                    {
+                        title: 'payments',
+                        icon: <MdOutlineAccountBalanceWallet />,
+                        link: '/payments',
+                        name: 'Payments',
+                    },
+                    {
+                        title: 'examiners',
+                        icon: <FaChalkboardTeacher />,
+                        link: '/m-examiners',
+                        name: 'Examiners',
+                    },
+                    {
+                        title: 'Schools',
+                        icon: <MdOutlineBusinessCenter />,
+                        link: '/schools',
+                        name: 'Schools',
+                    },
+                    {
+                        title: 'advanced search',
+                        icon: <MdManageSearch />,
+                        link: '/advsearch',
+                        name: 'Advanced Search',
+                    },
+                    {
+                        title: 'settings',
+                        icon: <AiOutlineSetting />,
+                        link: '/setting',
+                        name: 'Settings',
+                    },
+                ])
+            }
+            //setPreviledges(() => user.previledges)
+        }
+    }, [user, isSuccess])
     return (
         <Container direction='column' w='72px' h='100vh' spacing='32px'>
             <Box className='logo'>
@@ -100,7 +175,8 @@ const Navigation = () => {
                             <Stack direction='column' spacing='0px'>
                                 <Box className='menu_icon'>{data.icon}</Box>
                                 {data.title === 'mst' ||
-                                data.title === 'phd' ? (
+                                data.title === 'phd' ||
+                                data.title === 'FAC' ? (
                                     <Box pt='2px' className='menu_title'>
                                         {data.title}
                                     </Box>

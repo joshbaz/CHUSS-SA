@@ -13,6 +13,7 @@ import supervisorReducer from './features/supervisors/supervisorSlice'
 import doctoralReducer from './features/doctoralmembers/doctoralSlice'
 import schoolReducer from './features/schools/schoolSlice'
 import registrationReducer from './features/registration/registrationSlice'
+import facilitatorReducer from './features/facilitators/facilitatorSlice'
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -29,5 +30,6 @@ export const store = configureStore({
         opponentReport: opponentReportReducer,
         school: schoolReducer,
         registration: registrationReducer,
+        facilitator: facilitatorReducer,
     },
 })
