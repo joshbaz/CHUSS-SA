@@ -1,12 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
-import {
-    Box,
-    Stack,
-    Text,
-    useToast,
-    Button,
-    useDisclosure,
-} from '@chakra-ui/react'
+import { Box, Stack, Text, useToast, Button } from '@chakra-ui/react'
 import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../../components/common/Navigation/Navigation'
@@ -31,18 +25,18 @@ import { initSocketConnection } from '../../../../socketio.service.js'
 const EditExaminerReport = (props) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [changeMade, setChnageMade] = React.useState(false)
-    const [initials, setInitials] = React.useState(null)
+
     const [newRDeat, setnewRDeat] = React.useState(null)
 
     const [errors, setErrors] = React.useState({})
-    const [loadingComponen, setloadingComponent] = React.useState(false)
 
     let routeNavigate = useNavigate()
     let params = useParams()
     let dispatch = useDispatch()
     let projectCase = useSelector((state) => state.project)
-    let { individualReport, allreports, isSuccess, isError, message } =
-        useSelector((state) => state.report)
+    let { allreports, isSuccess, isError, message } = useSelector(
+        (state) => state.report
+    )
     useEffect(() => {
         dispatch(getAllExaminerReports())
         dispatch(getExaminerReport(params.rp_id))
@@ -60,13 +54,11 @@ const EditExaminerReport = (props) => {
     }, [dispatch, params.rp_id])
 
     useEffect(() => {
-      
-
         if (allreports.items.length > 0) {
             let allDetails = allreports.items.find(
                 (data) => data._id === params.rp_id
             )
-          
+
             if (allDetails) {
                 let saveDeta = {
                     ...allDetails,
@@ -174,7 +166,7 @@ const EditExaminerReport = (props) => {
         setErrors({})
         setChnageMade(() => true)
         //console.log(InputFile.url, 'InputFile')
-     
+
         let vv = {
             ...newRDeat,
             reportFile: InputFile,
@@ -197,11 +189,8 @@ const EditExaminerReport = (props) => {
         setIsSubmittingp(true)
     }
 
-    const diffhanldeSubmit = () => {}
-
     useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-          
             let newInitals = {
                 ...newRDeat,
                 reportId: newRDeat._id,
@@ -223,17 +212,26 @@ const EditExaminerReport = (props) => {
 
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{
-                        title: 'PhD report for update',
-                        count: null,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: 'PhD report for update',
+                            count: null,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={handleSubmit}>
@@ -327,7 +325,13 @@ const EditExaminerReport = (props) => {
 
 export default EditExaminerReport
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

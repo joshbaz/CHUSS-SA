@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -64,17 +65,26 @@ const MaViewProjectSupervisor = () => {
     }, [allSupervisorItems, params.s_id])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{
-                        title: 'View Master Supervisor',
-                        count: null,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: 'View Master Supervisor',
+                            count: null,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Stack
@@ -135,7 +145,13 @@ const MaViewProjectSupervisor = () => {
 
 export default MaViewProjectSupervisor
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

@@ -22,14 +22,12 @@ import GEViewVerification from '../../../components/ExaminerComponents/ViewExami
 
 const ViewExaminer = (props) => {
     let routeNavigate = useNavigate()
-let params = useParams()
+    let params = useParams()
     let dispatch = useDispatch()
     let projectCase = useSelector((state) => state.project)
 
     let examinerCase = useSelector((state) => state.examiner)
     useEffect(() => {
-      
-
         /** dispatch to get project */
         // dispatch(getIndividualProject(params.p_id))
         /** dispatch to get examiner */
@@ -38,7 +36,6 @@ let params = useParams()
         dispatch(getStudentsByExaminer(params.id))
     }, [params.id, dispatch])
 
-   
     let toast = useToast()
     useEffect(() => {
         if (examinerCase.isError) {
@@ -54,17 +51,26 @@ let params = useParams()
     }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{
-                        title: 'Examiners',
-                        count: null,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: 'Examiners',
+                            count: null,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Stack
@@ -162,7 +168,13 @@ let params = useParams()
 
 export default ViewExaminer
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

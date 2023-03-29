@@ -161,18 +161,26 @@ const EditOpponent = () => {
     }, [isSubmittingp])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar
-                    topbarData={{
-                        title: 'Edit Opponent',
-                        count: null,
-                        backButton: true,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                w='100%'
+                spacing='20px'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: 'Edit Opponent',
+                            count: null,
+                            backButton: true,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={''}>
@@ -263,7 +271,13 @@ const EditOpponent = () => {
 
 export default EditOpponent
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

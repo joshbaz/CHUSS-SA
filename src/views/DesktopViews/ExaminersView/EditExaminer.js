@@ -20,18 +20,19 @@ import GEEditTypeForm from '../../../components/ExaminerComponents/EditExaminer/
 import GEEditExaminerDetail from '../../../components/ExaminerComponents/EditExaminer/GEEditExaminerDetail'
 
 const EditExaminer = (props) => {
-   // const [helperFunctions, setHelperFunctions] = React.useState(null)
+    // const [helperFunctions, setHelperFunctions] = React.useState(null)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [changeMade, setChnageMade] = React.useState(false)
     const [initials, setInitials] = React.useState(null)
     const [errors, setErrors] = React.useState({})
-   // const [loadingComponent, setloadingComponent] = React.useState(false)
+    // const [loadingComponent, setloadingComponent] = React.useState(false)
     let routeNavigate = useNavigate()
     let params = useParams()
     let dispatch = useDispatch()
 
-    const { individualExaminer, isLoading, isError, isSuccess, message } =
-        useSelector((state) => state.examiner)
+    const { individualExaminer, isError, isSuccess, message } = useSelector(
+        (state) => state.examiner
+    )
     useEffect(() => {
         /** dispatch to get project */
         // dispatch(getIndividualProject(params.p_id))
@@ -117,7 +118,7 @@ const EditExaminer = (props) => {
                     examinerAppLetter: null,
                     examinerId: params.id,
                 })
-              //  setloadingComponent(false)
+                //  setloadingComponent(false)
             }
         } else {
             //setloadingComponent(false)
@@ -203,12 +204,21 @@ const EditExaminer = (props) => {
 
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar topbarData={{ title: 'Examiners', count: null }} />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar topbarData={{ title: 'Examiners', count: null }} />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={handleSubmit}>
@@ -304,7 +314,13 @@ const EditExaminer = (props) => {
 
 export default EditExaminer
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

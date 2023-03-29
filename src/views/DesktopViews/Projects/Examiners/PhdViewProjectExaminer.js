@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -22,94 +23,97 @@ import {
 import ViewExaminerFiles from '../../../../components/ProjectComponents/ViewExaminer/ViewExaminerFiles'
 
 const PhdViewProjectExaminer = () => {
-     const [projectValues, setProjectValues] = React.useState(null)
-     const [examinerValues, setExaminerValues] = React.useState(null)
-     let routeNavigate = useNavigate()
-     let params = useParams()
-     let dispatch = useDispatch()
-     let projectCase = useSelector((state) => state.project)
+    const [projectValues, setProjectValues] = React.useState(null)
+    const [examinerValues, setExaminerValues] = React.useState(null)
+    let routeNavigate = useNavigate()
+    let params = useParams()
+    let dispatch = useDispatch()
+    let projectCase = useSelector((state) => state.project)
 
-     let examinerCase = useSelector((state) => state.examiner)
-     useEffect(() => {
-       
-         /** dispatch to get project */
-         dispatch(getIndividualProject(params.p_id))
-         /** dispatch to get examiner */
-         dispatch(getIndividualExaminer(params.e_id))
-     }, [params.e_id, params.p_id, dispatch])
+    let examinerCase = useSelector((state) => state.examiner)
+    useEffect(() => {
+        /** dispatch to get project */
+        dispatch(getIndividualProject(params.p_id))
+        /** dispatch to get examiner */
+        dispatch(getIndividualExaminer(params.e_id))
+    }, [params.e_id, params.p_id, dispatch])
 
-     useEffect(() => {
-         dispatch(allExaminers(params.p_id))
-     }, [])
+    useEffect(() => {
+        dispatch(allExaminers(params.p_id))
+    }, [])
 
-     useEffect(() => {
-         dispatch(getAllProjects(params.p_id))
-     }, [])
+    useEffect(() => {
+        dispatch(getAllProjects(params.p_id))
+    }, [])
 
-     useEffect(() => {
-         let findExaminer = examinerCase.allExaminerItems.items.find(
-             (element) => element._id === params.e_id
-         )
+    useEffect(() => {
+        let findExaminer = examinerCase.allExaminerItems.items.find(
+            (element) => element._id === params.e_id
+        )
 
-      
+        if (findExaminer) {
+            setExaminerValues(findExaminer)
+        }
+    }, [examinerCase.allExaminerItems, params.e_id])
 
-         if (findExaminer) {
-             setExaminerValues(findExaminer)
-         }
-     }, [examinerCase.allExaminerItems, params.e_id])
+    useEffect(() => {
+        let findProject = projectCase.allprojects.items.find(
+            (element) => element._id === params.p_id
+        )
 
-     useEffect(() => {
-         let findProject = projectCase.allprojects.items.find(
-             (element) => element._id === params.p_id
-         )
+        if (findProject) {
+            setProjectValues(findProject)
+        }
+    }, [projectCase.allprojects, params.p_id])
 
-      
+    let toast = useToast()
+    useEffect(() => {
+        if (projectCase.isError) {
+            toast({
+                position: 'top',
+                title: examinerCase.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+            dispatch(pReset())
+        }
+        dispatch(pReset())
+    }, [projectCase.isError, projectCase.isSuccess, projectCase.message])
 
-         if (findProject) {
-             setProjectValues(findProject)
-         }
-     }, [projectCase.allprojects, params.p_id])
-
-   
-     let toast = useToast()
-     useEffect(() => {
-         if (projectCase.isError) {
-             toast({
-                 position: 'top',
-                 title: examinerCase.message,
-                 status: 'error',
-                 duration: 10000,
-                 isClosable: true,
-             })
-             dispatch(pReset())
-         }
-         dispatch(pReset())
-     }, [projectCase.isError, projectCase.isSuccess, projectCase.message])
-
-     useEffect(() => {
-         if (examinerCase.isError) {
-             toast({
-                 position: 'top',
-                 title: examinerCase.message,
-                 status: 'error',
-                 duration: 10000,
-                 isClosable: true,
-             })
-             dispatch(eReset())
-         }
-         dispatch(eReset())
-     }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
+    useEffect(() => {
+        if (examinerCase.isError) {
+            toast({
+                position: 'top',
+                title: examinerCase.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+            dispatch(eReset())
+        }
+        dispatch(eReset())
+    }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
 
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{ title: 'PhD View Examiner', count: null }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{ title: 'PhD View Examiner', count: null }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Stack
@@ -200,7 +204,13 @@ const PhdViewProjectExaminer = () => {
 
 export default PhdViewProjectExaminer
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {
@@ -226,4 +236,3 @@ const SubmitButton = styled(Box)`
     font-size: 14px;
     line-height: 20px;
 `
-

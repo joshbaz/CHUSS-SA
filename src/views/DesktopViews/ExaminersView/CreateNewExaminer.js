@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Button, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -25,7 +26,7 @@ const CreateNewExaminer = (props) => {
     let routeNavigate = useNavigate()
     let toast = useToast()
     let dispatch = useDispatch()
-    const { isLoading, isError, isSuccess, message } = useSelector(
+    const { isError, isSuccess, message } = useSelector(
         (state) => state.examiner
     )
 
@@ -101,12 +102,20 @@ const CreateNewExaminer = (props) => {
     })
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar topbarData={{ title: 'Examiners', count: null }} />
+            <Stack
+                className='overwrap'
+                direction='column'
+                w='100%'
+                spacing='20px'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar topbarData={{ title: 'Examiners', count: null }} />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Formik
@@ -232,7 +241,13 @@ const CreateNewExaminer = (props) => {
 
 export default CreateNewExaminer
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

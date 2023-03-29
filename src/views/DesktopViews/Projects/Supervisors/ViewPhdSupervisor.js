@@ -54,30 +54,37 @@ const ViewPhdSupervisor = () => {
         dispatch(reset())
     }, [isSuccess, isError, message])
 
-     useEffect(() => {
-         let findSupervisor = allSupervisorItems.items.find(
-             (element) => element._id === params.s_id
-         )
+    useEffect(() => {
+        let findSupervisor = allSupervisorItems.items.find(
+            (element) => element._id === params.s_id
+        )
 
-         if (findSupervisor) {
-             setIndividual(findSupervisor)
-         }
-     }, [allSupervisorItems, params.s_id])
+        if (findSupervisor) {
+            setIndividual(findSupervisor)
+        }
+    }, [allSupervisorItems, params.s_id])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
             <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{
-                        title: 'View PhD Supervisor',
-                        count: null,
-                    }}
-                />
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: 'View PhD Supervisor',
+                            count: null,
+                        }}
+                    />
+                </Box>
 
-                <Stack direction='column' padding={'10px 20px 0 10px'}>
+                <Stack
+                    className='overwrap'
+                    direction='column'
+                    padding={'10px 20px 0 10px'}>
                     <Stack
                         direction='column'
                         borderRadius={'6px'}
@@ -136,7 +143,13 @@ const ViewPhdSupervisor = () => {
 
 export default ViewPhdSupervisor
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

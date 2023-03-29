@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast, Button } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -124,7 +125,6 @@ const EditDoctoralMember = () => {
 
     React.useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-         
             dispatch(dcmemberUpdate(individual))
         } else if (
             Object.keys(errors).length > 0 &&
@@ -137,17 +137,26 @@ const EditDoctoralMember = () => {
     }, [isSubmittingp])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{
-                        title: 'Edit Doctoral Member ',
-                        count: null,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: 'Edit Doctoral Member ',
+                            count: null,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={handleSubmit}>
@@ -221,7 +230,13 @@ const EditDoctoralMember = () => {
 
 export default EditDoctoralMember
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

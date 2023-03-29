@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast, Button } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -6,11 +7,11 @@ import TopBar from '../../../components/common/Navigation/TopBar'
 import { MdArrowBack } from 'react-icons/md'
 import StudentDetailForm from '../../../components/ProjectComponents/CreateProject/CreateForms/StudentDetailForm'
 import ContactForm from '../../../components/ProjectComponents/CreateProject/CreateForms/ContactForm'
-import SupervisorForm from '../../../components/ProjectComponents/CreateProject/CreateForms/SupervisorForm'
-import SubmissionDateForm from '../../../components/ProjectComponents/CreateProject/CreateForms/SubmissionDateForm'
-import UploadFileForm from '../../../components/ProjectComponents/CreateProject/CreateForms/UploadFileForm'
-import UploadThesisFile from '../../../components/ProjectComponents/CreateProject/CreateForms/UploadThesisFile'
-import RegistrationForm from '../../../components/ProjectComponents/CreateProject/CreateForms/RegistrationForm'
+// import SupervisorForm from '../../../components/ProjectComponents/CreateProject/CreateForms/SupervisorForm'
+// import SubmissionDateForm from '../../../components/ProjectComponents/CreateProject/CreateForms/SubmissionDateForm'
+// import UploadFileForm from '../../../components/ProjectComponents/CreateProject/CreateForms/UploadFileForm'
+// import UploadThesisFile from '../../../components/ProjectComponents/CreateProject/CreateForms/UploadThesisFile'
+// import RegistrationForm from '../../../components/ProjectComponents/CreateProject/CreateForms/RegistrationForm'
 import { useNavigate } from 'react-router-dom'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
@@ -24,6 +25,7 @@ import {
     programTypeGetAll,
     academicYearGetAll,
 } from '../../../store/features/preferences/preferenceSlice'
+import EntryType from '../../../components/ProjectComponents/CreateProject/CreateForms/EntryType'
 
 const CreateMastersProject = () => {
     const [helperFunctions, setHelperFunctions] = React.useState(null)
@@ -31,7 +33,7 @@ const CreateMastersProject = () => {
     let routeNavigate = useNavigate()
 
     let dispatch = useDispatch()
-    const { isLoading, isError, isSuccess, message } = useSelector(
+    const { isError, isSuccess, message } = useSelector(
         (state) => state.project
     )
     const preferencesData = useSelector((state) => state.preference)
@@ -109,7 +111,7 @@ const CreateMastersProject = () => {
         programType: yup.string().required('required'),
         degreeProgram: yup.string().required('required'),
         schoolName: yup.string().required('required'),
-        departmentName: yup.string().required('required'),
+        //  departmentName: yup.string().required('required'),
         phoneNumber: yup.string().required('required'),
     })
 
@@ -126,18 +128,32 @@ const CreateMastersProject = () => {
         alternativeEmail: '',
         semesterRegistration: '',
         academicYear: '',
+        entryType: '',
+        createdDate: '',
     }
     let toast = useToast()
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{ title: 'New Masters Student', count: null }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: 'New Masters Student',
+                            count: null,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Formik
@@ -220,6 +236,7 @@ const CreateMastersProject = () => {
                                                 values={values}
                                                 errors={errors}
                                                 handleChange={handleChange}
+                                                setFieldValue={setFieldValue}
                                             />
                                         </Stack>
                                         {/** supervisior && date of submission & scanned form */}
@@ -227,6 +244,12 @@ const CreateMastersProject = () => {
                                             direction='column'
                                             w='30%'
                                             spacing='20px'>
+                                            <EntryType
+                                                values={values}
+                                                errors={errors}
+                                                handleChange={handleChange}
+                                                setFieldValue={setFieldValue}
+                                            />
                                             {/** 
                                         
                                         <SubmissionDateForm
@@ -268,7 +291,13 @@ const CreateMastersProject = () => {
 
 export default CreateMastersProject
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     font-family: 'Inter', sans-serif;

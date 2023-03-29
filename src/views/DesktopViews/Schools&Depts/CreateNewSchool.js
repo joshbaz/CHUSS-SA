@@ -80,12 +80,22 @@ const CreateNewSchool = () => {
     })
     return (
         <Container direction='row' w='100vw'>
-            {' '}
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px'>
+                    <Navigation />
+                </Box>
             </Box>
-            <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar topbarData={{ title: 'Create School ', count: null }} />
+
+            <Stack
+                className='overwrap'
+                direction='column'
+                w='100%'
+                spacing='20px'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{ title: 'Create School ', count: null }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Formik
@@ -187,6 +197,11 @@ export default CreateNewSchool
 
 const Container = styled(Stack)`
     font-family: 'Inter', sans-serif;
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
     .s_title {
         font-family: 'Inter', sans-serif;
         font-style: normal;
@@ -214,7 +229,6 @@ const Container = styled(Stack)`
         color: #ffffff;
     }
 `
-
 
 const BackButtonStack = styled(Stack)`
     p {

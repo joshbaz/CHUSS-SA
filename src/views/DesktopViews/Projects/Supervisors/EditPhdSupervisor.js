@@ -15,139 +15,146 @@ import {
 import EditSupervisorADetailForm from '../../../../components/ProjectComponents/AssignSupervisors/EditSupervisorADetailForm'
 
 const EditPhdSupervisor = () => {
+    let routeNavigate = useNavigate()
+    let params = useParams()
+    let dispatch = useDispatch()
+    let toast = useToast()
+    const [individual, setIndividual] = React.useState(null)
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+    const [changeMade, setChnageMade] = React.useState(false)
+    const [errors, setErrors] = React.useState({})
 
-     let routeNavigate = useNavigate()
-     let params = useParams()
-     let dispatch = useDispatch()
-     let toast = useToast()
-     const [individual, setIndividual] = React.useState(null)
-     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
-     const [changeMade, setChnageMade] = React.useState(false)
-     const [errors, setErrors] = React.useState({})
+    useEffect(() => {
+        dispatch(allSupervisors())
+    }, [])
 
-     useEffect(() => {
-         dispatch(allSupervisors())
-     }, [])
+    let { allSupervisorItems, isSuccess, isError, message } = useSelector(
+        (state) => state.supervisor
+    )
 
-     let { allSupervisorItems, isSuccess, isError, message } = useSelector(
-         (state) => state.supervisor
-     )
+    useEffect(() => {
+        if (isError) {
+            toast({
+                position: 'top',
+                title: message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(() => false)
+            setChnageMade(false)
 
-     useEffect(() => {
-         if (isError) {
-             toast({
-                 position: 'top',
-                 title: message,
-                 status: 'error',
-                 duration: 10000,
-                 isClosable: true,
-             })
-             setIsSubmittingp(() => false)
-             setChnageMade(false)
+            dispatch(reset())
+        }
 
-             dispatch(reset())
-         }
+        if (isSuccess && isSubmittingp && message) {
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            setChnageMade(false)
+            dispatch(reset())
+        }
 
-         if (isSuccess && isSubmittingp && message) {
-             toast({
-                 position: 'top',
-                 title: message.message,
-                 status: 'success',
-                 duration: 10000,
-                 isClosable: true,
-             })
-             setIsSubmittingp(false)
-             setChnageMade(false)
-             dispatch(reset())
-         }
+        dispatch(reset())
+    }, [isSuccess, isError, message])
 
-         dispatch(reset())
-     }, [isSuccess, isError, message])
+    useEffect(() => {
+        let findSupervisor = allSupervisorItems.items.find(
+            (element) => element._id === params.s_id
+        )
 
-     useEffect(() => {
-         let findSupervisor = allSupervisorItems.items.find(
-             (element) => element._id === params.s_id
-         )
+        if (findSupervisor) {
+            setIndividual({ ...findSupervisor, examinerId: params.s_id })
+        }
+    }, [allSupervisorItems, params.s_id])
 
-         if (findSupervisor) {
-             setIndividual({ ...findSupervisor, examinerId: params.s_id })
-         }
-     }, [allSupervisorItems, params.s_id])
+    /** function to handle value changes */
+    const handleChange = (e) => {
+        e.preventDefault()
+        setIsSubmittingp(() => false)
+        setErrors({})
+        setChnageMade(true)
 
-     /** function to handle value changes */
-     const handleChange = (e) => {
-         e.preventDefault()
-         setIsSubmittingp(() => false)
-         setErrors({})
-         setChnageMade(true)
+        setIndividual((prevState) => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+        }))
+    }
 
-         setIndividual((prevState) => ({
-             ...prevState,
-             [e.target.name]: e.target.value,
-         }))
-     }
+    let validate = (values) => {
+        const errors = {}
+        if (!values.jobtitle) {
+            errors.jobtitle = 'jobtitle required'
+        }
 
-     let validate = (values) => {
-         const errors = {}
-         if (!values.jobtitle) {
-             errors.jobtitle = 'jobtitle required'
-         }
+        if (!values.name) {
+            errors.name = ' Name required'
+        }
 
-         if (!values.name) {
-             errors.name = ' Name required'
-         }
+        if (!values.email) {
+            errors.email = 'Email required'
+        }
 
-         if (!values.email) {
-             errors.email = 'Email required'
-         }
+        if (!values.phoneNumber) {
+            errors.phoneNumber = 'Phone Number required'
+        }
 
-         if (!values.phoneNumber) {
-             errors.phoneNumber = 'Phone Number required'
-         }
+        if (!values.countryOfResidence) {
+            errors.countryOfResidence = 'countryOfResidence required'
+        }
 
-         if (!values.countryOfResidence) {
-             errors.countryOfResidence = 'countryOfResidence required'
-         }
+        if (!values.placeOfWork) {
+            errors.placeOfWork = 'Place Of Work required'
+        }
 
-         if (!values.placeOfWork) {
-             errors.placeOfWork = 'Place Of Work required'
-         }
+        return errors
+    }
 
-         return errors
-     }
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        setErrors(validate(individual))
+        setIsSubmittingp(true)
+    }
 
-     const handleSubmit = (e) => {
-         e.preventDefault()
-         setErrors(validate(individual))
-         setIsSubmittingp(true)
-     }
-
-     React.useEffect(() => {
-         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-          
-             dispatch(supervisorUpdate(individual))
-         } else if (
-             Object.keys(errors).length > 0 &&
-             isSubmittingp &&
-             changeMade
-         ) {
-             setIsSubmittingp(false)
-             setChnageMade(false)
-         }
-     }, [isSubmittingp])
+    React.useEffect(() => {
+        if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
+            dispatch(supervisorUpdate(individual))
+        } else if (
+            Object.keys(errors).length > 0 &&
+            isSubmittingp &&
+            changeMade
+        ) {
+            setIsSubmittingp(false)
+            setChnageMade(false)
+        }
+    }, [isSubmittingp])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{
-                        title: 'Edit Supervisor ',
-                        count: null,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: 'Edit Supervisor ',
+                            count: null,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={handleSubmit}>
@@ -221,7 +228,13 @@ const EditPhdSupervisor = () => {
 
 export default EditPhdSupervisor
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {
@@ -254,4 +267,3 @@ const SubmitButton = styled(Box)`
         }
     }
 `
-

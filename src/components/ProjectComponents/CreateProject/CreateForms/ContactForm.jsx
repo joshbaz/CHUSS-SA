@@ -1,7 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input } from '@chakra-ui/react'
-const ContactForm = ({ values, handleChange }) => {
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
+
+const ContactForm = ({ values, handleChange, setFieldValue, errors }) => {
     return (
         <FormContainer>
             <Box className='form_container'>
@@ -23,13 +26,30 @@ const ContactForm = ({ values, handleChange }) => {
                                 Phone Number <span>*</span>
                             </label>
                             <fieldset>
-                                <Input
-                                    type='text'
-                                    name='phoneNumber'
+                                <PhoneInput
+                                    inputStyle={{
+                                        width: '100%',
+                                    }}
+                                    inputProps={{
+                                        name: 'phoneNumber',
+                                    }}
+                                    country={'ug'}
                                     value={values.phoneNumber}
-                                    onChange={handleChange}
-                                    placeholder='i.e 0787785114'
+                                    name='phoneNumber'
+                                    onChange={(phone, e, formatedVal) =>
+                                        setFieldValue(
+                                            'phoneNumber',
+                                            formatedVal.target.value
+                                        )
+                                    }
+                                    placeholder={'e.g 256787785114'}
                                 />
+
+                                {errors && errors.phoneNumber ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.phoneNumber}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -45,11 +65,22 @@ const ContactForm = ({ values, handleChange }) => {
                             <fieldset>
                                 <Input
                                     type='email'
+                                    className={
+                                        errors && errors.email
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     name='email'
                                     value={values.email}
                                     onChange={handleChange}
                                     placeholder={'i.e apollo@gmail.com'}
                                 />
+
+                                {errors && errors.email ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.email}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                         <Stack
@@ -128,5 +159,22 @@ const FormContainer = styled(Box)`
 
     .formfields__Dfieldset {
         width: 100%;
+    }
+
+    .input_error {
+        border-color: red !important;
+        box-shadow: none;
+    }
+`
+
+const ErrorMsg = styled(Box)`
+    font-size: 13px;
+    line-height: 20px;
+    padding: 5px 10px;
+    color: #f14c54;
+    font-family: 'Inter', sans-serif;
+
+    .filesError {
+        padding: 0;
     }
 `

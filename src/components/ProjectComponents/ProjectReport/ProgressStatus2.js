@@ -13,6 +13,9 @@ import {
     Button,
     useToast,
     Input,
+    RadioGroup,
+    Radio,
+    Wrap,
 } from '@chakra-ui/react'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 //import { renderToStaticMarkup } from 'react-dom/server'
@@ -162,7 +165,7 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
                         }
                     })
 
-                    console.log('allnews', newData)
+                    //console.log('allnews', newData)
 
                     let allValues = [
                         {
@@ -341,6 +344,17 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
         })
     }
 
+    /** radio buttons for status entry type */
+    const statusUpdateEntryChange = (name, onit) => {
+        console.log('valueonit', onit)
+        setIsSubmittingp(false)
+        setChangeMade(true)
+        setNewActiveStatus({
+            ...newActiveStatus,
+            [name]: `${onit}`,
+        })
+    }
+
     let validate = (values) => {
         const errors = {}
 
@@ -490,13 +504,12 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
         hex: yup.string().required('color missing too'),
     })
     return (
-        <Container>
+        <Container w='100%'>
             <Stack spacing='0px' className='form_container'>
                 {/** form title */}
                 <Stack
                     className='formtitle'
                     direction='row'
-                    w='100%'
                     alignItems='center'
                     justifyContent='space-between'>
                     <Box>
@@ -629,11 +642,34 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
                                                     justifyContent: 'center',
                                                 }}>
                                                 <StatusText>
-                                                    {data.title !==
-                                                        'Add Status' &&
-                                                    !firstlast
-                                                        ? data.title
-                                                        : null}
+                                                    <Stack>
+                                                        <Text>
+                                                            {data.title !==
+                                                                'Add Status' &&
+                                                            !firstlast
+                                                                ? data.title
+                                                                : null}
+                                                        </Text>
+
+                                                        <Stack direction='row'>
+                                                            <Text>
+                                                                Start Date
+                                                            </Text>
+                                                            <Text></Text>
+                                                        </Stack>
+                                                        <Stack direction='row'>
+                                                            <Text>
+                                                                Expected At
+                                                            </Text>
+                                                            <Text></Text>
+                                                        </Stack>
+                                                        <Stack direction='row'>
+                                                            <Text>
+                                                                End Date
+                                                            </Text>
+                                                            <Text></Text>
+                                                        </Stack>
+                                                    </Stack>
                                                 </StatusText>
                                             </Box>
                                         </Stack>
@@ -645,6 +681,7 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
                 </Stack>
             </Stack>
 
+            {/** status change */}
             <Modal w='100vw' isOpen={isOpen} p='0' onClose={cancelStatusChange}>
                 <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
                 <ModalContent p='0'>
@@ -851,54 +888,79 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
                                                         </label>
 
                                                         <fieldset>
-                                                            <Input
-                                                                type='text'
+                                                            <RadioGroup
+                                                                onChange={(
+                                                                    onval
+                                                                ) => {
+                                                                    statusUpdateEntryChange(
+                                                                        'statusEntryType',
+                                                                        onval
+                                                                    )
+                                                                }}
+                                                                name='statusEntryType'
                                                                 value={
                                                                     newActiveStatus !==
                                                                         null &&
-                                                                    newActiveStatus.endDate
-                                                                        ? newActiveStatus.endDate
+                                                                    newActiveStatus.statusEntryType
+                                                                        ? newActiveStatus.statusEntryType
                                                                         : ''
-                                                                }
-                                                                name='tagName'
-                                                                onChange={
-                                                                    statusUpdateDetailsChange
-                                                                }
-                                                                placeholder={
-                                                                    'i.e In Review'
-                                                                }
-                                                            />
+                                                                }>
+                                                                <Stack
+                                                                    direction='row'
+                                                                    spacing='20px'>
+                                                                    <Radio value='new entry'>
+                                                                        <Stack spacing='0'>
+                                                                            <Text className='radio_title'>
+                                                                                new
+                                                                                entry
+                                                                            </Text>
+                                                                        </Stack>
+                                                                    </Radio>
+
+                                                                    <Radio value='old entry'>
+                                                                        <Stack spacing='0'>
+                                                                            <Text className='radio_title'>
+                                                                                old
+                                                                                entry
+                                                                            </Text>
+                                                                        </Stack>
+                                                                    </Radio>
+                                                                </Stack>
+                                                            </RadioGroup>
                                                         </fieldset>
                                                     </Stack>
                                                 </Stack>
 
-                                                <Stack direction='column'>
-                                                    <Stack>
-                                                        <label>
-                                                            End Date{' '}
-                                                            <span>*</span>
-                                                        </label>
+                                                {newActiveStatus.statusEntryType ===
+                                                'old entry' ? (
+                                                    <Stack direction='column'>
+                                                        <Stack>
+                                                            <label>
+                                                                End Date{' '}
+                                                                <span>*</span>
+                                                            </label>
 
-                                                        <fieldset>
-                                                            <Input
-                                                                placeholder='Select Date and Time'
-                                                                size='md'
-                                                                type='date'
-                                                                name='endDate'
-                                                                value={
-                                                                    newActiveStatus !==
-                                                                        null &&
-                                                                    newActiveStatus.endDate
-                                                                        ? newActiveStatus.endDate
-                                                                        : ''
-                                                                }
-                                                                onChange={
-                                                                    statusUpdateDetailsChange
-                                                                }
-                                                            />
-                                                        </fieldset>
+                                                            <fieldset>
+                                                                <Input
+                                                                    placeholder='Select Date and Time'
+                                                                    size='md'
+                                                                    type='date'
+                                                                    name='endDate'
+                                                                    value={
+                                                                        newActiveStatus !==
+                                                                            null &&
+                                                                        newActiveStatus.endDate
+                                                                            ? newActiveStatus.endDate
+                                                                            : ''
+                                                                    }
+                                                                    onChange={
+                                                                        statusUpdateDetailsChange
+                                                                    }
+                                                                />
+                                                            </fieldset>
+                                                        </Stack>
                                                     </Stack>
-                                                </Stack>
+                                                ) : null}
                                             </Stack>
                                         )}
                                     </Stack>
@@ -1118,7 +1180,7 @@ const Container = styled(Box)`
     }
     .content_wrap {
         height: 100%;
-        width: 100%;
+        overflow-x: hidden;
     }
 
     .status_dropdown {
@@ -1148,7 +1210,7 @@ const StatusContainer = styled(Stack)`
     align-items: center;
     height: 100%;
     width: 100%;
-    z-index: 10;
+
     overflow-x: auto;
 
     ul {
@@ -1160,7 +1222,6 @@ const StatusContainer = styled(Stack)`
         align-items: center;
         height: 100%;
         width: 100%;
-        z-index: 10;
     }
     li {
         width: 100%;
@@ -1250,7 +1311,7 @@ const StatusContainer = styled(Stack)`
         text-transform: uppercase;
         color: #464f60;
         padding: 0 5px;
-        flex-grow: 0;
+        flex-grow: 1;
 
         width: 100px;
         width: 60px;
@@ -1270,6 +1331,7 @@ const StatusContainer = styled(Stack)`
         height: 23px;
         position: relative;
         top: 40px;
+        flex-grow: 1;
         clip-path: polygon(
             0 10px,
             calc(100% - 0px) 10px,
@@ -1278,7 +1340,6 @@ const StatusContainer = styled(Stack)`
             calc(100% - 0px) calc(100% - 9px),
             0 calc(100% - 9px)
         );
-        flex-grow: 1;
     }
 
     .completed {
@@ -1320,7 +1381,6 @@ const StatusContainer = styled(Stack)`
 
     li:nth-last-child(1) {
         width: 50%;
-
         &:after {
             content: none;
             display: none;
@@ -1329,7 +1389,7 @@ const StatusContainer = styled(Stack)`
     }
 `
 
-const StatusText = styled(Text)`
+const StatusText = styled(Box)`
     bottom: 0;
     position: absolute;
     text-align: center;
@@ -1495,6 +1555,15 @@ const PopupForm = styled(Stack)`
         &:hover {
             background: #f4797f;
         }
+    }
+
+    .radio_title {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 20px;
+        color: #464f60;
     }
 `
 

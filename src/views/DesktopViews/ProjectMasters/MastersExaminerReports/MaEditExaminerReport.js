@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast, Button } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -24,18 +25,19 @@ import { initSocketConnection } from '../../../../socketio.service.js'
 const MaEditExaminerReport = () => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [changeMade, setChnageMade] = React.useState(false)
-   // const [initials, setInitials] = React.useState(null)
+    // const [initials, setInitials] = React.useState(null)
     const [newRDeat, setnewRDeat] = React.useState(null)
 
     const [errors, setErrors] = React.useState({})
-   // const [loadingComponen, setloadingComponent] = React.useState(false)
+    // const [loadingComponen, setloadingComponent] = React.useState(false)
 
     let routeNavigate = useNavigate()
     let params = useParams()
     let dispatch = useDispatch()
     let projectCase = useSelector((state) => state.project)
-    let { individualReport, allreports, isSuccess, isError, message } =
-        useSelector((state) => state.report)
+    let { allreports, isSuccess, isError, message } = useSelector(
+        (state) => state.report
+    )
     useEffect(() => {
         dispatch(getAllExaminerReports())
         dispatch(getExaminerReport(params.rp_id))
@@ -188,8 +190,6 @@ const MaEditExaminerReport = () => {
         setIsSubmittingp(true)
     }
 
-    const diffhanldeSubmit = () => {}
-
     useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
             let newInitals = {
@@ -213,17 +213,26 @@ const MaEditExaminerReport = () => {
 
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{
-                        title: 'Masters report for update',
-                        count: null,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: 'Masters report for update',
+                            count: null,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={handleSubmit}>
@@ -317,7 +326,13 @@ const MaEditExaminerReport = () => {
 
 export default MaEditExaminerReport
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

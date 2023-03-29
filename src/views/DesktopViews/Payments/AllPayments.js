@@ -25,7 +25,7 @@ import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io'
 import { FaFilter } from 'react-icons/fa'
 import { BiSearch } from 'react-icons/bi'
 import { GrClose } from 'react-icons/gr'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     reset,
@@ -59,7 +59,7 @@ const AllPayments = () => {
         },
     ]
 
-   // const [filterActive, setFilterActive] = React.useState(false)
+    // const [filterActive, setFilterActive] = React.useState(false)
     const [filterInfo, setFilterInfo] = React.useState([])
 
     /** handle search option change */
@@ -210,7 +210,7 @@ const AllPayments = () => {
         })
     }
 
-   // let routeNavigate = useNavigate()
+    // let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let { isError, isSuccess, message } = useSelector((state) => state.payment)
 
@@ -218,14 +218,14 @@ const AllPayments = () => {
     let toast = useToast()
 
     useEffect(() => {
-       // let page = Location.search.split('').slice(3).join('')
+        // let page = Location.search.split('').slice(3).join('')
         // let values = {
         //     page: page,
         // }
 
         dispatch(getPaginatedPayments())
         dispatch(getAllPayments())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [Location])
 
     useEffect(() => {
@@ -254,12 +254,22 @@ const AllPayments = () => {
 
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar topbarData={{ title: 'All Payments', count: null }} />
+            <Stack
+                className='overwrap'
+                direction='column'
+                w='100%'
+                spacing='20px'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{ title: 'All Payments', count: null }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'0 20px'}>
                     {/** filter inputs && button */}
@@ -520,6 +530,11 @@ export default AllPayments
 
 const Container = styled(Stack)`
     font-family: 'Inter', sans-serif;
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
     .add_button {
         height: 32px;
         color: #ffffff;

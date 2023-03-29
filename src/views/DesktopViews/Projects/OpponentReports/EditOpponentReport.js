@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast, Button } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -20,13 +21,12 @@ const EditOpponentReport = (props) => {
     const [changeMade, setChnageMade] = React.useState(false)
     const [initials, setInitials] = React.useState(null)
     const [errors, setErrors] = React.useState({})
-    const [loadingComponent, setloadingComponent] = React.useState(false)
+    // const [loadingComponent, setloadingComponent] = React.useState(false)
     let routeNavigate = useNavigate()
     let params = useParams()
     let dispatch = useDispatch()
 
     useEffect(() => {
-     
         dispatch(getOpponentReport(params.rp_id))
     }, [params.rp_id, dispatch])
 
@@ -141,7 +141,6 @@ const EditOpponentReport = (props) => {
             setIsSubmittingp &&
             changeMade
         ) {
-           
             dispatch(updateOpponentReport(initials))
         } else if (
             Object.keys(errors).length > 0 &&
@@ -154,14 +153,26 @@ const EditOpponentReport = (props) => {
     }, [isSubmittingp])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{ title: 'Edit Opponent Report', count: null }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: 'Edit Opponent Report',
+                            count: null,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={handleSubmit}>
@@ -251,7 +262,13 @@ const EditOpponentReport = (props) => {
 
 export default EditOpponentReport
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {
@@ -284,4 +301,3 @@ const SubmitButton = styled(Box)`
         }
     }
 `
-

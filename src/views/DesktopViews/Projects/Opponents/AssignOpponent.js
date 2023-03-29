@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useEffect } from 'react'
 import {
     Box,
@@ -26,6 +28,7 @@ import {
     allOpponents,
     assignOpponent,
 } from '../../../../store/features/opponents/opponentSlice'
+//work on
 import {
     getIndividualProject,
     reset as preset,
@@ -74,7 +77,7 @@ const AssignOpponent = ({ ...props }) => {
 
     const handleSearchInput = (e) => {
         e.preventDefault()
-     
+
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
         // let filterSelected = {
@@ -294,23 +297,31 @@ const AssignOpponent = ({ ...props }) => {
     }, [searchWord, filterActive])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar
-                    topbarData={{
-                        title: `${
-                            IndividualProject.individual !== null &&
-                            IndividualProject.individual.student.studentName
-                                ? `Selecting Opponents for ${IndividualProject.individual.student.studentName}`
-                                : `Opponents Selection`
-                        }`,
-                        count: null,
-                        backButton: true,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                w='100%'
+                spacing='20px'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: `${
+                                IndividualProject.individual !== null &&
+                                IndividualProject.individual.student.studentName
+                                    ? `Selecting Opponents for ${IndividualProject.individual.student.studentName}`
+                                    : `Opponents Selection`
+                            }`,
+                            count: null,
+                            backButton: true,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'0 20px'}>
                     <Stack
@@ -485,6 +496,11 @@ const AssignOpponent = ({ ...props }) => {
 export default AssignOpponent
 
 const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
     .assign_button {
         height: 32px;
         background: #f7f9fc;

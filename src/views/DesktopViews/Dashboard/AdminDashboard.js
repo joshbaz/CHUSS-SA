@@ -258,14 +258,22 @@ const AdminDashboard = () => {
     }, [allprojects.items])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar
-                    topbarData={{ title: 'Admin Dashboard', count: null }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                w='100%'
+                spacing='20px'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{ title: 'Admin Dashboard', count: null }}
+                    />
+                </Box>
 
                 {/** loading effect */}
                 {windowloading && <h1>Loading...</h1>}
@@ -765,6 +773,11 @@ const AdminDashboard = () => {
 export default AdminDashboard
 
 const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
     .s_title {
         font-family: 'Inter', sans-serif;
         font-style: normal;

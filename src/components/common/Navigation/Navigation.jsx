@@ -139,7 +139,12 @@ const Navigation = () => {
         }
     }, [user, isSuccess])
     return (
-        <Container direction='column' w='72px' h='100vh' spacing='32px'>
+        <Container
+            direction='column'
+            w='72px'
+            position='fixed'
+            h='100vh'
+            spacing='32px'>
             <Box className='logo'>
                 <img src={Logo} alt='' />
             </Box>

@@ -22,7 +22,7 @@ const TopBar = ({ topbarData }) => {
     const onLogout = () => {
         dispatch(Logout())
         dispatch(reset())
-         routeNavigate('/auth/signin', { replace: true })
+        routeNavigate('/auth/signin', { replace: true })
     }
 
     useEffect(() => {
@@ -31,6 +31,7 @@ const TopBar = ({ topbarData }) => {
 
     return (
         <Container
+           
             direction='row'
             h='56px'
             alignItems='center'
@@ -80,7 +81,7 @@ export default TopBar
 
 const Container = styled(Stack)`
     background: #fbfbfb;
-
+    overflow-x: hidden;
     h1 {
         font-family: 'Inter', sans-serif;
         font-style: normal;

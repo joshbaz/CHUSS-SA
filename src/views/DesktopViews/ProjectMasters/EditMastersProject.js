@@ -7,8 +7,8 @@ import TopBar from '../../../components/common/Navigation/TopBar'
 import { MdArrowBack } from 'react-icons/md'
 import EditStudentDetailForm from '../../../components/ProjectComponents/EditProject/EditStudentDetailForm'
 import EditContactForm from '../../../components/ProjectComponents/EditProject/EditContactForm'
-import EditSupervisorForm from '../../../components/ProjectComponents/EditProject/EditSupervisorForm'
-import EditUploadFileForm from '../../../components/ProjectComponents/EditProject/EditUploadFileForm'
+// import EditSupervisorForm from '../../../components/ProjectComponents/EditProject/EditSupervisorForm'
+// import EditUploadFileForm from '../../../components/ProjectComponents/EditProject/EditUploadFileForm'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
     reset,
@@ -22,8 +22,8 @@ import {
     academicYearGetAll,
 } from '../../../store/features/preferences/preferenceSlice'
 import { useSelector, useDispatch } from 'react-redux'
-import EditUploadThesis from '../../../components/ProjectComponents/EditProject/EditUploadThesis'
-import EditRegistrationForm from '../../../components/ProjectComponents/EditProject/EditRegistrationForm'
+// import EditUploadThesis from '../../../components/ProjectComponents/EditProject/EditUploadThesis'
+// import EditRegistrationForm from '../../../components/ProjectComponents/EditProject/EditRegistrationForm'
 
 const EditMastersProject = (props) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
@@ -252,12 +252,23 @@ const EditMastersProject = (props) => {
     }, [isSubmittingp])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar topbarData={{ title: 'Update Student', count: null }} />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{ title: 'Update Student', count: null }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={handleSubmit}>
@@ -339,7 +350,13 @@ const EditMastersProject = (props) => {
 
 export default EditMastersProject
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { Box, Stack, Input, Select } from '@chakra-ui/react'
+import { Box, Stack, Input, Select, useToast } from '@chakra-ui/react'
 import {
     allSchools,
     reset,
@@ -10,16 +11,20 @@ import { useDispatch, useSelector } from 'react-redux'
 const StudentDetailForm = ({
     values,
     handleChange,
+    errors,
     programData,
     setFieldValue,
 }) => {
     const [departments, setDepartments] = React.useState([])
     let dispatch = useDispatch()
+    let toast = useToast()
     useEffect(() => {
         dispatch(allSchools())
     }, [])
 
-    let { allSchoolItems } = useSelector((state) => state.school)
+    let { allSchoolItems, isError, message } = useSelector(
+        (state) => state.school
+    )
 
     const handleSchoolChange = (e) => {
         e.preventDefault()
@@ -42,7 +47,7 @@ const StudentDetailForm = ({
         }
     }
 
-   // console.log('finding', values.schoolName)
+    // console.log('finding', values.schoolName)
 
     const handleDepartmentChange = (e) => {
         e.preventDefault()
@@ -62,6 +67,22 @@ const StudentDetailForm = ({
             setFieldValue('departmentName', '')
         }
     }
+
+    useEffect(() => {
+        if (isError) {
+            toast({
+                position: 'top',
+                title: message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            dispatch(reset())
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isError, message, dispatch])
 
     return (
         <FormContainer>
@@ -88,6 +109,11 @@ const StudentDetailForm = ({
                             </label>
                             <fieldset>
                                 <Input
+                                    className={
+                                        errors && errors.registrationNumber
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     variant='outline'
                                     type='text'
                                     value={values.registrationNumber}
@@ -95,6 +121,11 @@ const StudentDetailForm = ({
                                     onChange={handleChange}
                                     placeholder={'[YEAR]/[CODE]/[ID]'}
                                 />
+                                {errors && errors.registrationNumber ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.registrationNumber}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                         <Stack
@@ -106,11 +137,21 @@ const StudentDetailForm = ({
                             <fieldset>
                                 <Input
                                     type='text'
+                                    className={
+                                        errors && errors.studentName
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     value={values.studentName}
                                     name='studentName'
                                     onChange={handleChange}
                                     placeholder={'Lastname, Firstname'}
                                 />
+                                {errors && errors.studentName ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.studentName}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Stack>
@@ -142,6 +183,12 @@ const StudentDetailForm = ({
                                         </>
                                     ) : null}
                                 </Select>
+
+                                {errors && errors.programName ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.programName}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -154,11 +201,22 @@ const StudentDetailForm = ({
                             <fieldset>
                                 <Input
                                     type='text'
+                                    className={
+                                        errors && errors.degreeProgram
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     value={values.degreeProgram}
                                     name='degreeProgram'
                                     onChange={handleChange}
                                     placeholder='i.e Ma in Public Science'
                                 />
+
+                                {errors && errors.degreeProgram ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.degreeProgram}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -187,6 +245,11 @@ const StudentDetailForm = ({
                                         )
                                     })}
                                 </Select>
+                                {errors && errors.schoolName ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.schoolName}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                         <Stack
@@ -217,6 +280,11 @@ const StudentDetailForm = ({
                                         )
                                     })}
                                 </Select>
+                                {errors && errors.departmentName ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.departmentName}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Stack>
@@ -227,11 +295,22 @@ const StudentDetailForm = ({
                             <fieldset>
                                 <Input
                                     type='text'
+                                    className={
+                                        errors && errors.Topic
+                                            ? 'input_error'
+                                            : ''
+                                    }
                                     value={values.Topic}
                                     name='Topic'
                                     onChange={handleChange}
                                     placeholder='i.e Uganda Refugee Policy and Food Policy'
                                 />
+
+                                {errors && errors.Topic ? (
+                                    <ErrorMsg className='filesError'>
+                                        {errors.Topic}
+                                    </ErrorMsg>
+                                ) : null}
                             </fieldset>
                         </Stack>
                     </Box>
@@ -297,5 +376,22 @@ const FormContainer = styled(Box)`
 
     .formfields__Dfieldset {
         width: 100%;
+    }
+
+    .input_error {
+        border-color: red !important;
+        box-shadow: none;
+    }
+`
+
+const ErrorMsg = styled(Box)`
+    font-size: 13px;
+    line-height: 20px;
+    padding: 5px 10px;
+    color: #f14c54;
+    font-family: 'Inter', sans-serif;
+
+    .filesError {
+        padding: 0;
     }
 `

@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useEffect } from 'react'
 import {
     Box,
@@ -33,283 +35,291 @@ import {
 import SupervisorTable from '../../../../components/ProjectComponents/AssignSupervisors/SupervisorTable'
 
 const AssignSupervisor = () => {
-   const [filterSearchOption, setFilterSearchOption] = React.useState('All')
-   const [searchWord, setSearchWord] = React.useState('')
-   const [perPage, setPerPage] = React.useState(10)
+    const [filterSearchOption, setFilterSearchOption] = React.useState('All')
+    const [searchWord, setSearchWord] = React.useState('')
+    const [perPage, setPerPage] = React.useState(10)
 
-   const [filterActive, setFilterActive] = React.useState(false)
-   const [filterInfo, setFilterInfo] = React.useState([])
-   const [projectId, setProjectId] = React.useState('')
+    const [filterActive, setFilterActive] = React.useState(false)
+    const [filterInfo, setFilterInfo] = React.useState([])
+    const [projectId, setProjectId] = React.useState('')
 
-   const [allDisplayData, setAllDisplayData] = React.useState({
-       currentPage: 1,
-       itemsPerPage: 10,
-       items: [],
-       allItems: [],
-       totalItemsDisplayed: 0,
-       totalItems: 0,
-       totalPages: 0,
-   })
-   const [searchData, setSearchData] = React.useState({
-       currentPage: 1,
-       itemsPerPage: 10,
-       items: [],
-       allSearchItems: [],
-       totalItemsDisplayed: 0,
-       totalSearchedItems: 0,
-       totalPages: 0,
-   })
+    const [allDisplayData, setAllDisplayData] = React.useState({
+        currentPage: 1,
+        itemsPerPage: 10,
+        items: [],
+        allItems: [],
+        totalItemsDisplayed: 0,
+        totalItems: 0,
+        totalPages: 0,
+    })
+    const [searchData, setSearchData] = React.useState({
+        currentPage: 1,
+        itemsPerPage: 10,
+        items: [],
+        allSearchItems: [],
+        totalItemsDisplayed: 0,
+        totalSearchedItems: 0,
+        totalPages: 0,
+    })
 
-   const [selectedExaminers, setSelectedExaminers] = React.useState([])
-   const [isSubmittingp, setIsSubmittingp] = React.useState(false)
-   const { isOpen, onOpen, onClose } = useDisclosure()
-   let dispatch = useDispatch()
-   let params = useParams()
-   let toast = useToast()
-   let { allSupervisorItems, isSuccess, isError, message } = useSelector(
-       (state) => state.supervisor
-   )
-   let IndividualProject = useSelector((state) => state.project)
+    const [selectedExaminers, setSelectedExaminers] = React.useState([])
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    let dispatch = useDispatch()
+    let params = useParams()
+    let toast = useToast()
+    let { allSupervisorItems, isSuccess, isError, message } = useSelector(
+        (state) => state.supervisor
+    )
+    let IndividualProject = useSelector((state) => state.project)
 
-   const handleSearchInput = (e) => {
-       e.preventDefault()
-     
-       let value = e.target.value || ''
-       setSearchWord(value.toLowerCase())
-       // let filterSelected = {
-       //     title: filterSearchOption,
-       //     searchfor: e.target.value,
-       // }
-       // setFilterInfo([...filterInfo, filterSelected])
-   }
+    const handleSearchInput = (e) => {
+        e.preventDefault()
 
-   const handleSubmitFilter = () => {
-       if (searchWord) {
-           if (filterInfo.length > 0) {
-               let newFilterInfo = [...filterInfo]
+        let value = e.target.value || ''
+        setSearchWord(value.toLowerCase())
+        // let filterSelected = {
+        //     title: filterSearchOption,
+        //     searchfor: e.target.value,
+        // }
+        // setFilterInfo([...filterInfo, filterSelected])
+    }
 
-               for (let i = 0; i < newFilterInfo.length; i++) {
-                   let iteration = i + 1
+    const handleSubmitFilter = () => {
+        if (searchWord) {
+            if (filterInfo.length > 0) {
+                let newFilterInfo = [...filterInfo]
 
-                   if (newFilterInfo[i].title === filterSearchOption) {
-                       if (newFilterInfo[i].searchfor.includes(searchWord)) {
-                           return null
-                       } else {
-                           let filterSelected = {
-                               title: filterSearchOption,
-                               searchfor: [
-                                   ...newFilterInfo[i].searchfor,
-                                   searchWord,
-                               ],
-                           }
-                           newFilterInfo.splice(i, 1, filterSelected)
-                           setFilterInfo(newFilterInfo)
-                           setSearchWord('')
-                           return filterSelected
-                       }
-                   } else if (
-                       newFilterInfo[i].title !== filterSearchOption &&
-                       iteration === newFilterInfo.length
-                   ) {
-                       let filterSelected = {
-                           title: filterSearchOption,
-                           searchfor: [searchWord],
-                       }
+                for (let i = 0; i < newFilterInfo.length; i++) {
+                    let iteration = i + 1
 
-                       setFilterInfo([...newFilterInfo, filterSelected])
-                       setSearchWord('')
-                   }
-               }
-           } else {
-               let filterSelected = {
-                   title: filterSearchOption,
-                   searchfor: [searchWord],
-               }
+                    if (newFilterInfo[i].title === filterSearchOption) {
+                        if (newFilterInfo[i].searchfor.includes(searchWord)) {
+                            return null
+                        } else {
+                            let filterSelected = {
+                                title: filterSearchOption,
+                                searchfor: [
+                                    ...newFilterInfo[i].searchfor,
+                                    searchWord,
+                                ],
+                            }
+                            newFilterInfo.splice(i, 1, filterSelected)
+                            setFilterInfo(newFilterInfo)
+                            setSearchWord('')
+                            return filterSelected
+                        }
+                    } else if (
+                        newFilterInfo[i].title !== filterSearchOption &&
+                        iteration === newFilterInfo.length
+                    ) {
+                        let filterSelected = {
+                            title: filterSearchOption,
+                            searchfor: [searchWord],
+                        }
 
-               setFilterInfo([...filterInfo, filterSelected])
-               setSearchWord('')
-               //setFilterSearchOption('All')
-               // console.log('filtered Info', filterInfo)
-           }
-       }
-   }
-   let routeNavigate = useNavigate()
+                        setFilterInfo([...newFilterInfo, filterSelected])
+                        setSearchWord('')
+                    }
+                }
+            } else {
+                let filterSelected = {
+                    title: filterSearchOption,
+                    searchfor: [searchWord],
+                }
 
-   useEffect(() => {
-       if (params.pid) {
-           setProjectId(params.pid)
-           dispatch(getIndividualProject(params.pid))
-       }
-   }, [])
+                setFilterInfo([...filterInfo, filterSelected])
+                setSearchWord('')
+                //setFilterSearchOption('All')
+                // console.log('filtered Info', filterInfo)
+            }
+        }
+    }
+    let routeNavigate = useNavigate()
 
-   useEffect(() => {
-       dispatch(allSupervisors())
-   }, [])
+    useEffect(() => {
+        if (params.pid) {
+            setProjectId(params.pid)
+            dispatch(getIndividualProject(params.pid))
+        }
+    }, [])
 
-   /** set all the display Data */
-   useEffect(() => {
-       /** initial items  */
-       //items collected
-       const allItemsCollected = allSupervisorItems.items
-       //total all items
-       const totalItems = allSupervisorItems.items.length
-       let itemsPerPage = perPage
-       const currentPage = allDisplayData.currentPage
-       const indexOfLastItem = currentPage * itemsPerPage
-       const indexOfFirstItem = indexOfLastItem - itemsPerPage
+    useEffect(() => {
+        dispatch(allSupervisors())
+    }, [])
 
-       const currentItems = allItemsCollected.slice(
-           indexOfFirstItem,
-           indexOfLastItem
-       )
+    /** set all the display Data */
+    useEffect(() => {
+        /** initial items  */
+        //items collected
+        const allItemsCollected = allSupervisorItems.items
+        //total all items
+        const totalItems = allSupervisorItems.items.length
+        let itemsPerPage = perPage
+        const currentPage = allDisplayData.currentPage
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
 
-       const pageLength = Math.ceil(totalItems / itemsPerPage)
+        const currentItems = allItemsCollected.slice(
+            indexOfFirstItem,
+            indexOfLastItem
+        )
 
-       setAllDisplayData({
-           currentPage: currentPage,
-           itemsPerPage: itemsPerPage,
-           items: currentItems,
-           allItems: allSupervisorItems.items,
-           totalItemsDisplayed: currentItems.length,
-           totalItems: totalItems,
-           totalPages: pageLength,
-       })
-   }, [allSupervisorItems, perPage])
+        const pageLength = Math.ceil(totalItems / itemsPerPage)
 
-   useEffect(() => {
-       if (isError) {
-           toast({
-               position: 'top',
-               title: message,
-               status: 'error',
-               duration: 10000,
-               isClosable: true,
-           })
-           setIsSubmittingp(false)
-           dispatch(reset())
-       }
+        setAllDisplayData({
+            currentPage: currentPage,
+            itemsPerPage: itemsPerPage,
+            items: currentItems,
+            allItems: allSupervisorItems.items,
+            totalItemsDisplayed: currentItems.length,
+            totalItems: totalItems,
+            totalPages: pageLength,
+        })
+    }, [allSupervisorItems, perPage])
 
-       if (isSuccess && message) {
-           toast({
-               position: 'top',
-               title: message.message,
-               status: 'success',
-               duration: 10000,
-               isClosable: true,
-           })
-           setSelectedExaminers([])
-           setIsSubmittingp(false)
+    useEffect(() => {
+        if (isError) {
+            toast({
+                position: 'top',
+                title: message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            dispatch(reset())
+        }
 
-           onClose()
-           routeNavigate(`/phd/projects/projectreport/${params.pid}`, {
-               replace: true,
-           })
-           dispatch(reset())
-       }
+        if (isSuccess && message) {
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setSelectedExaminers([])
+            setIsSubmittingp(false)
 
-       dispatch(reset())
-   }, [isSuccess, isError, message])
+            onClose()
+            routeNavigate(`/phd/projects/projectreport/${params.pid}`, {
+                replace: true,
+            })
+            dispatch(reset())
+        }
 
-   /** handle popup submit */
-   const handleAssignSubmit = () => {
-       setIsSubmittingp(true)
-       let allValues = {
-           items: selectedExaminers,
-           projectId,
-       }
-       dispatch(assignSupervisor(allValues))
-   }
+        dispatch(reset())
+    }, [isSuccess, isError, message])
 
-   /** function to handle search supervisors */
-   const handleSearchSubmission = () => {
-       if (searchWord) {
-           setFilterActive(true)
-       }
-   }
+    /** handle popup submit */
+    const handleAssignSubmit = () => {
+        setIsSubmittingp(true)
+        let allValues = {
+            items: selectedExaminers,
+            projectId,
+        }
+        dispatch(assignSupervisor(allValues))
+    }
 
-   /** function to handle search reset */
-   const handleSearchReset = () => {
-       setFilterActive(false)
-       setSearchWord('')
-   }
+    /** function to handle search supervisors */
+    const handleSearchSubmission = () => {
+        if (searchWord) {
+            setFilterActive(true)
+        }
+    }
 
-   /** function to handle reset */
-   const handleResetAll = () => {
-       setFilterActive(false)
-       setSearchWord('')
-       setSelectedExaminers([])
-   }
+    /** function to handle search reset */
+    const handleSearchReset = () => {
+        setFilterActive(false)
+        setSearchWord('')
+    }
 
-   /** handle search */
-   const handleSearch = () => {
-       const searchResults = allDisplayData.allItems.filter((data1, index) => {
-           let name = `${data1.name.toLowerCase()}`
-           let tname = `${
-               data1.jobtitle.toLowerCase() + ' ' + data1.name.toLowerCase()
-           }`
+    /** function to handle reset */
+    const handleResetAll = () => {
+        setFilterActive(false)
+        setSearchWord('')
+        setSelectedExaminers([])
+    }
 
-           if (name.includes(searchWord)) {
-               return data1
-           }
+    /** handle search */
+    const handleSearch = () => {
+        const searchResults = allDisplayData.allItems.filter((data1, index) => {
+            let name = `${data1.name.toLowerCase()}`
+            let tname = `${
+                data1.jobtitle.toLowerCase() + ' ' + data1.name.toLowerCase()
+            }`
 
-           if (tname.includes(searchWord)) {
-               return data1
-           }
+            if (name.includes(searchWord)) {
+                return data1
+            }
 
-           return null
-       })
+            if (tname.includes(searchWord)) {
+                return data1
+            }
 
-       //items collected
-       const allItemsCollected = searchResults
-       //total all items
-       const totalItems = searchResults.length
-       let itemsPerPage = perPage
-       const currentPage = allDisplayData.currentPage
-       const indexOfLastItem = currentPage * itemsPerPage
-       const indexOfFirstItem = indexOfLastItem - itemsPerPage
+            return null
+        })
 
-       const currentItems = allItemsCollected.slice(
-           indexOfFirstItem,
-           indexOfLastItem
-       )
+        //items collected
+        const allItemsCollected = searchResults
+        //total all items
+        const totalItems = searchResults.length
+        let itemsPerPage = perPage
+        const currentPage = allDisplayData.currentPage
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
 
-       const pageLength = Math.ceil(totalItems / itemsPerPage)
+        const currentItems = allItemsCollected.slice(
+            indexOfFirstItem,
+            indexOfLastItem
+        )
 
-       setSearchData({
-           currentPage: currentPage,
-           itemsPerPage: itemsPerPage,
-           items: currentItems,
-           allSearchItems: searchResults,
-           totalItemsDisplayed: currentItems.length,
-           totalSearchedItems: totalItems,
-           totalPages: pageLength,
-       })
-   }
+        const pageLength = Math.ceil(totalItems / itemsPerPage)
 
-   useEffect(() => {
-       if (filterActive) {
-           handleSearch()
-       }
-   }, [searchWord, filterActive])
+        setSearchData({
+            currentPage: currentPage,
+            itemsPerPage: itemsPerPage,
+            items: currentItems,
+            allSearchItems: searchResults,
+            totalItemsDisplayed: currentItems.length,
+            totalSearchedItems: totalItems,
+            totalPages: pageLength,
+        })
+    }
+
+    useEffect(() => {
+        if (filterActive) {
+            handleSearch()
+        }
+    }, [searchWord, filterActive])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar
-                    topbarData={{
-                        title: `${
-                            IndividualProject.individual !== null &&
-                            IndividualProject.individual.student.studentName
-                                ? `Selecting Supervisor for ${IndividualProject.individual.student.studentName}`
-                                : `Examiner Selection`
-                        }`,
-                        count: null,
-                        backButton: true,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                w='100%'
+                spacing='20px'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: `${
+                                IndividualProject.individual !== null &&
+                                IndividualProject.individual.student.studentName
+                                    ? `Selecting Supervisor for ${IndividualProject.individual.student.studentName}`
+                                    : `Examiner Selection`
+                            }`,
+                            count: null,
+                            backButton: true,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'0 20px'}>
                     <Stack
@@ -484,6 +494,11 @@ const AssignSupervisor = () => {
 export default AssignSupervisor
 
 const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
     .assign_button {
         height: 32px;
         background: #f7f9fc;

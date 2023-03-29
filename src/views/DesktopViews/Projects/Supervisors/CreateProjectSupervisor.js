@@ -77,6 +77,28 @@ const CreateProjectSupervisor = () => {
         }
     }, [isError, isSuccess, message])
 
+    useEffect(() => {
+        if (IndividualProject.isError) {
+            if (helperFunctions !== null) {
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
+            }
+            toast({
+                position: 'top',
+                title: IndividualProject.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            dispatch(preset())
+        }
+    }, [
+        IndividualProject.isError,
+        IndividualProject.isSuccess,
+        IndividualProject.message,
+    ])
+
     const initialValues = {
         jobtitle: '',
         name: '',
@@ -100,23 +122,31 @@ const CreateProjectSupervisor = () => {
 
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar
-                    topbarData={{
-                        title: `${
-                            IndividualProject.individual !== null &&
-                            IndividualProject.individual.student.studentName
-                                ? `Creating Supervisor for ${IndividualProject.individual.student.studentName}`
-                                : `Supervisor Selection`
-                        }`,
-                        count: null,
-                        backButton: true,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                w='100%'
+                spacing='20px'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: `${
+                                IndividualProject.individual !== null &&
+                                IndividualProject.individual.student.studentName
+                                    ? `Creating Supervisor for ${IndividualProject.individual.student.studentName}`
+                                    : `Supervisor Selection`
+                            }`,
+                            count: null,
+                            backButton: true,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Formik
@@ -204,7 +234,13 @@ const CreateProjectSupervisor = () => {
 
 export default CreateProjectSupervisor
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

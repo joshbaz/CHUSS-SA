@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import {
     Box,
@@ -33,12 +34,14 @@ import {
 import SupervisorTable from '../../../../components/ProjectComponents/AssignSupervisors/SupervisorTable'
 
 const MaAssignSupervisors = () => {
+    // eslint-disable-next-line no-unused-vars
     const [filterSearchOption, setFilterSearchOption] = React.useState('All')
     const [searchWord, setSearchWord] = React.useState('')
+    // eslint-disable-next-line no-unused-vars
     const [perPage, setPerPage] = React.useState(10)
 
     const [filterActive, setFilterActive] = React.useState(false)
-    const [filterInfo, setFilterInfo] = React.useState([])
+    // const [filterInfo, setFilterInfo] = React.useState([])
     const [projectId, setProjectId] = React.useState('')
 
     const [allDisplayData, setAllDisplayData] = React.useState({
@@ -73,7 +76,7 @@ const MaAssignSupervisors = () => {
 
     const handleSearchInput = (e) => {
         e.preventDefault()
-       
+
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
         // let filterSelected = {
@@ -83,56 +86,56 @@ const MaAssignSupervisors = () => {
         // setFilterInfo([...filterInfo, filterSelected])
     }
 
-    const handleSubmitFilter = () => {
-        if (searchWord) {
-            if (filterInfo.length > 0) {
-                let newFilterInfo = [...filterInfo]
+    // const handleSubmitFilter = () => {
+    //     if (searchWord) {
+    //         if (filterInfo.length > 0) {
+    //             let newFilterInfo = [...filterInfo]
 
-                for (let i = 0; i < newFilterInfo.length; i++) {
-                    let iteration = i + 1
+    //             for (let i = 0; i < newFilterInfo.length; i++) {
+    //                 let iteration = i + 1
 
-                    if (newFilterInfo[i].title === filterSearchOption) {
-                        if (newFilterInfo[i].searchfor.includes(searchWord)) {
-                            return null
-                        } else {
-                            let filterSelected = {
-                                title: filterSearchOption,
-                                searchfor: [
-                                    ...newFilterInfo[i].searchfor,
-                                    searchWord,
-                                ],
-                            }
-                            newFilterInfo.splice(i, 1, filterSelected)
-                            setFilterInfo(newFilterInfo)
-                            setSearchWord('')
-                            return filterSelected
-                        }
-                    } else if (
-                        newFilterInfo[i].title !== filterSearchOption &&
-                        iteration === newFilterInfo.length
-                    ) {
-                        let filterSelected = {
-                            title: filterSearchOption,
-                            searchfor: [searchWord],
-                        }
+    //                 if (newFilterInfo[i].title === filterSearchOption) {
+    //                     if (newFilterInfo[i].searchfor.includes(searchWord)) {
+    //                         return null
+    //                     } else {
+    //                         let filterSelected = {
+    //                             title: filterSearchOption,
+    //                             searchfor: [
+    //                                 ...newFilterInfo[i].searchfor,
+    //                                 searchWord,
+    //                             ],
+    //                         }
+    //                         newFilterInfo.splice(i, 1, filterSelected)
+    //                         setFilterInfo(newFilterInfo)
+    //                         setSearchWord('')
+    //                         return filterSelected
+    //                     }
+    //                 } else if (
+    //                     newFilterInfo[i].title !== filterSearchOption &&
+    //                     iteration === newFilterInfo.length
+    //                 ) {
+    //                     let filterSelected = {
+    //                         title: filterSearchOption,
+    //                         searchfor: [searchWord],
+    //                     }
 
-                        setFilterInfo([...newFilterInfo, filterSelected])
-                        setSearchWord('')
-                    }
-                }
-            } else {
-                let filterSelected = {
-                    title: filterSearchOption,
-                    searchfor: [searchWord],
-                }
+    //                     setFilterInfo([...newFilterInfo, filterSelected])
+    //                     setSearchWord('')
+    //                 }
+    //             }
+    //         } else {
+    //             let filterSelected = {
+    //                 title: filterSearchOption,
+    //                 searchfor: [searchWord],
+    //             }
 
-                setFilterInfo([...filterInfo, filterSelected])
-                setSearchWord('')
-                //setFilterSearchOption('All')
-                // console.log('filtered Info', filterInfo)
-            }
-        }
-    }
+    //             setFilterInfo([...filterInfo, filterSelected])
+    //             setSearchWord('')
+    //             //setFilterSearchOption('All')
+    //             // console.log('filtered Info', filterInfo)
+    //         }
+    //     }
+    // }
     let routeNavigate = useNavigate()
 
     useEffect(() => {
@@ -293,23 +296,31 @@ const MaAssignSupervisors = () => {
     }, [searchWord, filterActive])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar
-                    topbarData={{
-                        title: `${
-                            IndividualProject.individual !== null &&
-                            IndividualProject.individual.student.studentName
-                                ? `Selecting Supervisor for ${IndividualProject.individual.student.studentName}`
-                                : `Examiner Selection`
-                        }`,
-                        count: null,
-                        backButton: true,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                w='100%'
+                spacing='20px'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: `${
+                                IndividualProject.individual !== null &&
+                                IndividualProject.individual.student.studentName
+                                    ? `Selecting Supervisor for ${IndividualProject.individual.student.studentName}`
+                                    : `Examiner Selection`
+                            }`,
+                            count: null,
+                            backButton: true,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'0 20px'}>
                     <Stack
@@ -398,7 +409,7 @@ const MaAssignSupervisors = () => {
                         </Stack>
                     </Stack>
 
-                    <Stack >
+                    <Stack>
                         <SupervisorTable
                             allExaminerItems={allDisplayData}
                             allSearchedData={searchData}
@@ -484,6 +495,11 @@ const MaAssignSupervisors = () => {
 export default MaAssignSupervisors
 
 const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
     .assign_button {
         height: 32px;
         background: #f7f9fc;

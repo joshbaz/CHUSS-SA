@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import { Box, Stack, Text, useToast, Button } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -6,8 +7,8 @@ import TopBar from '../../../components/common/Navigation/TopBar'
 import { MdArrowBack } from 'react-icons/md'
 import EditStudentDetailForm from '../../../components/ProjectComponents/EditProject/EditStudentDetailForm'
 import EditContactForm from '../../../components/ProjectComponents/EditProject/EditContactForm'
-import EditSupervisorForm from '../../../components/ProjectComponents/EditProject/EditSupervisorForm'
-import EditUploadFileForm from '../../../components/ProjectComponents/EditProject/EditUploadFileForm'
+// import EditSupervisorForm from '../../../components/ProjectComponents/EditProject/EditSupervisorForm'
+// import EditUploadFileForm from '../../../components/ProjectComponents/EditProject/EditUploadFileForm'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
     reset,
@@ -21,244 +22,254 @@ import {
     academicYearGetAll,
 } from '../../../store/features/preferences/preferenceSlice'
 import { useSelector, useDispatch } from 'react-redux'
-import EditUploadThesis from '../../../components/ProjectComponents/EditProject/EditUploadThesis'
-import EditRegistrationForm from '../../../components/ProjectComponents/EditProject/EditRegistrationForm'
+// import EditUploadThesis from '../../../components/ProjectComponents/EditProject/EditUploadThesis'
+// import EditRegistrationForm from '../../../components/ProjectComponents/EditProject/EditRegistrationForm'
 
 const EditPhdProject = (props) => {
-   const [isSubmittingp, setIsSubmittingp] = React.useState(false)
-   const [changeMade, setChnageMade] = React.useState(false)
-   const [initials, setInitials] = React.useState(null)
-   const [errors, setErrors] = React.useState({})
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+    const [changeMade, setChnageMade] = React.useState(false)
+    const [initials, setInitials] = React.useState(null)
+    const [errors, setErrors] = React.useState({})
 
-   let routeNavigate = useNavigate()
-   let params = useParams()
-   let dispatch = useDispatch()
+    let routeNavigate = useNavigate()
+    let params = useParams()
+    let dispatch = useDispatch()
 
-   React.useEffect(() => {
-       let id = params.id
-     
-       dispatch(getIndividualProject(id))
-       dispatch(programTypeGetAll())
-       dispatch(academicYearGetAll())
-   }, [params.id, dispatch])
+    React.useEffect(() => {
+        let id = params.id
 
-   let { individual, isLoading, isSuccess, isError, message } = useSelector(
-       (state) => state.project
-   )
-   const preferencesData = useSelector((state) => state.preference)
+        dispatch(getIndividualProject(id))
+        dispatch(programTypeGetAll())
+        dispatch(academicYearGetAll())
+    }, [params.id, dispatch])
 
-   let toast = useToast()
+    let { individual, isSuccess, isError, message } = useSelector(
+        (state) => state.project
+    )
+    const preferencesData = useSelector((state) => state.preference)
 
-   React.useEffect(() => {
-       if (isError) {
-           toast({
-               position: 'top',
-               title: message,
-               status: 'error',
-               duration: 10000,
-               isClosable: true,
-           })
-           setIsSubmittingp(() => false)
-           setChnageMade(false)
+    let toast = useToast()
 
-           dispatch(reset())
-       }
+    React.useEffect(() => {
+        if (isError) {
+            toast({
+                position: 'top',
+                title: message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(() => false)
+            setChnageMade(false)
 
-       if (isSuccess && isSubmittingp) {
-           toast({
-               position: 'top',
-               title: message.message,
-               status: 'success',
-               duration: 10000,
-               isClosable: true,
-           })
-           setIsSubmittingp(false)
-           setChnageMade(false)
-           dispatch(reset())
-       }
-       dispatch(reset())
-   }, [isError, isSuccess, message, dispatch])
+            dispatch(reset())
+        }
 
-   React.useEffect(() => {
-       if (initials === null && individual !== null) {
-           if (individual._id === params.id) {
-               setInitials({
-                   id: params.id,
-                   registrationNumber:
-                       individual !== null &&
-                       individual.student.registrationNumber
-                           ? individual.student.registrationNumber
-                           : '',
-                   studentName:
-                       individual !== null && individual.student.studentName
-                           ? individual.student.studentName
-                           : '',
-                   programType:
-                       individual !== null &&
-                       individual.student.graduate_program_type
-                           ? individual.student.graduate_program_type
-                           : '',
-                   degreeProgram:
-                       individual !== null && individual.student.degree_program
-                           ? individual.student.degree_program
-                           : '',
-                   schoolName:
-                       individual !== null && individual.student.schoolName
-                           ? individual.student.schoolName
-                           : '',
-                   departmentName:
-                       individual !== null && individual.student.departmentName
-                           ? individual.student.departmentName
-                           : '',
-                   Topic:
-                       individual !== null && individual.topic
-                           ? individual.topic
-                           : '',
-                   email:
-                       individual !== null && individual.student.email
-                           ? individual.student.email
-                           : '',
-                   phoneNumber:
-                       individual !== null && individual.student.phoneNumber
-                           ? individual.student.phoneNumber
-                           : '',
-                   alternativeEmail:
-                       individual !== null &&
-                       individual.student.alternative_email
-                           ? individual.student.alternative_email
-                           : '',
+        if (isSuccess && isSubmittingp) {
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            setChnageMade(false)
+            dispatch(reset())
+        }
+        dispatch(reset())
+    }, [isError, isSuccess, message, dispatch])
 
-                   semesterRegistration:
-                       individual !== null && individual.student.semester
-                           ? individual.student.semester
-                           : '',
-                   academicYear:
-                       individual !== null && individual.student.academicYear
-                           ? individual.student.academicYear
-                           : '',
+    React.useEffect(() => {
+        if (initials === null && individual !== null) {
+            if (individual._id === params.id) {
+                setInitials({
+                    id: params.id,
+                    registrationNumber:
+                        individual !== null &&
+                        individual.student.registrationNumber
+                            ? individual.student.registrationNumber
+                            : '',
+                    studentName:
+                        individual !== null && individual.student.studentName
+                            ? individual.student.studentName
+                            : '',
+                    programType:
+                        individual !== null &&
+                        individual.student.graduate_program_type
+                            ? individual.student.graduate_program_type
+                            : '',
+                    degreeProgram:
+                        individual !== null && individual.student.degree_program
+                            ? individual.student.degree_program
+                            : '',
+                    schoolName:
+                        individual !== null && individual.student.schoolName
+                            ? individual.student.schoolName
+                            : '',
+                    departmentName:
+                        individual !== null && individual.student.departmentName
+                            ? individual.student.departmentName
+                            : '',
+                    Topic:
+                        individual !== null && individual.topic
+                            ? individual.topic
+                            : '',
+                    email:
+                        individual !== null && individual.student.email
+                            ? individual.student.email
+                            : '',
+                    phoneNumber:
+                        individual !== null && individual.student.phoneNumber
+                            ? individual.student.phoneNumber
+                            : '',
+                    alternativeEmail:
+                        individual !== null &&
+                        individual.student.alternative_email
+                            ? individual.student.alternative_email
+                            : '',
 
-                   studentId:
-                       individual !== null && individual.student._id
-                           ? individual.student._id
-                           : '',
+                    semesterRegistration:
+                        individual !== null && individual.student.semester
+                            ? individual.student.semester
+                            : '',
+                    academicYear:
+                        individual !== null && individual.student.academicYear
+                            ? individual.student.academicYear
+                            : '',
 
-                   ...individual,
-               })
-           }
-       }
+                    studentId:
+                        individual !== null && individual.student._id
+                            ? individual.student._id
+                            : '',
 
-       // setloadingComponent(false)
-       // return () => {
-       //     setInitials(null)
-       // }
-   }, [individual, params.id, initials])
+                    ...individual,
+                })
+            }
+        }
 
-   const handleChange = (e) => {
-       e.preventDefault()
-       setIsSubmittingp(() => false)
-       setErrors({})
-       setChnageMade(true)
+        // setloadingComponent(false)
+        // return () => {
+        //     setInitials(null)
+        // }
+    }, [individual, params.id, initials])
 
-       setInitials((prevState) => ({
-           ...prevState,
-           [e.target.name]: e.target.value,
-       }))
-   }
+    const handleChange = (e) => {
+        e.preventDefault()
+        setIsSubmittingp(() => false)
+        setErrors({})
+        setChnageMade(true)
 
-   /**
-    * Custom function
-    * handles school and department change
-    *
-    */
-   const setFieldValue2 = (sname, vdata) => {
-       setIsSubmittingp(() => false)
-       setErrors({})
-       setChnageMade(true)
+        setInitials((prevState) => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+        }))
+    }
 
-       setInitials((prevState) => ({
-           ...prevState,
-           [sname]: vdata,
-       }))
-   }
+    /**
+     * Custom function
+     * handles school and department change
+     *
+     */
+    const setFieldValue2 = (sname, vdata) => {
+        setIsSubmittingp(() => false)
+        setErrors({})
+        setChnageMade(true)
 
-   /** handlefile Input */
-   // const handleFileChange = (type, InputFile) => {
-   //     setIsSubmittingp(() => false)
-   //     setErrors({})
-   //     setChnageMade(true)
-   //     //console.log(InputFile.url, 'InputFile')
-   //     if (type === 'scannedForm') {
-   //         setInitials({
-   //             ...initials,
-   //             scannedForm: InputFile,
-   //         })
-   //     }
+        setInitials((prevState) => ({
+            ...prevState,
+            [sname]: vdata,
+        }))
+    }
 
-   //     if (type === 'thesisfile') {
-   //         setInitials({
-   //             ...initials,
-   //             thesisfile: InputFile,
-   //         })
-   //     }
-   // }
+    /** handlefile Input */
+    // const handleFileChange = (type, InputFile) => {
+    //     setIsSubmittingp(() => false)
+    //     setErrors({})
+    //     setChnageMade(true)
+    //     //console.log(InputFile.url, 'InputFile')
+    //     if (type === 'scannedForm') {
+    //         setInitials({
+    //             ...initials,
+    //             scannedForm: InputFile,
+    //         })
+    //     }
 
-   let validate = (values) => {
-       const errors = {}
-       if (!values.registrationNumber) {
-           errors.registrationNumber = 'Registration Number required'
-       }
+    //     if (type === 'thesisfile') {
+    //         setInitials({
+    //             ...initials,
+    //             thesisfile: InputFile,
+    //         })
+    //     }
+    // }
 
-       if (!values.studentName) {
-           errors.studentName = 'Student Name required'
-       }
+    let validate = (values) => {
+        const errors = {}
+        if (!values.registrationNumber) {
+            errors.registrationNumber = 'Registration Number required'
+        }
 
-       if (!values.degreeProgram) {
-           errors.degreeProgram = 'Degree Program required'
-       }
+        if (!values.studentName) {
+            errors.studentName = 'Student Name required'
+        }
 
-       if (!values.schoolName) {
-           errors.schoolName = 'School Name required'
-       }
+        if (!values.degreeProgram) {
+            errors.degreeProgram = 'Degree Program required'
+        }
 
-       if (!values.email) {
-           errors.email = 'Email required'
-       }
+        if (!values.schoolName) {
+            errors.schoolName = 'School Name required'
+        }
 
-       if (!values.phoneNumber) {
-           errors.phoneNumber = 'Phone Number required'
-       }
+        if (!values.email) {
+            errors.email = 'Email required'
+        }
 
-       return errors
-   }
+        if (!values.phoneNumber) {
+            errors.phoneNumber = 'Phone Number required'
+        }
 
-   const handleSubmit = (e) => {
-       e.preventDefault()
-       setErrors(validate(initials))
-       setIsSubmittingp(true)
-   }
+        return errors
+    }
 
-   React.useEffect(() => {
-       if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-        
-           dispatch(projectUpdate(initials))
-       } else if (
-           Object.keys(errors).length > 0 &&
-           isSubmittingp &&
-           changeMade
-       ) {
-           setIsSubmittingp(false)
-           setChnageMade(false)
-       }
-   }, [isSubmittingp])
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        setErrors(validate(initials))
+        setIsSubmittingp(true)
+    }
+
+    React.useEffect(() => {
+        if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
+            dispatch(projectUpdate(initials))
+        } else if (
+            Object.keys(errors).length > 0 &&
+            isSubmittingp &&
+            changeMade
+        ) {
+            setIsSubmittingp(false)
+            setChnageMade(false)
+        }
+    }, [isSubmittingp])
 
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar topbarData={{ title: 'Update Student', count: null }} />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{ title: 'Update Student', count: null }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <form onSubmit={handleSubmit}>
@@ -340,7 +351,12 @@ const EditPhdProject = (props) => {
 
 export default EditPhdProject
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

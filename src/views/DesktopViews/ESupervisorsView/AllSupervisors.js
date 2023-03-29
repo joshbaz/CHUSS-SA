@@ -241,12 +241,22 @@ const AllSupervisors = () => {
 
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' w='100%' spacing='20px'>
-                <TopBar topbarData={{ title: 'Supervisors ', count: null }} />
+            <Stack
+                className='overwrap'
+                direction='column'
+                w='100%'
+                spacing='20px'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{ title: 'Supervisors ', count: null }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'0 20px'}>
                     {/** filter inputs && button */}
@@ -522,6 +532,11 @@ export default AllSupervisors
 
 const Container = styled(Stack)`
     font-family: 'Inter', sans-serif;
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
     .add_button {
         height: 32px;
         color: #ffffff;

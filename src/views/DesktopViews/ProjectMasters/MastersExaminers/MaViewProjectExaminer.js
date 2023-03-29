@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -31,8 +32,6 @@ const MaViewProjectExaminer = () => {
 
     let examinerCase = useSelector((state) => state.examiner)
     useEffect(() => {
-        
-
         /** dispatch to get project */
         dispatch(getIndividualProject(params.p_id))
         /** dispatch to get examiner */
@@ -52,8 +51,6 @@ const MaViewProjectExaminer = () => {
             (element) => element._id === params.e_id
         )
 
-     
-
         if (findExaminer) {
             setExaminerValues(findExaminer)
         }
@@ -64,14 +61,11 @@ const MaViewProjectExaminer = () => {
             (element) => element._id === params.p_id
         )
 
-      
-
         if (findProject) {
             setProjectValues(findProject)
         }
     }, [projectCase.allprojects, params.p_id])
 
-   
     let toast = useToast()
     useEffect(() => {
         if (projectCase.isError) {
@@ -103,12 +97,26 @@ const MaViewProjectExaminer = () => {
 
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar topbarData={{ title: 'Masters View Examiner', count: null }} />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: 'Masters View Examiner',
+                            count: null,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Stack
@@ -199,7 +207,13 @@ const MaViewProjectExaminer = () => {
 
 export default MaViewProjectExaminer
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {

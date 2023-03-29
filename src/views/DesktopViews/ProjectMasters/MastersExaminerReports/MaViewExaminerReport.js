@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Box, Stack, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -25,14 +26,8 @@ const MaViewExaminerReport = (props) => {
     let routeNavigate = useNavigate()
     let params = useParams()
     let dispatch = useDispatch()
-    let {
-        individualReport,
-        allreports,
-        isLoading,
-        isSuccess,
-        isError,
-        message,
-    } = useSelector((state) => state.report)
+    let { individualReport, allreports, isSuccess, isError, message } =
+        useSelector((state) => state.report)
     let IndividualProject = useSelector((state) => state.project)
     useEffect(() => {
         if (params.p_id) {
@@ -133,22 +128,31 @@ const MaViewExaminerReport = (props) => {
     }, [individualReport, params.rp_id, initials])
     return (
         <Container direction='row' w='100vw'>
-            <Box w='72px'>
-                <Navigation />
+            <Box w='72px' position='relative'>
+                <Box w='72px' position='relative'>
+                    <Navigation />
+                </Box>
             </Box>
 
-            <Stack direction='column' spacing='20px' w='100%' bg='#ffffff'>
-                <TopBar
-                    topbarData={{
-                        title: `${
-                            IndividualProject.individual !== null &&
-                            IndividualProject.individual.student.studentName
-                                ? `Examiner Report for ${IndividualProject.individual.student.studentName}`
-                                : `Examiner Report`
-                        }`,
-                        count: null,
-                    }}
-                />
+            <Stack
+                className='overwrap'
+                direction='column'
+                spacing='20px'
+                w='100%'
+                bg='#ffffff'>
+                <Box w='100%' h='65px' zIndex={'20'}>
+                    <TopBar
+                        topbarData={{
+                            title: `${
+                                IndividualProject.individual !== null &&
+                                IndividualProject.individual.student.studentName
+                                    ? `Examiner Report for ${IndividualProject.individual.student.studentName}`
+                                    : `Examiner Report`
+                            }`,
+                            count: null,
+                        }}
+                    />
+                </Box>
 
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Stack
@@ -215,7 +219,13 @@ const MaViewExaminerReport = (props) => {
 
 export default MaViewExaminerReport
 
-const Container = styled(Stack)``
+const Container = styled(Stack)`
+    overflow-x: hidden !important;
+
+    .overwrap {
+        overflow: hidden;
+    }
+`
 
 const BackButtonStack = styled(Stack)`
     p {
