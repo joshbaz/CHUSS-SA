@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import styled from 'styled-components'
 import {
@@ -17,8 +18,7 @@ import {
     useToast,
 } from '@chakra-ui/react'
 import { MdOutlineFilePresent } from 'react-icons/md'
-import { BsListUl } from 'react-icons/bs'
-import { RiLayoutGridFill } from 'react-icons/ri'
+
 import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 import { useDispatch, useSelector } from 'react-redux'
@@ -28,10 +28,10 @@ import {
     addFileOpponent,
 } from '../../../store/features/opponents/opponentSlice'
 import { useNavigate } from 'react-router-dom'
-
+import { BASE_API_2 } from '../../../utils/base_url.config'
 
 const ViewUpdatedOpponentFiles = ({ values, projectValues }) => {
-    const [filesList, setFilesList] = React.useState([])
+   // const [filesList, setFilesList] = React.useState([])
     const [filesList2, setFilesList2] = React.useState([])
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [selectedFile, setSelectedFile] = React.useState(null)
@@ -69,7 +69,6 @@ const ViewUpdatedOpponentFiles = ({ values, projectValues }) => {
 
     /** activate delete project App file */
     const handleRemove = (fdetail) => {
-       
         if (projectValues._id && fdetail._id) {
             let rvalues = {
                 fileId: fdetail._id,
@@ -140,7 +139,7 @@ const ViewUpdatedOpponentFiles = ({ values, projectValues }) => {
 
     const handlefile = async () => {
         const getfiles = await window.electronAPI.oppDetail()
-      
+
         if (getfiles === null) {
         } else {
             setChangeMade(true)
@@ -153,7 +152,6 @@ const ViewUpdatedOpponentFiles = ({ values, projectValues }) => {
 
     React.useEffect(() => {
         if (projectValues !== null && values !== null) {
-           
             setNameValues(values.name)
 
             let examinerToFind = values._id
@@ -168,7 +166,6 @@ const ViewUpdatedOpponentFiles = ({ values, projectValues }) => {
             } else {
                 setFilesList2([])
             }
-           
         }
     }, [projectValues, values])
 
@@ -185,14 +182,12 @@ const ViewUpdatedOpponentFiles = ({ values, projectValues }) => {
     /** function to download file */
     const handleDownloadFile = async (data) => {
         const dataGiven = await window.electronAPI.getdownloadFile(data.fileId)
-       
 
         if (!dataGiven.message) {
             let newData = {
                 ...dataGiven,
             }
             if (nameValues !== null) {
-               
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -207,7 +202,6 @@ const ViewUpdatedOpponentFiles = ({ values, projectValues }) => {
                 newData
             )
 
-          
             // if (performDowload.message) {
             //     alert(performDowload.message)
             // }
@@ -222,10 +216,9 @@ const ViewUpdatedOpponentFiles = ({ values, projectValues }) => {
 
         const dataGiven = 'herer'
 
-     
         setSelectedFile([
             {
-                uri: `https://chuss.tk/docs/files/${data.fileId}`,
+                uri: `${BASE_API_2}/docs/files/${data.fileId}`,
                 fileType: data.fileType,
                 fileData: new ArrayBuffer(dataGiven),
             },

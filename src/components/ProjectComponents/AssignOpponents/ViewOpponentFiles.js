@@ -18,6 +18,7 @@ import { BsListUl } from 'react-icons/bs'
 import { RiLayoutGridFill } from 'react-icons/ri'
 import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
+import { BASE_API_2 } from '../../../utils/base_url.config'
 
 const ViewOpponentFiles = ({ values, projectValues }) => {
      const [selectedView, setSelectedView] = React.useState('grid')
@@ -107,7 +108,7 @@ const ViewOpponentFiles = ({ values, projectValues }) => {
        
          setSelectedFile([
              {
-                 uri: `https://chuss.tk/docs/files/${data.fileId}`,
+                 uri: `${BASE_API_2}/docs/files/${data.fileId}`,
                  fileType: data.fileType,
                  fileData: new ArrayBuffer(dataGiven),
              },

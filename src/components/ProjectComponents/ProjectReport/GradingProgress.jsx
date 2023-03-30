@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import {
     Box,
     Stack,
-    Text,
     Menu,
     MenuButton,
     MenuList,
@@ -71,7 +70,8 @@ const GradingProgress = ({ values }) => {
         let arrayInfo = []
 
         if (values !== null && values.examiners.length > 0) {
-            let newArray = values.examiners.filter((data) => {
+            // eslint-disable-next-line array-callback-return
+            values.examiners.filter((data) => {
                 arrayInfo.push(data.examinerId.name)
             })
 
@@ -82,7 +82,8 @@ const GradingProgress = ({ values }) => {
         let pieData = []
         let pieColor = []
         if (values !== null && values.examinerReports.length > 0) {
-            let newArray = values.examinerReports.filter((data) => {
+            // eslint-disable-next-line array-callback-return
+            values.examinerReports.filter((data) => {
                 if (data.submissionType === checkSubmissionStatus) {
                     pieData.push(
                         data.reportId.score === 0 &&
@@ -90,7 +91,7 @@ const GradingProgress = ({ values }) => {
                             ? 33.3
                             : data.reportId.score
                     )
-                 
+
                     if (data.reportId.reportStatus === 'pending') {
                         pieColor.push('#FAA723')
                     }

@@ -32,6 +32,7 @@ import {
 } from '../../../store/features/project/projectSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
+import { BASE_API_2 } from '../../../utils/base_url.config'
 const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
     const [filesList, setFilesList] = React.useState([])
@@ -73,7 +74,7 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
     const handleFileView = async (data) => {
         setSelectedFile([
             {
-                uri: `https://chuss.tk/docs/files/${data.fileId.fileId}`,
+                uri: `${BASE_API_2}/docs/files/${data.fileId.fileId}`,
                 fileType: data.fileId.fileType,
             },
         ])

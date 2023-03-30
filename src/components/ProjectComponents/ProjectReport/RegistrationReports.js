@@ -39,6 +39,7 @@ import {
     reset,
 } from '../../../store/features/registration/registrationSlice'
 import { useDispatch, useSelector } from 'react-redux'
+import { BASE_API_2 } from '../../../utils/base_url.config'
 const TableHead = [
     {
         title: '#',
@@ -204,7 +205,7 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
 
         setSelectedFile([
             {
-                uri: `https://chuss.tk/docs/files/${data.fileId}`,
+                uri: `${BASE_API_2}/docs/files/${data.fileId}`,
                 fileType: data.fileType,
                 fileData: new ArrayBuffer(dataGiven),
             },

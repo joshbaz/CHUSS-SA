@@ -1,3 +1,5 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import Moments from 'moment-timezone'
@@ -7,9 +9,7 @@ import {
     Box,
     Tabs,
     TabList,
-    TabPanels,
     Tab,
-    TabPanel,
     Text,
     Table,
     Thead,
@@ -19,51 +19,12 @@ import {
     Td,
     Button,
     Checkbox,
-    Tooltip,
-    Divider,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
 } from '@chakra-ui/react'
-import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
-import {
-    IoIosArrowDropright,
-    IoIosArrowDropdown,
-    IoIosStats,
-} from 'react-icons/io'
-import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
-import {
-    MdOutlineUpdate,
-    MdKeyboardArrowLeft,
-    MdKeyboardArrowRight,
-} from 'react-icons/md'
-import { TbDotsVertical } from 'react-icons/tb'
-import { RiPencilFill } from 'react-icons/ri'
-import { CgNotes } from 'react-icons/cg'
-import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import AdvPagination from './AdvPagination'
-import AdvPagination2 from './AdvPagination2'
+import { AiOutlineMinus } from 'react-icons/ai'
 
-const headers = [
-    {
-        label: 'Student Name',
-        key: 'studentName',
-    },
-    {
-        label: 'Student Contacts',
-        key: 'studentContacts',
-    },
-    {
-        label: 'topic',
-        key: 'topic',
-    },
-    {
-        label: 'status',
-        key: 'status',
-    },
-]
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
+
+import { useSelector } from 'react-redux'
 
 const AdvStudentTable = ({
     tableLists,
@@ -91,6 +52,7 @@ const AdvStudentTable = ({
         totalPages: 0,
     })
     const [projectTagData, setProjectTagData] = React.useState([])
+    // eslint-disable-next-line no-unused-vars
     const [perPage, setPerPage] = React.useState(10)
     const [searchData, setSearchData] = React.useState({
         currentPage: 0,
@@ -102,9 +64,7 @@ const AdvStudentTable = ({
         totalPages: 0,
     })
 
-    let { allprojects, message, isSuccess, isError } = useSelector(
-        (state) => state.project
-    )
+    let { allprojects } = useSelector((state) => state.project)
 
     /** changes all document tabs */
     useEffect(() => {
@@ -245,17 +205,17 @@ const AdvStudentTable = ({
                 }
             }
 
-              if (filterInfo[0].title === 'Registration') {
-                  if (filterInfo[0].queryfunction === 'is') {
-                      let status = data1.activeStatus.toLowerCase()
+            if (filterInfo[0].title === 'Registration') {
+                if (filterInfo[0].queryfunction === 'is') {
+                    let status = data1.activeStatus.toLowerCase()
 
-                      let check = filterInfo[0].searchfor.some((details) =>
-                          status.includes(details)
-                      )
+                    let check = filterInfo[0].searchfor.some((details) =>
+                        status.includes(details)
+                    )
 
-                      return check
-                  }
-              }
+                    return check
+                }
+            }
             /** registration */
             if (filterInfo[0].title === 'Registration') {
                 if (filterInfo[0].queryfunction === 'is') {
@@ -322,7 +282,7 @@ const AdvStudentTable = ({
                                         name.includes(details)
                                     )
 
-                                   // console.log('check', check)
+                                    // console.log('check', check)
 
                                     return check
                                 }
@@ -663,7 +623,7 @@ const AdvStudentTable = ({
     /** function to handle checkbox on each item */
     /** function to handle checkbox on each item */
     const handleIndivCheckbox = (e, data) => {
-       // console.log('checking0', e.target.checked, data)
+        // console.log('checking0', e.target.checked, data)
         if (exportData.length > 0) {
             let checkData = exportData.some(
                 (datacheck, index) => data._id === datacheck._id
@@ -703,18 +663,18 @@ const AdvStudentTable = ({
                         }
                     )
 
-                //    console.log('generalss', newDataToSave)
+                    //    console.log('generalss', newDataToSave)
 
                     setExportData(newDataToSave)
                 }
             } else {
                 if (allDisplayData.allItems.length > 0) {
                     let newDataToSave = allDisplayData.allItems.map((data) => {
-                      //  console.log('allDisplayData', data.activeStatus)
+                        //  console.log('allDisplayData', data.activeStatus)
                         return data
                     })
 
-                  //  console.log('generalstts', newDataToSave)
+                    //  console.log('generalstts', newDataToSave)
                     setExportData(newDataToSave)
                 }
             }
@@ -834,7 +794,6 @@ const AdvStudentTable = ({
                                                             element.tagName ===
                                                             activeStatus.status
                                                     )
-                                              
                                             }
                                         } else {
                                         }
@@ -855,6 +814,7 @@ const AdvStudentTable = ({
                                         ]
 
                                         /** function to return latest registration */
+                                        // eslint-disable-next-line no-unused-vars
                                         let returnedData =
                                             getLatestRegistration(
                                                 allRegistrations
@@ -1013,7 +973,6 @@ const AdvStudentTable = ({
                                                             element.tagName ===
                                                             activeStatus.status
                                                     )
-                                               
                                             }
                                         } else {
                                         }
@@ -1034,6 +993,7 @@ const AdvStudentTable = ({
                                         ]
 
                                         /** function to return latest registration */
+                                        // eslint-disable-next-line no-unused-vars
                                         let returnedData =
                                             getLatestRegistration(
                                                 allRegistrations
@@ -1444,7 +1404,6 @@ const Container = styled(Stack)`
     }
 `
 
-const ContactLists = styled(Stack)``
 const StatusItem = styled(Stack)`
     border-radius: 4px;
 

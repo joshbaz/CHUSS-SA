@@ -1,3 +1,5 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import {
@@ -19,19 +21,11 @@ import {
 import { BiDownload } from 'react-icons/bi'
 import { AiOutlineMinus } from 'react-icons/ai'
 
-import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
-import {
-    MdOutlineUpdate,
-    MdKeyboardArrowLeft,
-    MdKeyboardArrowRight,
-} from 'react-icons/md'
-import { TbDotsVertical } from 'react-icons/tb'
-import { RiPencilFill } from 'react-icons/ri'
-import { CgNotes } from 'react-icons/cg'
-import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import AdvPagination from './AdvPagination'
-import AdvPagination2 from './AdvPagination2'
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
+
+
+// import AdvPagination from './AdvPagination'
+// import AdvPagination2 from './AdvPagination2'
 import Moments from 'moment-timezone'
 
 const AdvReportTable = ({
@@ -44,14 +38,13 @@ const AdvReportTable = ({
     exportData,
     setExportData,
 }) => {
+    // eslint-disable-next-line no-unused-vars
     const [allDisplayItems, setAllDisplayItems] = React.useState([])
 
-    let { allprojects, isError, isSuccess, message } = useSelector(
-        (state) => state.project
-    )
+   
 
-    let reportCollectedDatas = useSelector((state) => state.report)
-    let examinerCollectedDatas = useSelector((state) => state.examiner)
+   
+    // eslint-disable-next-line no-unused-vars
     const [tableLists, setTableLists] = React.useState([
         {
             mtitle: 'Student Name',
@@ -95,6 +88,7 @@ const AdvReportTable = ({
         totalPages: 0,
     })
     const [projectTagData, setProjectTagData] = React.useState([])
+    // eslint-disable-next-line no-unused-vars
     const [perPage, setPerPage] = React.useState(10)
     const [searchData, setSearchData] = React.useState({
         currentPage: 0,
@@ -298,7 +292,7 @@ const AdvReportTable = ({
                     let status = reportDelay
                     //  console.log('whT IS THE D', diff)
                     let check = filterInfo[0].searchfor.some(
-                        (details) => details == status
+                        (details) => details === status
                     )
 
                     return check
@@ -513,7 +507,7 @@ const AdvReportTable = ({
                                     let check = newFilterArray[
                                         iteration
                                     ].searchfor.some(
-                                        (details) => status == details
+                                        (details) => status === details
                                     )
 
                                     return check
@@ -945,6 +939,7 @@ const AdvReportTable = ({
                                                             element.active
                                                     )
                                                 if (activeStatus) {
+                                                    // eslint-disable-next-line no-unused-vars
                                                     activeElementSet =
                                                         projectTagData.find(
                                                             (element) =>
@@ -1137,6 +1132,7 @@ const AdvReportTable = ({
                                                                 element.active
                                                         )
                                                     if (activeStatus) {
+                                                        // eslint-disable-next-line no-unused-vars
                                                         activeElementSet =
                                                             projectTagData.find(
                                                                 (element) =>
@@ -1249,7 +1245,7 @@ const AdvReportTable = ({
                                                                 : ''}
                                                         </Td>
                                                         <Td
-                                                        className='stud_topic'
+                                                            className='stud_topic'
                                                             maxW='250px'
                                                             style={{
                                                                 fontWeight: 500,
@@ -1673,7 +1669,7 @@ const NoItems = styled(Box)`
     font-size: 14px;
 `
 
-const ContactLists = styled(Stack)``
+
 const StatusItem = styled(Stack)`
     border-radius: 4px;
 

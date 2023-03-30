@@ -1,23 +1,21 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import styled from 'styled-components'
 import {
     Box,
     Stack,
-    Text,
     Modal,
     ModalOverlay,
     ModalContent,
     ModalBody,
     useToast,
     Button,
-    Checkbox,
     Radio,
     RadioGroup,
 } from '@chakra-ui/react'
 import { HiPencil } from 'react-icons/hi'
 import { useDispatch, useSelector } from 'react-redux'
-import { Formik, Form } from 'formik'
-import * as yup from 'yup'
+
 import {
     updateResubmission,
     reset,
@@ -35,7 +33,7 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
     const [editStatusActive, setEditStatusActive] = React.useState(false)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [changeMade, setChangeMade] = React.useState(false)
-    const [helperFunctions, setHelperFunctions] = React.useState(null)
+    // const [helperFunctions, setHelperFunctions] = React.useState(null)
     let dispatch = useDispatch()
     let toast = useToast()
     let { isSuccess, isError, message } = useSelector((state) => state.project)
@@ -64,7 +62,6 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
 
     //handle statusChnage
     const changeStatus = (val) => {
-       
         setChangeMade(() => false)
         let newValues = {
             projectId: projectId,
@@ -88,7 +85,7 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
             dispatch(reset())
         }
 
-        if (isSuccess && isSubmittingp) {
+        if (isSuccess && isSubmittingp && message) {
             toast({
                 position: 'top',
                 title: message.message,
@@ -410,16 +407,5 @@ const PopupForm = styled(Stack)`
         &:hover {
             background: #f4797f;
         }
-    }
-`
-
-const ErrorMsg = styled(Text)`
-    font-size: 13px;
-    line-height: 20px;
-    padding: 5px 10px;
-    color: #f14c54;
-
-    .filesError {
-        padding: 0;
     }
 `

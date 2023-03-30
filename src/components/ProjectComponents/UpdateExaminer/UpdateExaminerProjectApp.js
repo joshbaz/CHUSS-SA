@@ -27,6 +27,7 @@ import {
     addFileExaminer,
 } from '../../../store/features/project/projectSlice'
 import { useNavigate } from 'react-router-dom'
+import { BASE_API_2 } from '../../../utils/base_url.config'
 
 const UpdateExaminerProjectApp = ({ values, projectValues }) => {
    // const [filesList, setFilesList] = React.useState([])
@@ -225,7 +226,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
        
         setSelectedFile([
             {
-                uri: `https://chuss.tk/docs/files/${data.fileId}`,
+                uri: `${BASE_API_2}/docs/files/${data.fileId}`,
                 fileType: data.fileType,
                 fileData: new ArrayBuffer(dataGiven),
             },

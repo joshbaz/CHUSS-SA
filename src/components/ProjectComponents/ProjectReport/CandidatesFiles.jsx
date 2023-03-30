@@ -28,6 +28,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 import Moments from 'moment-timezone'
+import { BASE_API_2 } from '../../../utils/base_url.config'
 
 const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
@@ -56,7 +57,7 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
     const handleFileView = async (data) => {
         setSelectedFile([
             {
-                uri: `https://chuss.tk/docs/files/${data.fileId.fileId}`,
+                uri: `${BASE_API_2}/docs/files/${data.fileId.fileId}`,
                 fileType: data.fileId.fileType,
             },
         ])

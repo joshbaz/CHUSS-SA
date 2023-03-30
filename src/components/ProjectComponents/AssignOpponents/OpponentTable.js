@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+/* eslint-disable array-callback-return */
+import React from 'react'
 import styled from 'styled-components'
 import {
     Box,
@@ -10,24 +11,10 @@ import {
     Tr,
     Th,
     Td,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
     Checkbox,
-    Flex,
 } from '@chakra-ui/react'
-import { AiOutlinePlus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
-import {
-    IoIosArrowDropright,
-    IoIosArrowDropdown,
-    IoIosStats,
-} from 'react-icons/io'
-import { TbDotsVertical } from 'react-icons/tb'
-import { useNavigate } from 'react-router-dom'
-import { RiPencilFill } from 'react-icons/ri'
-import { CgNotes } from 'react-icons/cg'
+
 import {
     MdKeyboardArrowLeft,
     MdKeyboardArrowRight,
@@ -63,21 +50,6 @@ const OpponentTable = ({
     handleResetAll,
     handleSearchReset,
 }) => {
-    const [activityDrpdown, setActivityDropDown] = React.useState(false)
-    const [pexaminers, setPExaminers] = React.useState({
-        currentPage: 0,
-        perPage: 8,
-        current_total: 0,
-        overall_total: 0,
-        items: [],
-        allItems: [],
-    })
-    const [examinerLists, setExaminerLists] = React.useState([])
-
-    let routeNavigate = useNavigate()
-
-    useEffect(() => {}, [])
-   
     const handleCheckChange = (e, dataCollected) => {
         e.preventDefault()
 

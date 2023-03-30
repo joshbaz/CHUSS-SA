@@ -226,7 +226,7 @@ export default Settings
 const Container = styled(Stack)`
     overflow-x: hidden !important;
 
-    .overwrap {
+    .overwrap { 
         overflow: hidden;
     }
     .tab {

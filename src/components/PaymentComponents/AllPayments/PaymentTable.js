@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import {
@@ -5,9 +6,7 @@ import {
     Box,
     Tabs,
     TabList,
-    TabPanels,
     Tab,
-    TabPanel,
     Text,
     Table,
     Thead,
@@ -16,27 +15,19 @@ import {
     Th,
     Td,
     Checkbox,
-    Tooltip,
-    Divider,
     Menu,
     MenuButton,
     MenuList,
     MenuItem,
-    Button,
 } from '@chakra-ui/react'
-import { BiDownload } from 'react-icons/bi'
-import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
+//import { BiDownload } from 'react-icons/bi'
+import { AiOutlineMinus } from 'react-icons/ai'
 import Moments from 'moment-timezone'
-import {
-    IoIosArrowDropright,
-    IoIosArrowDropdown,
-    IoIosStats,
-} from 'react-icons/io'
+
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 import { TbDotsVertical } from 'react-icons/tb'
-import { RiPencilFill } from 'react-icons/ri'
-import { CgNotes } from 'react-icons/cg'
+
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
@@ -46,6 +37,7 @@ const PaymentTable = ({
     exportData,
     setExportData,
 }) => {
+    // eslint-disable-next-line no-unused-vars
     const [perPage, setPerPage] = React.useState(10)
 
     const [allDisplayData, setAllDisplayData] = React.useState({
@@ -101,9 +93,7 @@ const PaymentTable = ({
         },
     ]
 
-    let { paginatedPayments, allPaymentItems } = useSelector(
-        (state) => state.payment
-    )
+    let { allPaymentItems } = useSelector((state) => state.payment)
 
     let routeNavigate = useNavigate()
 
@@ -594,15 +584,7 @@ const PaymentTable = ({
     }
 
     /** function to handle data exportation */
-    const handleExportation = async () => {
-        if (exportData.length > 0) {
-            let values = {
-                tableName: 'Payments',
-                data: exportData,
-            }
-            await window.electronAPI.exportStudentCSV(values)
-        }
-    }
+  
 
     return (
         <Container>

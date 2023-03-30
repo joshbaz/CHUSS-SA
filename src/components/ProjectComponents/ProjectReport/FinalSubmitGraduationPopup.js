@@ -10,12 +10,7 @@ import {
     ModalBody,
     Input,
     Button,
-    InputGroup,
-    InputRightElement,
-    useDisclosure,
-    Select,
     useToast,
-    Textarea,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -34,9 +29,9 @@ const FinalSubmitGraduationPopup = ({
 }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [helperFunctions, setHelperFunctions] = React.useState(null)
-    const [filesList, setFilesList] = React.useState([])
+   // const [filesList, setFilesList] = React.useState([])
     const [dateOfGraduation, setDateOfGraduation] = React.useState('')
-    let routeNavigate = useNavigate()
+   // let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
     let { isSuccess, isError, message } = useSelector((state) => state.project)
@@ -271,7 +266,6 @@ const PopupForm = styled(Stack)`
     }
 
     .list_text {
-       
         font-style: normal;
         font-weight: 400;
         font-size: 16px;
@@ -351,4 +345,3 @@ const ErrorMsg = styled(Text)`
         padding: 0;
     }
 `
-

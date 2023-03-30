@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React from 'react'
 
 import styled from 'styled-components'
@@ -6,9 +7,7 @@ import {
     Box,
     Tabs,
     TabList,
-    TabPanels,
     Tab,
-    TabPanel,
     Text,
     Table,
     Thead,
@@ -16,31 +15,13 @@ import {
     Tr,
     Th,
     Td,
-    Checkbox,
-    Tooltip,
-    Divider,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    Button,
 } from '@chakra-ui/react'
-import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
-import {
-    IoIosArrowDropright,
-    IoIosArrowDropdown,
-    IoIosStats,
-} from 'react-icons/io'
+
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
-import {
-    MdOutlineUpdate,
-    MdKeyboardArrowLeft,
-    MdKeyboardArrowRight,
-} from 'react-icons/md'
-import { TbDotsVertical } from 'react-icons/tb'
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
+
 import { BiLinkExternal } from 'react-icons/bi'
-import { RiPencilFill } from 'react-icons/ri'
-import { CgNotes } from 'react-icons/cg'
+
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
@@ -64,6 +45,7 @@ const GEViewStudentTable = () => {
         },
     ]
 
+    // eslint-disable-next-line no-unused-vars
     const [perPage, setPerPage] = React.useState(10)
     const [allDisplayData, setAllDisplayData] = React.useState({
         currentPage: 0,
@@ -82,6 +64,7 @@ const GEViewStudentTable = () => {
         },
     ])
 
+    // eslint-disable-next-line no-unused-vars
     const [searchData, setSearchData] = React.useState({
         currentPage: 0,
         itemsPerPage: 8,
@@ -288,14 +271,14 @@ const GEViewStudentTable = () => {
                             {allDisplayData.items.length > 0 ? (
                                 <>
                                     {allDisplayData.items.map((data, index) => {
-                                       // console.log('graded', data)
+                                        // console.log('graded', data)
                                         let studentType =
                                             data.student
                                                 .graduate_program_type === 'PhD'
                                                 ? 'phd'
                                                 : 'masters'
                                         let markedStatus = false
-                                        let reportId
+
                                         data.examinerReports.filter(
                                             (dataReport) => {
                                                 if (

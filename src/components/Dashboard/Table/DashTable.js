@@ -225,6 +225,7 @@ const DashTable = () => {
                                         ]
 
                                         /** function to return latest registration */
+                                        // eslint-disable-next-line no-unused-vars
                                         let returnedData =
                                             getLatestRegistration(
                                                 allRegistrations

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import styled from 'styled-components'
 import {
@@ -10,23 +11,19 @@ import {
     ModalBody,
     Input,
     Button,
-    InputGroup,
-    InputRightElement,
-    useDisclosure,
     Select,
     useToast,
-    Textarea,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
     updateFinalSubmission,
     reset,
 } from '../../../store/features/project/projectSlice'
-import { useNavigate } from 'react-router-dom'
+//import { useNavigate } from 'react-router-dom'
 import { ImBin2 } from 'react-icons/im'
 
-import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
-import { MdOutlineFilePresent } from 'react-icons/md'
+import { BsFileEarmark } from 'react-icons/bs'
+
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 
@@ -45,8 +42,8 @@ const FinalSubmitPopupUpload = ({
 }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [helperFunctions, setHelperFunctions] = React.useState(null)
-    const [filesList, setFilesList] = React.useState([])
-    let routeNavigate = useNavigate()
+   // const [filesList, setFilesList] = React.useState([])
+   // let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
     let { isSuccess, isError, message } = useSelector((state) => state.project)
@@ -66,7 +63,7 @@ const FinalSubmitPopupUpload = ({
     /** function to get files */
     const handlefile = async (setFieldValue) => {
         const getfiles = await window.electronAPI.oppDetail()
-       
+
         if (getfiles === null) {
         } else {
             setFieldValue('finalsubmitfiles', {
@@ -116,7 +113,7 @@ const FinalSubmitPopupUpload = ({
             dispatch(reset())
         }
 
-        if (isSuccess && isSubmittingp) {
+        if (isSuccess && isSubmittingp && message) {
             if (helperFunctions !== null) {
                 toast({
                     position: 'top',

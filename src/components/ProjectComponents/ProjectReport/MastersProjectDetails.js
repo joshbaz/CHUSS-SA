@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import styled from 'styled-components'
 import {
@@ -17,8 +18,8 @@ import {
 import { BsInfoCircleFill } from 'react-icons/bs'
 import Moments from 'moment-timezone'
 import { AiOutlinePlus } from 'react-icons/ai'
-import { HiPencil } from 'react-icons/hi'
-import { ImBin2 } from 'react-icons/im'
+// import { HiPencil } from 'react-icons/hi'
+// import { ImBin2 } from 'react-icons/im'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
@@ -73,7 +74,7 @@ const MastersProjectDetails = ({ values, rlink }) => {
             setIsSubmittingp(false)
             dispatch(reset())
         }
-        if (isSuccess && isSubmittingp) {
+        if (isSuccess && isSubmittingp && message) {
             toast({
                 position: 'top',
                 title: message.message,
@@ -108,7 +109,6 @@ const MastersProjectDetails = ({ values, rlink }) => {
                     element.registrationId.registrationtype.toLowerCase() ===
                     'full admission'
             )
-           
 
             if (foundPData) {
                 setProvisionalAdm(foundPData)
@@ -747,20 +747,6 @@ const Container = styled(Box)`
         font-size: 13px;
         line-height: 20px;
     }
-`
-
-const EditIcon = styled(Button)`
-    width: 24px;
-    height: 24px;
-    background: transparent;
-    border: 1px dashed tansparent;
-    border-radius: 6px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #5e5c60;
-    font-size: 14px;
-    cursor: pointer;
 `
 
 const PopupForm = styled(Stack)`

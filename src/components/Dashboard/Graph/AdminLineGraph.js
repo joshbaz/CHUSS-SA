@@ -287,33 +287,6 @@ const Container = styled.div`
     }
 `
 
-const LineTitleWrap = styled.div`
-    width: 90%;
-    height: 32px;
-    margin-bottom: 7px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    h4 {
-        font-family: 'Roboto', sans-serif;
-        font-style: normal;
-        font-weight: bold;
-        font-size: 15px;
-        line-height: 132%;
-        display: flex;
-        align-items: center;
-        color: #333333;
-    }
-
-    div {
-        color: #5b5b5b;
-        font-size: 24px;
-    }
-    @media all and (min-width: 1365px) {
-        width: 100%;
-    }
-`
-
 const LineGraphWrap = styled.div`
     display: flex;
     position: relative;

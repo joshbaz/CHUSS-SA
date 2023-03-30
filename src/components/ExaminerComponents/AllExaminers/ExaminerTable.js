@@ -1,3 +1,5 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import {
@@ -15,12 +17,9 @@ import {
     MenuList,
     MenuItem,
     Checkbox,
-    Flex,
     Tabs,
     TabList,
-    TabPanels,
     Tab,
-    TabPanel,
     useToast,
     Button,
     Modal,
@@ -29,17 +28,12 @@ import {
     ModalBody,
 } from '@chakra-ui/react'
 import { BiDownload } from 'react-icons/bi'
-import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
+import { AiOutlineMinus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
-import {
-    IoIosArrowDropright,
-    IoIosArrowDropdown,
-    IoIosStats,
-} from 'react-icons/io'
+
 import { TbDotsVertical } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
-import { RiPencilFill } from 'react-icons/ri'
-import { CgNotes } from 'react-icons/cg'
+
 import {
     MdKeyboardArrowLeft,
     MdKeyboardArrowRight,
@@ -90,6 +84,7 @@ const ExaminerTable = ({
             dataCount: 0,
         },
     ])
+    // eslint-disable-next-line no-unused-vars
     const [perPage, setPerPage] = React.useState(10)
     const [allDisplayData, setAllDisplayData] = React.useState({
         currentPage: 0,
@@ -171,6 +166,7 @@ const ExaminerTable = ({
             totalAllItems: totalItems,
             totalPages: pageLength,
         })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allExaminerItems])
 
     let PaginationFirstNumber =
@@ -764,10 +760,6 @@ const ExaminerTable = ({
                                                         includedInExport
                                                             ? '#fef9ef'
                                                             : ''
-                                                    let checkedStatus =
-                                                        includedInExport
-                                                            ? true
-                                                            : false
 
                                                     return (
                                                         <Tr
@@ -929,10 +921,6 @@ const ExaminerTable = ({
                                                         includedInExport
                                                             ? '#fef9ef'
                                                             : ''
-                                                    let checkedStatus =
-                                                        includedInExport
-                                                            ? true
-                                                            : false
 
                                                     return (
                                                         <Tr

@@ -44,6 +44,8 @@ function createWindow() {
     })
 
     //mainWindow.maximize()
+  //  installer()
+    mainWindow.on('ready-to-show', mainWindow.show)
 
     mainWindow.loadURL(
         isDev
@@ -66,61 +68,44 @@ function createWindow() {
         mainWindow = null
         //localStorage.removeItem('user')
     })
-
-    //ipcMain.handle('dialog:openFile', handleFileOpen);
-
-    //template
-    // const template = [
-    //   {
-    //     label: "File",
-    //   },
-    // ];
-
-    //function openFile
-    // function openFile() {
-    //   //open file dialog
-    //   const files = dialog.showOpenDialog(win, {
-    //     properties: ["openFile"],
-    //     filters: [
-    //       {
-    //         name: "files",
-    //         extensions: ["doc", "docx", "pdf"],
-    //       },
-    //     ],
-    //   });
-
-    //   //no files
-    //   if (!files) return;
-
-    //   const file = files[0];
-    //   const fileContent = fs.readFileSync(file).toString();
-    //   console.log(fileContent);
-    // }
 }
 
 app.on('ready', createWindow)
 
-async function handleFileOpen(e) {
-    const files = await dialog.showOpenDialog({
-        properties: ['openFile'],
-        filters: [
-            {
-                name: 'files',
-                extensions: ['doc', 'docx', 'pdf'],
-            },
-        ],
-    })
+//installer
+// async function installer() {
+//     let percentage = 0
+//     let installerInterval = setInterval(() => {
+//         percentage += Math.random * 3
 
-    // console.log('files', files)
-    if (!files) {
-        return
-    } else {
-        const file = files[0]
+//         if (percentage >= 100) {
+//             clearInterval(installerInterval)
+//         }
+//         mainWindow.webContents.send('install/progress', percentage)
+//     }, 100)
+// }
 
-        //const fileContent = fs.readFileSync(file).toString();
-        return file
-    }
-}
+// async function handleFileOpen(e) {
+//     const files = await dialog.showOpenDialog({
+//         properties: ['openFile'],
+//         filters: [
+//             {
+//                 name: 'files',
+//                 extensions: ['doc', 'docx', 'pdf'],
+//             },
+//         ],
+//     })
+
+//     // console.log('files', files)
+//     if (!files) {
+//         return
+//     } else {
+//         const file = files[0]
+
+//         //const fileContent = fs.readFileSync(file).toString();
+//         return file
+//     }
+// }
 //IPC HANDLERS
 ipcMain.on('dialog-openFile', (event) => {
     if (os.platform() === 'linux' || os.platform() === 'win32') {

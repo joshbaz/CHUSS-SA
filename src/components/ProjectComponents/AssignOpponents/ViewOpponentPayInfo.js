@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Select, Input } from '@chakra-ui/react'
@@ -19,6 +20,7 @@ const ViewOpponentPayInfo = ({ values, projectValues }) => {
                 }
             })
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values])
     return (
         <FormContainer>

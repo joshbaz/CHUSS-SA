@@ -194,4 +194,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('reset-facilitator-password', values),
     newfacilitatorPasskey: (values) =>
         ipcRenderer.invoke('new-facilitator-passkey', values),
+
+    // loadingEffect: (msg, cb) =>
+    //     ipcRenderer.on(msg, (_, data) => {
+    //         cb(data)
+    //     }),
+    // window: {
+    //     close: () => ipcRenderer.send('app/close'),
+    //     minimize: () => ipcRenderer.send('app/minimize'),
+    // },
 })

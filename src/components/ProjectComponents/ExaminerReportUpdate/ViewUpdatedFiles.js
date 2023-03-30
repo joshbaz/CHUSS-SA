@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import styled from 'styled-components'
 import {
@@ -26,6 +27,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
+import { BASE_API_2 } from '../../../utils/base_url.config'
 
 const ViewUpdatedFiles = ({ values }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
@@ -84,7 +86,7 @@ const ViewUpdatedFiles = ({ values }) => {
     const handleFileView = async (data) => {
         setSelectedFile([
             {
-                uri: `https://chuss.tk/docs/files/${data.files.fileId}`,
+                uri: `${BASE_API_2}/docs/files/${data.files.fileId}`,
                 fileType: data.files.fileType,
             },
         ])

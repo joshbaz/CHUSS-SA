@@ -55,6 +55,7 @@ import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 import { SketchPicker } from 'react-color'
+import { BASE_API_2 } from '../../../utils/base_url.config'
 
 const VivaReport = ({
     values = null,
@@ -340,7 +341,7 @@ const VivaReport = ({
     const handleFileView = async (data) => {
         setSelectedFile([
             {
-                uri: `https://chuss.tk/docs/files/${data.fileId.fileId}`,
+                uri: `${BASE_API_2}/docs/files/${data.fileId.fileId}`,
                 fileType: data.fileId.fileType,
             },
         ])

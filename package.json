@@ -24,9 +24,11 @@
     "react-chartjs-2": "^4.3.1",
     "react-color": "^2.19.3",
     "react-csv": "^2.2.2",
+    "react-detect-offline": "^2.4.5",
     "react-doc-viewer": "^0.1.5",
     "react-dom": "^18.2.0",
     "react-icons": "^4.6.0",
+    "react-loader-spinner": "^5.3.4",
     "react-phone-input-2": "^2.15.1",
     "react-redux": "^8.0.4",
     "react-router-dom": "^6.4.2",
@@ -53,6 +55,7 @@
     "generateUpdatesFilesForAllChannels": true,
     "extends": null,
     "appId": "com.jkimbareeba.chuss",
+    "compression": "maximum",
     "productName": "CHUSS",
     "win": {
       "target": [
@@ -72,12 +75,7 @@
       "target": "dmg",
       "icon": "./build/chuss256.icns"
     },
-    "files": [
-      "dist/**/**",
-      "build/**/**",
-      "node_modules/**/**",
-      "package.json"
-    ],
+    "files": [],
     "directories": {
       "buildResources": "assets"
     }

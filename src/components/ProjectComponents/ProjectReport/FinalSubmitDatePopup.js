@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import styled from 'styled-components'
 import {
@@ -10,19 +11,14 @@ import {
     ModalBody,
     Input,
     Button,
-    InputGroup,
-    InputRightElement,
-    useDisclosure,
-    Select,
     useToast,
-    Textarea,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
     updateSubmissionDate,
     reset,
 } from '../../../store/features/project/projectSlice'
-import { useNavigate } from 'react-router-dom'
+//import { useNavigate } from 'react-router-dom'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 
@@ -30,13 +26,13 @@ const FinalSubmitDatePopup = ({
     projectId,
     submissionDateActive,
     setSubmissionDateActive,
-    valuess
+    valuess,
 }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [helperFunctions, setHelperFunctions] = React.useState(null)
-    const [filesList, setFilesList] = React.useState([])
+    //  const [filesList, setFilesList] = React.useState([])
     const [dateOfSubmission, setDateOfSubmission] = React.useState('')
-    let routeNavigate = useNavigate()
+    //  let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let toast = useToast()
     let { isSuccess, isError, message } = useSelector((state) => state.project)
@@ -46,76 +42,75 @@ const FinalSubmitDatePopup = ({
      */
 
     const cancelSubmissionUpload = () => {
-        
         setIsSubmittingp(false)
         setSubmissionDateActive(false)
 
         // onClose()
     }
 
-     React.useEffect(() => {
-         if (valuess !== null && valuess.FinalSubmissionDate !== null) {
-             setDateOfSubmission(valuess.FinalSubmissionDate)
-         }
-     }, [valuess])
+    React.useEffect(() => {
+        if (valuess !== null && valuess.FinalSubmissionDate !== null) {
+            setDateOfSubmission(valuess.FinalSubmissionDate)
+        }
+    }, [valuess])
 
-      const validationSchema = yup.object().shape({
-          FinalSubmissionDate: yup
-              .string()
-              .required('submission date is required'),
-      })
+    const validationSchema = yup.object().shape({
+        FinalSubmissionDate: yup
+            .string()
+            .required('submission date is required'),
+    })
 
-      const initialValues = {
-          FinalSubmissionDate: dateOfSubmission ? dateOfSubmission : '',
-      }
+    const initialValues = {
+        FinalSubmissionDate: dateOfSubmission ? dateOfSubmission : '',
+    }
 
-      /** run after submission awaiting for response */
+    /** run after submission awaiting for response */
 
-      React.useEffect(() => {
-          if (isError) {
-              if (helperFunctions !== null) {
-                  toast({
-                      position: 'top',
-                      title: message.message,
-                      status: 'error',
-                      duration: 10000,
-                      isClosable: true,
-                  })
-                  setIsSubmittingp(false)
-                  helperFunctions.setSubmitting(false)
-                  setIsSubmittingp(false)
-              }
-              toast({
-                  position: 'top',
-                  title: message.message,
-                  status: 'error',
-                  duration: 10000,
-                  isClosable: true,
-              })
+    React.useEffect(() => {
+        if (isError) {
+            if (helperFunctions !== null) {
+                toast({
+                    position: 'top',
+                    title: message.message,
+                    status: 'error',
+                    duration: 10000,
+                    isClosable: true,
+                })
+                setIsSubmittingp(false)
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
+            }
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
 
-              dispatch(reset())
-          }
+            dispatch(reset())
+        }
 
-          if (isSuccess && isSubmittingp) {
-              if (helperFunctions !== null) {
-                  toast({
-                      position: 'top',
-                      title: message.message,
-                      status: 'success',
-                      duration: 10000,
-                      isClosable: true,
-                  })
-                  helperFunctions.resetForm()
-                  helperFunctions.setSubmitting(false)
-                  setIsSubmittingp(false)
-                  setHelperFunctions(null)
+        if (isSuccess && isSubmittingp && message) {
+            if (helperFunctions !== null) {
+                toast({
+                    position: 'top',
+                    title: message.message,
+                    status: 'success',
+                    duration: 10000,
+                    isClosable: true,
+                })
+                helperFunctions.resetForm()
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
+                setHelperFunctions(null)
 
-                  // setDefenseUploadActive(false)
-                  dispatch(reset())
-              }
-          }
-          dispatch(reset())
-      }, [isError, isSuccess, message, dispatch])
+                // setDefenseUploadActive(false)
+                dispatch(reset())
+            }
+        }
+        dispatch(reset())
+    }, [isError, isSuccess, message, dispatch])
     return (
         <Modal
             w='100vw'
@@ -276,7 +271,6 @@ const PopupForm = styled(Stack)`
     }
 
     .list_text {
-        
         font-style: normal;
         font-weight: 400;
         font-size: 16px;
