@@ -15,7 +15,6 @@ import {
     Input,
     RadioGroup,
     Radio,
-    Wrap,
 } from '@chakra-ui/react'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 //import { renderToStaticMarkup } from 'react-dom/server'
@@ -39,6 +38,7 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { SketchPicker } from 'react-color'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
+import Moments from 'moment-timezone'
 
 const ProgressStatus2 = ({ values, allTagData, type }) => {
     const [projectId, setProjectId] = React.useState(null)
@@ -642,7 +642,18 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
                                                     justifyContent: 'center',
                                                 }}>
                                                 <StatusText>
-                                                    <Stack>
+                                                    <Stack
+                                                        style={{
+                                                            display: 'flex',
+                                                            flexDirection:
+                                                                'column',
+                                                            position:
+                                                                'relative',
+                                                            alignItems:
+                                                                'center',
+                                                            justifyContent:
+                                                                'center',
+                                                        }}>
                                                         <Text>
                                                             {data.title !==
                                                                 'Add Status' &&
@@ -651,24 +662,73 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
                                                                 : null}
                                                         </Text>
 
-                                                        <Stack direction='row'>
-                                                            <Text>
-                                                                Start Date
-                                                            </Text>
-                                                            <Text></Text>
-                                                        </Stack>
-                                                        <Stack direction='row'>
-                                                            <Text>
-                                                                Expected At
-                                                            </Text>
-                                                            <Text></Text>
-                                                        </Stack>
-                                                        <Stack direction='row'>
-                                                            <Text>
-                                                                End Date
-                                                            </Text>
-                                                            <Text></Text>
-                                                        </Stack>
+                                                        {data.title ===
+                                                            'Add Status' ||
+                                                        data.title ===
+                                                            'Entry' ||
+                                                        data.title ===
+                                                            'Graduated' ? null : (
+                                                            <Stack>
+                                                                <Stack direction='row'>
+                                                                    <Text>
+                                                                        Started:{' '}
+                                                                    </Text>
+                                                                    <Text>
+                                                                        {' '}
+                                                                        {data.startDate
+                                                                            ? Moments(
+                                                                                  data.startDate
+                                                                              )
+                                                                                  .tz(
+                                                                                      'Africa/Kampala'
+                                                                                  )
+                                                                                  .format(
+                                                                                      'DD MMM YYYY '
+                                                                                  )
+                                                                            : ''}
+                                                                    </Text>
+                                                                </Stack>
+                                                                <Stack direction='row'>
+                                                                    <Text>
+                                                                        Expected:{' '}
+                                                                    </Text>
+                                                                    <Text>
+                                                                        {data.expectedEndDate
+                                                                            ? Moments(
+                                                                                  data.expectedEndDate
+                                                                              )
+                                                                                  .tz(
+                                                                                      'Africa/Kampala'
+                                                                                  )
+                                                                                  .format(
+                                                                                      'DD MMM YYYY '
+                                                                                  )
+                                                                            : ''}
+                                                                    </Text>
+                                                                </Stack>
+                                                                {data.endDate && (
+                                                                    <Stack direction='row'>
+                                                                        <Text>
+                                                                            Finished:
+                                                                        </Text>
+
+                                                                        <Text>
+                                                                            {data.endDate
+                                                                                ? Moments(
+                                                                                      data.endDate
+                                                                                  )
+                                                                                      .tz(
+                                                                                          'Africa/Kampala'
+                                                                                      )
+                                                                                      .format(
+                                                                                          'DD MMM YYYY '
+                                                                                      )
+                                                                                : ''}
+                                                                        </Text>
+                                                                    </Stack>
+                                                                )}
+                                                            </Stack>
+                                                        )}
                                                     </Stack>
                                                 </StatusText>
                                             </Box>
@@ -1327,7 +1387,7 @@ const StatusContainer = styled(Stack)`
         content: '';
         background: #ffe5a6;
         width: 15%;
-        min-width: 100px;
+        min-width: 200px;
         height: 23px;
         position: relative;
         top: 40px;
@@ -1369,7 +1429,7 @@ const StatusContainer = styled(Stack)`
                 0px 0px 0px 2px rgba(70, 79, 96, 0.3), 0px 0px 0px 9px #fcd7d9;
         }
         &:after {
-            z-index: -2;
+            z-index: 2;
         }
     }
 
@@ -1393,8 +1453,9 @@ const StatusText = styled(Box)`
     bottom: 0;
     position: absolute;
     text-align: center;
-    width: 120px;
-    height: 100px;
+    min-width: 200px;
+    max-width: 220px;
+    min-height: 100px;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 14px;

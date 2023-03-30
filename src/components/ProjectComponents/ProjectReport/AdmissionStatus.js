@@ -96,12 +96,12 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
 
             setIsSubmittingp(() => false)
             setChangeMade(() => false)
-            setEditStatusActive(false)
+            setEditStatusActive(() => false)
             // setFileUploadActive(false)
             dispatch(reset())
         }
         dispatch(reset())
-    }, [isError, isSuccess, message, dispatch, isSubmittingp])
+    }, [isError, isSuccess, message, dispatch])
     return (
         <Container
             direction='row'
