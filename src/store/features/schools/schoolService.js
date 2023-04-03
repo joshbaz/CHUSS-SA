@@ -1,7 +1,7 @@
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 /** service to create school */
 const schoolCreate = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -14,7 +14,7 @@ const schoolCreate = async (values) => {
 
 /** service to get all paginated examiners  */
 const paginatedSchools = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -26,7 +26,7 @@ const paginatedSchools = async (values) => {
 
 /** service to get allSchools  */
 const allSchools = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -38,7 +38,7 @@ const allSchools = async (values) => {
 
 /** service to get individual  examiners  */
 const getIndividualSchool = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -50,7 +50,7 @@ const getIndividualSchool = async (values) => {
 
 /** service to create examiner from project */
 const schoolUpdate = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -62,7 +62,7 @@ const schoolUpdate = async (values) => {
 
 /** service to create examiner from project */
 const deleteSchool = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -74,7 +74,7 @@ const deleteSchool = async (values) => {
 
 /** service to create examiner from project */
 const deleteDepartment = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -86,7 +86,7 @@ const deleteDepartment = async (values) => {
 
 /** add department */
 const departmentCreate = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -98,7 +98,7 @@ const departmentCreate = async (values) => {
 
 /** update department */
 const departmentUpdate = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,

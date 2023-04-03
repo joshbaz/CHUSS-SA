@@ -1,6 +1,6 @@
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 const updateExaminerReport = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -10,7 +10,7 @@ const updateExaminerReport = async (values) => {
 }
 
 const getExaminerReport = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -20,7 +20,7 @@ const getExaminerReport = async (values) => {
 }
 
 const getAllExaminerReports = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -30,7 +30,7 @@ const getAllExaminerReports = async (values) => {
 }
 
 const removeExRpfiles = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -39,11 +39,44 @@ const removeExRpfiles = async (values) => {
     return response
 }
 
+const getReportStats = async (values) => {
+    let getToken = localStorage.getItem('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.getReportStats(allValues)
+    return response
+}
+
+const getReportReminders = async (values) => {
+    let getToken = localStorage.getItem('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.getReportReminders(allValues)
+    return response
+}
+
+const getLateReports = async (values) => {
+    let getToken = localStorage.getItem('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.getLateReports(allValues)
+    return response
+}
+
 let reportService = {
     updateExaminerReport,
     getExaminerReport,
     getAllExaminerReports,
     removeExRpfiles,
+    getReportStats,
+    getReportReminders,
+    getLateReports,
 }
 
 export default reportService

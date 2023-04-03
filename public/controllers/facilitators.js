@@ -149,3 +149,26 @@ exports.newfacilitatorPasskey = async (event, values) => {
         return errorResult
     }
 }
+
+exports.deactivateAdmin = async (event, values) => {
+    try {
+        let responseData = await axios.patch(
+            `${BASE_API_}/admin/v1/deactivate/${values.exId}`,
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}

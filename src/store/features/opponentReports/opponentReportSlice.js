@@ -31,7 +31,8 @@ export const updateOpponentReport = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)
@@ -61,7 +62,8 @@ export const getOpponentReport = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)

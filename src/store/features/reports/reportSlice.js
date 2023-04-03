@@ -9,6 +9,17 @@ let initialState = {
         items: [],
         overall_total: 0,
     },
+    stats: {
+        allreports: 0,
+        allreminders: 0,
+        latereports: 0,
+    },
+    allreminders: {
+        items: [],
+    },
+    alllatereports: {
+        items: [],
+    },
     isSuccess: false,
     isError: false,
     isLoading: false,
@@ -35,7 +46,8 @@ export const updateExaminerReport = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)
@@ -63,7 +75,8 @@ export const getExaminerReport = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -91,7 +104,8 @@ export const getAllExaminerReports = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -119,12 +133,100 @@ export const removeExRpfiles = createAsyncThunk(
                 removeAttempt.message === 'Not authenticated' ||
                 removeAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(removeAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(removeAttempt.message)
             }
             //return thunkAPI.rejectWithValue(removeAttempt.message)
+        }
+    }
+)
+
+/**  report stats */
+export const getReportStats = createAsyncThunk(
+    'reports/stats',
+    async (values, thunkAPI) => {
+        let allValues = {
+            id: values,
+            getToken,
+        }
+        const getAttempt = await reportService.getReportStats(allValues)
+
+        if (getAttempt.type === 'success') {
+            return getAttempt
+        } else {
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                await authService.logout()
+                window.location.reload()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getAttempt.message)
+        }
+    }
+)
+
+/**  report stats */
+export const getReportReminders = createAsyncThunk(
+    'reports/reminders',
+    async (values, thunkAPI) => {
+        let allValues = {
+            id: values,
+            getToken,
+        }
+        const getAttempt = await reportService.getReportReminders(allValues)
+
+        if (getAttempt.type === 'success') {
+            return getAttempt
+        } else {
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                await authService.logout()
+                window.location.reload()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getAttempt.message)
+        }
+    }
+)
+
+/**  report stats */
+export const getLateReports = createAsyncThunk(
+    'reports/latereports',
+    async (values, thunkAPI) => {
+        let allValues = {
+            id: values,
+            getToken,
+        }
+        const getAttempt = await reportService.getLateReports(allValues)
+
+        if (getAttempt.type === 'success') {
+            return getAttempt
+        } else {
+            if (
+                getAttempt.message === 'jwt expired' ||
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
+            ) {
+                await authService.logout()
+                window.location.reload()
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(getAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(getAttempt.message)
         }
     }
 )
@@ -193,6 +295,50 @@ export const reportSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(removeExRpfiles.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            //report stats
+            .addCase(getReportStats.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getReportStats.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.stats = action.payload
+            })
+            .addCase(getReportStats.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            //report reminders
+            .addCase(getReportReminders.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getReportReminders.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.allreminders = action.payload
+            })
+            .addCase(getReportReminders.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            //report late reports
+            .addCase(getLateReports.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getLateReports.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.alllatereports = action.payload
+            })
+            .addCase(getLateReports.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

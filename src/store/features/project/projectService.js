@@ -1,6 +1,6 @@
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 const projectDeletion = async (values)=> {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -11,7 +11,7 @@ const projectDeletion = async (values)=> {
 }
 
 const projectCreate = async (values) => {
-      let getToken = Cookies.get('_tk')
+      let getToken = localStorage.getItem('_tk')
       let allValues = {
           ...values,
           getToken,
@@ -22,7 +22,7 @@ const projectCreate = async (values) => {
 }
 
 const projectUpdate = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -33,7 +33,7 @@ const projectUpdate = async (values) => {
 }
 
 const getPProjects = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -43,7 +43,7 @@ const getPProjects = async (values) => {
 }
 
 const getAllProjects = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -53,7 +53,7 @@ const getAllProjects = async (values) => {
 }
 
 const getIndividualProject = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -64,7 +64,7 @@ const getIndividualProject = async (values) => {
 
 //project status update
 const updateProjectStatus = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -75,7 +75,7 @@ const updateProjectStatus = async (values) => {
 
 //candidate files
 const updateCandidateFiles = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -85,7 +85,7 @@ const updateCandidateFiles = async (values) => {
 }
 //viva files
 const updateVivaFiles = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -96,7 +96,7 @@ const updateVivaFiles = async (values) => {
 
 //viva defense
 const updateVivaDefense = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -107,7 +107,7 @@ const updateVivaDefense = async (values) => {
 
 //final submission files
 const updateFinalSubmission = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -118,7 +118,7 @@ const updateFinalSubmission = async (values) => {
 
 //final submission date
 const updateSubmissionDate = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -129,7 +129,7 @@ const updateSubmissionDate = async (values) => {
 
 //final graduation date
 const updateGraduationDate = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -139,7 +139,7 @@ const updateGraduationDate = async (values) => {
 }
 
 const updateResubmission = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -150,7 +150,7 @@ const updateResubmission = async (values) => {
 
 //final graduation date
 const deleteFileExaminer = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -161,7 +161,7 @@ const deleteFileExaminer = async (values) => {
 
 //final graduation date
 const addFileExaminer = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -172,7 +172,7 @@ const addFileExaminer = async (values) => {
 
 //remove Examiner
 const removeProjectExaminer = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -183,7 +183,7 @@ const removeProjectExaminer = async (values) => {
 
 //remove Examiner
 const updateRrrport = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -193,7 +193,7 @@ const updateRrrport = async (values) => {
 }
 
 const removeCaFiles = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -202,7 +202,7 @@ const removeCaFiles = async (values) => {
     return response
 }
 const removeViFiles = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -211,7 +211,7 @@ const removeViFiles = async (values) => {
     return response
 }
 const removeFinalSFiles = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,

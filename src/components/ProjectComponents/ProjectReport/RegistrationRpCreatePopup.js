@@ -85,17 +85,17 @@ const RegistrationRpCreatePopup = ({
     )
 
     const validationSchema = yup.object().shape({
-        regfiles: yup.mixed().required('file is required'),
+        //regfiles: yup.mixed().required('file is required'),
         regDate: yup.string().required('date is required'),
         regType: yup.string().required('registration type is required'),
         semester: yup.string().required('semester is required'),
         academicYear: yup.string().required('academic year is required'),
-        filetypename: yup.string().required('file type is required'),
-        othername: yup.string().when('filetypename', {
-            is: 'others',
-            then: yup.string().required('other name is required'),
-            otherwise: yup.string(),
-        }),
+       // filetypename: yup.string().required('file type is required'),
+        // othername: yup.string().when('filetypename', {
+        //     is: 'others',
+        //     then: yup.string().required('other name is required'),
+        //     otherwise: yup.string(),
+        // }),
     })
 
     const initialValues = {

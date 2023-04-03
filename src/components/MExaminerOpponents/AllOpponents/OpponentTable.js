@@ -58,509 +58,506 @@ const OpponentTable = ({
     exportData,
     setExportData,
 }) => {
-
-     const [removeActive, setRemoveActive] = React.useState(false)
-     const [removeDetails, setRemoveDetails] = React.useState(null)
-     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
-     const [filterTabData, setfilterTabData] = React.useState([
-         {
-             title: 'All',
-             dataCount: 0,
-         },
-     ])
-     // eslint-disable-next-line no-unused-vars
-     const [perPage, setPerPage] = React.useState(10)
-     const [allDisplayData, setAllDisplayData] = React.useState({
-         currentPage: 0,
-         itemsPerPage: 8,
-         items: [],
-         allItems: [],
-         totalItemsDisplayed: 0,
-         totalAllItems: 0,
-         totalPages: 0,
-     })
-
-     const [searchData, setSearchData] = React.useState({
-         currentPage: 0,
-         itemsPerPage: 8,
-         items: [],
-         allSearchItems: [],
-         totalItemsDisplayed: 0,
-         totalSearchedItems: 0,
-         totalPages: 0,
-     })
-
-     let routeNavigate = useNavigate()
-     let dispatch = useDispatch()
-     let toast = useToast()
-
-     let { allOpponentItems, isSuccess, isError, message } = useSelector(
-         (state) => state.opponent
-     )
-
-     /** changes all document tabs */
-     useEffect(() => {
-         if (searchActive) {
-             setfilterTabData([
-                 {
-                     title: 'All',
-                     dataCount: searchData.totalSearchedItems,
-                 },
-             ])
-         } else {
-             setfilterTabData([
-                 {
-                     title: 'All',
-                     dataCount: allDisplayData.totalAllItems,
-                 },
-             ])
-         }
-     }, [
-         searchActive,
-         allDisplayData.totalAllItems,
-         searchData.totalSearchedItems,
-     ])
-
-     useEffect(() => {
-         let allQueriedItems = allOpponentItems.items.filter((datas) => {
-             return datas
-         })
-         /** initial items  */
-         //items collected
-         const allItemsCollected = allQueriedItems
-         //total all items
-         const totalItems = allQueriedItems.length
-         let itemsPerPage = perPage
-         const currentPage = 1
-         const indexOfLastItem = currentPage * itemsPerPage
-         const indexOfFirstItem = indexOfLastItem - itemsPerPage
-
-         const currentItems = allItemsCollected.slice(
-             indexOfFirstItem,
-             indexOfLastItem
-         )
-
-         const pageLength = Math.ceil(totalItems / itemsPerPage)
-
-         setAllDisplayData({
-             currentPage: currentPage,
-             itemsPerPage: itemsPerPage,
-             items: currentItems,
-             allItems: allQueriedItems,
-             totalItemsDisplayed: currentItems.length,
-             totalAllItems: totalItems,
-             totalPages: pageLength,
-         })
-     }, [allOpponentItems])
-
-     let PaginationFirstNumber =
-         allDisplayData.currentPage * allDisplayData.itemsPerPage -
-         allDisplayData.itemsPerPage +
-         1
-
-     let PaginationLastNumber =
-         PaginationFirstNumber + allDisplayData.totalItemsDisplayed - 1
-
-     /** searched Pagination */
-     let PaginationSFirstNumber =
-         searchData.currentPage * searchData.itemsPerPage -
-         searchData.itemsPerPage +
-         1
-     let PaginationSLastNumber =
-         PaginationSFirstNumber + searchData.totalItemsDisplayed - 1
-
-     /** function to handle general checkbox */
-     const handleGeneralCheckbox = (e) => {
-         if (e.target.checked) {
-             if (searchActive) {
-                 if (searchData.allSearchItems.length > 0) {
-                     let newDataToSave = searchData.allSearchItems.map(
-                         (data) => {
-                             return data
-                         }
-                     )
-
-                     // console.log('generalss', newDataToSave)
-
-                     setExportData(newDataToSave)
-                 }
-             } else {
-                 if (allDisplayData.allItems.length > 0) {
-                     let newDataToSave = allDisplayData.allItems.map((data) => {
-                         //  console.log('allDisplayData', data.activeStatus)
-                         return data
-                     })
-
-                     //  console.log('generalstts', newDataToSave)
-                     setExportData(newDataToSave)
-                 }
-             }
-         } else {
-             setExportData([])
-         }
-     }
-
-     /** function to handle checkbox on each item */
-     const handleIndivCheckbox = (e, data) => {
-         //  console.log('checking0', e.target.checked, data)
-         if (exportData.length > 0) {
-             let checkData = exportData.some(
-                 (datacheck, index) => data._id === datacheck._id
-             )
-
-             if (checkData) {
-                 let newChecksData = [...exportData]
-                 for (
-                     let iteration = 0;
-                     iteration < newChecksData.length;
-                     iteration++
-                 ) {
-                     if (newChecksData[iteration]._id === data._id) {
-                         newChecksData.splice(iteration, 1)
-                         setExportData([...newChecksData])
-
-                         return
-                     }
-                 }
-             } else {
-                 setExportData([...exportData, data])
-             }
-         } else {
-             setExportData([data])
-         }
-     }
-
-     const handlePrev = () => {
-         if (searchActive) {
-             if (searchData.currentPage - 1 >= 1) {
-                 let page = searchData.currentPage - 1
-                 const indexOfLastItem = page * searchData.itemsPerPage
-                 const indexOfFirstItem =
-                     indexOfLastItem - searchData.itemsPerPage
-
-                 const currentItems = searchData.allSearchItems.slice(
-                     indexOfFirstItem,
-                     indexOfLastItem
-                 )
-
-                 setSearchData(() => ({
-                     ...searchData,
-                     currentPage: page,
-                     itemsPerPage: perPage,
-                     items: currentItems,
-                     totalItemsDisplayed: currentItems.length,
-                 }))
-             }
-         } else {
-             if (allDisplayData.currentPage - 1 >= 1) {
-                 let page = allDisplayData.currentPage - 1
-                 const indexOfLastItem = page * allDisplayData.itemsPerPage
-                 const indexOfFirstItem =
-                     indexOfLastItem - allDisplayData.itemsPerPage
-
-                 const currentItems = allDisplayData.allItems.slice(
-                     indexOfFirstItem,
-                     indexOfLastItem
-                 )
-
-                 setAllDisplayData({
-                     ...allDisplayData,
-                     currentPage: page,
-                     itemsPerPage: perPage,
-                     items: currentItems,
-                     totalItemsDisplayed: currentItems.length,
-                 })
-             }
-         }
-     }
-
-     const handleNext = () => {
-         if (searchActive) {
-             if (searchData.currentPage + 1 <= searchData.totalPages) {
-                 let page = searchData.currentPage + 1
-                 const indexOfLastItem = page * searchData.itemsPerPage
-                 const indexOfFirstItem =
-                     indexOfLastItem - searchData.itemsPerPage
-
-                 const currentItems = searchData.allSearchItems.slice(
-                     indexOfFirstItem,
-                     indexOfLastItem
-                 )
-
-                 setSearchData({
-                     ...searchData,
-                     currentPage: page,
-                     itemsPerPage: perPage,
-                     items: currentItems,
-                     totalItemsDisplayed: currentItems.length,
-                 })
-             }
-         } else {
-             if (allDisplayData.currentPage + 1 <= allDisplayData.totalPages) {
-                 let page = allDisplayData.currentPage + 1
-                 const indexOfLastItem = page * allDisplayData.itemsPerPage
-                 const indexOfFirstItem =
-                     indexOfLastItem - allDisplayData.itemsPerPage
-
-                 const currentItems = allDisplayData.allItems.slice(
-                     indexOfFirstItem,
-                     indexOfLastItem
-                 )
-
-                 setAllDisplayData(() => ({
-                     ...allDisplayData,
-                     currentPage: page,
-                     itemsPerPage: perPage,
-                     items: currentItems,
-                     totalItemsDisplayed: currentItems.length,
-                 }))
-             }
-         }
-     }
-
-     /** function to handle data exportation */
-     const handleExportation = async () => {
-         if (exportData.length > 0) {
-             let values = {
-                 tableName: 'Supervisors',
-                 data: exportData,
-             }
-             await window.electronAPI.exportExaminersCSV(values)
-         }
-     }
-
-     /** function to handle search filters */
-     const handleFilters = () => {
-         const searchResults = allDisplayData.allItems.filter(
-             (data1, index) => {
-                 /** student name */
-                 if (filterInfo[0].title === 'Examiner Name') {
-                     let name = `${data1.name.toLowerCase()}`
-                     let tname = `${
-                         data1.jobtitle.toLowerCase() +
-                         ' ' +
-                         data1.name.toLowerCase()
-                     }`
-                     //console.log('name', name)
-                     let check = filterInfo[0].searchfor.some((details) => {
-                         if (name.includes(details)) {
-                             return details
-                         }
-
-                         if (tname.includes(details)) {
-                             return details
-                         }
-                     })
-
-                     // let check = filterInfo[0].searchfor.some(({ details }) => {
-                     //     console.log('details', details)
-                     //     if (name.includes(details)) {
-                     //         return true
-                     //     }
-                     // })
-                     // console.log('check', check)
-
-                     return check
-                 }
-
-                 /** topic */
-                 if (filterInfo[0].title === 'Email') {
-                     let topic = data1.email.toLowerCase()
-
-                     let check = filterInfo[0].searchfor.some((details) =>
-                         topic.includes(details)
-                     )
-
-                     return check
-                 }
-
-                 return null
-             }
-         )
-
-         /** filters to add to the first */
-         if (searchResults.length > 0 && filterInfo.length > 1) {
-             let newFilterArray = [...filterInfo]
-             newFilterArray.splice(0, 1)
-             //console.log('new arrayS', newFilterArray)
-             //stopped here
-
-             //make a new copy of the searched Data
-             let newSearchedData = [...searchResults]
-
-             //iterate through the queries
-             for (
-                 let iteration = 0;
-                 iteration < newFilterArray.length;
-                 iteration++
-             ) {
-                 if (newSearchedData.length > 0) {
-                     /** filter the data */
-                     const newResults = newSearchedData.filter(
-                         (data1, index) => {
-                             /** student name */
-                             if (
-                                 newFilterArray[iteration].title ===
-                                 'Examiner Name'
-                             ) {
-                                 let name = `${data1.name.toLowerCase()}`
-                                 let tname = `${
-                                     data1.jobtitle.toLowerCase() +
-                                     ' ' +
-                                     data1.name.toLowerCase()
-                                 }`
-
-                                 let check = newFilterArray[
-                                     iteration
-                                 ].searchfor.some((details) => {
-                                     if (name.includes(details)) {
-                                         return details
-                                     }
-
-                                     if (tname.includes(details)) {
-                                         return details
-                                     }
-                                 })
-
-                                 return check
-                             }
-
-                             /** email */
-                             if (newFilterArray[iteration].title === 'Email') {
-                                 let topic = data1.email.toLowerCase()
-
-                                 let check = newFilterArray[
-                                     iteration
-                                 ].searchfor.some((details) =>
-                                     topic.includes(details)
-                                 )
-
-                                 return check
-                             }
-
-                             return null
-                         }
-                     )
-
-                     /** assign the new results */
-
-                     newSearchedData = [...newResults]
-                 } else {
-                     return
-                 }
-             }
-             // perform state update of the results
-
-             //items collected
-             const allItemsCollected = newSearchedData
-             //total all items
-             const totalItems = newSearchedData.length
-             let itemsPerPage = perPage
-             const currentPage = 1
-             const indexOfLastItem = currentPage * itemsPerPage
-             const indexOfFirstItem = indexOfLastItem - itemsPerPage
-
-             const currentItems = allItemsCollected.slice(
-                 indexOfFirstItem,
-                 indexOfLastItem
-             )
-
-             const pageLength = Math.ceil(totalItems / itemsPerPage)
-
-             setSearchData({
-                 currentPage: currentPage,
-                 itemsPerPage: itemsPerPage,
-                 items: currentItems,
-                 allSearchItems: newSearchedData,
-                 totalItemsDisplayed: currentItems.length,
-                 totalSearchedItems: totalItems,
-                 totalPages: pageLength,
-             })
-         } else {
-             /** filter info less than 2 and no searched data */
-             /** set the records */
-             //items collected
-             const allItemsCollected = searchResults
-             //total all items
-             const totalItems = searchResults.length
-             let itemsPerPage = perPage
-             const currentPage = 1
-             const indexOfLastItem = currentPage * itemsPerPage
-             const indexOfFirstItem = indexOfLastItem - itemsPerPage
-
-             const currentItems = allItemsCollected.slice(
-                 indexOfFirstItem,
-                 indexOfLastItem
-             )
-
-             const pageLength = Math.ceil(totalItems / itemsPerPage)
-
-             setSearchData({
-                 currentPage: currentPage,
-                 itemsPerPage: itemsPerPage,
-                 items: currentItems,
-                 allSearchItems: searchResults,
-                 totalItemsDisplayed: currentItems.length,
-                 totalSearchedItems: totalItems,
-                 totalPages: pageLength,
-             })
-         }
-     }
-
-     useEffect(() => {
-         if (filterInfo.length > 0) {
-             handleFilters()
-         }
-     }, [filterInfo])
-
-     /** HANDLE PROJECT DELETION */
-     const handleRemove = (ppId, name) => {
-         if (ppId._id && name) {
-             let rvalues = {
-                 name: `${ppId.jobtitle + ' ' + name}`,
-                 exId: ppId._id,
-             }
-             setRemoveDetails(() => rvalues)
-             setRemoveActive(true)
-         }
-     }
-
-     const onRemoveUpload = () => {
-         if (removeDetails.exId) {
-             dispatch(examinerDeletes(removeDetails))
-             setIsSubmittingp(true)
-         }
-     }
-
-     const cancelRemoveUpload = () => {
-         setRemoveActive(false)
-         setRemoveDetails(null)
-
-         // onClose()
-     }
-
-     React.useEffect(() => {
-         if (isError && isSubmittingp) {
-             setIsSubmittingp(false)
-             dispatch(reset())
-         }
-         if (isSuccess && message && isSubmittingp) {
-             toast({
-                 position: 'top',
-                 title: message.message,
-                 status: 'success',
-                 duration: 10000,
-                 isClosable: true,
-             })
-             setIsSubmittingp(false)
-             setRemoveActive(false)
-             setRemoveDetails(null)
-
-             dispatch(reset())
-         }
-
-         dispatch(reset())
-     }, [isSuccess, message, isSubmittingp, isError])
+    const [removeActive, setRemoveActive] = React.useState(false)
+    const [removeDetails, setRemoveDetails] = React.useState(null)
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+    const [filterTabData, setfilterTabData] = React.useState([
+        {
+            title: 'All',
+            dataCount: 0,
+        },
+    ])
+    // eslint-disable-next-line no-unused-vars
+    const [perPage, setPerPage] = React.useState(10)
+    const [allDisplayData, setAllDisplayData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allItems: [],
+        totalItemsDisplayed: 0,
+        totalAllItems: 0,
+        totalPages: 0,
+    })
+
+    const [searchData, setSearchData] = React.useState({
+        currentPage: 0,
+        itemsPerPage: 8,
+        items: [],
+        allSearchItems: [],
+        totalItemsDisplayed: 0,
+        totalSearchedItems: 0,
+        totalPages: 0,
+    })
+
+    let routeNavigate = useNavigate()
+    let dispatch = useDispatch()
+    let toast = useToast()
+
+    let { allOpponentItems, isSuccess, isError, message } = useSelector(
+        (state) => state.opponent
+    )
+
+    /** changes all document tabs */
+    useEffect(() => {
+        if (searchActive) {
+            setfilterTabData([
+                {
+                    title: 'All',
+                    dataCount: searchData.totalSearchedItems,
+                },
+            ])
+        } else {
+            setfilterTabData([
+                {
+                    title: 'All',
+                    dataCount: allDisplayData.totalAllItems,
+                },
+            ])
+        }
+    }, [
+        searchActive,
+        allDisplayData.totalAllItems,
+        searchData.totalSearchedItems,
+    ])
+
+    useEffect(() => {
+        let allQueriedItems = allOpponentItems.items.filter((datas) => {
+            return datas
+        })
+        /** initial items  */
+        //items collected
+        const allItemsCollected = allQueriedItems
+        //total all items
+        const totalItems = allQueriedItems.length
+        let itemsPerPage = perPage
+        const currentPage = 1
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+        const currentItems = allItemsCollected.slice(
+            indexOfFirstItem,
+            indexOfLastItem
+        )
+
+        const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+        setAllDisplayData({
+            currentPage: currentPage,
+            itemsPerPage: itemsPerPage,
+            items: currentItems,
+            allItems: allQueriedItems,
+            totalItemsDisplayed: currentItems.length,
+            totalAllItems: totalItems,
+            totalPages: pageLength,
+        })
+    }, [allOpponentItems])
+
+    let PaginationFirstNumber =
+        allDisplayData.currentPage * allDisplayData.itemsPerPage -
+        allDisplayData.itemsPerPage +
+        1
+
+    let PaginationLastNumber =
+        PaginationFirstNumber + allDisplayData.totalItemsDisplayed - 1
+
+    /** searched Pagination */
+    let PaginationSFirstNumber =
+        searchData.currentPage * searchData.itemsPerPage -
+        searchData.itemsPerPage +
+        1
+    let PaginationSLastNumber =
+        PaginationSFirstNumber + searchData.totalItemsDisplayed - 1
+
+    /** function to handle general checkbox */
+    const handleGeneralCheckbox = (e) => {
+        if (e.target.checked) {
+            if (searchActive) {
+                if (searchData.allSearchItems.length > 0) {
+                    let newDataToSave = searchData.allSearchItems.map(
+                        (data) => {
+                            return data
+                        }
+                    )
+
+                    // console.log('generalss', newDataToSave)
+
+                    setExportData(newDataToSave)
+                }
+            } else {
+                if (allDisplayData.allItems.length > 0) {
+                    let newDataToSave = allDisplayData.allItems.map((data) => {
+                        //  console.log('allDisplayData', data.activeStatus)
+                        return data
+                    })
+
+                    //  console.log('generalstts', newDataToSave)
+                    setExportData(newDataToSave)
+                }
+            }
+        } else {
+            setExportData([])
+        }
+    }
+
+    /** function to handle checkbox on each item */
+    const handleIndivCheckbox = (e, data) => {
+        //  console.log('checking0', e.target.checked, data)
+        if (exportData.length > 0) {
+            let checkData = exportData.some(
+                (datacheck, index) => data._id === datacheck._id
+            )
+
+            if (checkData) {
+                let newChecksData = [...exportData]
+                for (
+                    let iteration = 0;
+                    iteration < newChecksData.length;
+                    iteration++
+                ) {
+                    if (newChecksData[iteration]._id === data._id) {
+                        newChecksData.splice(iteration, 1)
+                        setExportData([...newChecksData])
+
+                        return
+                    }
+                }
+            } else {
+                setExportData([...exportData, data])
+            }
+        } else {
+            setExportData([data])
+        }
+    }
+
+    const handlePrev = () => {
+        if (searchActive) {
+            if (searchData.currentPage - 1 >= 1) {
+                let page = searchData.currentPage - 1
+                const indexOfLastItem = page * searchData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - searchData.itemsPerPage
+
+                const currentItems = searchData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setSearchData(() => ({
+                    ...searchData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                }))
+            }
+        } else {
+            if (allDisplayData.currentPage - 1 >= 1) {
+                let page = allDisplayData.currentPage - 1
+                const indexOfLastItem = page * allDisplayData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allDisplayData.itemsPerPage
+
+                const currentItems = allDisplayData.allItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setAllDisplayData({
+                    ...allDisplayData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        }
+    }
+
+    const handleNext = () => {
+        if (searchActive) {
+            if (searchData.currentPage + 1 <= searchData.totalPages) {
+                let page = searchData.currentPage + 1
+                const indexOfLastItem = page * searchData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - searchData.itemsPerPage
+
+                const currentItems = searchData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setSearchData({
+                    ...searchData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        } else {
+            if (allDisplayData.currentPage + 1 <= allDisplayData.totalPages) {
+                let page = allDisplayData.currentPage + 1
+                const indexOfLastItem = page * allDisplayData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allDisplayData.itemsPerPage
+
+                const currentItems = allDisplayData.allItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setAllDisplayData(() => ({
+                    ...allDisplayData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                }))
+            }
+        }
+    }
+
+    /** function to handle data exportation */
+    const handleExportation = async () => {
+        if (exportData.length > 0) {
+            let values = {
+                tableName: 'Opponents',
+                data: exportData,
+            }
+            await window.electronAPI.exportExaminersCSV(values)
+        }
+    }
+
+    /** function to handle search filters */
+    const handleFilters = () => {
+        const searchResults = allDisplayData.allItems.filter((data1, index) => {
+            /** student name */
+            if (filterInfo[0].title === 'Examiner Name') {
+                let name = `${data1.name.toLowerCase()}`
+                let tname = `${
+                    data1.jobtitle.toLowerCase() +
+                    ' ' +
+                    data1.name.toLowerCase()
+                }`
+                //console.log('name', name)
+                let check = filterInfo[0].searchfor.some((details) => {
+                    if (name.includes(details)) {
+                        return details
+                    }
+
+                    if (tname.includes(details)) {
+                        return details
+                    }
+                })
+
+                // let check = filterInfo[0].searchfor.some(({ details }) => {
+                //     console.log('details', details)
+                //     if (name.includes(details)) {
+                //         return true
+                //     }
+                // })
+                // console.log('check', check)
+
+                return check
+            }
+
+            /** topic */
+            if (filterInfo[0].title === 'Email') {
+                let topic = data1.email.toLowerCase()
+
+                let check = filterInfo[0].searchfor.some((details) =>
+                    topic.includes(details)
+                )
+
+                return check
+            }
+
+            return null
+        })
+
+        /** filters to add to the first */
+        if (searchResults.length > 0 && filterInfo.length > 1) {
+            let newFilterArray = [...filterInfo]
+            newFilterArray.splice(0, 1)
+            //console.log('new arrayS', newFilterArray)
+            //stopped here
+
+            //make a new copy of the searched Data
+            let newSearchedData = [...searchResults]
+
+            //iterate through the queries
+            for (
+                let iteration = 0;
+                iteration < newFilterArray.length;
+                iteration++
+            ) {
+                if (newSearchedData.length > 0) {
+                    /** filter the data */
+                    const newResults = newSearchedData.filter(
+                        (data1, index) => {
+                            /** student name */
+                            if (
+                                newFilterArray[iteration].title ===
+                                'Examiner Name'
+                            ) {
+                                let name = `${data1.name.toLowerCase()}`
+                                let tname = `${
+                                    data1.jobtitle.toLowerCase() +
+                                    ' ' +
+                                    data1.name.toLowerCase()
+                                }`
+
+                                let check = newFilterArray[
+                                    iteration
+                                ].searchfor.some((details) => {
+                                    if (name.includes(details)) {
+                                        return details
+                                    }
+
+                                    if (tname.includes(details)) {
+                                        return details
+                                    }
+                                })
+
+                                return check
+                            }
+
+                            /** email */
+                            if (newFilterArray[iteration].title === 'Email') {
+                                let topic = data1.email.toLowerCase()
+
+                                let check = newFilterArray[
+                                    iteration
+                                ].searchfor.some((details) =>
+                                    topic.includes(details)
+                                )
+
+                                return check
+                            }
+
+                            return null
+                        }
+                    )
+
+                    /** assign the new results */
+
+                    newSearchedData = [...newResults]
+                } else {
+                    return
+                }
+            }
+            // perform state update of the results
+
+            //items collected
+            const allItemsCollected = newSearchedData
+            //total all items
+            const totalItems = newSearchedData.length
+            let itemsPerPage = perPage
+            const currentPage = 1
+            const indexOfLastItem = currentPage * itemsPerPage
+            const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+            const currentItems = allItemsCollected.slice(
+                indexOfFirstItem,
+                indexOfLastItem
+            )
+
+            const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+            setSearchData({
+                currentPage: currentPage,
+                itemsPerPage: itemsPerPage,
+                items: currentItems,
+                allSearchItems: newSearchedData,
+                totalItemsDisplayed: currentItems.length,
+                totalSearchedItems: totalItems,
+                totalPages: pageLength,
+            })
+        } else {
+            /** filter info less than 2 and no searched data */
+            /** set the records */
+            //items collected
+            const allItemsCollected = searchResults
+            //total all items
+            const totalItems = searchResults.length
+            let itemsPerPage = perPage
+            const currentPage = 1
+            const indexOfLastItem = currentPage * itemsPerPage
+            const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+            const currentItems = allItemsCollected.slice(
+                indexOfFirstItem,
+                indexOfLastItem
+            )
+
+            const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+            setSearchData({
+                currentPage: currentPage,
+                itemsPerPage: itemsPerPage,
+                items: currentItems,
+                allSearchItems: searchResults,
+                totalItemsDisplayed: currentItems.length,
+                totalSearchedItems: totalItems,
+                totalPages: pageLength,
+            })
+        }
+    }
+
+    useEffect(() => {
+        if (filterInfo.length > 0) {
+            handleFilters()
+        }
+    }, [filterInfo])
+
+    /** HANDLE PROJECT DELETION */
+    const handleRemove = (ppId, name) => {
+        if (ppId._id && name) {
+            let rvalues = {
+                name: `${ppId.jobtitle + ' ' + name}`,
+                exId: ppId._id,
+            }
+            setRemoveDetails(() => rvalues)
+            setRemoveActive(true)
+        }
+    }
+
+    const onRemoveUpload = () => {
+        if (removeDetails.exId) {
+            dispatch(examinerDeletes(removeDetails))
+            setIsSubmittingp(true)
+        }
+    }
+
+    const cancelRemoveUpload = () => {
+        setRemoveActive(false)
+        setRemoveDetails(null)
+
+        // onClose()
+    }
+
+    React.useEffect(() => {
+        if (isError && isSubmittingp) {
+            setIsSubmittingp(false)
+            dispatch(reset())
+        }
+        if (isSuccess && message && isSubmittingp) {
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(false)
+            setRemoveActive(false)
+            setRemoveDetails(null)
+
+            dispatch(reset())
+        }
+
+        dispatch(reset())
+    }, [isSuccess, message, isSubmittingp, isError])
     return (
         <Container>
             <Stack spacing='0' className='form_container'>
@@ -773,7 +770,9 @@ const OpponentTable = ({
                                                                             View
                                                                             Opponent
                                                                         </MenuItem>
-                                                                        <MenuItem
+
+                                                                        {/**
+                                                                             * <MenuItem
                                                                             onClick={() =>
                                                                                 handleRemove(
                                                                                     data,
@@ -783,6 +782,12 @@ const OpponentTable = ({
                                                                             Delete
                                                                             Opponent
                                                                         </MenuItem>
+                                                                             * 
+                                                                             * 
+                                                                             * 
+                                                                             * 
+                                                                             * 
+                                                                             */}
                                                                     </MenuList>
                                                                 </Menu>
                                                             </Td>
@@ -891,7 +896,8 @@ const OpponentTable = ({
                                                                             View
                                                                             Opponent
                                                                         </MenuItem>
-                                                                        <MenuItem
+                                                                        {/**
+                                                                             * <MenuItem
                                                                             onClick={() =>
                                                                                 handleRemove(
                                                                                     data,
@@ -899,8 +905,14 @@ const OpponentTable = ({
                                                                                 )
                                                                             }>
                                                                             Delete
-                                                                           Opponent
+                                                                            Opponent
                                                                         </MenuItem>
+                                                                             * 
+                                                                             * 
+                                                                             * 
+                                                                             * 
+                                                                             * 
+                                                                             */}
                                                                     </MenuList>
                                                                 </Menu>
                                                             </Td>
@@ -1435,4 +1447,3 @@ const PopupForm = styled(Stack)`
         }
     }
 `
-

@@ -109,7 +109,7 @@ const CreateMastersProject = () => {
         registrationNumber: yup.string().required('required'),
         studentName: yup.string().required('required'),
         programType: yup.string().required('required'),
-        degreeProgram: yup.string().required('required'),
+       // degreeProgram: yup.string().required('required'),
         schoolName: yup.string().required('required'),
         //  departmentName: yup.string().required('required'),
         phoneNumber: yup.string().required('required'),
@@ -230,6 +230,7 @@ const CreateMastersProject = () => {
                                                     preferencesData
                                                         .allProgramItems.items
                                                 }
+                                                degreetype={"Masters"}
                                             />
 
                                             <ContactForm

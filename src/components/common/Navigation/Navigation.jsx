@@ -14,9 +14,9 @@ import { AiOutlineSetting } from 'react-icons/ai'
 import { FaChalkboardTeacher } from 'react-icons/fa'
 
 import { useSelector } from 'react-redux'
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 const Navigation = () => {
-    const isAuthenticated = !!Cookies.get('_tk')
+    //  const isAuthenticated = !!localStorage.getItem('_tk')
     // const [previledges, setPreviledges] = React.useState('Administrator')
     const { user, isSuccess } = useSelector((state) => state.auth)
 
@@ -57,6 +57,7 @@ const Navigation = () => {
                         link: '/payments',
                         name: 'Payments',
                     },
+                    
                     {
                         title: 'examiners',
                         icon: <FaChalkboardTeacher />,
@@ -69,12 +70,13 @@ const Navigation = () => {
                         link: '/schools',
                         name: 'Schools',
                     },
-                    {
-                        title: 'advanced search',
+                  {
+                        title: 'reports',
                         icon: <MdManageSearch />,
-                        link: '/advsearch',
-                        name: 'Advanced Search',
+                        link: '/m-reports',
+                        name: 'reports',
                     },
+
                     {
                         title: 'settings',
                         icon: <AiOutlineSetting />,
@@ -115,18 +117,20 @@ const Navigation = () => {
                         link: '/m-examiners',
                         name: 'Examiners',
                     },
+                   
                     {
                         title: 'Schools',
                         icon: <MdOutlineBusinessCenter />,
                         link: '/schools',
                         name: 'Schools',
                     },
-                    {
-                        title: 'advanced search',
+                   {
+                        title: 'reports',
                         icon: <MdManageSearch />,
-                        link: '/advsearch',
-                        name: 'Advanced Search',
+                        link: '/m-reports',
+                        name: 'reports',
                     },
+
                     {
                         title: 'settings',
                         icon: <AiOutlineSetting />,

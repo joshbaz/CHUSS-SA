@@ -1,6 +1,6 @@
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 const createRegistration = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -10,7 +10,7 @@ const createRegistration = async (values) => {
 }
 
 const updateRegistration = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -20,7 +20,7 @@ const updateRegistration = async (values) => {
 }
 
 const removeRegistration = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,

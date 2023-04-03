@@ -25,7 +25,10 @@ const ViewPayment = (props) => {
 
     useEffect(() => {
         /** dispatch to getSinglePayment */
-        dispatch(getSinglePayment(params.id))
+        let idValues = {
+            id: params.id,
+        }
+        dispatch(getSinglePayment(idValues))
     }, [params.id, dispatch])
     let paymentCase = useSelector((state) => state.payment)
 

@@ -1,7 +1,7 @@
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 /** service to create examiner from project */
 const projectDCMemberCreate = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -13,7 +13,7 @@ const projectDCMemberCreate = async (values) => {
 
 /** service to assign examiner from project */
 const assignDCMember = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -25,7 +25,7 @@ const assignDCMember = async (values) => {
 
 /** service to get all paginated examiners  */
 const paginatedDCMember = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -37,7 +37,7 @@ const paginatedDCMember = async (values) => {
 
 /** service to get all  examiners  */
 const allDCMembers = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -49,7 +49,7 @@ const allDCMembers = async (values) => {
 
 /** service to get individual  examiners  */
 const getIndividualDCMember = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -61,7 +61,7 @@ const getIndividualDCMember = async (values) => {
 
 /** service to create examiner from project */
 const dcmemberUpdate = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -73,7 +73,7 @@ const dcmemberUpdate = async (values) => {
 
 /** service to remove supervisor from project */
 const removeDCMember = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,

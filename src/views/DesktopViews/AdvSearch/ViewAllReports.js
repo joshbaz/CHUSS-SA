@@ -16,6 +16,7 @@ import {
     Text,
     useToast,
     SimpleGrid,
+    Select,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -27,30 +28,49 @@ import { BiSearch } from 'react-icons/bi'
 
 import { GrClose } from 'react-icons/gr'
 
-import { useNavigate } from 'react-router-dom'
+//import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 import {
+    getAllProjects,
     reset,
-    allFacilitators,
-    allLoginActivities,
-} from '../../../store/features/facilitators/facilitatorSlice'
+} from '../../../store/features/project/projectSlice'
+// import {
+//     allExaminers,
+//     reset as eReset,
+// } from '../../../store/features/Examiner/examinerSlice'
+import {
+    getAllExaminerReports,
+    reset as rpReset,
+} from '../../../store/features/reports/reportSlice'
+import {
+    reset as treset,
+    tagGetAll,
+} from '../../../store/features/tags/tagSlice'
 
-import FacilitatorTable from '../../../components/Facilitators/AllFacilitators/FacilitatorTable'
+//import FacilitatorTable from '../../../components/Facilitators/AllFacilitators/FacilitatorTable'
 import { initSocketConnection } from '../../../socketio.service'
+import AllReportTable from './AllReportTable'
 
-const AllFacilitators = () => {
+const ViewAllReports = () => {
     const [filterSearchOption, setFilterSearchOption] =
-        React.useState('Facilitator Name')
+        React.useState('Student Name')
     const [searchWord, setSearchWord] = React.useState('')
+    const [searchStatus, setSearchStatus] = React.useState('')
     const [exportData, setExportData] = React.useState([])
     const filterItems = [
         {
-            title: 'Facilitator Name',
+            title: 'Student Name',
+        },
+        {
+            title: 'topic',
+        },
+        {
+            title: 'Examiner Name',
         },
 
         {
-            title: 'Email',
+            title: 'Report Status',
         },
     ]
     const [filterInfo, setFilterInfo] = React.useState([])
@@ -60,8 +80,16 @@ const AllFacilitators = () => {
     /** handle search option change */
     const handleSearchOptionChange = (valuet) => {
         setSearchWord('')
-        //setSearchStatus('')
+        setSearchStatus('')
         setFilterSearchOption(valuet)
+    }
+
+    /** handle status changes */
+    /** function to add a search status */
+    const handleSearchStatusChange = (e) => {
+        e.preventDefault()
+
+        setSearchStatus(e.target.value.toLowerCase())
     }
 
     const handleSearchInput = (e) => {
@@ -77,6 +105,7 @@ const AllFacilitators = () => {
     }
 
     const handleSubmitFilter = () => {
+        /** search word */
         if (searchWord) {
             if (filterInfo.length > 0) {
                 let newFilterInfo = [...filterInfo]
@@ -121,6 +150,56 @@ const AllFacilitators = () => {
 
                 setFilterInfo([...filterInfo, filterSelected])
                 setSearchWord('')
+                //setFilterSearchOption('All')
+                // console.log('filtered Info', filterInfo)
+            }
+        }
+
+        /** search status */
+        if (searchStatus) {
+            if (filterInfo.length > 0) {
+                let newFilterInfo = [...filterInfo]
+
+                for (let i = 0; i < newFilterInfo.length; i++) {
+                    let iteration = i + 1
+
+                    if (newFilterInfo[i].title === filterSearchOption) {
+                        if (newFilterInfo[i].searchfor.includes(searchStatus)) {
+                            return null
+                        } else {
+                            let filterSelected = {
+                                title: filterSearchOption,
+                                searchfor: [
+                                    ...newFilterInfo[i].searchfor,
+                                    searchStatus,
+                                ],
+                            }
+                            newFilterInfo.splice(i, 1, filterSelected)
+                            setFilterInfo(newFilterInfo)
+                            setSearchWord('')
+                            return filterSelected
+                        }
+                    } else if (
+                        newFilterInfo[i].title !== filterSearchOption &&
+                        iteration === newFilterInfo.length
+                    ) {
+                        let filterSelected = {
+                            title: filterSearchOption,
+                            searchfor: [searchStatus],
+                        }
+
+                        setFilterInfo([...newFilterInfo, filterSelected])
+                        setSearchWord('')
+                    }
+                }
+            } else {
+                let filterSelected = {
+                    title: filterSearchOption,
+                    searchfor: [searchStatus],
+                }
+
+                setFilterInfo([...filterInfo, filterSelected])
+                setSearchStatus('')
                 //setFilterSearchOption('All')
                 // console.log('filtered Info', filterInfo)
             }
@@ -185,9 +264,9 @@ const AllFacilitators = () => {
     const clearAllFilters = () => {
         setFilterInfo([])
         setSearchWord('')
-
+        setSearchStatus('')
         setSearchActive(false)
-        setFilterSearchOption('Facilitator Name')
+        setFilterSearchOption('Student Name')
     }
 
     const handleRemoveFilter = (Info) => {
@@ -204,28 +283,34 @@ const AllFacilitators = () => {
         })
     }
 
-    let routeNavigate = useNavigate()
+   // let routeNavigate = useNavigate()
     let dispatch = useDispatch()
 
-    let { isSuccess, isError, message } = useSelector(
-        (state) => state.facilitator
+    let { allprojects, isError, isSuccess, message } = useSelector(
+        (state) => state.project
     )
+
+    // let examinerCollectedDatas = useSelector((state) => state.examiner)
+    let reportCollectedDatas = useSelector((state) => state.report)
+    const tagsData = useSelector((state) => state.tag)
 
     //let Location = useLocation()
     let toast = useToast()
 
     useEffect(() => {
-        dispatch(allFacilitators())
-        dispatch(allLoginActivities())
+        dispatch(getAllProjects())
+        // dispatch(allExaminers())
+        dispatch(getAllExaminerReports())
+        dispatch(tagGetAll())
 
-        const io = initSocketConnection()
-        io.on('updatedAdmin', (data) => {
-            if (data.actions === 'update-admin') {
-                //dispatch(tagGetAll())
-                dispatch(allFacilitators())
-                dispatch(allLoginActivities())
-            }
-        })
+        // const io = initSocketConnection()
+        // io.on('updatedAdmin', (data) => {
+        //     if (data.actions === 'update-admin') {
+        //         //dispatch(tagGetAll())
+        //         dispatch(allFacilitators())
+        //         dispatch(allLoginActivities())
+        //     }
+        // })
     }, [])
 
     useEffect(() => {
@@ -252,6 +337,77 @@ const AllFacilitators = () => {
         // }
     }, [isSuccess, isError, message])
 
+    useEffect(() => {
+        if (tagsData.isError) {
+            toast({
+                position: 'top',
+                title: tagsData.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            dispatch(treset())
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
+
+    // useEffect(() => {
+    //     if (examinerCollectedDatas.isError) {
+    //         toast({
+    //             position: 'top',
+    //             title: examinerCollectedDatas.message,
+    //             status: 'error',
+    //             duration: 10000,
+    //             isClosable: true,
+    //         })
+
+    //         dispatch(eReset())
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [
+    //     examinerCollectedDatas.isError,
+    //     examinerCollectedDatas.isSuccess,
+    //     examinerCollectedDatas.message,
+    //     dispatch,
+    // ])
+
+    useEffect(() => {
+        if (reportCollectedDatas.isError) {
+            toast({
+                position: 'top',
+                title: reportCollectedDatas.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            dispatch(rpReset())
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        reportCollectedDatas.isError,
+        reportCollectedDatas.isSuccess,
+        reportCollectedDatas.message,
+        dispatch,
+    ])
+
+    /** function to select statuses */
+    const TableStatuses = React.useMemo(() => {
+        if (filterSearchOption) {
+            if (filterSearchOption === 'Report Status') {
+                let allInfoData = tagsData.allTagItems.items.filter(
+                    (data, index) => data.table === 'examinerReport'
+                )
+
+                return allInfoData
+            } else {
+                return []
+            }
+        } else {
+            return []
+        }
+    }, [tagsData.allTagItems.items, filterSearchOption])
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px' position='relative'>
@@ -267,7 +423,7 @@ const AllFacilitators = () => {
                 spacing='20px'>
                 <Box w='100%' h='65px' zIndex={'20'}>
                     <TopBar
-                        topbarData={{ title: 'Facilitators ', count: null }}
+                        topbarData={{ title: 'All Reports ', count: null }}
                     />
                 </Box>
 
@@ -387,41 +543,97 @@ const AllFacilitators = () => {
 
                                 {/** input */}
                                 <Box h='32px'>
-                                    <InputGroup
-                                        h='32px'
-                                        minW='300px'
-                                        pr='0'
-                                        p='0'
-                                        m='0'
-                                        className='input_group'>
-                                        <InputLeftElement h='32px' p='0' m='0'>
-                                            <Button
-                                                p='0'
-                                                m='0'
-                                                bg='transparent'
-                                                h='100%'
-                                                w='100%'
-                                                borderRadius='0px'
-                                                size='28px'>
-                                                <BiSearch />
-                                            </Button>
-                                        </InputLeftElement>
-                                        <Input
+                                    {filterSearchOption === 'Report Status' ? (
+                                        <InputGroup
                                             h='32px'
-                                            type='text'
-                                            placeholder='Search'
-                                            onChange={handleSearchInput}
-                                            value={searchWord}
-                                            style={{ textIndent: '5px' }}
-                                        />
-                                    </InputGroup>
+                                            minW='300px'
+                                            pr=''
+                                            p='0'
+                                            pl='30px'
+                                            m='0'
+                                            className='input_group'>
+                                            <InputLeftElement
+                                                h='32px'
+                                                bg='transparent'
+                                                p='0'
+                                                m='0'>
+                                                <Button
+                                                    p='0'
+                                                    m='0'
+                                                    bg='transparent'
+                                                    h='100%'
+                                                    w='100%'
+                                                    borderRadius='0px'
+                                                    size='28px'>
+                                                    <BiSearch />
+                                                </Button>
+                                            </InputLeftElement>
+                                            {TableStatuses.length > 0 ? (
+                                                <Select
+                                                    placeholder='select status'
+                                                    onChange={
+                                                        handleSearchStatusChange
+                                                    }
+                                                    value={searchStatus}>
+                                                    {TableStatuses.map(
+                                                        (data, index) => {
+                                                            return (
+                                                                <option
+                                                                    key={index}>
+                                                                    {data.tagName.toLowerCase()}
+                                                                </option>
+                                                            )
+                                                        }
+                                                    )}
+                                                </Select>
+                                            ) : (
+                                                <Select placeholder='select status'></Select>
+                                            )}
+                                        </InputGroup>
+                                    ) : (
+                                        <InputGroup
+                                            h='32px'
+                                            minW='300px'
+                                            pr='0'
+                                            p='0'
+                                            m='0'
+                                            className='input_group'>
+                                            <InputLeftElement
+                                                h='32px'
+                                                p='0'
+                                                m='0'>
+                                                <Button
+                                                    p='0'
+                                                    m='0'
+                                                    bg='transparent'
+                                                    h='100%'
+                                                    w='100%'
+                                                    borderRadius='0px'
+                                                    size='28px'>
+                                                    <BiSearch />
+                                                </Button>
+                                            </InputLeftElement>
+                                            <Input
+                                                h='32px'
+                                                type='text'
+                                                placeholder='Search'
+                                                onChange={handleSearchInput}
+                                                value={searchWord}
+                                                style={{ textIndent: '5px' }}
+                                            />
+                                        </InputGroup>
+                                    )}
                                 </Box>
                             </Stack>
 
                             <TableButton>
                                 <Button
                                     onClick={handleSubmitFilter}
-                                    disabled={searchWord ? false : true}
+                                    disabled={
+                                        searchWord || searchStatus
+                                            ? false
+                                            : true
+                                    }
                                     leftIcon={<AiOutlinePlus />}
                                     className='btn__rule'>
                                     Add Rule
@@ -441,7 +653,8 @@ const AllFacilitators = () => {
 
                         {/**  button */}
                         <Box>
-                            <Button
+                            {/**
+                             *  <Button
                                 onClick={() =>
                                     routeNavigate(`/facilitators/create`)
                                 }
@@ -451,6 +664,10 @@ const AllFacilitators = () => {
                                 variant='solid'>
                                 Add New Facilitator
                             </Button>
+                             * 
+                             * 
+                             * 
+                             */}
                         </Box>
                     </Stack>
 
@@ -525,10 +742,13 @@ const AllFacilitators = () => {
                         {/** table & tabs */}
 
                         <Box>
-                            <FacilitatorTable
+                            <AllReportTable
                                 setExportData={setExportData}
                                 exportData={exportData}
+                                allProjects={allprojects.items}
+                                allItems={reportCollectedDatas.allreports}
                                 searchActive={searchActive}
+                                allTagData={tagsData.allTagItems.items}
                                 filterInfo={filterInfo}
                             />
                         </Box>
@@ -539,7 +759,7 @@ const AllFacilitators = () => {
     )
 }
 
-export default AllFacilitators
+export default ViewAllReports
 
 const Container = styled(Stack)`
     font-family: 'Inter', sans-serif;

@@ -48,7 +48,8 @@ export const projectOpponentCreate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -71,9 +72,11 @@ export const assignOpponent = createAsyncThunk(
         } else {
             if (
                 assignAttempt.message === 'jwt expired' ||
-                assignAttempt.message === 'Not authenticated'
+                assignAttempt.message === 'Not authenticated' ||
+                assignAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(assignAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(assignAttempt.message)
@@ -96,9 +99,11 @@ export const paginatedOpponent = createAsyncThunk(
         } else {
             if (
                 getAttempt.message === 'jwt expired' ||
-                getAttempt.message === 'Not authenticated'
+                getAttempt.message === 'Not authenticated' ||
+                getAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -121,9 +126,11 @@ export const allOpponents = createAsyncThunk(
         } else {
             if (
                 allAttempt.message === 'jwt expired' ||
-                allAttempt.message === 'Not authenticated'
+                allAttempt.message === 'Not authenticated' ||
+                allAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(allAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(allAttempt.message)
@@ -148,9 +155,11 @@ export const getIndividualOpponent = createAsyncThunk(
         } else {
             if (
                 individualAttempt.message === 'jwt expired' ||
-                individualAttempt.message === 'Not authenticated'
+                individualAttempt.message === 'Not authenticated' ||
+                individualAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(individualAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(individualAttempt.message)
@@ -174,9 +183,11 @@ export const opponentUpdate = createAsyncThunk(
         } else {
             if (
                 creationAttempt.message === 'jwt expired' ||
-                creationAttempt.message === 'Not authenticated'
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -202,9 +213,11 @@ export const deleteFileOpponent = createAsyncThunk(
         } else {
             if (
                 deleteAttempt.message === 'jwt expired' ||
-                deleteAttempt.message === 'Not authenticated'
+                deleteAttempt.message === 'Not authenticated' ||
+                deleteAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(deleteAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(deleteAttempt.message)
@@ -228,9 +241,11 @@ export const addFileOpponent = createAsyncThunk(
         } else {
             if (
                 addAttempt.message === 'jwt expired' ||
-                addAttempt.message === 'Not authenticated'
+                addAttempt.message === 'Not authenticated' ||
+                addAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(addAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(addAttempt.message)
@@ -256,9 +271,11 @@ export const removeProjectOpponent = createAsyncThunk(
         } else {
             if (
                 removeAttempt.message === 'jwt expired' ||
-                removeAttempt.message === 'Not authenticated'
+                removeAttempt.message === 'Not authenticated' ||
+                removeAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(removeAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(removeAttempt.message)
@@ -287,7 +304,8 @@ export const OpponentMainCreate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)

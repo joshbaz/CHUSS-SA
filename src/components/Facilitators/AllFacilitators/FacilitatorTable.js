@@ -25,6 +25,7 @@ import {
     ModalOverlay,
     ModalContent,
     ModalBody,
+    useToast,
 } from '@chakra-ui/react'
 import { BiDownload } from 'react-icons/bi'
 import { AiOutlineMinus } from 'react-icons/ai'
@@ -33,11 +34,11 @@ import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 import { TbDotsVertical } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
-// import {
-//     examinerDeletes,
-//     reset,
-// } from '../../../store/features/Examiner/examinerSlice'
-import { useSelector } from 'react-redux'
+import {
+    deactivateFacilitator,
+    reset,
+} from '../../../store/features/facilitators/facilitatorSlice'
+import { useDispatch, useSelector } from 'react-redux'
 import Moments from 'moment-timezone'
 
 const TableHead = [
@@ -99,10 +100,16 @@ const FacilitatorTable = ({
     })
 
     let routeNavigate = useNavigate()
+    let dispatch = useDispatch()
+    let toast = useToast()
 
-    let { allfacilitatorItems, allLoginActivityItems } = useSelector(
-        (state) => state.facilitator
-    )
+    let {
+        allfacilitatorItems,
+        allLoginActivityItems,
+        isSuccess,
+        message,
+        isError,
+    } = useSelector((state) => state.facilitator)
 
     /** changes all document tabs */
     useEffect(() => {
@@ -328,10 +335,10 @@ const FacilitatorTable = ({
     const handleExportation = async () => {
         if (exportData.length > 0) {
             let values = {
-                tableName: 'Supervisors',
+                tableName: 'Facilitators',
                 data: exportData,
             }
-            await window.electronAPI.exportExaminersCSV(values)
+            await window.electronAPI.exportfacilitatorsCSV(values)
         }
     }
 
@@ -527,6 +534,7 @@ const FacilitatorTable = ({
             let rvalues = {
                 name: `${ppId.jobtitle + ' ' + name}`,
                 exId: ppId._id,
+                deactivated: ppId.deactivated,
             }
             setRemoveDetails(() => rvalues)
             setRemoveActive(true)
@@ -535,7 +543,7 @@ const FacilitatorTable = ({
 
     const onRemoveUpload = () => {
         if (removeDetails.exId) {
-            // dispatch(examinerDeletes(removeDetails))
+            dispatch(deactivateFacilitator(removeDetails))
             setIsSubmittingp(true)
         }
     }
@@ -546,6 +554,27 @@ const FacilitatorTable = ({
 
         // onClose()
     }
+
+    useEffect(() => {
+        if (isError) {
+            setIsSubmittingp(() => false)
+            dispatch(reset())
+        }
+
+        if (isSuccess && message) {
+            toast({
+                position: 'top',
+                title: message.message,
+                status: 'success',
+                duration: 10000,
+                isClosable: true,
+            })
+            setIsSubmittingp(() => false)
+            setRemoveActive(false)
+            setRemoveDetails(null)
+            dispatch(reset())
+        }
+    }, [isSuccess, isError, message])
 
     return (
         <Container>
@@ -850,16 +879,30 @@ const FacilitatorTable = ({
                                                                             View
                                                                             facilitator
                                                                         </MenuItem>
-                                                                        <MenuItem
-                                                                            onClick={() =>
-                                                                                handleRemove(
-                                                                                    data,
-                                                                                    data.lastname
-                                                                                )
-                                                                            }>
-                                                                            Deactivate
-                                                                            facilitator
-                                                                        </MenuItem>
+                                                                        {data.deactivated ===
+                                                                        false ? (
+                                                                            <MenuItem
+                                                                                onClick={() =>
+                                                                                    handleRemove(
+                                                                                        data,
+                                                                                        data.lastname
+                                                                                    )
+                                                                                }>
+                                                                                Deactivate
+                                                                                facilitator
+                                                                            </MenuItem>
+                                                                        ) : (
+                                                                            <MenuItem
+                                                                                onClick={() =>
+                                                                                    handleRemove(
+                                                                                        data,
+                                                                                        data.lastname
+                                                                                    )
+                                                                                }>
+                                                                                activate
+                                                                                facilitator
+                                                                            </MenuItem>
+                                                                        )}
                                                                     </MenuList>
                                                                 </Menu>
                                                             </Td>
@@ -1060,16 +1103,30 @@ const FacilitatorTable = ({
                                                                             View
                                                                             facilitator
                                                                         </MenuItem>
-                                                                        <MenuItem
-                                                                            onClick={() =>
-                                                                                handleRemove(
-                                                                                    data,
-                                                                                    data.lastname
-                                                                                )
-                                                                            }>
-                                                                            Deactivate
-                                                                            facilitator
-                                                                        </MenuItem>
+                                                                        {data.deactivated ===
+                                                                        false ? (
+                                                                            <MenuItem
+                                                                                onClick={() =>
+                                                                                    handleRemove(
+                                                                                        data,
+                                                                                        data.lastname
+                                                                                    )
+                                                                                }>
+                                                                                Deactivate
+                                                                                facilitator
+                                                                            </MenuItem>
+                                                                        ) : (
+                                                                            <MenuItem
+                                                                                onClick={() =>
+                                                                                    handleRemove(
+                                                                                        data,
+                                                                                        data.lastname
+                                                                                    )
+                                                                                }>
+                                                                                activate
+                                                                                facilitator
+                                                                            </MenuItem>
+                                                                        )}
                                                                     </MenuList>
                                                                 </Menu>
                                                             </Td>
@@ -1230,7 +1287,12 @@ const FacilitatorTable = ({
                                     alignItems='center'
                                     justifyContent='space-between'>
                                     <Box>
-                                        <h1>Delete Supervisor</h1>
+                                        {removeDetails !== null &&
+                                        removeDetails.deactivated ? (
+                                            <h1>Activate Facilitator</h1>
+                                        ) : (
+                                            <h1>Deactivate Facilitator</h1>
+                                        )}
                                     </Box>
                                 </Stack>
 
@@ -1240,7 +1302,8 @@ const FacilitatorTable = ({
                                     direction='row'
                                     className='list_text'>
                                     <p>
-                                        Are you sure you want to delete
+                                        Are you sure you want to
+                                        activate/deactivate
                                         <span>
                                             <li>
                                                 {removeDetails !== null &&

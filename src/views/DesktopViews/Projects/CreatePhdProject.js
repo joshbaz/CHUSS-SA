@@ -109,7 +109,7 @@ const CreatePhdProject = () => {
         registrationNumber: yup.string().required('required'),
         studentName: yup.string().required('required'),
         programType: yup.string().required('required'),
-        degreeProgram: yup.string().required('required'),
+        // degreeProgram: yup.string().required('required'),
         schoolName: yup.string().required('required'),
         // departmentName: yup.string().required('required'),
         phoneNumber: yup.string().required('required'),
@@ -227,12 +227,14 @@ const CreatePhdProject = () => {
                                                     preferencesData
                                                         .allProgramItems.items
                                                 }
+                                                degreetype={'Phd'}
                                             />
 
                                             <ContactForm
                                                 values={values}
                                                 errors={errors}
                                                 handleChange={handleChange}
+                                                setFieldValue={setFieldValue}
                                             />
                                         </Stack>
                                         {/** supervisior && date of submission & scanned form */}

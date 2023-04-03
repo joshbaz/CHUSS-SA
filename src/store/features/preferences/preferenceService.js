@@ -1,8 +1,8 @@
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 /** program type */
 /** create program */
 const createProgramType = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -12,7 +12,7 @@ const createProgramType = async (values) => {
 }
 /** edit program */
 const updateProgramType = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -22,7 +22,7 @@ const updateProgramType = async (values) => {
 }
 /** get all program */
 const getProgramType = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -34,7 +34,7 @@ const getProgramType = async (values) => {
 /** academic year */
 /** create academic year */
 const createAcademicYear = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -44,7 +44,7 @@ const createAcademicYear = async (values) => {
 }
 /** edit academic year */
 const updateAcademicYear = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -54,7 +54,7 @@ const updateAcademicYear = async (values) => {
 }
 /** get all academic year */
 const getAcademicYear = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,

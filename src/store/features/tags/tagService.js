@@ -1,6 +1,6 @@
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 const createTag = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken
@@ -10,7 +10,7 @@ const createTag = async (values) => {
 }
 
 const getTags = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -20,7 +20,7 @@ const getTags = async (values) => {
 }
 
 const updateTags = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,

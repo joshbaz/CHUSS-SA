@@ -75,7 +75,9 @@
       "target": "dmg",
       "icon": "./build/chuss256.icns"
     },
-    "files": [],
+    "files": [
+     
+    ],
     "directories": {
       "buildResources": "assets"
     }

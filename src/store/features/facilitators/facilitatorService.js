@@ -1,8 +1,8 @@
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 
 /** service to create examiner from project */
 const facilitatorCreate = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -14,7 +14,7 @@ const facilitatorCreate = async (values) => {
 
 /** service to create examiner from project */
 const facilitatorUpdate = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -26,7 +26,7 @@ const facilitatorUpdate = async (values) => {
 
 /** service to get all  examiners  */
 const allFacilitators = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -37,7 +37,7 @@ const allFacilitators = async (values) => {
 }
 
 const allLoginActivities = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -49,7 +49,7 @@ const allLoginActivities = async (values) => {
 
 /** service to create examiner from project */
 const facilitatorResetPassword = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -61,6 +61,17 @@ const facilitatorResetPassword = async (values) => {
     return response
 }
 
+
+const deactivateFacilitator = async (values) => {
+    let getToken = localStorage.getItem('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.deactivateFacilitator(allValues)
+
+    return response
+}
 let facilitatorService = {
     allLoginActivities,
     allFacilitators,
@@ -69,6 +80,8 @@ let facilitatorService = {
 
     facilitatorCreate,
     facilitatorResetPassword,
+
+    deactivateFacilitator,
 }
 
 export default facilitatorService

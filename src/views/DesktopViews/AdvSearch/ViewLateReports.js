@@ -16,6 +16,7 @@ import {
     Text,
     useToast,
     SimpleGrid,
+    Select,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -27,231 +28,390 @@ import { BiSearch } from 'react-icons/bi'
 
 import { GrClose } from 'react-icons/gr'
 
-import { useNavigate } from 'react-router-dom'
+//import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 import {
+    getAllProjects,
     reset,
-    allFacilitators,
-    allLoginActivities,
-} from '../../../store/features/facilitators/facilitatorSlice'
+} from '../../../store/features/project/projectSlice'
+// import {
+//     allExaminers,
+//     reset as eReset,
+// } from '../../../store/features/Examiner/examinerSlice'
+import {
+    getLateReports,
+    reset as rpReset,
+} from '../../../store/features/reports/reportSlice'
+import {
+    reset as treset,
+    tagGetAll,
+} from '../../../store/features/tags/tagSlice'
 
-import FacilitatorTable from '../../../components/Facilitators/AllFacilitators/FacilitatorTable'
+//import FacilitatorTable from '../../../components/Facilitators/AllFacilitators/FacilitatorTable'
 import { initSocketConnection } from '../../../socketio.service'
 
-const AllFacilitators = () => {
-    const [filterSearchOption, setFilterSearchOption] =
-        React.useState('Facilitator Name')
-    const [searchWord, setSearchWord] = React.useState('')
-    const [exportData, setExportData] = React.useState([])
-    const filterItems = [
-        {
-            title: 'Facilitator Name',
-        },
 
-        {
-            title: 'Email',
-        },
-    ]
-    const [filterInfo, setFilterInfo] = React.useState([])
+import LateReportTable from './LateReportTable'
 
-    const [searchActive, setSearchActive] = React.useState(false)
+const ViewLateReports = () => {
+     const [filterSearchOption, setFilterSearchOption] =
+         React.useState('Student Name')
+     const [searchWord, setSearchWord] = React.useState('')
+     const [searchStatus, setSearchStatus] = React.useState('')
+     const [exportData, setExportData] = React.useState([])
+     const filterItems = [
+         {
+             title: 'Student Name',
+         },
+         {
+             title: 'topic',
+         },
+         {
+             title: 'Examiner Name',
+         },
 
-    /** handle search option change */
-    const handleSearchOptionChange = (valuet) => {
-        setSearchWord('')
-        //setSearchStatus('')
-        setFilterSearchOption(valuet)
-    }
+         {
+             title: 'Report Status',
+         },
+     ]
+     const [filterInfo, setFilterInfo] = React.useState([])
 
-    const handleSearchInput = (e) => {
-        e.preventDefault()
+     const [searchActive, setSearchActive] = React.useState(false)
 
-        let value = e.target.value || ''
-        setSearchWord(value.toLowerCase())
-        // let filterSelected = {
-        //     title: filterSearchOption,
-        //     searchfor: e.target.value,
-        // }
-        // setFilterInfo([...filterInfo, filterSelected])
-    }
+     /** handle search option change */
+     const handleSearchOptionChange = (valuet) => {
+         setSearchWord('')
+         setSearchStatus('')
+         setFilterSearchOption(valuet)
+     }
 
-    const handleSubmitFilter = () => {
-        if (searchWord) {
-            if (filterInfo.length > 0) {
-                let newFilterInfo = [...filterInfo]
+     /** handle status changes */
+     /** function to add a search status */
+     const handleSearchStatusChange = (e) => {
+         e.preventDefault()
 
-                for (let i = 0; i < newFilterInfo.length; i++) {
-                    let iteration = i + 1
+         setSearchStatus(e.target.value.toLowerCase())
+     }
 
-                    if (newFilterInfo[i].title === filterSearchOption) {
-                        if (newFilterInfo[i].searchfor.includes(searchWord)) {
-                            return null
-                        } else {
-                            let filterSelected = {
-                                title: filterSearchOption,
-                                searchfor: [
-                                    ...newFilterInfo[i].searchfor,
-                                    searchWord,
-                                ],
-                            }
-                            newFilterInfo.splice(i, 1, filterSelected)
-                            setFilterInfo(newFilterInfo)
-                            setSearchWord('')
-                            return filterSelected
-                        }
-                    } else if (
-                        newFilterInfo[i].title !== filterSearchOption &&
-                        iteration === newFilterInfo.length
-                    ) {
-                        let filterSelected = {
-                            title: filterSearchOption,
-                            searchfor: [searchWord],
-                        }
+     const handleSearchInput = (e) => {
+         e.preventDefault()
 
-                        setFilterInfo([...newFilterInfo, filterSelected])
-                        setSearchWord('')
-                    }
-                }
-            } else {
-                let filterSelected = {
-                    title: filterSearchOption,
-                    searchfor: [searchWord],
-                }
+         let value = e.target.value || ''
+         setSearchWord(value.toLowerCase())
+         // let filterSelected = {
+         //     title: filterSearchOption,
+         //     searchfor: e.target.value,
+         // }
+         // setFilterInfo([...filterInfo, filterSelected])
+     }
 
-                setFilterInfo([...filterInfo, filterSelected])
-                setSearchWord('')
-                //setFilterSearchOption('All')
-                // console.log('filtered Info', filterInfo)
-            }
-        }
-    }
+     const handleSubmitFilter = () => {
+         /** search word */
+         if (searchWord) {
+             if (filterInfo.length > 0) {
+                 let newFilterInfo = [...filterInfo]
 
-    /** function to set the search active  */
-    const handleSearchActive = () => {
-        if (filterInfo.length > 0) {
-            setSearchActive(true)
-        }
-    }
+                 for (let i = 0; i < newFilterInfo.length; i++) {
+                     let iteration = i + 1
 
-    //this is for the checkbox filter
-    const checkboxesFilter = (title, value) => {
-        if (filterInfo.length > 0) {
-            let newFilterInfo = [...filterInfo]
+                     if (newFilterInfo[i].title === filterSearchOption) {
+                         if (newFilterInfo[i].searchfor.includes(searchWord)) {
+                             return null
+                         } else {
+                             let filterSelected = {
+                                 title: filterSearchOption,
+                                 searchfor: [
+                                     ...newFilterInfo[i].searchfor,
+                                     searchWord,
+                                 ],
+                             }
+                             newFilterInfo.splice(i, 1, filterSelected)
+                             setFilterInfo(newFilterInfo)
+                             setSearchWord('')
+                             return filterSelected
+                         }
+                     } else if (
+                         newFilterInfo[i].title !== filterSearchOption &&
+                         iteration === newFilterInfo.length
+                     ) {
+                         let filterSelected = {
+                             title: filterSearchOption,
+                             searchfor: [searchWord],
+                         }
 
-            for (let i = 0; i < newFilterInfo.length; i++) {
-                let iteration = i + 1
+                         setFilterInfo([...newFilterInfo, filterSelected])
+                         setSearchWord('')
+                     }
+                 }
+             } else {
+                 let filterSelected = {
+                     title: filterSearchOption,
+                     searchfor: [searchWord],
+                 }
 
-                if (newFilterInfo[i].title === title) {
-                    //word is found
-                    if (value.length < 1) {
-                        newFilterInfo.splice(i, 1)
-                        return setFilterInfo(newFilterInfo)
-                    } else {
-                        let filterSelected = {
-                            title: title,
-                            searchfor: value,
-                        }
-                        newFilterInfo.splice(i, 1, filterSelected)
-                        setFilterInfo(newFilterInfo)
+                 setFilterInfo([...filterInfo, filterSelected])
+                 setSearchWord('')
+                 //setFilterSearchOption('All')
+                 // console.log('filtered Info', filterInfo)
+             }
+         }
 
-                        return filterSelected
-                    }
-                } else if (
-                    newFilterInfo[i].title !== title &&
-                    iteration === newFilterInfo.length
-                ) {
-                    let filterSelected = {
-                        title: title,
-                        searchfor: value,
-                    }
+         /** search status */
+         if (searchStatus) {
+             if (filterInfo.length > 0) {
+                 let newFilterInfo = [...filterInfo]
 
-                    setFilterInfo([...newFilterInfo, filterSelected])
-                }
-            }
-        } else {
-            let filterSelected = {
-                title: title,
-                searchfor: value,
-            }
+                 for (let i = 0; i < newFilterInfo.length; i++) {
+                     let iteration = i + 1
 
-            setFilterInfo([...filterInfo, filterSelected])
+                     if (newFilterInfo[i].title === filterSearchOption) {
+                         if (
+                             newFilterInfo[i].searchfor.includes(searchStatus)
+                         ) {
+                             return null
+                         } else {
+                             let filterSelected = {
+                                 title: filterSearchOption,
+                                 searchfor: [
+                                     ...newFilterInfo[i].searchfor,
+                                     searchStatus,
+                                 ],
+                             }
+                             newFilterInfo.splice(i, 1, filterSelected)
+                             setFilterInfo(newFilterInfo)
+                             setSearchWord('')
+                             return filterSelected
+                         }
+                     } else if (
+                         newFilterInfo[i].title !== filterSearchOption &&
+                         iteration === newFilterInfo.length
+                     ) {
+                         let filterSelected = {
+                             title: filterSearchOption,
+                             searchfor: [searchStatus],
+                         }
 
-            //setFilterSearchOption('All')
-            // console.log('filtered Info', filterInfo)
-        }
-    }
+                         setFilterInfo([...newFilterInfo, filterSelected])
+                         setSearchWord('')
+                     }
+                 }
+             } else {
+                 let filterSelected = {
+                     title: filterSearchOption,
+                     searchfor: [searchStatus],
+                 }
 
-    const clearAllFilters = () => {
-        setFilterInfo([])
-        setSearchWord('')
+                 setFilterInfo([...filterInfo, filterSelected])
+                 setSearchStatus('')
+                 //setFilterSearchOption('All')
+                 // console.log('filtered Info', filterInfo)
+             }
+         }
+     }
 
-        setSearchActive(false)
-        setFilterSearchOption('Facilitator Name')
-    }
+     /** function to set the search active  */
+     const handleSearchActive = () => {
+         if (filterInfo.length > 0) {
+             setSearchActive(true)
+         }
+     }
 
-    const handleRemoveFilter = (Info) => {
-        let newFilterInfo = [...filterInfo]
+     //this is for the checkbox filter
+     const checkboxesFilter = (title, value) => {
+         if (filterInfo.length > 0) {
+             let newFilterInfo = [...filterInfo]
 
-        newFilterInfo.filter((data, index) => {
-            if (data.title === Info.title) {
-                newFilterInfo.splice(index, 1)
+             for (let i = 0; i < newFilterInfo.length; i++) {
+                 let iteration = i + 1
 
-                return setFilterInfo([...newFilterInfo])
-            } else {
-                return null
-            }
-        })
-    }
+                 if (newFilterInfo[i].title === title) {
+                     //word is found
+                     if (value.length < 1) {
+                         newFilterInfo.splice(i, 1)
+                         return setFilterInfo(newFilterInfo)
+                     } else {
+                         let filterSelected = {
+                             title: title,
+                             searchfor: value,
+                         }
+                         newFilterInfo.splice(i, 1, filterSelected)
+                         setFilterInfo(newFilterInfo)
 
-    let routeNavigate = useNavigate()
-    let dispatch = useDispatch()
+                         return filterSelected
+                     }
+                 } else if (
+                     newFilterInfo[i].title !== title &&
+                     iteration === newFilterInfo.length
+                 ) {
+                     let filterSelected = {
+                         title: title,
+                         searchfor: value,
+                     }
 
-    let { isSuccess, isError, message } = useSelector(
-        (state) => state.facilitator
-    )
+                     setFilterInfo([...newFilterInfo, filterSelected])
+                 }
+             }
+         } else {
+             let filterSelected = {
+                 title: title,
+                 searchfor: value,
+             }
 
-    //let Location = useLocation()
-    let toast = useToast()
+             setFilterInfo([...filterInfo, filterSelected])
 
-    useEffect(() => {
-        dispatch(allFacilitators())
-        dispatch(allLoginActivities())
+             //setFilterSearchOption('All')
+             // console.log('filtered Info', filterInfo)
+         }
+     }
 
-        const io = initSocketConnection()
-        io.on('updatedAdmin', (data) => {
-            if (data.actions === 'update-admin') {
-                //dispatch(tagGetAll())
-                dispatch(allFacilitators())
-                dispatch(allLoginActivities())
-            }
-        })
-    }, [])
+     const clearAllFilters = () => {
+         setFilterInfo([])
+         setSearchWord('')
+         setSearchStatus('')
+         setSearchActive(false)
+         setFilterSearchOption('Student Name')
+     }
 
-    useEffect(() => {
-        if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+     const handleRemoveFilter = (Info) => {
+         let newFilterInfo = [...filterInfo]
 
-            dispatch(reset())
-        }
+         newFilterInfo.filter((data, index) => {
+             if (data.title === Info.title) {
+                 newFilterInfo.splice(index, 1)
 
-        // if (isSuccess) {
-        //     toast({
-        //         position: 'top',
-        //         title:'collected data',
-        //         status: 'success',
-        //         duration: 10000,
-        //         isClosable: true,
-        //     })
-        // }
-    }, [isSuccess, isError, message])
+                 return setFilterInfo([...newFilterInfo])
+             } else {
+                 return null
+             }
+         })
+     }
 
+     // let routeNavigate = useNavigate()
+     let dispatch = useDispatch()
+
+     let { allprojects, isError, isSuccess, message } = useSelector(
+         (state) => state.project
+     )
+
+     // let examinerCollectedDatas = useSelector((state) => state.examiner)
+     let reportCollectedDatas = useSelector((state) => state.report)
+     const tagsData = useSelector((state) => state.tag)
+
+     //let Location = useLocation()
+     let toast = useToast()
+
+     useEffect(() => {
+         dispatch(getAllProjects())
+         // dispatch(allExaminers())
+         dispatch(getLateReports())
+         dispatch(tagGetAll())
+
+         // const io = initSocketConnection()
+         // io.on('updatedAdmin', (data) => {
+         //     if (data.actions === 'update-admin') {
+         //         //dispatch(tagGetAll())
+         //         dispatch(allFacilitators())
+         //         dispatch(allLoginActivities())
+         //     }
+         // })
+     }, [])
+
+     useEffect(() => {
+         if (isError) {
+             toast({
+                 position: 'top',
+                 title: message,
+                 status: 'error',
+                 duration: 10000,
+                 isClosable: true,
+             })
+
+             dispatch(reset())
+         }
+
+         // if (isSuccess) {
+         //     toast({
+         //         position: 'top',
+         //         title:'collected data',
+         //         status: 'success',
+         //         duration: 10000,
+         //         isClosable: true,
+         //     })
+         // }
+     }, [isSuccess, isError, message])
+
+     useEffect(() => {
+         if (tagsData.isError) {
+             toast({
+                 position: 'top',
+                 title: tagsData.message,
+                 status: 'error',
+                 duration: 10000,
+                 isClosable: true,
+             })
+
+             dispatch(treset())
+         }
+         // eslint-disable-next-line react-hooks/exhaustive-deps
+     }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
+
+     // useEffect(() => {
+     //     if (examinerCollectedDatas.isError) {
+     //         toast({
+     //             position: 'top',
+     //             title: examinerCollectedDatas.message,
+     //             status: 'error',
+     //             duration: 10000,
+     //             isClosable: true,
+     //         })
+
+     //         dispatch(eReset())
+     //     }
+     //     // eslint-disable-next-line react-hooks/exhaustive-deps
+     // }, [
+     //     examinerCollectedDatas.isError,
+     //     examinerCollectedDatas.isSuccess,
+     //     examinerCollectedDatas.message,
+     //     dispatch,
+     // ])
+
+     useEffect(() => {
+         if (reportCollectedDatas.isError) {
+             toast({
+                 position: 'top',
+                 title: reportCollectedDatas.message,
+                 status: 'error',
+                 duration: 10000,
+                 isClosable: true,
+             })
+
+             dispatch(rpReset())
+         }
+         // eslint-disable-next-line react-hooks/exhaustive-deps
+     }, [
+         reportCollectedDatas.isError,
+         reportCollectedDatas.isSuccess,
+         reportCollectedDatas.message,
+         dispatch,
+     ])
+
+     /** function to select statuses */
+     const TableStatuses = React.useMemo(() => {
+         if (filterSearchOption) {
+             if (filterSearchOption === 'Report Status') {
+                 let allInfoData = tagsData.allTagItems.items.filter(
+                     (data, index) => data.table === 'examinerReport'
+                 )
+
+                 return allInfoData
+             } else {
+                 return []
+             }
+         } else {
+             return []
+         }
+     }, [tagsData.allTagItems.items, filterSearchOption])
     return (
         <Container direction='row' w='100vw'>
             <Box w='72px' position='relative'>
@@ -267,7 +427,7 @@ const AllFacilitators = () => {
                 spacing='20px'>
                 <Box w='100%' h='65px' zIndex={'20'}>
                     <TopBar
-                        topbarData={{ title: 'Facilitators ', count: null }}
+                        topbarData={{ title: 'All Late Reports', count: null }}
                     />
                 </Box>
 
@@ -387,41 +547,97 @@ const AllFacilitators = () => {
 
                                 {/** input */}
                                 <Box h='32px'>
-                                    <InputGroup
-                                        h='32px'
-                                        minW='300px'
-                                        pr='0'
-                                        p='0'
-                                        m='0'
-                                        className='input_group'>
-                                        <InputLeftElement h='32px' p='0' m='0'>
-                                            <Button
-                                                p='0'
-                                                m='0'
-                                                bg='transparent'
-                                                h='100%'
-                                                w='100%'
-                                                borderRadius='0px'
-                                                size='28px'>
-                                                <BiSearch />
-                                            </Button>
-                                        </InputLeftElement>
-                                        <Input
+                                    {filterSearchOption === 'Report Status' ? (
+                                        <InputGroup
                                             h='32px'
-                                            type='text'
-                                            placeholder='Search'
-                                            onChange={handleSearchInput}
-                                            value={searchWord}
-                                            style={{ textIndent: '5px' }}
-                                        />
-                                    </InputGroup>
+                                            minW='300px'
+                                            pr=''
+                                            p='0'
+                                            pl='30px'
+                                            m='0'
+                                            className='input_group'>
+                                            <InputLeftElement
+                                                h='32px'
+                                                bg='transparent'
+                                                p='0'
+                                                m='0'>
+                                                <Button
+                                                    p='0'
+                                                    m='0'
+                                                    bg='transparent'
+                                                    h='100%'
+                                                    w='100%'
+                                                    borderRadius='0px'
+                                                    size='28px'>
+                                                    <BiSearch />
+                                                </Button>
+                                            </InputLeftElement>
+                                            {TableStatuses.length > 0 ? (
+                                                <Select
+                                                    placeholder='select status'
+                                                    onChange={
+                                                        handleSearchStatusChange
+                                                    }
+                                                    value={searchStatus}>
+                                                    {TableStatuses.map(
+                                                        (data, index) => {
+                                                            return (
+                                                                <option
+                                                                    key={index}>
+                                                                    {data.tagName.toLowerCase()}
+                                                                </option>
+                                                            )
+                                                        }
+                                                    )}
+                                                </Select>
+                                            ) : (
+                                                <Select placeholder='select status'></Select>
+                                            )}
+                                        </InputGroup>
+                                    ) : (
+                                        <InputGroup
+                                            h='32px'
+                                            minW='300px'
+                                            pr='0'
+                                            p='0'
+                                            m='0'
+                                            className='input_group'>
+                                            <InputLeftElement
+                                                h='32px'
+                                                p='0'
+                                                m='0'>
+                                                <Button
+                                                    p='0'
+                                                    m='0'
+                                                    bg='transparent'
+                                                    h='100%'
+                                                    w='100%'
+                                                    borderRadius='0px'
+                                                    size='28px'>
+                                                    <BiSearch />
+                                                </Button>
+                                            </InputLeftElement>
+                                            <Input
+                                                h='32px'
+                                                type='text'
+                                                placeholder='Search'
+                                                onChange={handleSearchInput}
+                                                value={searchWord}
+                                                style={{ textIndent: '5px' }}
+                                            />
+                                        </InputGroup>
+                                    )}
                                 </Box>
                             </Stack>
 
                             <TableButton>
                                 <Button
                                     onClick={handleSubmitFilter}
-                                    disabled={searchWord ? false : true}
+                                    disabled={
+                                        searchWord || searchStatus
+                                            ? false
+                                            : true
+                                    }
                                     leftIcon={<AiOutlinePlus />}
                                     className='btn__rule'>
                                     Add Rule
@@ -441,7 +657,8 @@ const AllFacilitators = () => {
 
                         {/**  button */}
                         <Box>
-                            <Button
+                            {/**
+                             *  <Button
                                 onClick={() =>
                                     routeNavigate(`/facilitators/create`)
                                 }
@@ -451,6 +668,10 @@ const AllFacilitators = () => {
                                 variant='solid'>
                                 Add New Facilitator
                             </Button>
+                             * 
+                             * 
+                             * 
+                             */}
                         </Box>
                     </Stack>
 
@@ -525,10 +746,13 @@ const AllFacilitators = () => {
                         {/** table & tabs */}
 
                         <Box>
-                            <FacilitatorTable
+                            <LateReportTable
                                 setExportData={setExportData}
                                 exportData={exportData}
+                                allProjects={allprojects.items}
+                                allItems={reportCollectedDatas.alllatereports}
                                 searchActive={searchActive}
+                                allTagData={tagsData.allTagItems.items}
                                 filterInfo={filterInfo}
                             />
                         </Box>
@@ -539,7 +763,7 @@ const AllFacilitators = () => {
     )
 }
 
-export default AllFacilitators
+export default ViewLateReports
 
 const Container = styled(Stack)`
     font-family: 'Inter', sans-serif;
@@ -733,3 +957,4 @@ const TableButton = styled(Box)`
         line-height: 20px;
     }
 `
+

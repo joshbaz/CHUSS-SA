@@ -18,6 +18,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('export-examiners-csv', values),
     exportReportsAdvCSV: (values) =>
         ipcRenderer.invoke('export-exportedDatas-csv', values),
+    exportfacilitatorsCSV: (values) =>
+        ipcRenderer.invoke('export-facilitators-csv', values),
+    exportgeneralsupervisorsCSV: (values) =>
+        ipcRenderer.invoke('export-general-superservisors-csv', values),
 
     /** projects */
     projectDeletion: (values) =>
@@ -130,12 +134,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
     updateOpponentReport: (values) =>
         ipcRenderer.invoke('update-opponent-report', values),
     getOpponentReport: (id) => ipcRenderer.invoke('get-opponent-report', id),
+
     /**reports */
     updateExamiiinerReport: (values) =>
         ipcRenderer.invoke('update-examiner-reportsss', values),
     getExaminerReport: (id) => ipcRenderer.invoke('get-examiner-report', id),
     getAllExaminerReports: (values) =>
         ipcRenderer.invoke('get-all-examiner-reports', values),
+    getReportStats: (values) => ipcRenderer.invoke('get-reports-stats', values),
+    getReportReminders: (values) =>
+        ipcRenderer.invoke('get-reports-reminders', values),
+    getLateReports: (values) => ipcRenderer.invoke('get-late-reports', values),
     /** remove examiner report files */
     removeExRpfiles: (values) => ipcRenderer.invoke('remove-exrpfiles', values),
     /** tags */
@@ -194,6 +203,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.invoke('reset-facilitator-password', values),
     newfacilitatorPasskey: (values) =>
         ipcRenderer.invoke('new-facilitator-passkey', values),
+    deactivateFacilitator: (values) =>
+        ipcRenderer.invoke('deactivate-facilitator', values),
 
     // loadingEffect: (msg, cb) =>
     //     ipcRenderer.on(msg, (_, data) => {

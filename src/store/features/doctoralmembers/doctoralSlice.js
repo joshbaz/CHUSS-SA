@@ -42,7 +42,8 @@ export const projectDCMemberCreate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -68,7 +69,8 @@ export const assignDCMember = createAsyncThunk(
                 assignAttempt.message === 'Not authenticated' ||
                 assignAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(assignAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(assignAttempt.message)
@@ -94,7 +96,8 @@ export const paginatedDCMember = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -120,7 +123,8 @@ export const allDCMembers = createAsyncThunk(
                 allAttempt.message === 'Not authenticated' ||
                 allAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(allAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(allAttempt.message)
@@ -148,7 +152,8 @@ export const getIndividualDCMember = createAsyncThunk(
                 individualAttempt.message === 'Not authenticated' ||
                 individualAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(individualAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(individualAttempt.message)
@@ -175,7 +180,8 @@ export const dcmemberUpdate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -201,7 +207,8 @@ export const removeDCMember = createAsyncThunk(
                 removeAttempt.message === 'Not authenticated' ||
                 removeAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(removeAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(removeAttempt.message)

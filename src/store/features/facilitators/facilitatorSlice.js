@@ -35,7 +35,8 @@ export const facilitatorCreate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -60,7 +61,8 @@ export const allFacilitators = createAsyncThunk(
                 allAttempt.message === 'Not authenticated' ||
                 allAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(allAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(allAttempt.message)
@@ -88,7 +90,8 @@ export const facilitatorUpdate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -115,7 +118,8 @@ export const allLoginActivities = createAsyncThunk(
                 allAttempt.message === 'Not authenticated' ||
                 allAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(allAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(allAttempt.message)
@@ -142,7 +146,8 @@ export const facilitatorResetPassword = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -152,7 +157,34 @@ export const facilitatorResetPassword = createAsyncThunk(
     }
 )
 
-
+/** deactivateFacilitator */
+export const deactivateFacilitator = createAsyncThunk(
+    'facilitator/deactivate',
+    async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+        }
+        const creationAttempt = await facilitatorService.deactivateFacilitator(
+            allValues
+        )
+        if (creationAttempt.type === 'success') {
+            return creationAttempt
+        } else {
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                await authService.logout()
+                window.location.reload()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
+        }
+    }
+)
 
 export const facilitatorSlice = createSlice({
     name: 'facilitator',
@@ -166,83 +198,96 @@ export const facilitatorSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-          builder
-              .addCase(facilitatorCreate.pending, (state) => {
-                  state.isLoading = true
-              })
-              .addCase(facilitatorCreate.fulfilled, (state, action) => {
-                  state.isLoading = false
-                  state.isSuccess = true
-                  state.message = action.payload
-              })
-              .addCase(facilitatorCreate.rejected, (state, action) => {
-                  state.isLoading = false
-                  state.isError = true
-                  state.message = action.payload
-              })
+        builder
+            .addCase(facilitatorCreate.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(facilitatorCreate.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(facilitatorCreate.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
 
-              /** update facilitator */
-              .addCase(facilitatorUpdate.pending, (state) => {
-                  state.isLoading = true
-              })
-              .addCase(facilitatorUpdate.fulfilled, (state, action) => {
-                  state.isLoading = false
-                  state.isSuccess = true
-                  state.message = action.payload
-              })
-              .addCase(facilitatorUpdate.rejected, (state, action) => {
-                  state.isLoading = false
-                  state.isError = true
-                  state.message = action.payload
-              })
+            /** update facilitator */
+            .addCase(facilitatorUpdate.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(facilitatorUpdate.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(facilitatorUpdate.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
 
-              /**  facilitator reset password */
-              .addCase(facilitatorResetPassword.pending, (state) => {
-                  state.isLoading = true
-              })
-              .addCase(facilitatorResetPassword.fulfilled, (state, action) => {
-                  state.isLoading = false
-                  state.isSuccess = true
-                  state.message = action.payload
-              })
-              .addCase(facilitatorResetPassword.rejected, (state, action) => {
-                  state.isLoading = false
-                  state.isError = true
-                  state.message = action.payload
-              })
+            /**  facilitator reset password */
+            .addCase(facilitatorResetPassword.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(facilitatorResetPassword.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(facilitatorResetPassword.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
 
-             
+            /** all facilitator */
+            .addCase(allFacilitators.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(allFacilitators.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.allfacilitatorItems = action.payload
+            })
+            .addCase(allFacilitators.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
 
-              /** all facilitator */
-              .addCase(allFacilitators.pending, (state) => {
-                  state.isLoading = true
-              })
-              .addCase(allFacilitators.fulfilled, (state, action) => {
-                  state.isLoading = false
-                  state.isSuccess = true
-                  state.allfacilitatorItems = action.payload
-              })
-              .addCase(allFacilitators.rejected, (state, action) => {
-                  state.isLoading = false
-                  state.isError = true
-                  state.message = action.payload
-              })
+            /** all login activities */
+            .addCase(allLoginActivities.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(allLoginActivities.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.allLoginActivityItems = action.payload
+            })
+            .addCase(allLoginActivities.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
 
-              /** all login activities */
-              .addCase(allLoginActivities.pending, (state) => {
-                  state.isLoading = true
-              })
-              .addCase(allLoginActivities.fulfilled, (state, action) => {
-                  state.isLoading = false
-                  state.isSuccess = true
-                  state.allLoginActivityItems = action.payload
-              })
-              .addCase(allLoginActivities.rejected, (state, action) => {
-                  state.isLoading = false
-                  state.isError = true
-                  state.message = action.payload
-              })
-    }
+            /** deactivate facilitator */
+            .addCase(deactivateFacilitator.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(deactivateFacilitator.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(deactivateFacilitator.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+    },
 })
 
 export const { reset } = facilitatorSlice.actions

@@ -26,7 +26,8 @@ export const Login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
 })
 
 export const Logout = createAsyncThunk('auth/logout', async () => {
-    authService.logout()
+    await authService.logout()
+    window.location.reload()
 })
 
 /** supervisor update */
@@ -47,7 +48,8 @@ export const facilitatorNewPasskey = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)

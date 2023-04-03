@@ -42,7 +42,8 @@ export const projectSupervisorCreate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -70,7 +71,8 @@ export const assignSupervisor = createAsyncThunk(
                 assignAttempt.message === 'Not authenticated' ||
                 assignAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(assignAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(assignAttempt.message)
@@ -98,7 +100,8 @@ export const paginatedSupervisor = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -124,7 +127,8 @@ export const allSupervisors = createAsyncThunk(
                 allAttempt.message === 'Not authenticated' ||
                 allAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(allAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(allAttempt.message)
@@ -151,7 +155,8 @@ export const getIndividualSupervisor = createAsyncThunk(
                 individualAttempt.message === 'Not authenticated' ||
                 individualAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(individualAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(individualAttempt.message)
@@ -180,7 +185,8 @@ export const supervisorUpdate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -209,7 +215,8 @@ export const supervisorRemove = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -239,7 +246,8 @@ export const SupervisorCreate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)

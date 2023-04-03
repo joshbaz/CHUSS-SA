@@ -1,7 +1,7 @@
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 /** service to create examiner from project */
 const projectOpponentCreate = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -13,7 +13,7 @@ const projectOpponentCreate = async (values) => {
 
 /** service to assign examiner from project */
 const assignOpponent = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -25,7 +25,7 @@ const assignOpponent = async (values) => {
 
 /** service to get all paginated examiners  */
 const paginatedOpponent = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -37,7 +37,7 @@ const paginatedOpponent = async (values) => {
 
 /** service to get all  examiners  */
 const allOpponent = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -49,7 +49,7 @@ const allOpponent = async (values) => {
 
 /** service to get individual  examiners  */
 const getIndividualOpponent = async (id) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...id,
          getToken,
@@ -61,7 +61,7 @@ const getIndividualOpponent = async (id) => {
 
 /** service to create examiner from project */
 const opponentUpdate = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -73,7 +73,7 @@ const opponentUpdate = async (values) => {
 
 //delete file opponent
 const deleteFileOpponent = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -84,7 +84,7 @@ const deleteFileOpponent = async (values) => {
 
 //add file opponent
 const addFileOpponent = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -95,7 +95,7 @@ const addFileOpponent = async (values) => {
 
 //remove project opponent
 const removeProjectOpponent = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -107,7 +107,7 @@ const removeProjectOpponent = async (values) => {
 
 /** service to create examiner from project */
 const OpponentMainCreate = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,

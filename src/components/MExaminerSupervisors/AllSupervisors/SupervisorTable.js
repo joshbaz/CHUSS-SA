@@ -327,7 +327,7 @@ const SupervisorTable = ({
                 tableName: 'Supervisors',
                 data: exportData,
             }
-            await window.electronAPI.exportExaminersCSV(values)
+            await window.electronAPI.exportgeneralsupervisorsCSV(values)
         }
     }
 
@@ -773,7 +773,9 @@ const SupervisorTable = ({
                                                                             View
                                                                             Supervisor
                                                                         </MenuItem>
-                                                                        <MenuItem
+                                                                        {
+                                                                            /**
+                                                                             *  <MenuItem
                                                                             onClick={() =>
                                                                                 handleRemove(
                                                                                     data,
@@ -783,6 +785,13 @@ const SupervisorTable = ({
                                                                             Delete
                                                                             Supervisor
                                                                         </MenuItem>
+                                                                             * 
+                                                                             * 
+                                                                             * 
+                                                                             * 
+                                                                             */
+                                                                        }
+                                                                       
                                                                     </MenuList>
                                                                 </Menu>
                                                             </Td>
@@ -891,7 +900,8 @@ const SupervisorTable = ({
                                                                             View
                                                                             Supervisor
                                                                         </MenuItem>
-                                                                        <MenuItem
+                                                                        {/**
+                                                                             *  <MenuItem
                                                                             onClick={() =>
                                                                                 handleRemove(
                                                                                     data,
@@ -901,6 +911,11 @@ const SupervisorTable = ({
                                                                             Delete
                                                                             Supervisor
                                                                         </MenuItem>
+                                                                             * 
+                                                                             * 
+                                                                             * 
+                                                                             * 
+                                                                             */}
                                                                     </MenuList>
                                                                 </Menu>
                                                             </Td>

@@ -275,8 +275,7 @@ const AdminDashboard = () => {
                     />
                 </Box>
 
-                {/** loading effect */}
-                {windowloading && <h1>Loading...</h1>}
+                {/** loading effect {windowloading && <h1>Loading...</h1>} */}
 
                 <Stack direction='column' padding={'0 20px'}>
                     <Stack
@@ -731,13 +730,13 @@ const AdminDashboard = () => {
                                 direction='row'
                                 alignItems={'center'}
                                 style={{ cursor: 'pointer' }}
-                                onClick={() => routeNavigate('/advsearch')}>
+                                onClick={() => routeNavigate('/m-reports')}>
                                 <Box className='ad_icon'>
                                     <MdManageSearch />
                                 </Box>
 
                                 <Box className='ad_text'>
-                                    <Text>Advanced search</Text>
+                                    <Text>manage reports</Text>
                                 </Box>
                             </AdStack>
                         </Stack>

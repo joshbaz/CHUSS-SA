@@ -37,7 +37,8 @@ export const updateProjectStatus = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)
@@ -64,7 +65,8 @@ export const updateVivaFiles = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)
@@ -91,7 +93,8 @@ export const updateVivaDefense = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)
@@ -118,7 +121,8 @@ export const updateFinalSubmission = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)
@@ -147,7 +151,8 @@ export const updateSubmissionDate = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)
@@ -176,7 +181,8 @@ export const updateGraduationDate = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)

@@ -72,16 +72,20 @@ import AllSupervisors from '../views/DesktopViews/ESupervisorsView/AllSupervisor
 import CreateNewSupervisor from '../views/DesktopViews/ESupervisorsView/CreateNewSupervisor'
 import ViewSupervisor from '../views/DesktopViews/ESupervisorsView/ViewSupervisor'
 import EditSupervisor from '../views/DesktopViews/ESupervisorsView/EditSupervisor'
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 import { useSelector } from 'react-redux'
 import AdminDashboard from '../views/DesktopViews/Dashboard/AdminDashboard'
 import AllFacilitators from '../views/DesktopViews/Facilitators/AllFacilitators'
 import CreateNewFacilitators from '../views/DesktopViews/Facilitators/CreateNewFacilitators'
 import UpdateFacilitators from '../views/DesktopViews/Facilitators/UpdateFacilitators'
 import ViewFacilitator from '../views/DesktopViews/Facilitators/ViewFacilitator'
+import ManageReports from '../views/DesktopViews/AdvSearch/ManageReports'
+import ViewAllReports from '../views/DesktopViews/AdvSearch/ViewAllReports'
+import ViewLateReports from '../views/DesktopViews/AdvSearch/ViewLateReports'
+import ViewReminders from '../views/DesktopViews/AdvSearch/ViewReminders'
 
 const AllRoutes = () => {
-    const isAuthenticated = !!Cookies.get('_tk')
+    const isAuthenticated = !!localStorage.getItem('_tk')
     //let user = isAuthenticated ? JSON.parse(Cookies.get('user')) : null
     //  const getToken = Cookies.get('_tk')
     const [previledges, setPreviledges] = React.useState('Administrator')
@@ -97,7 +101,7 @@ const AllRoutes = () => {
     }, [user, isAuthenticated, isSuccess])
 
     return (
-        <HashRouter>
+        <HashRouter basename='/'>
             <Routes>
                 <Route exact path='/auth/reset' element={<Reset />} />
                 <Route exact path='/auth/signin' element={<Login />} />
@@ -525,6 +529,29 @@ const AllRoutes = () => {
                     />
                     {/** Advanced search */}
                     <Route exact path='/advsearch' element={<AdvSearch />} />
+
+                    {/** Report page routes */}
+                    <Route
+                        exact
+                        path='/m-reports'
+                        element={<ManageReports />}
+                    />
+                    <Route
+                        exact
+                        path='/m-reports/allreports'
+                        element={<ViewAllReports />}
+                    />
+                    <Route
+                        exact
+                        path='/m-reports/latereports'
+                        element={<ViewLateReports />}
+                    />
+
+                    <Route
+                        exact
+                        path='/m-reports/reminders'
+                        element={<ViewReminders />}
+                    />
 
                     {/** settings */}
                     <Route exact path='/setting' element={<Settings />} />

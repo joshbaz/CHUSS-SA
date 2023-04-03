@@ -44,7 +44,7 @@ function createWindow() {
     })
 
     //mainWindow.maximize()
-  //  installer()
+    //  installer()
     mainWindow.on('ready-to-show', mainWindow.show)
 
     mainWindow.loadURL(
@@ -63,7 +63,7 @@ function createWindow() {
     //           })
     // )
     // mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
-    //mainWindow.loadURL(`file://${__dirname}/../build/index.html#`)
+    // mainWindow.loadURL(`file://${__dirname}/../build/index.html#`)
     mainWindow.on('closed', () => {
         mainWindow = null
         //localStorage.removeItem('user')
@@ -437,6 +437,10 @@ ipcMain.handle(
     'get-all-examiner-reports',
     reportController.getAllExaminerReports
 )
+ipcMain.handle('get-reports-stats', reportController.getReportStats)
+
+ipcMain.handle('get-reports-reminders', reportController.getReportReminders)
+ipcMain.handle('get-late-reports', reportController.getLateReports)
 /** opponent reports */
 /**
  * 1.handle update opponent reports
@@ -521,6 +525,7 @@ ipcMain.handle(
     'new-facilitator-passkey',
     facilitatorController.newfacilitatorPasskey
 )
+ipcMain.handle('deactivate-facilitator', facilitatorController.deactivateAdmin)
 
 /** files */
 //handle
@@ -956,12 +961,15 @@ ipcMain.handle('export-exportedDatas-csv', async (event, values) => {
     } else {
         const rowData = await values.data.map((data2, index) => {
             /** function to return latest registration */
-            let currentDate = Moments(new Date())
-            let pastDate = Moments(data2.creationDate)
-            let diff = data2.creationDate
-                ? currentDate.diff(pastDate, 'days')
-                : 0
-            let reportDelay = data2.submissionDate ? 0 : diff
+            // let currentDate = Moments(new Date())
+            // let pastDate = Moments(data2.creationDate)
+            // let diff = data2.creationDate
+            //     ? currentDate.diff(pastDate, 'days')
+            //     : 0
+            //  let reportDelay = data2.submissionDate ? 0 : diff
+            let creationDates = Moments(data2.creationDate)
+                .tz('Africa/Kampala')
+                .format('dddd DD MMM YYYY h:mm a')
             return {
                 No: index + 1,
                 'Student Name': data2.projectsData.student.studentName,
@@ -974,7 +982,106 @@ ipcMain.handle('export-exportedDatas-csv', async (event, values) => {
                 'Examiner Email': data2.examiner.email,
                 'Examiner PhoneNumber': data2.examiner.phoneNumber,
                 'Report Status': data2.reportStatus,
-                'Report Delay': reportDelay,
+                Created: `${creationDates}`,
+            }
+        })
+
+        //   console.log('rows  data', rowData, rowData)
+
+        const worksheet = XLSX.utils.json_to_sheet(rowData)
+        worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
+            return { wch: 10 }
+        })
+        const workbook = XLSX.utils.book_new()
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, `${values.tableName}`)
+
+        await XLSX.writeFile(workbook, dialogSaves.filePath)
+
+        const newoptions = {
+            message: `Export Successfully Saved - ${dialogSaves.filePath}`,
+        }
+        dialog.showMessageBox(mainWindow, newoptions)
+    }
+})
+
+/** export facilitators */
+
+ipcMain.handle('export-facilitators-csv', async (event, values) => {
+    const options = {
+        defaultPath: app.getPath('documents') + `/${values.tableName}.${'csv'}`,
+        filters: [
+            {
+                name: 'Custom File Type',
+                extensions: ['xls', 'xlsx', 'xlsb', 'csv', 'ods'],
+            },
+        ],
+    }
+    const dialogSaves = await dialog.showSaveDialog(mainWindow, options)
+
+    if (dialogSaves.canceled) {
+        return
+    } else {
+        const rowData = await values.data.map((data2, index) => {
+            /** function to return latest registration */
+
+            return {
+                No: index + 1,
+                'Facilitator Name': `${
+                    data2.jobtitle + data2.firstname + ' ' + data2.lastname
+                }`,
+                Role: data2.role.toUpperCase(),
+                Email: data2.email,
+                'Phone Number': `${data2.contact}`,
+                Privileges: `${data2.privileges}`,
+            }
+        })
+
+        //   console.log('rows  data', rowData, rowData)
+
+        const worksheet = XLSX.utils.json_to_sheet(rowData)
+        worksheet['!cols'] = Array.from({ length: rowData.length }, () => {
+            return { wch: 10 }
+        })
+        const workbook = XLSX.utils.book_new()
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, `${values.tableName}`)
+
+        await XLSX.writeFile(workbook, dialogSaves.filePath)
+
+        const newoptions = {
+            message: `Export Successfully Saved - ${dialogSaves.filePath}`,
+        }
+        dialog.showMessageBox(mainWindow, newoptions)
+    }
+})
+
+/** export general supervisors */
+
+ipcMain.handle('export-general-superservisors-csv', async (event, values) => {
+    const options = {
+        defaultPath: app.getPath('documents') + `/${values.tableName}.${'csv'}`,
+        filters: [
+            {
+                name: 'Custom File Type',
+                extensions: ['xls', 'xlsx', 'xlsb', 'csv', 'ods'],
+            },
+        ],
+    }
+    const dialogSaves = await dialog.showSaveDialog(mainWindow, options)
+
+    if (dialogSaves.canceled) {
+        return
+    } else {
+        const rowData = await values.data.map((data2, index) => {
+            /** function to return latest registration */
+
+            return {
+                No: index + 1,
+                'Examiner Name': `${data2.jobtitle + data2.name}`,
+                Type: 'Supervisor',
+                Email: data2.email,
+                'Phone Number': data2.phoneNumber.toString(),
             }
         })
 

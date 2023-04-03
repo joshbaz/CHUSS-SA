@@ -32,7 +32,8 @@ export const tagCreate = createAsyncThunk(
                 createAttempt.message === 'Not authenticated' ||
                 createAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(createAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(createAttempt.message)
@@ -59,7 +60,8 @@ export const tagGetAll = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -86,7 +88,8 @@ export const tagUpdate = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                authService.logout()
+                 await authService.logout()
+                window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)

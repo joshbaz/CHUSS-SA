@@ -1,7 +1,7 @@
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 /** update payment */
 const updatePayment = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -12,7 +12,7 @@ const updatePayment = async (values) => {
 }
 /** getPaginatedPayments */
 const getPaginatedPayments = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,
@@ -23,9 +23,9 @@ const getPaginatedPayments = async (values) => {
 }
 /** getSinglePayment */
 const getSinglePayment = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
-        id: values,
+        ...values,
         getToken,
     }
     const response = await window.electronAPI.getSinglePayment(allValues)
@@ -34,7 +34,7 @@ const getSinglePayment = async (values) => {
 }
 /** update payment */
 const getAllPayments = async (values) => {
-    let getToken = Cookies.get('_tk')
+    let getToken = localStorage.getItem('_tk')
     let allValues = {
         ...values,
         getToken,

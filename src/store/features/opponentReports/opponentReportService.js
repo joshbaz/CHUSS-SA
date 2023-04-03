@@ -1,6 +1,6 @@
-import Cookies from 'js-cookie'
+//import Cookies from 'js-cookie'
 const updateOpponentReport = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,
@@ -10,7 +10,7 @@ const updateOpponentReport = async (values) => {
 }
 
 const getOpponentReport = async (values) => {
-     let getToken = Cookies.get('_tk')
+     let getToken = localStorage.getItem('_tk')
      let allValues = {
          ...values,
          getToken,

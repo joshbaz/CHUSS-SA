@@ -41,7 +41,7 @@ exports.updateExaminerssReport = async (event, values) => {
         //console.log('great pp', values.reportFile)
 
         let responseData = await axios.patch(
-            `${BASE_API_}/reporrts/v1/update/${values._id}`,
+            `${BASE_API_}/reports/v1/update/${values._id}`,
             {
                 headers: {
                     Authorization: 'Bearer ' + values.getToken,
@@ -141,3 +141,71 @@ exports.removeExRpFiles = async (event, values) => {
         return response
     }
 }
+
+/** get  report stats*/
+exports.getReportStats = async (event, values) => {
+    try {
+        let responseData = await axios.get(
+            `${BASE_API_}/reports/v1/stats`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
+        )
+
+        let data = {
+            ...responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
+
+/** get  report reminders*/
+exports.getReportReminders = async (event, values) => {
+    try {
+        let responseData = await axios.get(
+            `${BASE_API_}/reports/v1/reminders`,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
+        )
+
+        let data = {
+            ...responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
+
+/** get late  report*/
+exports.getLateReports = async (event, values) => {
+    try {
+        let responseData = await axios.get(`${BASE_API_}/reports/v1/late`, {
+            headers: {
+                Authorization: 'Bearer ' + values.getToken,
+            },
+        })
+
+        let data = {
+            ...responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
+
+
