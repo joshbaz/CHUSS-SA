@@ -73,17 +73,17 @@ const RegistrationRpEditPopup = ({
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
 
     const validationSchema = yup.object().shape({
-        regfiles: yup.mixed().required('file is required'),
+        //regfiles: yup.mixed().required('file is required'),
         regDate: yup.string().required('date is required'),
         regType: yup.string().required('registration type is required'),
-        semester: yup.string().required('semester is required'),
+        //semester: yup.string().required('semester is required'),
         academicYear: yup.string().required('academic year is required'),
-        filetypename: yup.string().required('file type is required'),
-        othername: yup.string().when('filetypename', {
-            is: 'others',
-            then: yup.string().required('other name is required'),
-            otherwise: yup.string(),
-        }),
+        // filetypename: yup.string().required('file type is required'),
+        // othername: yup.string().when('filetypename', {
+        //     is: 'others',
+        //     then: yup.string().required('other name is required'),
+        //     otherwise: yup.string(),
+        // }),
     })
 
     const initialValues = {
@@ -161,7 +161,7 @@ const RegistrationRpEditPopup = ({
                                                     direction='column'
                                                     spacing='11px'>
                                                     <Box className='content_title'>
-                                                        Registration Date
+                                                        Date
                                                     </Box>
 
                                                     <Box
@@ -291,7 +291,8 @@ const RegistrationRpEditPopup = ({
                                             </Stack>
 
                                             {/** semester */}
-                                            <Stack
+                                            {/**
+                                                 * <Stack
                                                 minW='120px'
                                                 className='form_input'
                                                 direction='column'
@@ -341,6 +342,15 @@ const RegistrationRpEditPopup = ({
                                                     </Stack>
                                                 </RadioGroup>
                                             </Stack>
+                                                 * 
+                                                 * 
+                                                 * 
+                                                 * 
+                                                 * 
+                                                 * 
+                                                 * 
+                                                 * 
+                                                 */}
 
                                             {/** Support files */}
                                             <Stack

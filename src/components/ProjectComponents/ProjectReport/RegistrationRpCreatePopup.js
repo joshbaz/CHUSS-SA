@@ -88,9 +88,9 @@ const RegistrationRpCreatePopup = ({
         //regfiles: yup.mixed().required('file is required'),
         regDate: yup.string().required('date is required'),
         regType: yup.string().required('registration type is required'),
-        semester: yup.string().required('semester is required'),
+        // semester: yup.string().required('semester is required'),
         academicYear: yup.string().required('academic year is required'),
-       // filetypename: yup.string().required('file type is required'),
+        // filetypename: yup.string().required('file type is required'),
         // othername: yup.string().when('filetypename', {
         //     is: 'others',
         //     then: yup.string().required('other name is required'),
@@ -231,7 +231,7 @@ const RegistrationRpCreatePopup = ({
                                                     direction='column'
                                                     spacing='11px'>
                                                     <Box className='content_title'>
-                                                        Registration Date
+                                                        Date
                                                     </Box>
 
                                                     <Box
@@ -361,7 +361,10 @@ const RegistrationRpCreatePopup = ({
                                             </Stack>
 
                                             {/** semester */}
-                                            <Stack
+                                            {
+                                                /***
+                                                 * 
+                                                 *   <Stack
                                                 minW='120px'
                                                 className='form_input'
                                                 direction='column'
@@ -411,6 +414,16 @@ const RegistrationRpCreatePopup = ({
                                                     </Stack>
                                                 </RadioGroup>
                                             </Stack>
+                                                 * 
+                                                 * 
+                                                 * 
+                                                 * 
+                                                 * 
+                                                 * 
+                                                 * 
+                                                 */
+                                            }
+                                          
 
                                             {/** Support files */}
                                             <Stack

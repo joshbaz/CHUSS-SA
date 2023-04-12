@@ -420,6 +420,9 @@ const AssignOpponent = ({ ...props }) => {
                             selectedExaminers={selectedExaminers}
                             setSelectedExaminers={setSelectedExaminers}
                             rlink={'/phd'}
+                            setSearchData={setSearchData}
+                            setAllDisplayData={setAllDisplayData}
+                            perPage={perPage}
                         />
                     </Stack>
                 </Stack>

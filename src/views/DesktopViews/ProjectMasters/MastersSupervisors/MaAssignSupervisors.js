@@ -419,6 +419,9 @@ const MaAssignSupervisors = () => {
                             selectedExaminers={selectedExaminers}
                             setSelectedExaminers={setSelectedExaminers}
                             rlink={'/masters'}
+                            setSearchData={setSearchData}
+                            setAllDisplayData={setAllDisplayData}
+                            perPage={perPage}
                         />
                     </Stack>
                 </Stack>

@@ -16,17 +16,12 @@ import {
 
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 
-
 import {
     MdKeyboardArrowLeft,
     MdKeyboardArrowRight,
     MdVerified,
 } from 'react-icons/md'
 const TableHead = [
-    {
-        title: '#',
-        filter: true,
-    },
     {
         title: 'Type',
         filter: true,
@@ -51,9 +46,10 @@ const ExaminerTable = ({
     allSearchedData,
     handleResetAll,
     handleSearchReset,
+    setSearchData,
+    setAllDisplayData,
+    perPage,
 }) => {
-    
-
     const handleCheckChange = (e, dataCollected) => {
         e.preventDefault()
 
@@ -93,9 +89,96 @@ const ExaminerTable = ({
     let PaginationLastNumber2 =
         PaginationFirstNumber2 + allSearchedData.totalItemsDisplayed - 1
 
-    const handlePrev = () => {}
+    const handlePrev = () => {
+        if (searchActive) {
+            if (allSearchedData.currentPage - 1 >= 1) {
+                let page = allSearchedData.currentPage - 1
+                const indexOfLastItem = page * allSearchedData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allSearchedData.itemsPerPage
 
-    const handleNext = () => {}
+                const currentItems = allSearchedData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setSearchData(() => ({
+                    ...allSearchedData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                }))
+            }
+        } else {
+            if (allExaminerItems.currentPage - 1 >= 1) {
+                let page = allExaminerItems.currentPage - 1
+                const indexOfLastItem = page * allExaminerItems.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allExaminerItems.itemsPerPage
+
+                const currentItems = allExaminerItems.allItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setAllDisplayData({
+                    ...allExaminerItems,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        }
+    }
+
+    const handleNext = () => {
+        if (searchActive) {
+            if (allSearchedData.currentPage + 1 <= allSearchedData.totalPages) {
+                let page = allSearchedData.currentPage + 1
+                const indexOfLastItem = page * allSearchedData.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allSearchedData.itemsPerPage
+
+                const currentItems = allSearchedData.allSearchItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setSearchData({
+                    ...allSearchedData,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                })
+            }
+        } else {
+            if (
+                allExaminerItems.currentPage + 1 <=
+                allExaminerItems.totalPages
+            ) {
+                let page = allExaminerItems.currentPage + 1
+                const indexOfLastItem = page * allExaminerItems.itemsPerPage
+                const indexOfFirstItem =
+                    indexOfLastItem - allExaminerItems.itemsPerPage
+
+                const currentItems = allExaminerItems.allItems.slice(
+                    indexOfFirstItem,
+                    indexOfLastItem
+                )
+
+                setAllDisplayData(() => ({
+                    ...allExaminerItems,
+                    currentPage: page,
+                    itemsPerPage: perPage,
+                    items: currentItems,
+                    totalItemsDisplayed: currentItems.length,
+                }))
+            }
+        }
+    }
 
     return (
         <Container>
@@ -232,7 +315,7 @@ const ExaminerTable = ({
                                                                     }
                                                                 />
                                                             </Td>
-                                                            <Td>1</Td>
+
                                                             <Td>
                                                                 <Box className='type_examiner'>
                                                                     {
@@ -326,7 +409,7 @@ const ExaminerTable = ({
                                                                     }
                                                                 />
                                                             </Td>
-                                                            <Td>1</Td>
+
                                                             <Td>
                                                                 <Box className='type_examiner'>
                                                                     {

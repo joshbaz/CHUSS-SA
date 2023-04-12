@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import {
     Box,
     Stack,
-    Text,
     Modal,
     ModalOverlay,
     ModalContent,
@@ -100,7 +99,7 @@ const RegistrationRpViewPopup = ({
                                 alignItems='center'
                                 justifyContent='space-between'>
                                 <Box>
-                                    <h1>Add Registration</h1>
+                                    <h1>View Registration</h1>
                                 </Box>
                             </Stack>
 
@@ -116,7 +115,7 @@ const RegistrationRpViewPopup = ({
                                     w='100%'>
                                     <Stack direction='column' spacing='11px'>
                                         <Box className='content_title'>
-                                            Registration Date
+                                            Date
                                         </Box>
 
                                         <Box
@@ -216,7 +215,9 @@ const RegistrationRpViewPopup = ({
                                 </Stack>
 
                                 {/** semester */}
-                                <Stack
+                                {/***
+                                     * 
+                                     *  <Stack
                                     minW='120px'
                                     className='form_input'
                                     direction='column'
@@ -248,6 +249,16 @@ const RegistrationRpViewPopup = ({
                                         </Stack>
                                     </RadioGroup>
                                 </Stack>
+                                     * 
+                                     * 
+                                     * 
+                                     * 
+                                     * 
+                                     * 
+                                     * 
+                                     * 
+                                     * 
+                                     */}
 
                                 {/** Support files */}
                                 <Stack

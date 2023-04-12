@@ -213,9 +213,7 @@ const EditPhdProject = (props) => {
             errors.studentName = 'Student Name required'
         }
 
-        if (!values.degreeProgram) {
-            errors.degreeProgram = 'Degree Program required'
-        }
+      
 
         if (!values.schoolName) {
             errors.schoolName = 'School Name required'
@@ -330,12 +328,14 @@ const EditPhdProject = (props) => {
                                             preferencesData.allProgramItems
                                                 .items
                                         }
+                                        degreetype={'Phd'}
                                     />
 
                                     <EditContactForm
                                         values={initials}
                                         errors={errors}
                                         handleChange={handleChange}
+                                        setFieldValue={setFieldValue2}
                                     />
                                 </Stack>
                             </Stack>

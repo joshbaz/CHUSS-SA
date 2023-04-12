@@ -735,7 +735,7 @@ const ProjectDetails = ({ values, rlink }) => {
                                                     fullAdm !== null &&
                                                     fullAdm.registrationId.date
                                                         ? Moments(
-                                                              provisionalAdm
+                                                              fullAdm
                                                                   .registrationId
                                                                   .date
                                                           )
