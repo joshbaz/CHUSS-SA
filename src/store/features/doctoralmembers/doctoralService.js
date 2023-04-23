@@ -82,12 +82,27 @@ const removeDCMember = async (values) => {
 
     return response
 }
+
+/** service to migrate supervisor to dc member */
+const migrateSupervisortoDCMember = async (values) => {
+     let getToken = localStorage.getItem('_tk')
+     let allValues = {
+         ...values,
+         getToken,
+     }
+    const response = await window.electronAPI.migrateSupervisortoDCMember(
+        allValues
+    )
+
+    return response
+}
 let doctoralService = {
     projectDCMemberCreate,
     assignDCMember,
     paginatedDCMember,
     allDCMembers,
     getIndividualDCMember,
+    migrateSupervisortoDCMember,
 
     dcmemberUpdate,
     removeDCMember,

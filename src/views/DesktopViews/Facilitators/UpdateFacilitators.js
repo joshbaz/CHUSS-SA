@@ -29,6 +29,8 @@ import UpdateFacilatorDetails from '../../../components/Facilitators/UpdateFacil
 import UpdateFacilitatorPrivileges from '../../../components/Facilitators/UpdateFacilitator/UpdateFacilitatorPrivileges'
 import UpdateFacilitatorPassword from '../../../components/Facilitators/UpdateFacilitator/UpdateFacilitatorPassword'
 import { initSocketConnection } from '../../../socketio.service'
+import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+const { backgroundMainColor, textLightColor } = dashboardLightTheme
 
 const UpdateFacilitators = () => {
     let toast = useToast()
@@ -200,7 +202,7 @@ const UpdateFacilitators = () => {
         // onClose()
     }
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />
@@ -224,14 +226,16 @@ const UpdateFacilitators = () => {
                 <Stack direction='column' padding={'10px 20px 0 10px'}>
                     <Stack
                         direction='column'
-                        bg='#FBFBFB'
+                        bg={backgroundMainColor}
+                        minH='80vh'
                         spacing={'20px'}
                         padding={'20px 20px 30px 20px'}>
                         {/** title head */}
                         <Stack
                             direction='row'
                             alignItems='center'
-                            justifyContent='space-between'>
+                            justifyContent='space-between'
+                            color={textLightColor}>
                             <BackButtonStack
                                 className='back_button'
                                 direction='row'

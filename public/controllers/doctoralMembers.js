@@ -215,3 +215,27 @@ exports.removeDCMember = async (event, values) => {
         return errorResult
     }
 }
+
+/** migrate supervisor to dcmember */
+exports.migrateSupervisortoDCMember = async (event, values) => {
+    try {
+        let responseData = await axios.post(
+            `${BASE_API_}/doctoralmember/v1/project/migrate/${values.projectId}/${values.supId}`,
+            values,
+            {
+                headers: {
+                    Authorization: 'Bearer ' + values.getToken,
+                },
+            }
+        )
+
+        let data = {
+            message: responseData.data,
+            type: 'success',
+        }
+        return data
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}

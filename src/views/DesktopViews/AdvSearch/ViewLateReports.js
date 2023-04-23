@@ -49,7 +49,7 @@ import {
 } from '../../../store/features/tags/tagSlice'
 
 //import FacilitatorTable from '../../../components/Facilitators/AllFacilitators/FacilitatorTable'
-import { initSocketConnection } from '../../../socketio.service'
+//import { initSocketConnection } from '../../../socketio.service'
 
 
 import LateReportTable from './LateReportTable'
@@ -413,7 +413,7 @@ const ViewLateReports = () => {
          }
      }, [tagsData.allTagItems.items, filterSearchOption])
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />

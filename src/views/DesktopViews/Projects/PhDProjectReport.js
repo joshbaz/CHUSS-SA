@@ -32,6 +32,9 @@ import AdmissionStatus from '../../../components/ProjectComponents/ProjectReport
 import RegistrationReports from '../../../components/ProjectComponents/ProjectReport/RegistrationReports'
 import { initSocketConnection } from '../../../socketio.service.js'
 import ProgressStatus2 from '../../../components/ProjectComponents/ProjectReport/ProgressStatus2'
+import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+const { backgroundMainColor, textLightColor, backgroundRadius } =
+    dashboardLightTheme
 const PageLinks = [
     {
         title: 'Registration',
@@ -191,12 +194,14 @@ const PhDProjectReport = ({ ...props }) => {
 
                 <Stack
                     direction='column'
-                    padding={'10px 20px 0 10px'}
+                    padding={'10px 20px 20px 10px'}
                     style={{ overflowX: 'hidden' }}
                     position='relative'>
                     <Stack
                         direction='column'
-                        bg='#FBFBFB'
+                        bg={backgroundMainColor}
+                        minH='80vh'
+                        borderRadius={backgroundRadius}
                         spacing={'20px'}
                         padding={'20px 20px 30px 20px'}>
                         {/** title head */}
@@ -204,6 +209,7 @@ const PhDProjectReport = ({ ...props }) => {
                             <Stack
                                 direction='row'
                                 alignItems='center'
+                                color={textLightColor}
                                 justifyContent='space-between'>
                                 <BackButtonStack
                                     className='back_button'
@@ -214,7 +220,7 @@ const PhDProjectReport = ({ ...props }) => {
                                         onClick={() => routeNavigate(-1)}>
                                         <MdArrowBack />
                                     </Box>
-                                    <Text>PhD Project Report</Text>
+                                    <Text>PhD Student Report</Text>
                                 </BackButtonStack>
                             </Stack>
 
@@ -335,7 +341,8 @@ const Container = styled(Stack)`
 `
 
 const BackButtonStack = styled(Stack)`
-    p {
+    color: #ffffff;
+     p {
         font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;

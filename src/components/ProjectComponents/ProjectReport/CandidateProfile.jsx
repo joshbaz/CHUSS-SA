@@ -237,6 +237,32 @@ const CandidateProfile = ({ values, rlink }) => {
                                         />
                                     </Box>
                                 </Stack>
+
+                                <Stack
+                                    direction='row'
+                                    alignItems='center'
+                                    spacing='15px'>
+                                    <label htmlFor='phone'>
+                                        <Stack
+                                            direction={'row'}
+                                            alignItems='center'
+                                            spacing='8px'>
+                                            <Text>Funding Type</Text>
+                                        </Stack>
+                                    </label>
+
+                                    <Box className='form_input'>
+                                        <Input
+                                            readOnly
+                                            value={
+                                                values !== null &&
+                                                values.student.fundingType
+                                                    ? values.student.fundingType
+                                                    : ''
+                                            }
+                                        />
+                                    </Box>
+                                </Stack>
                             </Stack>
                         </Stack>
                     </Stack>
@@ -263,7 +289,7 @@ const Container = styled(Box)`
         height: 54px;
         width: 100%;
 
-        border-bottom: 1px solid #ebeefa;
+        border-bottom: 1px solid #d1d5db;
         padding: 0 30px;
         h1 {
             width: 100%;

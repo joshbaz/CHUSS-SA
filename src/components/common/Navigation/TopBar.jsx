@@ -81,6 +81,8 @@ export default TopBar
 
 const Container = styled(Stack)`
     background: #fbfbfb;
+    border-bottom: 1px solid #d1d5db;
+
     overflow-x: hidden;
     h1 {
         font-family: 'Inter', sans-serif;

@@ -217,6 +217,36 @@ export const removeDCMember = createAsyncThunk(
         }
     }
 )
+
+//migrate supervisor to dc member
+export const migrateSupervisortoDCMember = createAsyncThunk(
+    'dcmember/migratesupervisor',
+    async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const migrateAttempt =
+            await doctoralService.migrateSupervisortoDCMember(allValues)
+        if (migrateAttempt.type === 'success') {
+            return migrateAttempt
+        } else {
+            if (
+                migrateAttempt.message === 'jwt expired' ||
+                migrateAttempt.message === 'Not authenticated' ||
+                migrateAttempt.message === 'jwt malformed'
+            ) {
+                await authService.logout()
+                window.location.reload()
+                return thunkAPI.rejectWithValue(migrateAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(migrateAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(removeAttempt.message)
+        }
+    }
+)
+
 export const doctoralSlice = createSlice({
     name: 'dcmember',
     initialState,
@@ -322,6 +352,21 @@ export const doctoralSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(removeDCMember.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            //migrate supervisor to dcmember
+            .addCase(migrateSupervisortoDCMember.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(migrateSupervisortoDCMember.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(migrateSupervisortoDCMember.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

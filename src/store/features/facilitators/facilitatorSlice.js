@@ -36,7 +36,7 @@ export const facilitatorCreate = createAsyncThunk(
                 creationAttempt.message === 'jwt malformed'
             ) {
                 await authService.logout()
-                window.location.reload()
+                window.location.replace('/')
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -62,7 +62,7 @@ export const allFacilitators = createAsyncThunk(
                 allAttempt.message === 'jwt malformed'
             ) {
                 await authService.logout()
-                window.location.reload()
+                window.location.replace('/')
                 return thunkAPI.rejectWithValue(allAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(allAttempt.message)
@@ -91,7 +91,7 @@ export const facilitatorUpdate = createAsyncThunk(
                 creationAttempt.message === 'jwt malformed'
             ) {
                 await authService.logout()
-                window.location.reload()
+                 window.location.replace('/')
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -119,7 +119,7 @@ export const allLoginActivities = createAsyncThunk(
                 allAttempt.message === 'jwt malformed'
             ) {
                 await authService.logout()
-                window.location.reload()
+                window.location.replace('/')
                 return thunkAPI.rejectWithValue(allAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(allAttempt.message)
@@ -147,7 +147,7 @@ export const facilitatorResetPassword = createAsyncThunk(
                 creationAttempt.message === 'jwt malformed'
             ) {
                 await authService.logout()
-                window.location.reload()
+                window.location.replace('/')
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -176,7 +176,7 @@ export const deactivateFacilitator = createAsyncThunk(
                 creationAttempt.message === 'jwt malformed'
             ) {
                 await authService.logout()
-                window.location.reload()
+                window.location.replace('/')
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)

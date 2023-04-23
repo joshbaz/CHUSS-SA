@@ -652,7 +652,7 @@ const Container = styled(Box)`
         height: 54px;
         width: 100%;
 
-        border-bottom: 1px solid #ebeefa;
+        border-bottom: 1px solid #d1d5db;
         padding: 0 30px;
         h1 {
             width: 100%;

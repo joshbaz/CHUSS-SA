@@ -135,7 +135,7 @@ const StudentDetailForm = ({
 
         if (e.target.value) {
             let findSchool = allSchoolItems.items.find(
-                (element) => element._id === e.target.value
+                (element) => element.schoolName === e.target.value
             )
 
             //console.log('finding', findSchool)
@@ -259,7 +259,7 @@ const StudentDetailForm = ({
                             </fieldset>
                         </Stack>
                     </Stack>
-
+                    {/** graduate program */}
                     <Box className='formfields__Sfieldset'>
                         <Stack spacing='8px' className='form_wrap'>
                             <label>
@@ -297,6 +297,7 @@ const StudentDetailForm = ({
                         </Stack>
                     </Box>
 
+                    {/** degree program */}
                     <Box className='formfields__Sfieldset'>
                         <Stack spacing='8px' className='form_wrap'>
                             <label>
@@ -352,6 +353,7 @@ const StudentDetailForm = ({
                         </Stack>
                     </Box>
 
+                    {/** school name */}
                     <Stack direction='row' w='100%'>
                         <Stack
                             spacing='8px'
@@ -365,12 +367,13 @@ const StudentDetailForm = ({
                                         values.schoolName ? 'black' : 'gray.400'
                                     }
                                     placeholder='i.e Select School '
+                                    value={values.schoolName}
                                     onChange={handleSchoolChange}>
                                     {allSchoolItems.items.map((data) => {
                                         return (
                                             <option
                                                 key={data._id}
-                                                value={data._id}>
+                                                value={data.schoolName}>
                                                 {data.schoolName}
                                             </option>
                                         )
@@ -419,6 +422,23 @@ const StudentDetailForm = ({
                             </fieldset>
                         </Stack>
                     </Stack>
+
+                    {/** funding type */}
+                    <Box className='formfields__Sfieldset'>
+                        <Stack spacing='8px' className='form_wrap'>
+                            <label>Funding Type</label>
+                            <fieldset>
+                                <Select
+                                    placeholder='select funding type'
+                                    name='fundingType'
+                                    value={values.fundingType}
+                                    onChange={handleChange}>
+                                    <option value={'MISR'}>MISR</option>
+                                    <option value={'self'}>Individual</option>
+                                </Select>
+                            </fieldset>
+                        </Stack>
+                    </Box>
 
                     <Box className='formfields__Sfieldset'>
                         <Stack spacing='8px' className='form_wrap'>

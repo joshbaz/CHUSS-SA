@@ -390,6 +390,7 @@ ipcMain.handle('individual-dcmember', doctoralMController.getIndividualDCMember)
 ipcMain.handle('update-dcmember', doctoralMController.updateDCMember)
 /** remove DCMember */
 ipcMain.handle('remove-dcmember', doctoralMController.removeDCMember)
+ipcMain.handle('migrate-supervisor-to-dcmember', doctoralMController.migrateSupervisortoDCMember)
 
 /*
  * Examiners

@@ -48,6 +48,7 @@ import { allSupervisors } from '../../../store/features/supervisors/supervisorSl
 import { tagGetAll } from '../../../store/features/tags/tagSlice'
 import { useLocation, useNavigate } from 'react-router-dom'
 import AdminLineGraph from '../../../components/Dashboard/Graph/AdminLineGraph'
+import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 
 const tiledata = [
     {
@@ -97,6 +98,8 @@ const tiledata2 = [
     },
 ]
 
+const { backgroundMainColor, textLightColor } = dashboardLightTheme
+
 const AdminDashboard = () => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
@@ -116,15 +119,15 @@ const AdminDashboard = () => {
 
     // eslint-disable-next-line no-unused-vars
     const [displayEducatorRecent, setDisplayRecentEducator] = React.useState([])
-    const [windowloading, setwindowloading] = React.useState(false)
+    //const [windowloading, setwindowloading] = React.useState(false)
 
-    useEffect(() => {
-        if (document.readyState === 'loading') {
-            setwindowloading(true)
-        } else if (document.readyState === 'complete') {
-            setwindowloading(false)
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (document.readyState === 'loading') {
+    //         setwindowloading(true)
+    //     } else if (document.readyState === 'complete') {
+    //         setwindowloading(false)
+    //     }
+    // }, [])
 
     //websocket trial
     React.useEffect(() => {
@@ -257,7 +260,7 @@ const AdminDashboard = () => {
         setDisplayRecentFacilitator([...allDetails])
     }, [allprojects.items])
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />
@@ -282,8 +285,8 @@ const AdminDashboard = () => {
                         direction='column'
                         padding={'0 0px'}
                         pb='20px'
-                        pt='20px'
-                        bg='#FBFBFB'
+                        pt='40px'
+                        bg={backgroundMainColor}
                         spacing='41px'>
                         {/** shorts */}
                         {/** shortLinks */}
@@ -916,7 +919,7 @@ const LinksStack = styled(Stack)`
         font-weight: 500;
         font-size: 17px;
         line-height: 21px;
-        color: #1a2240;
+        color: ${textLightColor};
     }
 
     .link_icon {

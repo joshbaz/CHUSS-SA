@@ -39,6 +39,7 @@ import { allExaminers } from '../../../store/features/Examiner/examinerSlice'
 import { allSupervisors } from '../../../store/features/supervisors/supervisorSlice'
 import { tagGetAll } from '../../../store/features/tags/tagSlice'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 
 const tiledata = [
     {
@@ -64,6 +65,7 @@ const tiledata = [
     },
 ]
 
+const { backgroundMainColor, textLightColor } = dashboardLightTheme
 const Dashboard = () => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
@@ -203,7 +205,7 @@ const Dashboard = () => {
                         direction='column'
                         padding={'0 0px'}
                         pb='20px'
-                        bg='#FBFBFB'
+                        bg={backgroundMainColor}
                         spacing='41px'>
                         {/** search */}
                         <Stack
@@ -485,7 +487,7 @@ const LinksStack = styled(Stack)`
         font-weight: 500;
         font-size: 17px;
         line-height: 21px;
-        color: #1a2240;
+        color: ${textLightColor};
     }
 
     .link_icon {

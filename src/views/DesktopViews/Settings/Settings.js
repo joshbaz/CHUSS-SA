@@ -34,6 +34,8 @@ import GradingReportTableTags from '../../../components/SettingComponents/Gradin
 import ExaminerReportTableTags from '../../../components/SettingComponents/ExaminerReportTableTags'
 import PaymentTableTags from '../../../components/SettingComponents/PaymentTableTags'
 
+
+
 const Settings = () => {
     let dispatch = useDispatch()
     let toast = useToast()
@@ -91,7 +93,7 @@ const Settings = () => {
         },
     ]
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />

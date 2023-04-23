@@ -106,13 +106,15 @@ const EditStudentDetailForm = ({
     degreetype,
 }) => {
     const [departments, setDepartments] = React.useState([])
-     const [allDegreeProgram, setAllDegreeProgram] = React.useState([])
+    const [allDegreeProgram, setAllDegreeProgram] = React.useState([])
     let dispatch = useDispatch()
     useEffect(() => {
         dispatch(allSchools())
-    }, [])
+    }, [dispatch])
 
-    let { allSchoolItems } = useSelector((state) => state.school)
+    let { allSchoolItems, isError, message, isSuccess } = useSelector(
+        (state) => state.school
+    )
 
     React.useEffect(() => {
         if (degreetype === 'Phd') {
@@ -172,7 +174,18 @@ const EditStudentDetailForm = ({
                 setDepartments(findSchool.departments)
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values])
+
+    useEffect(() => {
+        if (isError) {
+            dispatch(reset())
+        }
+
+        if (isSuccess && message) {
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, dispatch])
 
     return (
         <FormContainer>
@@ -324,8 +337,7 @@ const EditStudentDetailForm = ({
                                         </>
                                     ) : null}
                                 </Select>
-                                {
-                                    /***
+                                {/***
                                      * 
                                      *   <Input
                                     className={
@@ -348,9 +360,8 @@ const EditStudentDetailForm = ({
                                      * 
                                      * 
                                      * 
-                                     */
-                                }
-                              
+                                     */}
+
                                 {errors && errors.degreeProgram ? (
                                     <ErrorMsg className='filesError'>
                                         {errors.degreeProgram}

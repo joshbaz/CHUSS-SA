@@ -20,6 +20,10 @@ import {
 } from '../../../../store/features/project/projectSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import { initSocketConnection } from '../../../../socketio.service'
+import { dashboardLightTheme } from '../../../../theme/dashboard_theme'
+
+const { backgroundMainColor, textLightColor, backgroundRadius } =
+    dashboardLightTheme
 
 const ViewExaminerReport = (props) => {
     const [initials, setInitials] = React.useState(null)
@@ -135,7 +139,7 @@ const ViewExaminerReport = (props) => {
     }, [individualReport, params.rp_id, initials])
 
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />
@@ -157,16 +161,19 @@ const ViewExaminerReport = (props) => {
                     />
                 </Box>
 
-                <Stack direction='column' padding={'10px 20px 0 10px'}>
+                <Stack direction='column' padding={'10px 20px 20px 10px'}>
                     <Stack
                         direction='column'
-                        bg='#FBFBFB'
+                        bg={backgroundMainColor}
+                        minH='80vh'
+                        borderRadius={backgroundRadius}
                         spacing={'20px'}
                         padding={'20px 20px 30px 20px'}>
                         {/** back & submit button*/}
                         <Stack
                             direction='row'
                             alignItems='center'
+                            color={textLightColor}
                             justifyContent='space-between'>
                             <BackButtonStack
                                 className='back_button'

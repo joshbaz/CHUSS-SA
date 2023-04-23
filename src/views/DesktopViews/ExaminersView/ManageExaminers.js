@@ -23,6 +23,10 @@ import {
     allOpponents,
     reset as oreset,
 } from '../../../store/features/opponents/opponentSlice'
+import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+
+const { backgroundMainColor, textLightColor, backgroundRadius } =
+    dashboardLightTheme
 
 const tiledata = [
     {
@@ -47,6 +51,16 @@ const tiledata = [
         color: '#293AD1',
     },
 ]
+
+// const tiledata2 = [
+//     {
+//         title: 'Manage Doctoral Members',
+//         icon: <RiFoldersFill />,
+//         link: '/m-examiners/examiners',
+//         bg: '#DDF5DF',
+//         color: '#1BBD2B',
+//     },
+// ]
 
 const ManageExaminers = () => {
     let routeNavigate = useNavigate()
@@ -166,7 +180,7 @@ const ManageExaminers = () => {
     }, [examinerCase, opponentCase, supervisorCase])
 
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />
@@ -184,11 +198,12 @@ const ManageExaminers = () => {
                     />
                 </Box>
 
-                <Stack direction='column' padding={'10px 20px 0 10px'}>
+                <Stack direction='column' padding={'10px 20px 20px 10px'}>
                     <Stack
                         direction='column'
-                        bg='#FBFBFB'
-                        minH='85vh'
+                        bg={backgroundMainColor}
+                        minH='80vh'
+                        borderRadius={backgroundRadius}
                         spacing={'32px'}
                         padding={'20px 20px 30px 20px'}>
                         {/** shortLinks */}
@@ -301,7 +316,7 @@ const LinksStack = styled(Stack)`
         font-weight: 600;
         font-size: 17px;
         line-height: 21px;
-        color: #1a2240;
+        color: ${textLightColor};
     }
 
     .link_icon {

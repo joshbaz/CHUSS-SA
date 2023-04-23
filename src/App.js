@@ -53,11 +53,9 @@ function App() {
                     </Text>
                 </Container>
             ) : (
-                <CheckConnection>
-                    <ThemeProvider theme={dashboardLightTheme}>
-                        <AllRoutes />
-                    </ThemeProvider>
-                </CheckConnection>
+                <ThemeProvider theme={dashboardLightTheme}>
+                    <AllRoutes />
+                </ThemeProvider>
             )}
         </>
     )
@@ -87,3 +85,13 @@ const Container = styled(Stack)`
         color: #838389;
     }
 `
+
+/**
+                     *  <CheckConnection>
+                    <ThemeProvider theme={dashboardLightTheme}>
+                        <AllRoutes />
+                    </ThemeProvider>
+                </CheckConnection>
+                     * 
+                     * 
+                     */

@@ -213,6 +213,17 @@ const MaAssignExaminer = () => {
         dispatch(reset())
     }, [isSuccess, isError, message])
 
+    useEffect(() => {
+        if (IndividualProject.isError) {
+            dispatch(preset())
+        }
+        dispatch(preset())
+    }, [
+        IndividualProject.isError,
+        IndividualProject.isSuccess,
+        IndividualProject.message,
+    ])
+
     /** handle popup submit */
     const handleAssignSubmit = () => {
         setIsSubmittingp(true)
@@ -296,7 +307,7 @@ const MaAssignExaminer = () => {
     }, [searchWord, filterActive])
 
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />

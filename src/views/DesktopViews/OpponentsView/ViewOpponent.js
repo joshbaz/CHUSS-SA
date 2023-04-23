@@ -15,7 +15,11 @@ import {
 
 import ViewOpponentDetailForm from '../../../components/ProjectComponents/AssignOpponents/ViewOpponentDetailForm'
 import ViewOpponentFiles from '../../../components/ProjectComponents/AssignOpponents/ViewOpponentFiles'
+import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 //import ViewOpponentPayInfo from '../../../components/ProjectComponents/AssignOpponents/ViewOpponentPayInfo'
+
+const { backgroundMainColor, textLightColor, backgroundRadius } =
+    dashboardLightTheme
 
 const ViewOpponent = () => {
     // eslint-disable-next-line no-unused-vars
@@ -57,7 +61,7 @@ const ViewOpponent = () => {
         dispatch(eReset())
     }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />
@@ -79,16 +83,19 @@ const ViewOpponent = () => {
                     />
                 </Box>
 
-                <Stack direction='column' padding={'10px 20px 0 10px'}>
+                <Stack direction='column' padding={'10px 20px 20px 10px'}>
                     <Stack
                         direction='column'
-                        bg='#FBFBFB'
+                        bg={backgroundMainColor}
+                        minH='80vh'
+                        borderRadius={backgroundRadius}
                         spacing={'20px'}
                         padding={'20px 20px 30px 20px'}>
                         {/** title head */}
                         <Stack
                             direction='row'
                             alignItems='center'
+                            color={textLightColor}
                             justifyContent='space-between'>
                             <BackButtonStack
                                 className='back_button'

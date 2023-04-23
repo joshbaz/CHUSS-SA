@@ -22,6 +22,7 @@ exports.createProject = async (event, values) => {
         fd.append('alternativeEmail', values.alternativeEmail)
         fd.append('semesterRegistration', values.semesterRegistration)
         fd.append('academicYear', values.academicYear)
+        fd.append('fundingType', values.fundingType)
 
         let responseData = await axios.post(
             `${BASE_API_}/project/v1/create`,
@@ -74,6 +75,7 @@ exports.updateProject = async (event, values) => {
         fd.append('alternativeEmail', values.alternativeEmail)
         fd.append('semesterRegistration', values.semesterRegistration)
         fd.append('academicYear', values.academicYear)
+        fd.append('fundingType', values.fundingType)
 
         let responseData = await axios.patch(
             `${BASE_API_}/project/v1/update/${values.id}`,

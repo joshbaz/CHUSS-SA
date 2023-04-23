@@ -13,7 +13,7 @@ const ExaminerATypeForm = ({
             <Box className='form_container'>
                 {/** form title */}
                 <Box className='formtitle'>
-                    <h1>External Examiner</h1>
+                    <h1>Examiner Type</h1>
                 </Box>
 
                 <Stack
@@ -26,7 +26,7 @@ const ExaminerATypeForm = ({
                     <Box className='formfields__Sfieldset'>
                         <Stack spacing='8px' className='form_wrap'>
                             <label>
-                                An External Examinar? <span>*</span>
+                                 Examinar Type? <span>*</span>
                             </label>
                             <fieldset>
                                 <Select
@@ -34,8 +34,8 @@ const ExaminerATypeForm = ({
                                     value={values.typeOfExaminer}
                                     onChange={handleChange}>
                                     <option value=''>select option</option>
-                                    <option value='External'>Yes</option>
-                                    <option value='Internal'>No</option>
+                                    <option value='External'>External</option>
+                                    <option value='Internal'>Internal</option>
                                 </Select>
                                 {errors && errors.typeOfExaminer ? (
                                     <ErrorMsg className='filesError'>

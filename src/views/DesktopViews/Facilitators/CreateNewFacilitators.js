@@ -18,6 +18,8 @@ import {
 import FacilitatorDetailForm from '../../../components/Facilitators/CreateFacilitator/FacilitatorDetailForm'
 import FacilitatorPriviledges from '../../../components/Facilitators/CreateFacilitator/FacilitatorPriviledges'
 import FacilitatorPasskey from '../../../components/Facilitators/CreateFacilitator/FacilitatorPasskey'
+import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+const { backgroundMainColor, textLightColor } = dashboardLightTheme
 
 const CreateNewFacilitators = () => {
     const [helperFunctions, setHelperFunctions] = React.useState(null)
@@ -93,7 +95,7 @@ const CreateNewFacilitators = () => {
             .oneOf([yup.ref('password'), null], 'Passwords must match'),
     })
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />
@@ -139,13 +141,15 @@ const CreateNewFacilitators = () => {
                             <Form>
                                 <Stack
                                     direction='column'
-                                    bg='#FBFBFB'
+                                    bg={backgroundMainColor}
+                                    minH='80vh'
                                     spacing={'20px'}
                                     padding={'20px 20px 30px 20px'}>
                                     {/** title head */}
                                     <Stack
                                         direction='row'
                                         alignItems='center'
+                                        color={textLightColor}
                                         justifyContent='space-between'>
                                         <BackButtonStack
                                             className='back_button'

@@ -12,6 +12,9 @@ import {
     reset,
 } from '../../../../store/features/supervisors/supervisorSlice'
 import ViewSupervisorADetailForm from '../../../../components/ProjectComponents/AssignSupervisors/ViewSupervisorADetailForm'
+import { dashboardLightTheme } from '../../../../theme/dashboard_theme'
+const { backgroundMainColor, textLightColor, backgroundRadius } =
+    dashboardLightTheme
 
 const ViewPhdSupervisor = () => {
     let routeNavigate = useNavigate()
@@ -64,7 +67,7 @@ const ViewPhdSupervisor = () => {
         }
     }, [allSupervisorItems, params.s_id])
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />
@@ -84,18 +87,19 @@ const ViewPhdSupervisor = () => {
                 <Stack
                     className='overwrap'
                     direction='column'
-                    padding={'10px 20px 0 10px'}>
+                    padding={'10px 20px 20px 10px'}>
                     <Stack
                         direction='column'
-                        borderRadius={'6px'}
-                        bg='#FBFBFB'
-                        minH='83vh'
+                        bg={backgroundMainColor}
+                        minH='80vh'
+                        borderRadius={backgroundRadius}
                         spacing={'20px'}
                         padding={'20px 20px 30px 20px'}>
                         {/** title head */}
                         <Stack
                             direction='row'
                             alignItems='center'
+                            color={textLightColor}
                             justifyContent='space-between'>
                             <BackButtonStack
                                 className='back_button'

@@ -18,6 +18,10 @@ import GEAppointmentUpload from '../../../components/ExaminerComponents/EditExam
 import GEEditPayInfo from '../../../components/ExaminerComponents/EditExaminer/GEEditPayInfo'
 import GEEditTypeForm from '../../../components/ExaminerComponents/EditExaminer/GEEditTypeForm'
 import GEEditExaminerDetail from '../../../components/ExaminerComponents/EditExaminer/GEEditExaminerDetail'
+import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+
+const { backgroundMainColor, textLightColor, backgroundRadius } =
+    dashboardLightTheme
 
 const EditExaminer = (props) => {
     // const [helperFunctions, setHelperFunctions] = React.useState(null)
@@ -84,6 +88,7 @@ const EditExaminer = (props) => {
                     individualExaminer !== null &&
                     individualExaminer.paymentInfo.length > 0
                 ) {
+                    // eslint-disable-next-line array-callback-return
                     individualExaminer.paymentInfo.find((element2) => {
                         paymentDetails = {
                             ...element2,
@@ -203,7 +208,7 @@ const EditExaminer = (props) => {
     }, [errors, isSubmittingp])
 
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />
@@ -220,12 +225,14 @@ const EditExaminer = (props) => {
                     <TopBar topbarData={{ title: 'Examiners', count: null }} />
                 </Box>
 
-                <Stack direction='column' padding={'10px 20px 0 10px'}>
+                <Stack direction='column' padding={'10px 20px 20px 10px'}>
                     <form onSubmit={handleSubmit}>
                         {' '}
                         <Stack
                             direction='column'
-                            bg='#FBFBFB'
+                            bg={backgroundMainColor}
+                            minH='80vh'
+                            borderRadius={backgroundRadius}
                             spacing={'20px'}
                             padding={'20px 20px 30px 20px'}>
                             {/** title head */}
@@ -236,6 +243,7 @@ const EditExaminer = (props) => {
                                 <BackButtonStack
                                     className='back_button'
                                     direction='row'
+                                    color={textLightColor}
                                     alignItems='center'>
                                     <Box
                                         fontSize='25px'

@@ -27,6 +27,9 @@ import ViewSchoolDetails from '../../../components/SchoolComponents/ViewSchools/
 import ViewDepartments from '../../../components/SchoolComponents/ViewSchools/ViewDepartments'
 import EditSchool from './EditSchool'
 import { initSocketConnection } from '../../../socketio.service'
+import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+const { backgroundMainColor, textLightColor, backgroundRadius } =
+    dashboardLightTheme
 
 const ViewSchool = (props) => {
     const [schoolId, setSchoolId] = React.useState('')
@@ -230,7 +233,7 @@ const ViewSchool = (props) => {
     }, [errors, isSubmittingedits])
 
     return (
-        <Container direction='row' w='100vw'>
+        <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
                 <Box w='72px' position='relative'>
                     <Navigation />
@@ -248,17 +251,19 @@ const ViewSchool = (props) => {
                     />
                 </Box>
 
-                <Stack direction='column' padding={'0 20px'}>
+                <Stack direction='column' padding={'10px 20px'}>
                     <Stack
                         direction='column'
-                        bg='#FBFBFB'
-                        minH='85vh'
+                        bg={backgroundMainColor}
+                        minH='80vh'
+                        borderRadius={backgroundRadius}
                         spacing={'20px'}
                         padding={'20px 20px 30px 20px'}>
                         {/** title head */}
                         <Stack
                             direction='row'
                             alignItems='center'
+                            color={textLightColor}
                             justifyContent='space-between'>
                             <BackButtonStack
                                 className='back_button'
@@ -269,7 +274,9 @@ const ViewSchool = (props) => {
                                     onClick={() => routeNavigate(-1)}>
                                     <MdArrowBack />
                                 </Box>
-                                <Text>View School Details</Text>
+                                <Text color={textLightColor}>
+                                    View School Details
+                                </Text>
                             </BackButtonStack>
 
                             <SubmitButton>
@@ -371,7 +378,7 @@ const BackButtonStack = styled(Stack)`
         font-weight: 600;
         font-size: 17px;
         line-height: 20px;
-        color: #1a1a24;
+
         letter-spacing: 0.02em;
     }
 `

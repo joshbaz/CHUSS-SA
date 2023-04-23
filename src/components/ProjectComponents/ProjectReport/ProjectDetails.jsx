@@ -13,12 +13,14 @@ import {
     ModalContent,
     ModalBody,
     Button,
+    Tooltip,
 } from '@chakra-ui/react'
 import { BsInfoCircleFill } from 'react-icons/bs'
 import Moments from 'moment-timezone'
 import { AiOutlinePlus } from 'react-icons/ai'
 
 import { RiDeleteBin6Line } from 'react-icons/ri'
+import { TbDatabaseExport } from 'react-icons/tb'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -28,6 +30,7 @@ import {
 } from '../../../store/features/supervisors/supervisorSlice'
 import {
     removeDCMember,
+    migrateSupervisortoDCMember,
     reset as dreset,
 } from '../../../store/features/doctoralmembers/doctoralSlice'
 const ProjectDetails = ({ values, rlink }) => {
@@ -39,6 +42,10 @@ const ProjectDetails = ({ values, rlink }) => {
 
     const [removeActive2, setRemoveActive2] = React.useState(false)
     const [removeDetails2, setRemoveDetails2] = React.useState(null)
+
+    /** state for supervisor migrate to doctoral member */
+    const [migrateActive, setMigrateActive] = React.useState(false)
+    const [migrateDetails, setMigrateDetails] = React.useState(null)
 
     const [fullAdm, setFullAdm] = React.useState(null)
     let routeNavigate = useNavigate()
@@ -72,6 +79,35 @@ const ProjectDetails = ({ values, rlink }) => {
     const cancelRemoveUpload = () => {
         setRemoveActive(false)
         setRemoveDetails(null)
+
+        // onClose()
+    }
+
+    /** migrating the supervisor to doctoral member */
+    const handleMigrate = (supId, nam, title) => {
+        // alert(`details, ${values._id}, ${supId}`)
+        if (values._id && supId) {
+            let rvalues = {
+                supId: supId,
+                name: `${title + nam}`,
+                projectId: values._id,
+            }
+            setMigrateDetails(() => rvalues)
+            setMigrateActive(() => true)
+        }
+    }
+
+    const onMigrateUpload = () => {
+        // alert(`details ${migrateDetails.projectId}, ${migrateDetails.supId}`)
+        if (migrateDetails.projectId && migrateDetails.supId) {
+            dispatch(migrateSupervisortoDCMember(migrateDetails))
+            setIsSubmittingp(() => true)
+        }
+    }
+
+    const cancelMigrateUpload = () => {
+        setMigrateActive(false)
+        setMigrateDetails(null)
 
         // onClose()
     }
@@ -124,7 +160,7 @@ const ProjectDetails = ({ values, rlink }) => {
         }
 
         dispatch(reset())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, message])
 
     /** dc member */
@@ -145,12 +181,14 @@ const ProjectDetails = ({ values, rlink }) => {
             setIsSubmittingp(false)
             setRemoveActive2(false)
             setRemoveDetails2(null)
+            setMigrateActive(false)
+            setMigrateDetails(null)
 
             dispatch(dreset())
         }
 
         dispatch(dreset())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dcMState.isSuccess, dcMState.message, dcMState.isError])
 
     React.useEffect(() => {
@@ -330,38 +368,69 @@ const ProjectDetails = ({ values, rlink }) => {
                                                                         <Stack
                                                                             direction='row'
                                                                             alignItems='center'>
-                                                                            <Button
-                                                                                bg='transparent'
-                                                                                h='100%'
-                                                                                w='100%'
-                                                                                size='28px'
-                                                                                onClick={() =>
-                                                                                    handleRemove(
-                                                                                        data
-                                                                                            .supervisorId
-                                                                                            ._id,
-                                                                                        data
-                                                                                            .supervisorId
-                                                                                            .name,
-                                                                                        data
-                                                                                            .supervisorId
-                                                                                            .jobtitle
-                                                                                    )
-                                                                                }>
-                                                                                <RiDeleteBin6Line />
-                                                                            </Button>
-                                                                            <Button
-                                                                                bg='transparent'
-                                                                                h='100%'
-                                                                                w='100%'
-                                                                                size='28px'
-                                                                                onClick={() =>
-                                                                                    routeNavigate(
-                                                                                        `${rlink}/projects/supervisors/view/${values._id}/${data.supervisorId._id}`
-                                                                                    )
-                                                                                }>
-                                                                                <BiLinkExternal />
-                                                                            </Button>
+                                                                            <Tooltip label='remove supervisor'>
+                                                                                <Button
+                                                                                    bg='transparent'
+                                                                                    h='100%'
+                                                                                    w='100%'
+                                                                                    size='28px'
+                                                                                    onClick={() =>
+                                                                                        handleRemove(
+                                                                                            data
+                                                                                                .supervisorId
+                                                                                                ._id,
+                                                                                            data
+                                                                                                .supervisorId
+                                                                                                .name,
+                                                                                            data
+                                                                                                .supervisorId
+                                                                                                .jobtitle
+                                                                                        )
+                                                                                    }>
+                                                                                    <RiDeleteBin6Line />
+                                                                                </Button>
+                                                                            </Tooltip>
+
+                                                                            {/** view */}
+                                                                            <Tooltip label='view supervisor'>
+                                                                                <Button
+                                                                                    bg='transparent'
+                                                                                    h='100%'
+                                                                                    w='100%'
+                                                                                    size='28px'
+                                                                                    onClick={() =>
+                                                                                        routeNavigate(
+                                                                                            `${rlink}/projects/supervisors/view/${values._id}/${data.supervisorId._id}`
+                                                                                        )
+                                                                                    }>
+                                                                                    <BiLinkExternal />
+                                                                                </Button>
+                                                                            </Tooltip>
+
+                                                                            {/** transfer supervisor to doctoral member */}
+                                                                            <Tooltip label='migrate supervisor to dc member'>
+                                                                                <Button
+                                                                                    bg='transparent'
+                                                                                    h='100%'
+                                                                                    w='100%'
+                                                                                    size='28px'
+                                                                                    mr='5px'
+                                                                                    onClick={() =>
+                                                                                        handleMigrate(
+                                                                                            data
+                                                                                                .supervisorId
+                                                                                                ._id,
+                                                                                            data
+                                                                                                .supervisorId
+                                                                                                .name,
+                                                                                            data
+                                                                                                .supervisorId
+                                                                                                .jobtitle
+                                                                                        )
+                                                                                    }>
+                                                                                    <TbDatabaseExport />
+                                                                                </Button>
+                                                                            </Tooltip>
                                                                         </Stack>
                                                                     </InputRightElement>
                                                                 </InputGroup>
@@ -496,38 +565,43 @@ const ProjectDetails = ({ values, rlink }) => {
                                                                         <Stack
                                                                             direction='row'
                                                                             alignItems='center'>
-                                                                            <Button
-                                                                                bg='transparent'
-                                                                                h='100%'
-                                                                                w='100%'
-                                                                                size='28px'
-                                                                                onClick={() =>
-                                                                                    handleRemove2(
-                                                                                        data
-                                                                                            .doctoralmemberId
-                                                                                            ._id,
-                                                                                        data
-                                                                                            .doctoralmemberId
-                                                                                            .name,
-                                                                                        data
-                                                                                            .doctoralmemberId
-                                                                                            .jobtitle
-                                                                                    )
-                                                                                }>
-                                                                                <RiDeleteBin6Line />
-                                                                            </Button>
-                                                                            <Button
-                                                                                bg='transparent'
-                                                                                h='100%'
-                                                                                w='100%'
-                                                                                size='28px'
-                                                                                onClick={() =>
-                                                                                    routeNavigate(
-                                                                                        `${rlink}/projects/doctoralmember/view/${values._id}/${data.doctoralmemberId._id}`
-                                                                                    )
-                                                                                }>
-                                                                                <BiLinkExternal />
-                                                                            </Button>
+                                                                            <Tooltip label='remove doctoral member'>
+                                                                                <Button
+                                                                                    bg='transparent'
+                                                                                    h='100%'
+                                                                                    w='100%'
+                                                                                    size='28px'
+                                                                                    onClick={() =>
+                                                                                        handleRemove2(
+                                                                                            data
+                                                                                                .doctoralmemberId
+                                                                                                ._id,
+                                                                                            data
+                                                                                                .doctoralmemberId
+                                                                                                .name,
+                                                                                            data
+                                                                                                .doctoralmemberId
+                                                                                                .jobtitle
+                                                                                        )
+                                                                                    }>
+                                                                                    <RiDeleteBin6Line />
+                                                                                </Button>
+                                                                            </Tooltip>
+
+                                                                            <Tooltip label='view doctoral member'>
+                                                                                <Button
+                                                                                    bg='transparent'
+                                                                                    h='100%'
+                                                                                    w='100%'
+                                                                                    size='28px'
+                                                                                    onClick={() =>
+                                                                                        routeNavigate(
+                                                                                            `${rlink}/projects/doctoralmember/view/${values._id}/${data.doctoralmemberId._id}`
+                                                                                        )
+                                                                                    }>
+                                                                                    <BiLinkExternal />
+                                                                                </Button>
+                                                                            </Tooltip>
                                                                         </Stack>
                                                                     </InputRightElement>
                                                                 </InputGroup>
@@ -928,6 +1002,77 @@ const ProjectDetails = ({ values, rlink }) => {
                     </ModalBody>
                 </ModalContent>
             </Modal>
+
+            {/** migrate supervisor to dc member */}
+            <Modal
+                w='100vw'
+                isOpen={migrateActive}
+                p='0'
+                onClose={() => cancelMigrateUpload()}>
+                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
+                <ModalContent p='0'>
+                    <ModalBody p='0'>
+                        <PopupForm
+                            p='0px'
+                            direction='column'
+                            spacing='0'
+                            justifyContent='space-between'>
+                            <Stack direction='column' spacing={'10px'} h='50%'>
+                                <Stack
+                                    className='pop_title'
+                                    direction='row'
+                                    w='100%'
+                                    alignItems='center'
+                                    justifyContent='space-between'>
+                                    <Box>
+                                        <h1>Migrate Supervisor to DC Member</h1>
+                                    </Box>
+                                </Stack>
+
+                                <Stack
+                                    p='10px 20px 10px 20px'
+                                    spacing={'2px'}
+                                    direction='row'
+                                    className='list_text'>
+                                    <p>
+                                        Are you sure you want to migrate
+                                        <span>
+                                            <li>
+                                                {migrateDetails !== null &&
+                                                    migrateDetails.name}
+                                            </li>
+                                        </span>
+                                        to dcmember on this student.
+                                    </p>
+                                </Stack>
+                            </Stack>
+                            <Stack
+                                p='0px 20px'
+                                h='65px'
+                                bg='#ffffff'
+                                direction='row'
+                                borderTop='1px solid #E9EDF5'
+                                borderRadius='0 0 8px 8px'
+                                justifyContent='flex-end'
+                                alignItems='center'>
+                                <Button
+                                    variant='outline'
+                                    className='cancel_button'
+                                    onClick={() => cancelMigrateUpload()}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={onMigrateUpload}
+                                    disabled={false}
+                                    isLoading={isSubmittingp ? true : false}
+                                    className='apply_button'>
+                                    Confirm
+                                </Button>
+                            </Stack>
+                        </PopupForm>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </Container>
     )
 }
@@ -949,7 +1094,7 @@ const Container = styled(Box)`
         height: 54px;
         width: 100%;
 
-        border-bottom: 1px solid #ebeefa;
+        border-bottom: 1px solid #d1d5db;
         padding: 0 30px;
         h1 {
             width: 100%;
