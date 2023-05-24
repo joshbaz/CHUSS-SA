@@ -97,6 +97,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     removeDCMember: (values) => ipcRenderer.invoke('remove-dcmember', values),
     migrateSupervisortoDCMember: (values) =>
         ipcRenderer.invoke('migrate-supervisor-to-dcmember', values),
+    dCMemberCreate: (values) =>
+        ipcRenderer.invoke('create-dcmember-main', values),
     /** opponents */
     createProjectOpponent: (values) =>
         ipcRenderer.invoke('create-opponent-project', values),

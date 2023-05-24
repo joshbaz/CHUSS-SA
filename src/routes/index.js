@@ -83,6 +83,10 @@ import ManageReports from '../views/DesktopViews/AdvSearch/ManageReports'
 import ViewAllReports from '../views/DesktopViews/AdvSearch/ViewAllReports'
 import ViewLateReports from '../views/DesktopViews/AdvSearch/ViewLateReports'
 import ViewReminders from '../views/DesktopViews/AdvSearch/ViewReminders'
+import AllDcMembers from '../views/DesktopViews/EDcMembersView/AllDcMembers'
+import ViewDcMember from '../views/DesktopViews/EDcMembersView/ViewDcMember'
+import CreateNewDcMember from '../views/DesktopViews/EDcMembersView/CreateNewDcMember'
+import EditDcMember from '../views/DesktopViews/EDcMembersView/EditDcMember'
 
 const AllRoutes = () => {
     const isAuthenticated = !!localStorage.getItem('_tk')
@@ -498,6 +502,31 @@ const AllRoutes = () => {
                         exact
                         path='/m-examiners/supervisors/edit/:id'
                         element={<EditSupervisor />}
+                    />
+
+                    {/** all Doctoral member page routes */}
+                    <Route
+                        exact
+                        path='/m-examiners/dcmembers'
+                        element={<AllDcMembers />}
+                    />
+
+                    <Route
+                        exact
+                        path='/m-examiners/dcmembers/create'
+                        element={<CreateNewDcMember />}
+                    />
+
+                    <Route
+                        exact
+                        path='/m-examiners/dcmembers/view/:id'
+                        element={<ViewDcMember />}
+                    />
+
+                    <Route
+                        exact
+                        path='/m-examiners/dcmembers/edit/:id'
+                        element={<EditDcMember />}
                     />
 
                     {/** payment page routes */}

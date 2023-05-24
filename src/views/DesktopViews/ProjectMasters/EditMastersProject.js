@@ -105,6 +105,7 @@ const EditMastersProject = (props) => {
     ])
 
     React.useEffect(() => {
+        console.log('looking at edits')
         if (initials === null && individual !== null) {
             if (individual._id === params.id) {
                 setInitials({
@@ -260,6 +261,7 @@ const EditMastersProject = (props) => {
 
     React.useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
+            console.log('looking at submission')     
             dispatch(projectUpdate(initials))
         } else if (
             Object.keys(errors).length > 0 &&

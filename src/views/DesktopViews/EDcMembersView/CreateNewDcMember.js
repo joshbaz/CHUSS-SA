@@ -2,44 +2,36 @@
 import React, { useEffect } from 'react'
 import { Box, Stack, Button, Text, useToast } from '@chakra-ui/react'
 import styled from 'styled-components'
-import Navigation from '../../../../components/common/Navigation/Navigation'
-import TopBar from '../../../../components/common/Navigation/TopBar'
-import { useNavigate, useParams } from 'react-router-dom'
+import Navigation from '../../../components/common/Navigation/Navigation'
+import TopBar from '../../../components/common/Navigation/TopBar'
+import { MdArrowBack } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
 
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 import { useSelector, useDispatch } from 'react-redux'
 import {
     reset,
-    projectSupervisorCreate,
-} from '../../../../store/features/supervisors/supervisorSlice'
-import {
-    getIndividualProject,
-    reset as preset,
-} from '../../../../store/features/project/projectSlice'
-import SupervisorADetailForm from '../../../../components/ProjectComponents/AssignSupervisors/SupervisorA_DetailForm'
-import { dashboardLightTheme } from '../../../../theme/dashboard_theme'
+    DCMemberCreate,
+} from '../../../store/features/doctoralmembers/doctoralSlice'
+
+import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+import CreateDoctoralDetailForm from '../../../components/MExaminerDcMember/CreateDoctoralDetailForm'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
-const MaCreateProjectSupervisor = () => {
+const CreateNewDcMember = () => {
     const [helperFunctions, setHelperFunctions] = React.useState(null)
-    const [projectId, setProjectId] = React.useState('')
+
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let routeNavigate = useNavigate()
-    let params = useParams()
+
     let toast = useToast()
     let dispatch = useDispatch()
     const { isError, isSuccess, message } = useSelector(
-        (state) => state.supervisor
+        (state) => state.doctoralMembers
     )
-    let IndividualProject = useSelector((state) => state.project)
-    useEffect(() => {
-        if (params.pid) {
-            setProjectId(params.pid)
-            dispatch(getIndividualProject(params.pid))
-        }
-    }, [])
 
     useEffect(() => {
         if (isError) {
@@ -70,37 +62,12 @@ const MaCreateProjectSupervisor = () => {
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
-                routeNavigate(`/masters/projects/projectreport/${params.pid}`, {
-                    replace: true,
-                })
+
                 setHelperFunctions(null)
             }
             dispatch(reset())
         }
     }, [isError, isSuccess, message])
-
-    useEffect(() => {
-        if (IndividualProject.isError) {
-            if (helperFunctions !== null) {
-                helperFunctions.setSubmitting(false)
-                setIsSubmittingp(false)
-            }
-            toast({
-                position: 'top',
-                title: IndividualProject.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
-            dispatch(preset())
-        }
-        dispatch(preset())
-    }, [
-        IndividualProject.isError,
-        IndividualProject.isSuccess,
-        IndividualProject.message,
-    ])
 
     const initialValues = {
         jobtitle: '',
@@ -122,7 +89,6 @@ const MaCreateProjectSupervisor = () => {
         placeOfWork: yup.string().required('required'),
         email: yup.string().email('Invalid email').required('required'),
     })
-
     return (
         <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
@@ -139,14 +105,8 @@ const MaCreateProjectSupervisor = () => {
                 <Box w='100%' h='65px' zIndex={'20'}>
                     <TopBar
                         topbarData={{
-                            title: `${
-                                IndividualProject.individual !== null &&
-                                IndividualProject.individual.student.studentName
-                                    ? `Creating Supervisor for ${IndividualProject.individual.student.studentName}`
-                                    : `Supervisor Selection`
-                            }`,
+                            title: 'Create New Doctoral Committee Member',
                             count: null,
-                            backButton: true,
                         }}
                     />
                 </Box>
@@ -160,9 +120,8 @@ const MaCreateProjectSupervisor = () => {
                             setIsSubmittingp(true)
                             let values2 = {
                                 ...values,
-                                projectId,
                             }
-                            dispatch(projectSupervisorCreate(values2))
+                            dispatch(DCMemberCreate(values2))
                         }}>
                         {({
                             values,
@@ -192,7 +151,17 @@ const MaCreateProjectSupervisor = () => {
                                             className='back_button'
                                             direction='row'
                                             alignItems='center'>
-                                            <Text>Add New Supervisor</Text>
+                                            <Box
+                                                fontSize='25px'
+                                                onClick={() =>
+                                                    routeNavigate(-1)
+                                                }>
+                                                <MdArrowBack />
+                                            </Box>
+                                            <Text>
+                                                Add New Doctoral Committee
+                                                Member
+                                            </Text>
                                         </BackButtonStack>
 
                                         <SubmitButton
@@ -217,7 +186,7 @@ const MaCreateProjectSupervisor = () => {
                                                 direction='column'
                                                 w='70%'
                                                 spacing='20px'>
-                                                <SupervisorADetailForm
+                                                <CreateDoctoralDetailForm
                                                     values={values}
                                                     errors={errors}
                                                     handleChange={handleChange}
@@ -238,7 +207,7 @@ const MaCreateProjectSupervisor = () => {
     )
 }
 
-export default MaCreateProjectSupervisor
+export default CreateNewDcMember
 
 const Container = styled(Stack)`
     overflow-x: hidden !important;

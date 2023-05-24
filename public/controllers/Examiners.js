@@ -323,7 +323,7 @@ exports.updateExaminer = async (event, values) => {
         fd.append('branchCode', branchCode)
         fd.append('bankAddress', bankAddress)
         fd.append('bankCity', bankCity)
-
+        
         let responseData = await axios.patch(
             `${BASE_API_}/examiner/v1/update/${values.examinerId}`,
             fd,

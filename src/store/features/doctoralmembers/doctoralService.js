@@ -96,6 +96,19 @@ const migrateSupervisortoDCMember = async (values) => {
 
     return response
 }
+
+
+/** service to create examiner from project */
+const dCMemberCreate = async (values) => {
+    let getToken = localStorage.getItem('_tk')
+    let allValues = {
+        ...values,
+        getToken,
+    }
+    const response = await window.electronAPI.dCMemberCreate(allValues)
+
+    return response
+}
 let doctoralService = {
     projectDCMemberCreate,
     assignDCMember,
@@ -106,6 +119,7 @@ let doctoralService = {
 
     dcmemberUpdate,
     removeDCMember,
+    dCMemberCreate,
 }
 
 export default doctoralService

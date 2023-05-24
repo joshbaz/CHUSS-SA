@@ -247,6 +247,35 @@ export const migrateSupervisortoDCMember = createAsyncThunk(
     }
 )
 
+
+/** DCMember main */
+export const DCMemberCreate = createAsyncThunk(
+    'doctoralmember/main/create',
+    async (values, thunkAPI) => {
+        let allValues = {
+            ...values,
+            getToken,
+        }
+        const creationAttempt = await doctoralService.dCMemberCreate(allValues)
+        if (creationAttempt.type === 'success') {
+            return creationAttempt
+        } else {
+            if (
+                creationAttempt.message === 'jwt expired' ||
+                creationAttempt.message === 'Not authenticated' ||
+                creationAttempt.message === 'jwt malformed'
+            ) {
+                await authService.logout()
+                window.location.reload()
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            } else {
+                return thunkAPI.rejectWithValue(creationAttempt.message)
+            }
+            //return thunkAPI.rejectWithValue(creationAttempt.message)
+        }
+    }
+)
+
 export const doctoralSlice = createSlice({
     name: 'dcmember',
     initialState,
@@ -367,6 +396,21 @@ export const doctoralSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(migrateSupervisortoDCMember.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            //main doctoral member
+            .addCase(DCMemberCreate.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(DCMemberCreate.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(DCMemberCreate.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

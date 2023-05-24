@@ -60,26 +60,9 @@ exports.createProject = async (event, values) => {
 //update Project
 exports.updateProject = async (event, values) => {
     try {
-        const fd = new FormData()
-
-        fd.append('registrationNumber', values.registrationNumber)
-        fd.append('studentId', values.studentId)
-        fd.append('studentName', values.studentName)
-        fd.append('programType', values.programType)
-        fd.append('degreeProgram', values.degreeProgram)
-        fd.append('schoolName', values.schoolName)
-        fd.append('departmentName', values.departmentName)
-        fd.append('Topic', values.Topic)
-        fd.append('email', values.email)
-        fd.append('phoneNumber', values.phoneNumber)
-        fd.append('alternativeEmail', values.alternativeEmail)
-        fd.append('semesterRegistration', values.semesterRegistration)
-        fd.append('academicYear', values.academicYear)
-        fd.append('fundingType', values.fundingType)
-
         let responseData = await axios.patch(
             `${BASE_API_}/project/v1/update/${values.id}`,
-            fd,
+            values,
             {
                 headers: {
                     Authorization: 'Bearer ' + values.getToken,

@@ -28,7 +28,7 @@ const projectUpdate = async (values) => {
         getToken,
     }
     const response = await window.electronAPI.projectUpdate(allValues)
-
+console.log('response', response)
     return response
 }
 

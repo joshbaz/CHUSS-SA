@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
-import { Box, Stack, useToast } from '@chakra-ui/react'
+import { Box, Stack, useToast, Grid, SimpleGrid } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
@@ -23,6 +23,12 @@ import {
     allOpponents,
     reset as oreset,
 } from '../../../store/features/opponents/opponentSlice'
+
+import {
+    allDCMembers,
+    reset as dreset,
+} from '../../../store/features/doctoralmembers/doctoralSlice'
+
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 
 const { backgroundMainColor, textLightColor, backgroundRadius } =
@@ -47,6 +53,13 @@ const tiledata = [
         title: 'Manage Opponents',
         icon: <RiFoldersFill />,
         link: '/m-examiners/opponents',
+        bg: '#EDEEFF',
+        color: '#293AD1',
+    },
+    {
+        title: 'Manage Doctoral Members',
+        icon: <RiFoldersFill />,
+        link: '/m-examiners/dcmembers',
         bg: '#EDEEFF',
         color: '#293AD1',
     },
@@ -90,6 +103,14 @@ const ManageExaminers = () => {
             bg: '#EDEEFF',
             color: '#293AD1',
         },
+        {
+            title: 'Total Doctoral Members',
+            value: 0,
+            subText: 'Cumulative of opponents in the system.',
+            link: '/m-examiners/opponents',
+            bg: '#EDEEFF',
+            color: '#293AD1',
+        },
     ])
     let dispatch = useDispatch()
     let toast = useToast()
@@ -98,11 +119,13 @@ const ManageExaminers = () => {
         dispatch(allExaminers())
         dispatch(allSupervisors())
         dispatch(allOpponents())
+        dispatch(allDCMembers())
     }, [])
 
     let examinerCase = useSelector((state) => state.examiner)
     let opponentCase = useSelector((state) => state.opponent)
     let supervisorCase = useSelector((state) => state.supervisor)
+    let dcmemberCase = useSelector((state) => state.doctoralMembers)
 
     React.useEffect(() => {
         setStatsData([
@@ -130,11 +153,20 @@ const ManageExaminers = () => {
                 bg: '#EDEEFF',
                 color: '#293AD1',
             },
+            {
+                title: 'Total Doctoral Members',
+                value: dcmemberCase.allDCMemberItems.items.length,
+                subText: 'Cumulative of opponents in the system.',
+                link: '/m-examiners/opponents',
+                bg: '#EDEEFF',
+                color: '#293AD1',
+            },
         ])
     }, [
         examinerCase.allExaminerItems.items,
         opponentCase.allOpponentItems.items,
         supervisorCase.allSupervisorItems,
+        dcmemberCase.allDCMemberItems,
     ])
 
     React.useEffect(() => {
@@ -174,10 +206,23 @@ const ManageExaminers = () => {
             dispatch(sreset())
         }
 
+        if (dcmemberCase.isError) {
+            toast({
+                position: 'top',
+                title: dcmemberCase.message,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+            })
+
+            dispatch(dreset())
+        }
+
         dispatch(reset())
         dispatch(sreset())
         dispatch(oreset())
-    }, [examinerCase, opponentCase, supervisorCase])
+        dispatch(dreset())
+    }, [examinerCase, opponentCase, supervisorCase, dcmemberCase])
 
     return (
         <Container direction='row' w='100vw' spacing={'0px'}>
@@ -213,28 +258,41 @@ const ManageExaminers = () => {
                             spacing='20px'>
                             <h1>Shortlinks</h1>
 
-                            <Stack direction='row' spacing='25px'>
-                                {tiledata.map((data, index) => (
-                                    <Stack
-                                        onClick={() => routeNavigate(data.link)}
-                                        direction='row'
-                                        alignItems={'center'}
-                                        justifyContent='center'
-                                        spacing='20px'
-                                        key={index}
-                                        className='sumbox'
-                                        w={{ base: '100%', xl: '200px' }}>
-                                        <Box
-                                            className='link_icon'
-                                            bg={data.bg}
-                                            color={data.color}>
-                                            {data.icon}
-                                        </Box>
-                                        <h5 className='link_text'>
-                                            {data.title}
-                                        </h5>
-                                    </Stack>
-                                ))}
+                            <Stack
+                                direction='row'
+                                spacing='25px'
+                                w='100%'
+                                position='relative'>
+                                <SimpleGrid
+                                    columns={3}
+                                    autoFlow
+                                    grow='1'
+                                    gap={'20px'}
+                                    w='100%'>
+                                    {tiledata.map((data, index) => (
+                                        <Stack
+                                            onClick={() =>
+                                                routeNavigate(data.link)
+                                            }
+                                            direction='row'
+                                            alignItems={'center'}
+                                            justifyContent='center'
+                                            spacing='20px'
+                                            key={index}
+                                            className='sumbox'
+                                            w={{ base: '100%', xl: '200px' }}>
+                                            <Box
+                                                className='link_icon'
+                                                bg={data.bg}
+                                                color={data.color}>
+                                                {data.icon}
+                                            </Box>
+                                            <h5 className='link_text'>
+                                                {data.title}
+                                            </h5>
+                                        </Stack>
+                                    ))}
+                                </SimpleGrid>
                             </Stack>
                         </LinksStack>
 
@@ -246,30 +304,37 @@ const ManageExaminers = () => {
                             {/** options */}
                             <StatContainer w='100%'>
                                 <StatStack direction='row' spacing='15px'>
-                                    {statsdata.map((data, index) => (
-                                        <Stack
-                                            p='10px 18px'
-                                            direction='column'
-                                            justifyContent='space-between'
-                                            spacing='0px'
-                                            key={index}
-                                            className='statbox'
-                                            w={{
-                                                base: '100%',
-                                                md: '313.5px',
-                                                xl: '313.5px',
-                                            }}>
-                                            <h5 className='link_text'>
-                                                {data.title}
-                                            </h5>
-                                            <Box className='link_value'>
-                                                {data.value}
-                                            </Box>
-                                            <p className='link_subtext'>
-                                                {data.subText}
-                                            </p>
-                                        </Stack>
-                                    ))}
+                                    <SimpleGrid
+                                        columns={3}
+                                        autoFlow
+                                        grow='1'
+                                        gap={'20px'}
+                                        w='100%'>
+                                        {statsdata.map((data, index) => (
+                                            <Stack
+                                                p='10px 18px'
+                                                direction='column'
+                                                justifyContent='space-between'
+                                                spacing='0px'
+                                                key={index}
+                                                className='statbox'
+                                                w={{
+                                                    base: '100%',
+                                                    md: '313.5px',
+                                                    xl: '313.5px',
+                                                }}>
+                                                <h5 className='link_text'>
+                                                    {data.title}
+                                                </h5>
+                                                <Box className='link_value'>
+                                                    {data.value}
+                                                </Box>
+                                                <p className='link_subtext'>
+                                                    {data.subText}
+                                                </p>
+                                            </Stack>
+                                        ))}
+                                    </SimpleGrid>
                                 </StatStack>
                             </StatContainer>
                         </StatStack>

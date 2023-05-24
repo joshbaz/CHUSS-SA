@@ -147,7 +147,7 @@ const ViewSupervisorADetailForm = ({ values }) => {
                     <Box className='formfields__Sfieldset'>
                         <Stack spacing='8px' className='form_wrap'>
                             <label>
-                                Higer Education Institution (or detailed
+                                Higher Education Institution (or detailed
                                 information of examinars place of work){' '}
                                 <span>*</span>
                             </label>
