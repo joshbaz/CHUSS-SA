@@ -28,7 +28,7 @@ const Login = () => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
 
-    const { user,isError, isSuccess, message } = useSelector(
+    const { user, isError, isSuccess, message } = useSelector(
         (state) => state.auth
     )
 
@@ -128,7 +128,9 @@ const Login = () => {
                     </Formik>
                 </Box>
 
-                <Box w='50%' h='100vh' className='background' />
+                <Box w='50%' h='100vh' className='background'>
+                    <img src={backgroundImage} alt='' />
+                </Box>
             </Stack>
         </Container>
     )
@@ -159,13 +161,13 @@ const Container = styled(Box)`
     }
     .background {
         height: 100vh;
-        background-image: url(${backgroundImage});
+
         background-fit: cover;
         background-repeat: no-repeat;
         background-position: left top;
 
         img {
-            width: 100vw;
+            width: 100%;
             height: 100vh;
             object-fit: cover;
         }
