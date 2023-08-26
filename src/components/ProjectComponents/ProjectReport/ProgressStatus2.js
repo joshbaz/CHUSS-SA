@@ -56,6 +56,8 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
         statusEntryType: '',
         endDate: '',
         dateOfGraduation: '',
+        timeline: 'false',
+        statusDate: '',
     })
     const [errors, setErrors] = React.useState({})
     //submitting state
@@ -290,6 +292,7 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
             )
             if (activeStatus) {
                 setNewActiveStatus({
+                    ...newActiveStatus,
                     status: activeStatus.projectStatusId.status,
                     ...activeStatus.projectStatusId,
                 })
@@ -328,6 +331,7 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
             setIsSubmittingp(false)
             setChangeMade(true)
             setNewActiveStatus({
+                ...newActiveStatus,
                 status: data.tagName,
                 statusId: data._id,
             })
@@ -346,7 +350,18 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
 
     /** radio buttons for status entry type */
     const statusUpdateEntryChange = (name, onit) => {
-        console.log('valueonit', onit)
+        // console.log('valueonit', onit)
+        setIsSubmittingp(false)
+        setChangeMade(true)
+        setNewActiveStatus({
+            ...newActiveStatus,
+            [name]: `${onit}`,
+        })
+    }
+
+    /** radio buttons for timeline check */
+    const statusUpdateTimelineChange = (name, onit) => {
+        // console.log('valueonit', onit)
         setIsSubmittingp(false)
         setChangeMade(true)
         setNewActiveStatus({
@@ -669,53 +684,17 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
                                                         data.title ===
                                                             'Graduated' ? null : (
                                                             <Stack>
-                                                                <Stack direction='row'>
-                                                                    <Text>
-                                                                        Started:{' '}
-                                                                    </Text>
-                                                                    <Text>
-                                                                        {' '}
-                                                                        {data.startDate
-                                                                            ? Moments(
-                                                                                  data.startDate
-                                                                              )
-                                                                                  .tz(
-                                                                                      'Africa/Kampala'
-                                                                                  )
-                                                                                  .format(
-                                                                                      'DD MMM YYYY '
-                                                                                  )
-                                                                            : ''}
-                                                                    </Text>
-                                                                </Stack>
-                                                                <Stack direction='row'>
-                                                                    <Text>
-                                                                        Expected:{' '}
-                                                                    </Text>
-                                                                    <Text>
-                                                                        {data.expectedEndDate
-                                                                            ? Moments(
-                                                                                  data.expectedEndDate
-                                                                              )
-                                                                                  .tz(
-                                                                                      'Africa/Kampala'
-                                                                                  )
-                                                                                  .format(
-                                                                                      'DD MMM YYYY '
-                                                                                  )
-                                                                            : ''}
-                                                                    </Text>
-                                                                </Stack>
-                                                                {data.endDate && (
+                                                                {data.timeline ===
+                                                                'false' ? (
                                                                     <Stack direction='row'>
                                                                         <Text>
-                                                                            Finished:
+                                                                            Date:{' '}
                                                                         </Text>
-
                                                                         <Text>
-                                                                            {data.endDate
+                                                                            {' '}
+                                                                            {data.statusDate
                                                                                 ? Moments(
-                                                                                      data.endDate
+                                                                                      data.statusDate
                                                                                   )
                                                                                       .tz(
                                                                                           'Africa/Kampala'
@@ -725,6 +704,67 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
                                                                                       )
                                                                                 : ''}
                                                                         </Text>
+                                                                    </Stack>
+                                                                ) : (
+                                                                    <Stack>
+                                                                        <Stack direction='row'>
+                                                                            <Text>
+                                                                                Started:{' '}
+                                                                            </Text>
+                                                                            <Text>
+                                                                                {' '}
+                                                                                {data.startDate
+                                                                                    ? Moments(
+                                                                                          data.startDate
+                                                                                      )
+                                                                                          .tz(
+                                                                                              'Africa/Kampala'
+                                                                                          )
+                                                                                          .format(
+                                                                                              'DD MMM YYYY '
+                                                                                          )
+                                                                                    : ''}
+                                                                            </Text>
+                                                                        </Stack>
+                                                                        <Stack direction='row'>
+                                                                            <Text>
+                                                                                Expected:{' '}
+                                                                            </Text>
+                                                                            <Text>
+                                                                                {data.expectedEndDate
+                                                                                    ? Moments(
+                                                                                          data.expectedEndDate
+                                                                                      )
+                                                                                          .tz(
+                                                                                              'Africa/Kampala'
+                                                                                          )
+                                                                                          .format(
+                                                                                              'DD MMM YYYY '
+                                                                                          )
+                                                                                    : ''}
+                                                                            </Text>
+                                                                        </Stack>
+                                                                        {data.endDate && (
+                                                                            <Stack direction='row'>
+                                                                                <Text>
+                                                                                    Finished:
+                                                                                </Text>
+
+                                                                                <Text>
+                                                                                    {data.endDate
+                                                                                        ? Moments(
+                                                                                              data.endDate
+                                                                                          )
+                                                                                              .tz(
+                                                                                                  'Africa/Kampala'
+                                                                                              )
+                                                                                              .format(
+                                                                                                  'DD MMM YYYY '
+                                                                                              )
+                                                                                        : ''}
+                                                                                </Text>
+                                                                            </Stack>
+                                                                        )}
                                                                     </Stack>
                                                                 )}
                                                             </Stack>
@@ -849,6 +889,64 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
                                                 list above
                                             </Text>
                                         </NewStatusBtnStack>
+                                        {/** Check if there status has timelines */}
+                                        {newActiveStatus.status ===
+                                        'Graduated' ? null : (
+                                            <Stack direction='column'>
+                                                <Stack>
+                                                    <label>
+                                                        Has Timeline?{' '}
+                                                        <span>*</span>
+                                                    </label>
+
+                                                    <fieldset>
+                                                        <RadioGroup
+                                                            onChange={(
+                                                                onval
+                                                            ) => {
+                                                                statusUpdateTimelineChange(
+                                                                    'timeline',
+                                                                    onval
+                                                                )
+                                                            }}
+                                                            name='timeline'
+                                                            value={
+                                                                newActiveStatus !==
+                                                                    null &&
+                                                                newActiveStatus.timeline
+                                                                    ? newActiveStatus.timeline
+                                                                    : ''
+                                                            }>
+                                                            <Stack
+                                                                direction='row'
+                                                                spacing='20px'>
+                                                                <Radio
+                                                                    value={
+                                                                        'true'
+                                                                    }>
+                                                                    <Stack spacing='0'>
+                                                                        <Text className='radio_title'>
+                                                                            true
+                                                                        </Text>
+                                                                    </Stack>
+                                                                </Radio>
+
+                                                                <Radio
+                                                                    value={
+                                                                        'false'
+                                                                    }>
+                                                                    <Stack spacing='0'>
+                                                                        <Text className='radio_title'>
+                                                                            false
+                                                                        </Text>
+                                                                    </Stack>
+                                                                </Radio>
+                                                            </Stack>
+                                                        </RadioGroup>
+                                                    </fieldset>
+                                                </Stack>
+                                            </Stack>
+                                        )}
                                         {/** timelines */}
 
                                         {newActiveStatus.status ===
@@ -884,143 +982,188 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
                                             </Stack>
                                         ) : (
                                             <Stack>
-                                                <Stack direction='column'>
+                                                {newActiveStatus.timeline ===
+                                                'false' ? (
                                                     <Stack>
-                                                        <label>
-                                                            Start Date{' '}
-                                                            <span>*</span>
-                                                        </label>
+                                                        <Stack direction='column'>
+                                                            <Stack>
+                                                                <label>
+                                                                    Status Date{' '}
+                                                                    <span>
+                                                                        *
+                                                                    </span>
+                                                                </label>
 
-                                                        <fieldset>
-                                                            <Input
-                                                                placeholder='Select Date and Time'
-                                                                size='md'
-                                                                type='date'
-                                                                name='startDate'
-                                                                value={
-                                                                    newActiveStatus !==
-                                                                        null &&
-                                                                    newActiveStatus.startDate
-                                                                        ? newActiveStatus.startDate
-                                                                        : ''
-                                                                }
-                                                                onChange={
-                                                                    statusUpdateDetailsChange
-                                                                }
-                                                            />
-                                                        </fieldset>
-                                                    </Stack>
-                                                </Stack>
-
-                                                <Stack direction='column'>
-                                                    <Stack>
-                                                        <label>
-                                                            Expected End{' '}
-                                                            <span>*</span>
-                                                        </label>
-
-                                                        <fieldset>
-                                                            <Input
-                                                                placeholder='Select Date and Time'
-                                                                size='md'
-                                                                type='date'
-                                                                name='expectedEnd'
-                                                                value={
-                                                                    newActiveStatus !==
-                                                                        null &&
-                                                                    newActiveStatus.expectedEnd
-                                                                        ? newActiveStatus.expectedEnd
-                                                                        : ''
-                                                                }
-                                                                onChange={
-                                                                    statusUpdateDetailsChange
-                                                                }
-                                                            />
-                                                        </fieldset>
-                                                    </Stack>
-                                                </Stack>
-
-                                                <Stack direction='column'>
-                                                    <Stack>
-                                                        <label>
-                                                            Entry Type{' '}
-                                                            <span>*</span>
-                                                        </label>
-
-                                                        <fieldset>
-                                                            <RadioGroup
-                                                                onChange={(
-                                                                    onval
-                                                                ) => {
-                                                                    statusUpdateEntryChange(
-                                                                        'statusEntryType',
-                                                                        onval
-                                                                    )
-                                                                }}
-                                                                name='statusEntryType'
-                                                                value={
-                                                                    newActiveStatus !==
-                                                                        null &&
-                                                                    newActiveStatus.statusEntryType
-                                                                        ? newActiveStatus.statusEntryType
-                                                                        : ''
-                                                                }>
-                                                                <Stack
-                                                                    direction='row'
-                                                                    spacing='20px'>
-                                                                    <Radio value='new entry'>
-                                                                        <Stack spacing='0'>
-                                                                            <Text className='radio_title'>
-                                                                                new
-                                                                                entry
-                                                                            </Text>
-                                                                        </Stack>
-                                                                    </Radio>
-
-                                                                    <Radio value='old entry'>
-                                                                        <Stack spacing='0'>
-                                                                            <Text className='radio_title'>
-                                                                                old
-                                                                                entry
-                                                                            </Text>
-                                                                        </Stack>
-                                                                    </Radio>
-                                                                </Stack>
-                                                            </RadioGroup>
-                                                        </fieldset>
-                                                    </Stack>
-                                                </Stack>
-
-                                                {newActiveStatus.statusEntryType ===
-                                                'old entry' ? (
-                                                    <Stack direction='column'>
-                                                        <Stack>
-                                                            <label>
-                                                                End Date{' '}
-                                                                <span>*</span>
-                                                            </label>
-
-                                                            <fieldset>
-                                                                <Input
-                                                                    placeholder='Select Date and Time'
-                                                                    size='md'
-                                                                    type='date'
-                                                                    name='endDate'
-                                                                    value={
-                                                                        newActiveStatus !==
-                                                                            null &&
-                                                                        newActiveStatus.endDate
-                                                                            ? newActiveStatus.endDate
-                                                                            : ''
-                                                                    }
-                                                                    onChange={
-                                                                        statusUpdateDetailsChange
-                                                                    }
-                                                                />
-                                                            </fieldset>
+                                                                <fieldset>
+                                                                    <Input
+                                                                        placeholder='Select Date and Time'
+                                                                        size='md'
+                                                                        type='date'
+                                                                        name='statusDate'
+                                                                        value={
+                                                                            newActiveStatus !==
+                                                                                null &&
+                                                                            newActiveStatus.statusDate
+                                                                                ? newActiveStatus.statusDate
+                                                                                : ''
+                                                                        }
+                                                                        onChange={
+                                                                            statusUpdateDetailsChange
+                                                                        }
+                                                                    />
+                                                                </fieldset>
+                                                            </Stack>
                                                         </Stack>
                                                     </Stack>
-                                                ) : null}
+                                                ) : (
+                                                    <Stack>
+                                                        <Stack direction='column'>
+                                                            <Stack>
+                                                                <label>
+                                                                    Start Date{' '}
+                                                                    <span>
+                                                                        *
+                                                                    </span>
+                                                                </label>
+
+                                                                <fieldset>
+                                                                    <Input
+                                                                        placeholder='Select Date and Time'
+                                                                        size='md'
+                                                                        type='date'
+                                                                        name='startDate'
+                                                                        value={
+                                                                            newActiveStatus !==
+                                                                                null &&
+                                                                            newActiveStatus.startDate
+                                                                                ? newActiveStatus.startDate
+                                                                                : ''
+                                                                        }
+                                                                        onChange={
+                                                                            statusUpdateDetailsChange
+                                                                        }
+                                                                    />
+                                                                </fieldset>
+                                                            </Stack>
+                                                        </Stack>
+
+                                                        <Stack direction='column'>
+                                                            <Stack>
+                                                                <label>
+                                                                    Expected End{' '}
+                                                                    <span>
+                                                                        *
+                                                                    </span>
+                                                                </label>
+
+                                                                <fieldset>
+                                                                    <Input
+                                                                        placeholder='Select Date and Time'
+                                                                        size='md'
+                                                                        type='date'
+                                                                        name='expectedEnd'
+                                                                        value={
+                                                                            newActiveStatus !==
+                                                                                null &&
+                                                                            newActiveStatus.expectedEnd
+                                                                                ? newActiveStatus.expectedEnd
+                                                                                : ''
+                                                                        }
+                                                                        onChange={
+                                                                            statusUpdateDetailsChange
+                                                                        }
+                                                                    />
+                                                                </fieldset>
+                                                            </Stack>
+                                                        </Stack>
+
+                                                        <Stack direction='column'>
+                                                            <Stack>
+                                                                <label>
+                                                                    Entry Type{' '}
+                                                                    <span>
+                                                                        *
+                                                                    </span>
+                                                                </label>
+
+                                                                <fieldset>
+                                                                    <RadioGroup
+                                                                        onChange={(
+                                                                            onval
+                                                                        ) => {
+                                                                            statusUpdateEntryChange(
+                                                                                'statusEntryType',
+                                                                                onval
+                                                                            )
+                                                                        }}
+                                                                        name='statusEntryType'
+                                                                        value={
+                                                                            newActiveStatus !==
+                                                                                null &&
+                                                                            newActiveStatus.statusEntryType
+                                                                                ? newActiveStatus.statusEntryType
+                                                                                : ''
+                                                                        }>
+                                                                        <Stack
+                                                                            direction='row'
+                                                                            spacing='20px'>
+                                                                            <Radio value='new entry'>
+                                                                                <Stack spacing='0'>
+                                                                                    <Text className='radio_title'>
+                                                                                        new
+                                                                                        entry
+                                                                                    </Text>
+                                                                                </Stack>
+                                                                            </Radio>
+
+                                                                            <Radio value='old entry'>
+                                                                                <Stack spacing='0'>
+                                                                                    <Text className='radio_title'>
+                                                                                        old
+                                                                                        entry
+                                                                                    </Text>
+                                                                                </Stack>
+                                                                            </Radio>
+                                                                        </Stack>
+                                                                    </RadioGroup>
+                                                                </fieldset>
+                                                            </Stack>
+                                                        </Stack>
+
+                                                        {newActiveStatus.statusEntryType ===
+                                                        'old entry' ? (
+                                                            <Stack direction='column'>
+                                                                <Stack>
+                                                                    <label>
+                                                                        End Date{' '}
+                                                                        <span>
+                                                                            *
+                                                                        </span>
+                                                                    </label>
+
+                                                                    <fieldset>
+                                                                        <Input
+                                                                            placeholder='Select Date and Time'
+                                                                            size='md'
+                                                                            type='date'
+                                                                            name='endDate'
+                                                                            value={
+                                                                                newActiveStatus !==
+                                                                                    null &&
+                                                                                newActiveStatus.endDate
+                                                                                    ? newActiveStatus.endDate
+                                                                                    : ''
+                                                                            }
+                                                                            onChange={
+                                                                                statusUpdateDetailsChange
+                                                                            }
+                                                                        />
+                                                                    </fieldset>
+                                                                </Stack>
+                                                            </Stack>
+                                                        ) : null}
+                                                    </Stack>
+                                                )}
                                             </Stack>
                                         )}
                                     </Stack>

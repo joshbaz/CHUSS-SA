@@ -44,7 +44,7 @@ const ViewUpdateExaminerDetail = ({ values }) => {
                         </label>
 
                         <Box className='form_input'>
-                            <Input readOnly value={name} />
+                            <Input readOnly value={name ? name : ''} />
                         </Box>
                     </Stack>
                 </Stack>

@@ -48,8 +48,14 @@ const UploadUpdateReport = ({ setFieldValue, values }) => {
                                         <MdOutlineFilePresent />
                                     </Box>
                                     <Text>
-                                        {values.reportFile.name}
-                                        {values.reportFile.ext}
+                                        {values.reportFile &&
+                                        values.reportFile.name
+                                            ? values.reportFile.name
+                                            : ''}
+                                        {values.reportFile &&
+                                        values.reportFile.ext
+                                            ? values.reportFile.ext
+                                            : ''}
                                     </Text>
                                 </Stack>
                             </Stack>

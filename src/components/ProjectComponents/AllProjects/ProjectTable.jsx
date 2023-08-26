@@ -318,7 +318,9 @@ const ProjectTable = ({
             }
             /** status */
             if (filterInfo[0].title === 'Status') {
-                let status = data1.activeStatus.toLowerCase()
+                let status = data1.activeStatus
+                    ? data1.activeStatus.toLowerCase()
+                    : ''
 
                 let check = filterInfo[0].searchfor.some((details) =>
                     status.includes(details)
@@ -1795,7 +1797,6 @@ const Container = styled(Stack)`
         }
     }
 `
-
 
 const StatusItem = styled(Stack)`
     border-radius: 4px;
