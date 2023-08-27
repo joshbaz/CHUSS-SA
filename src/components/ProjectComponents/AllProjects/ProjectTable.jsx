@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { BiDownload } from 'react-icons/bi'
+import { BiDownload, BiColumns } from 'react-icons/bi'
 import {
     Stack,
     Box,
@@ -34,6 +34,7 @@ import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 import { TbDotsVertical } from 'react-icons/tb'
+import { IoIosArrowDown } from 'react-icons/io'
 
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -84,36 +85,64 @@ const ProjectTable = ({
         totalPages: 0,
     })
 
-    const TableHead = [
-        // {
-        //     title: '#',
-        //     filter: true,
-        // },
+    const [mastersTableColumn, setMastersTableColumn] = React.useState([
         {
             title: 'STUDENT(SRN)',
+            display: true,
         },
         {
             title: 'Student Name',
+            display: true,
+        },
+        {
+            title: 'Gender',
+            display: false,
         },
         {
             title: 'TOPIC',
             filter: true,
+            display: true,
         },
         {
             title: 'STATUS',
             filter: true,
+            display: true,
         },
 
         {
             title: 'EXAMINERS',
+            display: true,
+        },
+        {
+            title: 'Internal Examiners',
+            display: false,
+        },
+        {
+            title: 'External Examiner',
+            display: false,
         },
         {
             title: 'Registration',
+            display: true,
         },
         {
             title: 'Submission',
+            display: true,
         },
-    ]
+    ])
+
+    React.useEffect(() => {
+        const MacolumnSettings = !!localStorage.getItem('Ma_columnSet')
+        if (MacolumnSettings) {
+            let listOfColumns = JSON.parse(localStorage.getItem('Ma_columnSet'))
+            setMastersTableColumn(() => listOfColumns)
+        } else {
+            localStorage.setItem(
+                'Ma_columnSet',
+                JSON.stringify(mastersTableColumn)
+            )
+        }
+    }, [])
 
     let dispatch = useDispatch()
     let toast = useToast()
@@ -755,6 +784,28 @@ const ProjectTable = ({
         dispatch(reset())
     }, [isSuccess, message, isSubmittingp, isError])
 
+    /** function to handle the columns table checkbox */
+    const handleColumnsChange = (e, value) => {
+        //alert(e.target.checked)
+
+        let ColumnData = [...mastersTableColumn]
+        let newColumnssData = ColumnData.map((data) => {
+            if (data.title === value) {
+                let editedValue = {
+                    ...data,
+                    display: e.target.checked,
+                }
+
+                return editedValue
+            } else {
+                return data
+            }
+        })
+
+        setMastersTableColumn(() => newColumnssData)
+        localStorage.setItem('Ma_columnSet', JSON.stringify(newColumnssData))
+    }
+
     return (
         <Container>
             {/** tab data */}
@@ -801,11 +852,49 @@ const ProjectTable = ({
                             Export
                         </Button>
                     </TableButton>
+                    <TableButton>
+                        <Menu closeOnSelect={false}>
+                            <MenuButton
+                                h='32px'
+                                w='188px'
+                                className='btn__columns'
+                                as={Button}
+                                variant='solid'
+                                leftIcon={<BiColumns />}
+                                rightIcon={<IoIosArrowDown />}>
+                                Columns
+                            </MenuButton>
+                            <MenuList>
+                                {mastersTableColumn.map((data, index) => {
+                                    let columnsTitle = data.title
+                                        ? data.title.toLowerCase()
+                                        : ''
+                                    let activeColumn = data.display
+                                    return (
+                                        <MenuItem key={index}>
+                                            <Checkbox
+                                                onChange={(e) =>
+                                                    handleColumnsChange(
+                                                        e,
+                                                        data.title
+                                                    )
+                                                }
+                                                value={columnsTitle}
+                                                isChecked={activeColumn}>
+                                                {columnsTitle}
+                                            </Checkbox>
+                                        </MenuItem>
+                                    )
+                                })}
+                            </MenuList>
+                        </Menu>
+                    </TableButton>
                 </SearchActivity>
             </Stack>
 
-            {/** table */}
-            <Box minH='48vh'>
+            {/** student table */}
+            {/** student table head */}
+            <Box minH='50vh' className='table_wrapper'>
                 <Table size='sm'>
                     <Thead>
                         <Tr>
@@ -821,47 +910,58 @@ const ProjectTable = ({
                                 />
                             </Th>
 
-                            {TableHead.map((data, index) => {
-                                return (
-                                    <Th key={index} className='table_head'>
-                                        <Stack
-                                            direction='row'
-                                            alignItems={'center'}>
-                                            <Text>{data.title}</Text>
+                            {mastersTableColumn.map((data, index) => {
+                                if (data.display) {
+                                    return (
+                                        <Th key={index} className='table_head'>
+                                            <Stack
+                                                width='100%'
+                                                direction='row'
+                                                alignItems={'center'}>
+                                                <Text>{data.title}</Text>
 
-                                            {data.filter && (
-                                                <Stack
-                                                    h='13px'
-                                                    direction='column'
-                                                    justifyContent={'center'}
-                                                    spacing='2px'
-                                                    padding='0'
-                                                    m='0'>
-                                                    <Box
-                                                        h='30%'
-                                                        color='#464F60'
-                                                        style={{
-                                                            fontSize: '12px',
-                                                        }}>
-                                                        <TiArrowSortedUp />
-                                                    </Box>
-                                                    <Box
-                                                        color='#ABAAAF'
-                                                        style={{
-                                                            fontSize: '12px',
-                                                        }}>
-                                                        <TiArrowSortedDown />
-                                                    </Box>
-                                                </Stack>
-                                            )}
-                                        </Stack>
-                                    </Th>
-                                )
+                                                {data.filter && (
+                                                    <Stack
+                                                        h='13px'
+                                                        direction='column'
+                                                        justifyContent={
+                                                            'center'
+                                                        }
+                                                        spacing='2px'
+                                                        padding='0'
+                                                        m='0'>
+                                                        <Box
+                                                            h='30%'
+                                                            color='#464F60'
+                                                            style={{
+                                                                fontSize:
+                                                                    '12px',
+                                                            }}>
+                                                            <TiArrowSortedUp />
+                                                        </Box>
+                                                        <Box
+                                                            color='#ABAAAF'
+                                                            style={{
+                                                                fontSize:
+                                                                    '12px',
+                                                            }}>
+                                                            <TiArrowSortedDown />
+                                                        </Box>
+                                                    </Stack>
+                                                )}
+                                            </Stack>
+                                        </Th>
+                                    )
+                                } else {
+                                    return null
+                                }
                             })}
+
                             <Th></Th>
                         </Tr>
                     </Thead>
 
+                    {/** search table body */}
                     {searchActive ? (
                         <Tbody>
                             {searchData.items.length > 0 ? (
@@ -914,6 +1014,79 @@ const ProjectTable = ({
                                         } else {
                                             includedInExport = false
                                         }
+
+                                        let examiners_reports = [
+                                            ...data.examinerReports,
+                                        ]
+
+                                        let studentExaminers = [
+                                            ...data.examiners,
+                                        ]
+
+                                        let compiledInternalExaminerReports = []
+
+                                        let compiledExternalExaminerReports = []
+
+                                        if (
+                                            examiners_reports.length > 0 &&
+                                            studentExaminers.length > 0
+                                        ) {
+                                            for (
+                                                let iteration = 0;
+                                                iteration <
+                                                examiners_reports.length;
+                                                iteration++
+                                            ) {
+                                                let pushExaminerReport = {
+                                                    ...examiners_reports[
+                                                        iteration
+                                                    ],
+                                                    examinerName: '',
+                                                }
+
+                                                studentExaminers.filter(
+                                                    (IEData) => {
+                                                        if (
+                                                            IEData.examinerId
+                                                                ._id ===
+                                                            pushExaminerReport
+                                                                .reportId
+                                                                .examiner
+                                                        ) {
+                                                            pushExaminerReport.examinerName =
+                                                                IEData
+                                                                    .examinerId
+                                                                    .jobtitle +
+                                                                ' ' +
+                                                                IEData
+                                                                    .examinerId
+                                                                    .name
+
+                                                            if (
+                                                                IEData
+                                                                    .examinerId
+                                                                    .typeOfExaminer ===
+                                                                'Internal'
+                                                            ) {
+                                                                compiledInternalExaminerReports.push(
+                                                                    pushExaminerReport
+                                                                )
+                                                            } else {
+                                                                compiledExternalExaminerReports.push(
+                                                                    pushExaminerReport
+                                                                )
+                                                            }
+
+                                                            return null
+                                                        } else {
+                                                            return null
+                                                        }
+                                                    }
+                                                )
+                                            }
+                                        } else {
+                                        }
+
                                         return (
                                             <Tr
                                                 className={`table_row ${
@@ -954,169 +1127,305 @@ const ProjectTable = ({
                                                     </Box>
                                                 </Td> */}
 
-                                                <Td
-                                                    style={{
-                                                        color: '#5E5C60',
-                                                        fontWeight: 500,
-                                                    }}>
-                                                    {
-                                                        data.student
-                                                            .registrationNumber
-                                                    }
-                                                </Td>
-
-                                                <Td
-                                                    minW='150px'
-                                                    maxW='150px'
-                                                    className='studentName'
-                                                    style={{
-                                                        color: '#15151D',
-                                                        fontWeight: 500,
-                                                        fontSize: '13px',
-                                                    }}>
-                                                    {data.student.studentName}
-                                                </Td>
-                                                <Td
-                                                    maxW='250px'
-                                                    style={{
-                                                        fontWeight: 500,
-                                                        color: '#15151D',
-                                                    }}>
-                                                    {data.topic}
-                                                </Td>
-                                                <Td>
-                                                    {' '}
-                                                    <StatusItem
-                                                        tcolors={
-                                                            activeElementSet &&
-                                                            activeElementSet.hex
-                                                                ? activeElementSet.hex
-                                                                : ''
+                                                {mastersTableColumn[0]
+                                                    .display ? (
+                                                    <Td
+                                                        style={{
+                                                            color: '#5E5C60',
+                                                            fontWeight: 500,
+                                                        }}>
+                                                        {
+                                                            data.student
+                                                                .registrationNumber
                                                         }
-                                                        bcolors={
-                                                            activeElementSet &&
-                                                            activeElementSet.rgba
-                                                                ? activeElementSet.rgba
-                                                                : ''
-                                                        }
-                                                        minW='160px'
-                                                        direction='row'
-                                                        alignItems='center'>
-                                                        <div />
-                                                        <Text>
-                                                            {' '}
-                                                            {activeElementSet &&
-                                                            activeElementSet.tagName !==
-                                                                undefined
-                                                                ? activeElementSet.tagName
-                                                                : ''}
-                                                        </Text>
-                                                    </StatusItem>
-                                                </Td>
+                                                    </Td>
+                                                ) : null}
 
-                                                <Td>
-                                                    <Box
-                                                        m='auto'
-                                                        w='100%'
-                                                        display='flex'
-                                                        justifyContent={
-                                                            'center'
-                                                        }>
-                                                        {data.examiners.length <
-                                                        1 ? (
-                                                            <Tooltip
-                                                                color='#fbd2d4'
-                                                                borderRadius={
-                                                                    '8px'
-                                                                }
-                                                                height='30px'
-                                                                hasArrow
-                                                                label={
-                                                                    <Box
-                                                                        style={{
-                                                                            fontFamily:
-                                                                                'Inter',
-                                                                            fontSize:
-                                                                                '14px',
-                                                                        }}
-                                                                        w='100%'
-                                                                        h='100%'
-                                                                        display='flex'
-                                                                        alignItems={
-                                                                            'center'
-                                                                        }
-                                                                        p='10px 5px 10px 5px'>
-                                                                        Assign
-                                                                        Examiners
-                                                                    </Box>
-                                                                }>
-                                                                <Box className='add_examiners'>
-                                                                    <AiOutlinePlus />
-                                                                </Box>
-                                                            </Tooltip>
-                                                        ) : (
-                                                            <Tooltip
-                                                                hasArrow
-                                                                color='#fbd2d4'
-                                                                borderRadius={
-                                                                    '8px'
-                                                                }
-                                                                label={
-                                                                    <Box
-                                                                        style={{
-                                                                            fontFamily:
-                                                                                'Inter',
-                                                                            fontSize:
-                                                                                '14px',
-                                                                        }}
-                                                                        w='100%'
-                                                                        h='100%'
-                                                                        display='flex'
-                                                                        flexDirection={
-                                                                            'column'
-                                                                        }
-                                                                        alignItems={
-                                                                            'center'
-                                                                        }>
-                                                                        <Box p='10px 5px 10px 5px'>
+                                                {mastersTableColumn[1]
+                                                    .display ? (
+                                                    <Td
+                                                        minW='150px'
+                                                        maxW='150px'
+                                                        className='studentName'
+                                                        style={{
+                                                            color: '#15151D',
+                                                            fontWeight: 500,
+                                                            fontSize: '13px',
+                                                        }}>
+                                                        {
+                                                            data.student
+                                                                .studentName
+                                                        }
+                                                    </Td>
+                                                ) : null}
+                                                {mastersTableColumn[2]
+                                                    .display ? (
+                                                    <Td
+                                                        minW='150px'
+                                                        maxW='150px'
+                                                        className='studentName'
+                                                        style={{
+                                                            color: '#15151D',
+                                                            fontWeight: 500,
+                                                            fontSize: '13px',
+                                                        }}>
+                                                        {data.student.gender}
+                                                    </Td>
+                                                ) : null}
+
+                                                {mastersTableColumn[3]
+                                                    .display ? (
+                                                    <Td
+                                                        minW='250px'
+                                                        maxW='250px'
+                                                        style={{
+                                                            fontWeight: 500,
+                                                            color: '#15151D',
+                                                        }}>
+                                                        {data.topic}
+                                                    </Td>
+                                                ) : null}
+
+                                                {mastersTableColumn[4]
+                                                    .display ? (
+                                                    <Td>
+                                                        {' '}
+                                                        <StatusItem
+                                                            tcolors={
+                                                                activeElementSet &&
+                                                                activeElementSet.hex
+                                                                    ? activeElementSet.hex
+                                                                    : ''
+                                                            }
+                                                            bcolors={
+                                                                activeElementSet &&
+                                                                activeElementSet.rgba
+                                                                    ? activeElementSet.rgba
+                                                                    : ''
+                                                            }
+                                                            minW='160px'
+                                                            direction='row'
+                                                            alignItems='center'>
+                                                            <div />
+                                                            <Text>
+                                                                {' '}
+                                                                {activeElementSet &&
+                                                                activeElementSet.tagName !==
+                                                                    undefined
+                                                                    ? activeElementSet.tagName
+                                                                    : ''}
+                                                            </Text>
+                                                        </StatusItem>
+                                                    </Td>
+                                                ) : null}
+
+                                                {mastersTableColumn[5]
+                                                    .display ? (
+                                                    <Td>
+                                                        <Box
+                                                            m='auto'
+                                                            w='100%'
+                                                            display='flex'
+                                                            justifyContent={
+                                                                'center'
+                                                            }>
+                                                            {data.examiners
+                                                                .length < 1 ? (
+                                                                <Tooltip
+                                                                    color='#fbd2d4'
+                                                                    borderRadius={
+                                                                        '8px'
+                                                                    }
+                                                                    height='30px'
+                                                                    hasArrow
+                                                                    label={
+                                                                        <Box
+                                                                            style={{
+                                                                                fontFamily:
+                                                                                    'Inter',
+                                                                                fontSize:
+                                                                                    '14px',
+                                                                            }}
+                                                                            w='100%'
+                                                                            h='100%'
+                                                                            display='flex'
+                                                                            alignItems={
+                                                                                'center'
+                                                                            }
+                                                                            p='10px 5px 10px 5px'>
                                                                             Assign
                                                                             Examiners
                                                                         </Box>
-                                                                        <Divider />
-                                                                        <Box p='10px 5px 10px 5px'>
-                                                                            View
-                                                                            Examiners
-                                                                        </Box>
+                                                                    }>
+                                                                    <Box className='add_examiners'>
+                                                                        <AiOutlinePlus />
                                                                     </Box>
-                                                                }>
-                                                                <Box className='examiner_item'>
-                                                                    {
-                                                                        data
-                                                                            .examiners
-                                                                            .length
+                                                                </Tooltip>
+                                                            ) : (
+                                                                <Tooltip
+                                                                    hasArrow
+                                                                    color='#fbd2d4'
+                                                                    borderRadius={
+                                                                        '8px'
                                                                     }
+                                                                    label={
+                                                                        <Box
+                                                                            style={{
+                                                                                fontFamily:
+                                                                                    'Inter',
+                                                                                fontSize:
+                                                                                    '14px',
+                                                                            }}
+                                                                            w='100%'
+                                                                            h='100%'
+                                                                            display='flex'
+                                                                            flexDirection={
+                                                                                'column'
+                                                                            }
+                                                                            alignItems={
+                                                                                'center'
+                                                                            }>
+                                                                            <Box p='10px 5px 10px 5px'>
+                                                                                Assign
+                                                                                Examiners
+                                                                            </Box>
+                                                                            <Divider />
+                                                                            <Box p='10px 5px 10px 5px'>
+                                                                                View
+                                                                                Examiners
+                                                                            </Box>
+                                                                        </Box>
+                                                                    }>
+                                                                    <Box className='examiner_item'>
+                                                                        {
+                                                                            data
+                                                                                .examiners
+                                                                                .length
+                                                                        }
+                                                                    </Box>
+                                                                </Tooltip>
+                                                            )}
+                                                        </Box>
+                                                    </Td>
+                                                ) : null}
+                                                {/** internal examiners */}
+                                                {mastersTableColumn[6]
+                                                    .display ? (
+                                                    <Td minW='250px'>
+                                                        {compiledInternalExaminerReports.length >
+                                                        0 ? (
+                                                            <Stack direction='column'>
+                                                                {compiledInternalExaminerReports.map(
+                                                                    (
+                                                                        internalEData,
+                                                                        iEIndex
+                                                                    ) => {
+                                                                        return (
+                                                                            <Box
+                                                                                m='auto'
+                                                                                w='100%'
+                                                                                display='flex'
+                                                                                className='subtype'
+                                                                                justifyContent={
+                                                                                    'center'
+                                                                                }>
+                                                                                {
+                                                                                    internalEData.examinerName
+                                                                                }
+                                                                            </Box>
+                                                                        )
+                                                                    }
+                                                                )}
+                                                            </Stack>
+                                                        ) : (
+                                                            <Stack direction='column'>
+                                                                <Box
+                                                                    m='auto'
+                                                                    w='100%'
+                                                                    display='flex'
+                                                                    className='subtype'
+                                                                    justifyContent={
+                                                                        'center'
+                                                                    }>
+                                                                    -
                                                                 </Box>
-                                                            </Tooltip>
+                                                            </Stack>
                                                         )}
-                                                    </Box>
-                                                </Td>
-                                                <Td>
-                                                    <Box className='registration'>
-                                                        {returnedData}{' '}
-                                                    </Box>
-                                                </Td>
-                                                <Td>
-                                                    <Box
-                                                        m='auto'
-                                                        w='100%'
-                                                        display='flex'
-                                                        className='subtype'
-                                                        justifyContent={
-                                                            'center'
-                                                        }>
-                                                        {data.submissionStatus}
-                                                    </Box>
-                                                </Td>
+                                                    </Td>
+                                                ) : null}
+
+                                                {/** external examiners */}
+                                                {mastersTableColumn[7]
+                                                    .display ? (
+                                                    <Td minW='250px'>
+                                                        {compiledExternalExaminerReports.length >
+                                                        0 ? (
+                                                            <Stack direction='column'>
+                                                                {compiledExternalExaminerReports.map(
+                                                                    (
+                                                                        externalEData,
+                                                                        iEIndex
+                                                                    ) => {
+                                                                        return (
+                                                                            <Box
+                                                                                m='auto'
+                                                                                w='100%'
+                                                                                display='flex'
+                                                                                className='subtype'
+                                                                                justifyContent={
+                                                                                    'center'
+                                                                                }>
+                                                                                {
+                                                                                    externalEData.examinerName
+                                                                                }
+                                                                            </Box>
+                                                                        )
+                                                                    }
+                                                                )}
+                                                            </Stack>
+                                                        ) : (
+                                                            <Stack direction='column'>
+                                                                <Box
+                                                                    m='auto'
+                                                                    w='100%'
+                                                                    display='flex'
+                                                                    className='subtype'
+                                                                    justifyContent={
+                                                                        'center'
+                                                                    }>
+                                                                    -
+                                                                </Box>
+                                                            </Stack>
+                                                        )}
+                                                    </Td>
+                                                ) : null}
+
+                                                {mastersTableColumn[8]
+                                                    .display ? (
+                                                    <Td>
+                                                        <Box className='registration'>
+                                                            {returnedData}{' '}
+                                                        </Box>
+                                                    </Td>
+                                                ) : null}
+
+                                                {mastersTableColumn[9]
+                                                    .display ? (
+                                                    <Td>
+                                                        <Box
+                                                            m='auto'
+                                                            w='100%'
+                                                            display='flex'
+                                                            className='subtype'
+                                                            justifyContent={
+                                                                'center'
+                                                            }>
+                                                            {
+                                                                data.submissionStatus
+                                                            }
+                                                        </Box>
+                                                    </Td>
+                                                ) : null}
                                                 <Td>
                                                     <Menu>
                                                         <MenuButton>
@@ -1164,6 +1473,7 @@ const ProjectTable = ({
                         </Tbody>
                     ) : (
                         <Tbody>
+                            {/** non-search table body (All items)  */}
                             {allDisplayData.items.length > 0 ? (
                                 <>
                                     {allDisplayData.items.map((data, index) => {
@@ -1214,6 +1524,80 @@ const ProjectTable = ({
                                         } else {
                                             includedInExport = false
                                         }
+
+                                        // console.log('data', data)
+
+                                        let examiners_reports = [
+                                            ...data.examinerReports,
+                                        ]
+
+                                        let studentExaminers = [
+                                            ...data.examiners,
+                                        ]
+
+                                        let compiledInternalExaminerReports = []
+
+                                        let compiledExternalExaminerReports = []
+
+                                        if (
+                                            examiners_reports.length > 0 &&
+                                            studentExaminers.length > 0
+                                        ) {
+                                            for (
+                                                let iteration = 0;
+                                                iteration <
+                                                examiners_reports.length;
+                                                iteration++
+                                            ) {
+                                                let pushExaminerReport = {
+                                                    ...examiners_reports[
+                                                        iteration
+                                                    ],
+                                                    examinerName: '',
+                                                }
+
+                                                studentExaminers.filter(
+                                                    (IEData) => {
+                                                        if (
+                                                            IEData.examinerId
+                                                                ._id ===
+                                                            pushExaminerReport
+                                                                .reportId
+                                                                .examiner
+                                                        ) {
+                                                            pushExaminerReport.examinerName =
+                                                                IEData
+                                                                    .examinerId
+                                                                    .jobtitle +
+                                                                ' ' +
+                                                                IEData
+                                                                    .examinerId
+                                                                    .name
+
+                                                            if (
+                                                                IEData
+                                                                    .examinerId
+                                                                    .typeOfExaminer ===
+                                                                'Internal'
+                                                            ) {
+                                                                compiledInternalExaminerReports.push(
+                                                                    pushExaminerReport
+                                                                )
+                                                            } else {
+                                                                compiledExternalExaminerReports.push(
+                                                                    pushExaminerReport
+                                                                )
+                                                            }
+
+                                                            return null
+                                                        } else {
+                                                            return null
+                                                        }
+                                                    }
+                                                )
+                                            }
+                                        } else {
+                                        }
                                         return (
                                             <Tr
                                                 className={`table_row ${
@@ -1254,169 +1638,307 @@ const ProjectTable = ({
                                                     </Box>
                                                 </Td>*/}
 
-                                                <Td
-                                                    style={{
-                                                        color: '#5E5C60',
-                                                        fontWeight: 500,
-                                                    }}>
-                                                    {
-                                                        data.student
-                                                            .registrationNumber
-                                                    }
-                                                </Td>
-
-                                                <Td
-                                                    minW='150px'
-                                                    maxW='150px'
-                                                    className='studentName'
-                                                    style={{
-                                                        color: '#15151D',
-                                                        fontWeight: 500,
-                                                        fontSize: '13px',
-                                                    }}>
-                                                    {data.student.studentName}
-                                                </Td>
-                                                <Td
-                                                    maxW='250px'
-                                                    style={{
-                                                        fontWeight: 500,
-                                                        color: '#15151D',
-                                                    }}>
-                                                    {data.topic}
-                                                </Td>
-                                                <Td>
-                                                    {' '}
-                                                    <StatusItem
-                                                        tcolors={
-                                                            activeElementSet &&
-                                                            activeElementSet.hex
-                                                                ? activeElementSet.hex
-                                                                : ''
+                                                {mastersTableColumn[0]
+                                                    .display ? (
+                                                    <Td
+                                                        style={{
+                                                            color: '#5E5C60',
+                                                            fontWeight: 500,
+                                                        }}>
+                                                        {
+                                                            data.student
+                                                                .registrationNumber
                                                         }
-                                                        bcolors={
-                                                            activeElementSet &&
-                                                            activeElementSet.rgba
-                                                                ? activeElementSet.rgba
-                                                                : ''
-                                                        }
-                                                        minW='160px'
-                                                        direction='row'
-                                                        alignItems='center'>
-                                                        <div />
-                                                        <Text>
-                                                            {' '}
-                                                            {activeElementSet &&
-                                                            activeElementSet.tagName !==
-                                                                undefined
-                                                                ? activeElementSet.tagName
-                                                                : ''}
-                                                        </Text>
-                                                    </StatusItem>
-                                                </Td>
+                                                    </Td>
+                                                ) : null}
 
-                                                <Td>
-                                                    <Box
-                                                        m='auto'
-                                                        w='100%'
-                                                        display='flex'
-                                                        justifyContent={
-                                                            'center'
-                                                        }>
-                                                        {data.examiners.length <
-                                                        1 ? (
-                                                            <Tooltip
-                                                                color='#fbd2d4'
-                                                                borderRadius={
-                                                                    '8px'
-                                                                }
-                                                                height='30px'
-                                                                hasArrow
-                                                                label={
-                                                                    <Box
-                                                                        style={{
-                                                                            fontFamily:
-                                                                                'Inter',
-                                                                            fontSize:
-                                                                                '14px',
-                                                                        }}
-                                                                        w='100%'
-                                                                        h='100%'
-                                                                        display='flex'
-                                                                        alignItems={
-                                                                            'center'
-                                                                        }
-                                                                        p='10px 5px 10px 5px'>
-                                                                        Assign
-                                                                        Examiners
-                                                                    </Box>
-                                                                }>
-                                                                <Box className='add_examiners'>
-                                                                    <AiOutlinePlus />
-                                                                </Box>
-                                                            </Tooltip>
-                                                        ) : (
-                                                            <Tooltip
-                                                                hasArrow
-                                                                color='#fbd2d4'
-                                                                borderRadius={
-                                                                    '8px'
-                                                                }
-                                                                label={
-                                                                    <Box
-                                                                        style={{
-                                                                            fontFamily:
-                                                                                'Inter',
-                                                                            fontSize:
-                                                                                '14px',
-                                                                        }}
-                                                                        w='100%'
-                                                                        h='100%'
-                                                                        display='flex'
-                                                                        flexDirection={
-                                                                            'column'
-                                                                        }
-                                                                        alignItems={
-                                                                            'center'
-                                                                        }>
-                                                                        <Box p='10px 5px 10px 5px'>
+                                                {mastersTableColumn[1]
+                                                    .display ? (
+                                                    <Td
+                                                        minW='150px'
+                                                        maxW='150px'
+                                                        className='studentName'
+                                                        style={{
+                                                            color: '#15151D',
+                                                            fontWeight: 500,
+                                                            fontSize: '13px',
+                                                        }}>
+                                                        {
+                                                            data.student
+                                                                .studentName
+                                                        }
+                                                    </Td>
+                                                ) : null}
+
+                                                {mastersTableColumn[2]
+                                                    .display ? (
+                                                    <Td
+                                                        minW='150px'
+                                                        maxW='150px'
+                                                        className='studentName'
+                                                        style={{
+                                                            color: '#15151D',
+                                                            fontWeight: 500,
+                                                            fontSize: '13px',
+                                                        }}>
+                                                        {data.student.gender}
+                                                    </Td>
+                                                ) : null}
+
+                                                {mastersTableColumn[3]
+                                                    .display ? (
+                                                    <Td
+                                                        minW='250px'
+                                                        maxW='250px'
+                                                        style={{
+                                                            fontWeight: 500,
+                                                            color: '#15151D',
+                                                        }}>
+                                                        {data.topic}
+                                                    </Td>
+                                                ) : null}
+
+                                                {mastersTableColumn[4]
+                                                    .display ? (
+                                                    <Td>
+                                                        {' '}
+                                                        <StatusItem
+                                                            tcolors={
+                                                                activeElementSet &&
+                                                                activeElementSet.hex
+                                                                    ? activeElementSet.hex
+                                                                    : ''
+                                                            }
+                                                            bcolors={
+                                                                activeElementSet &&
+                                                                activeElementSet.rgba
+                                                                    ? activeElementSet.rgba
+                                                                    : ''
+                                                            }
+                                                            minW='160px'
+                                                            direction='row'
+                                                            alignItems='center'>
+                                                            <div />
+                                                            <Text>
+                                                                {' '}
+                                                                {activeElementSet &&
+                                                                activeElementSet.tagName !==
+                                                                    undefined
+                                                                    ? activeElementSet.tagName
+                                                                    : ''}
+                                                            </Text>
+                                                        </StatusItem>
+                                                    </Td>
+                                                ) : null}
+
+                                                {mastersTableColumn[5]
+                                                    .display ? (
+                                                    <Td>
+                                                        <Box
+                                                            m='auto'
+                                                            w='100%'
+                                                            display='flex'
+                                                            justifyContent={
+                                                                'center'
+                                                            }>
+                                                            {data.examiners
+                                                                .length < 1 ? (
+                                                                <Tooltip
+                                                                    color='#fbd2d4'
+                                                                    borderRadius={
+                                                                        '8px'
+                                                                    }
+                                                                    height='30px'
+                                                                    hasArrow
+                                                                    label={
+                                                                        <Box
+                                                                            style={{
+                                                                                fontFamily:
+                                                                                    'Inter',
+                                                                                fontSize:
+                                                                                    '14px',
+                                                                            }}
+                                                                            w='100%'
+                                                                            h='100%'
+                                                                            display='flex'
+                                                                            alignItems={
+                                                                                'center'
+                                                                            }
+                                                                            p='10px 5px 10px 5px'>
                                                                             Assign
                                                                             Examiners
                                                                         </Box>
-                                                                        <Divider />
-                                                                        <Box p='10px 5px 10px 5px'>
-                                                                            View
-                                                                            Examiners
-                                                                        </Box>
+                                                                    }>
+                                                                    <Box className='add_examiners'>
+                                                                        <AiOutlinePlus />
                                                                     </Box>
-                                                                }>
-                                                                <Box className='examiner_item'>
-                                                                    {
-                                                                        data
-                                                                            .examiners
-                                                                            .length
+                                                                </Tooltip>
+                                                            ) : (
+                                                                <Tooltip
+                                                                    hasArrow
+                                                                    color='#fbd2d4'
+                                                                    borderRadius={
+                                                                        '8px'
                                                                     }
+                                                                    label={
+                                                                        <Box
+                                                                            style={{
+                                                                                fontFamily:
+                                                                                    'Inter',
+                                                                                fontSize:
+                                                                                    '14px',
+                                                                            }}
+                                                                            w='100%'
+                                                                            h='100%'
+                                                                            display='flex'
+                                                                            flexDirection={
+                                                                                'column'
+                                                                            }
+                                                                            alignItems={
+                                                                                'center'
+                                                                            }>
+                                                                            <Box p='10px 5px 10px 5px'>
+                                                                                Assign
+                                                                                Examiners
+                                                                            </Box>
+                                                                            <Divider />
+                                                                            <Box p='10px 5px 10px 5px'>
+                                                                                View
+                                                                                Examiners
+                                                                            </Box>
+                                                                        </Box>
+                                                                    }>
+                                                                    <Box className='examiner_item'>
+                                                                        {
+                                                                            data
+                                                                                .examiners
+                                                                                .length
+                                                                        }
+                                                                    </Box>
+                                                                </Tooltip>
+                                                            )}
+                                                        </Box>
+                                                    </Td>
+                                                ) : null}
+                                                {/** internal examiners */}
+                                                {mastersTableColumn[6]
+                                                    .display ? (
+                                                    <Td minW='250px'>
+                                                        {compiledInternalExaminerReports.length >
+                                                        0 ? (
+                                                            <Stack direction='column'>
+                                                                {compiledInternalExaminerReports.map(
+                                                                    (
+                                                                        internalEData,
+                                                                        iEIndex
+                                                                    ) => {
+                                                                        return (
+                                                                            <Box
+                                                                                m='auto'
+                                                                                w='100%'
+                                                                                display='flex'
+                                                                                className='subtype'
+                                                                                justifyContent={
+                                                                                    'center'
+                                                                                }>
+                                                                                {
+                                                                                    internalEData.examinerName
+                                                                                }
+                                                                            </Box>
+                                                                        )
+                                                                    }
+                                                                )}
+                                                            </Stack>
+                                                        ) : (
+                                                            <Stack direction='column'>
+                                                                <Box
+                                                                    m='auto'
+                                                                    w='100%'
+                                                                    display='flex'
+                                                                    className='subtype'
+                                                                    justifyContent={
+                                                                        'center'
+                                                                    }>
+                                                                    -
                                                                 </Box>
-                                                            </Tooltip>
+                                                            </Stack>
                                                         )}
-                                                    </Box>
-                                                </Td>
-                                                <Td>
-                                                    <Box className='registration'>
-                                                        {returnedData}{' '}
-                                                    </Box>
-                                                </Td>
-                                                <Td>
-                                                    <Box
-                                                        m='auto'
-                                                        w='100%'
-                                                        display='flex'
-                                                        className='subtype'
-                                                        justifyContent={
-                                                            'center'
-                                                        }>
-                                                        {data.submissionStatus}
-                                                    </Box>
-                                                </Td>
+                                                    </Td>
+                                                ) : null}
+
+                                                {/** external examiners */}
+                                                {mastersTableColumn[7]
+                                                    .display ? (
+                                                    <Td minW='250px'>
+                                                        {compiledExternalExaminerReports.length >
+                                                        0 ? (
+                                                            <Stack direction='column'>
+                                                                {compiledExternalExaminerReports.map(
+                                                                    (
+                                                                        externalEData,
+                                                                        iEIndex
+                                                                    ) => {
+                                                                        return (
+                                                                            <Box
+                                                                                m='auto'
+                                                                                w='100%'
+                                                                                display='flex'
+                                                                                className='subtype'
+                                                                                justifyContent={
+                                                                                    'center'
+                                                                                }>
+                                                                                {
+                                                                                    externalEData.examinerName
+                                                                                }
+                                                                            </Box>
+                                                                        )
+                                                                    }
+                                                                )}
+                                                            </Stack>
+                                                        ) : (
+                                                            <Stack direction='column'>
+                                                                <Box
+                                                                    m='auto'
+                                                                    w='100%'
+                                                                    display='flex'
+                                                                    className='subtype'
+                                                                    justifyContent={
+                                                                        'center'
+                                                                    }>
+                                                                    -
+                                                                </Box>
+                                                            </Stack>
+                                                        )}
+                                                    </Td>
+                                                ) : null}
+
+                                                {mastersTableColumn[8]
+                                                    .display ? (
+                                                    <Td>
+                                                        <Box className='registration'>
+                                                            {returnedData}{' '}
+                                                        </Box>
+                                                    </Td>
+                                                ) : null}
+
+                                                {mastersTableColumn[9]
+                                                    .display ? (
+                                                    <Td>
+                                                        <Box
+                                                            m='auto'
+                                                            w='100%'
+                                                            display='flex'
+                                                            className='subtype'
+                                                            justifyContent={
+                                                                'center'
+                                                            }>
+                                                            {
+                                                                data.submissionStatus
+                                                            }
+                                                        </Box>
+                                                    </Td>
+                                                ) : null}
+
                                                 <Td>
                                                     <Menu>
                                                         <MenuButton>
@@ -1469,12 +1991,12 @@ const ProjectTable = ({
             {/** Pagination */}
 
             {searchActive ? (
-                <Box>
-                    {' '}
+                <Box w='100%'>
                     {searchData.items.length > 0 && (
                         <PaginationStack
                             direction='row'
-                            height='56px'
+                            h='56px'
+                            pr='10px'
                             alignItems='center'
                             justifyContent={'space-between'}>
                             <Box className='pages'>
@@ -1488,6 +2010,7 @@ const ProjectTable = ({
                                 h='90%'
                                 direction='row'
                                 spacing='20px'
+                                p='10px'
                                 alignItems='center'
                                 className='pagination'>
                                 <Box className='rows'>
@@ -1500,15 +2023,20 @@ const ProjectTable = ({
                                     direction='row'
                                     alignItems='center'
                                     className='arrows'>
-                                    <Box className='left' onClick={handlePrev}>
+                                    <Box
+                                        as={Button}
+                                        className='left'
+                                        onClick={handlePrev}>
                                         <MdKeyboardArrowLeft />
                                     </Box>
-                                    <Box>
-                                        {' '}
+                                    <Box className='pageNumbs'>
                                         {searchData.currentPage}/
                                         {searchData.totalPages}
                                     </Box>
-                                    <Box className='right' onClick={handleNext}>
+                                    <Box
+                                        as={Button}
+                                        className='right'
+                                        onClick={handleNext}>
                                         <MdKeyboardArrowRight />
                                     </Box>
                                 </Stack>
@@ -1517,12 +2045,12 @@ const ProjectTable = ({
                     )}
                 </Box>
             ) : (
-                <Box>
-                    {' '}
+                <Box w='100%'>
                     {allDisplayData.items.length > 0 && (
                         <PaginationStack
                             direction='row'
-                            height='56px'
+                            h='56px'
+                            pr='10px'
                             alignItems='center'
                             justifyContent={'space-between'}>
                             <Box className='pages'>
@@ -1536,6 +2064,7 @@ const ProjectTable = ({
                                 h='90%'
                                 direction='row'
                                 spacing='20px'
+                                p='10px'
                                 alignItems='center'
                                 className='pagination'>
                                 <Box className='rows'>
@@ -1548,7 +2077,10 @@ const ProjectTable = ({
                                     direction='row'
                                     alignItems='center'
                                     className='arrows'>
-                                    <Box className='left' onClick={handlePrev}>
+                                    <Box
+                                        as={Button}
+                                        className='left'
+                                        onClick={handlePrev}>
                                         <MdKeyboardArrowLeft />
                                     </Box>
                                     <Box>
@@ -1556,7 +2088,10 @@ const ProjectTable = ({
                                         {allDisplayData.currentPage}/
                                         {allDisplayData.totalPages}
                                     </Box>
-                                    <Box className='right' onClick={handleNext}>
+                                    <Box
+                                        as={Button}
+                                        className='right'
+                                        onClick={handleNext}>
                                         <MdKeyboardArrowRight />
                                     </Box>
                                 </Stack>
@@ -1700,6 +2235,14 @@ const Container = styled(Stack)`
             background: #ef5466;
         }
     }
+
+    .table_wrapper {
+        overflow-x: auto !important;
+    }
+
+    table {
+        overflow-x: auto !important;
+    }
     thead {
         background: rgba(247, 249, 252, 0.8);
         backdrop-filter: blur(8px);
@@ -1792,9 +2335,13 @@ const Container = styled(Stack)`
     }
 
     .table_row {
-        :hover {
+        &:hover {
             background: #fef9ef;
         }
+    }
+
+    .row_selected {
+        background: #fef9ef;
     }
 `
 
@@ -1837,6 +2384,7 @@ const NoItems = styled(Box)`
 `
 
 const PaginationStack = styled(Stack)`
+    overflow: hidden;
     .pagination {
         color: #6b7280;
         align-items: center;
@@ -1847,8 +2395,8 @@ const PaginationStack = styled(Stack)`
     .pages {
         font-family: 'Inter', sans-serif;
         font-style: normal;
-        font-weight: normal;
-        font-size: 12px;
+        font-weight: bold;
+        font-size: 16px;
         line-height: 166%;
         color: #111827;
     }
@@ -1859,16 +2407,16 @@ const PaginationStack = styled(Stack)`
         h1 {
             font-family: 'Inter', sans-serif;
             font-style: normal;
-            font-weight: normal;
-            font-size: 12px;
+            font-weight: bold;
+            font-size: 16px;
             line-height: 166%;
         }
         span {
             margin-left: 2px;
             font-family: 'Inter', sans-serif;
             font-style: normal;
-            font-weight: normal;
-            font-size: 12px;
+            font-weight: bold;
+            font-size: 16px;
             line-height: 19px;
 
             letter-spacing: 0.3px;
@@ -1877,20 +2425,30 @@ const PaginationStack = styled(Stack)`
     }
 
     .arrows {
-        width: 88px;
+        min-width: 88px;
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: bold !important;
+
+        line-height: 19px;
 
         .left,
         .right {
+            height: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 40px;
-            font-size: 20px;
+
+            font-size: 29px;
             cursor: pointer;
             box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
             border-radius: 6px;
+            &:hover {
+                background: #fef9ef;
+            }
         }
     }
 `
@@ -1933,6 +2491,19 @@ const TableButton = styled(Box)`
 
     .btn__print {
         height: 28px;
+        background: #f7f9fc;
+        box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
+        border-radius: 6px;
+
+        letter-spacing: 0.02em;
+        color: #868fa0;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .btn__columns {
+        height: 28px;
+        width: 150px;
         background: #f7f9fc;
         box-shadow: 0px 0px 0px 1px rgba(70, 79, 96, 0.2);
         border-radius: 6px;
