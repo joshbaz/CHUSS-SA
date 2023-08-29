@@ -23,6 +23,8 @@ const facilitatorController = require('./controllers/facilitators')
 const schoolController = require('./controllers/schools')
 const registrationController = require('./controllers/registration')
 
+const { autoUpdater } = require('electron-updater')
+
 let mainWindow = null
 
 require('@electron/remote/main').initialize()
@@ -70,7 +72,43 @@ function createWindow() {
     })
 }
 
-app.on('ready', createWindow)
+//app.on('ready', createWindow)
+
+app.whenReady().then(() => {
+    createWindow()
+
+    app.on('activate', function () {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    })
+
+    /** deals with system auto update */
+    /** check for any updates */
+    autoUpdater.checkForUpdates()
+    const messageOptions = {
+        message: 'Checking for updates',
+    }
+    dialog.showMessageBox(null, messageOptions)
+})
+
+/** deals with system auto update */
+/** an update of the system is available */
+autoUpdater.on('update-available', (info) => {
+    dialog.showMessageBox(null, { message: 'Update available.' })
+    let pth = autoUpdater.downloadUpdate()
+    dialog.showMessageBox(null, { message: pth })
+})
+
+/** deals with system auto update */
+/** update not available */
+autoUpdater.on('update-not-available', (info) => {
+    dialog.showMessageBox(null, { message: 'No update available' })
+})
+
+/** deals with system auto update */
+/** download of the system update complete */
+autoUpdater.on('update-downloaded', (info) => {
+    dialog.showMessageBox(null, { message: 'Update downloaded' })
+})
 
 //installer
 // async function installer() {
@@ -390,7 +428,10 @@ ipcMain.handle('individual-dcmember', doctoralMController.getIndividualDCMember)
 ipcMain.handle('update-dcmember', doctoralMController.updateDCMember)
 /** remove DCMember */
 ipcMain.handle('remove-dcmember', doctoralMController.removeDCMember)
-ipcMain.handle('migrate-supervisor-to-dcmember', doctoralMController.migrateSupervisortoDCMember)
+ipcMain.handle(
+    'migrate-supervisor-to-dcmember',
+    doctoralMController.migrateSupervisortoDCMember
+)
 ipcMain.handle('create-dcmember-main', doctoralMController.createDcMember)
 /*
  * Examiners
