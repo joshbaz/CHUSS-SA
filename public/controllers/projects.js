@@ -12,6 +12,7 @@ exports.createProject = async (event, values) => {
 
         fd.append('registrationNumber', values.registrationNumber)
         fd.append('studentName', values.studentName)
+         fd.append('gender', values.gender)
         fd.append('programType', values.programType)
         fd.append('degreeProgram', values.degreeProgram)
         fd.append('schoolName', values.schoolName)
