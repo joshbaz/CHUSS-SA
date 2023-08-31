@@ -121,6 +121,7 @@ const CreatePhdProject = () => {
     const initialValues = {
         registrationNumber: '',
         studentName: '',
+        gender: '',
         programType: 'PhD',
         degreeProgram: '',
         schoolName: '',

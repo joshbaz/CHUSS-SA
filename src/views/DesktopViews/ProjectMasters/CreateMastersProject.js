@@ -121,6 +121,7 @@ const CreateMastersProject = () => {
     const initialValues = {
         registrationNumber: '',
         studentName: '',
+        gender: '',
         programType: 'Masters',
         degreeProgram: '',
         schoolName: '',

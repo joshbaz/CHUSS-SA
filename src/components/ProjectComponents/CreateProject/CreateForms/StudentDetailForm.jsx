@@ -263,9 +263,31 @@ const StudentDetailForm = ({
                             </fieldset>
                         </Stack>
                     </Stack>
-                    {/** graduate program */}
-                    <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
+                    {/** graduate program && gender */}
+                    <Stack direction='row' w='100%'>
+                        {/** gender */}
+                        <Stack
+                            spacing='8px'
+                            className='form_wrap formfields__Dfieldset'>
+                            <label>
+                                Gender <span>*</span>
+                            </label>
+                            <fieldset>
+                                <Select
+                                    readOnly
+                                    placeholder='select gender'
+                                    name='gender'
+                                    value={values.gender}>
+                                    <option value={'Male'}>Male</option>
+                                    <option value={'Female'}>Female</option>
+                                </Select>
+                            </fieldset>
+                        </Stack>
+
+                        {/** graduate program */}
+                        <Stack
+                            spacing='8px'
+                            className='form_wrap formfields__Dfieldset'>
                             <label>
                                 Graduate Program Type <span>*</span>
                             </label>
@@ -299,7 +321,8 @@ const StudentDetailForm = ({
                                 ) : null}
                             </fieldset>
                         </Stack>
-                    </Box>
+                    </Stack>
+                  
 
                     {/** degree program */}
                     <Box className='formfields__Sfieldset'>

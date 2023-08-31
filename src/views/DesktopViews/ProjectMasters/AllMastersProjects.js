@@ -41,7 +41,6 @@ import {
 } from '../../../store/features/tags/tagSlice'
 import { initSocketConnection } from '../../../socketio.service'
 
-
 const AllMastersProjects = () => {
     const tagsData = useSelector((state) => state.tag)
     const [filterSearchOption, setFilterSearchOption] =
@@ -64,6 +63,9 @@ const AllMastersProjects = () => {
         },
         {
             title: 'Status',
+        },
+        {
+            title: 'School',
         },
 
         {
