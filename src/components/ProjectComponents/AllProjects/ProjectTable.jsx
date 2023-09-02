@@ -1190,32 +1190,118 @@ const ProjectTable = ({
                                                     .display ? (
                                                     <Td>
                                                         {' '}
-                                                        <StatusItem
-                                                            tcolors={
-                                                                activeElementSet &&
-                                                                activeElementSet.hex
-                                                                    ? activeElementSet.hex
-                                                                    : ''
-                                                            }
-                                                            bcolors={
-                                                                activeElementSet &&
-                                                                activeElementSet.rgba
-                                                                    ? activeElementSet.rgba
-                                                                    : ''
-                                                            }
-                                                            minW='160px'
-                                                            direction='row'
-                                                            alignItems='center'>
-                                                            <div />
-                                                            <Text>
-                                                                {' '}
-                                                                {activeElementSet &&
-                                                                activeElementSet.tagName !==
-                                                                    undefined
-                                                                    ? activeElementSet.tagName
-                                                                    : ''}
-                                                            </Text>
-                                                        </StatusItem>
+                                                        <Stack>
+                                                            <StatusItem
+                                                                tcolors={
+                                                                    activeElementSet &&
+                                                                    activeElementSet.hex
+                                                                        ? activeElementSet.hex
+                                                                        : ''
+                                                                }
+                                                                bcolors={
+                                                                    activeElementSet &&
+                                                                    activeElementSet.rgba
+                                                                        ? activeElementSet.rgba
+                                                                        : ''
+                                                                }
+                                                                minW='160px'
+                                                                direction='row'
+                                                                alignItems='center'>
+                                                                <div className='tag_point' />
+                                                                <Text>
+                                                                    {' '}
+                                                                    {activeElementSet &&
+                                                                    activeElementSet.tagName !==
+                                                                        undefined
+                                                                        ? activeElementSet.tagName
+                                                                        : ''}
+                                                                </Text>
+                                                            </StatusItem>
+
+                                                            {/** if statusDate */}
+                                                            {activeStatus &&
+                                                                activeStatus
+                                                                    .projectStatusId
+                                                                    .statusDate !==
+                                                                    undefined && (
+                                                                    <StatusItem
+                                                                        tcolors={
+                                                                            activeElementSet &&
+                                                                            activeElementSet.hex
+                                                                                ? activeElementSet.hex
+                                                                                : ''
+                                                                        }
+                                                                        bcolors={
+                                                                            activeElementSet &&
+                                                                            activeElementSet.rgba
+                                                                                ? '#eeeeef'
+                                                                                : ''
+                                                                        }
+                                                                        minW='160px'
+                                                                        direction='row'
+                                                                        justifyContent='center'
+                                                                        alignItems='center'>
+                                                                        <Text>
+                                                                            {' '}
+                                                                            {activeStatus &&
+                                                                            activeStatus
+                                                                                .projectStatusId
+                                                                                .statusDate !==
+                                                                                undefined
+                                                                                ? Moments(
+                                                                                      new Date(
+                                                                                          activeStatus.projectStatusId.statusDate
+                                                                                      )
+                                                                                  ).format(
+                                                                                      'DD MMM YY'
+                                                                                  )
+                                                                                : ''}
+                                                                        </Text>
+                                                                    </StatusItem>
+                                                                )}
+
+                                                            {/** if graduated */}
+                                                            {activeStatus &&
+                                                                activeStatus
+                                                                    .projectStatusId
+                                                                    .status ===
+                                                                    'Graduated' && (
+                                                                    <StatusItem
+                                                                        tcolors={
+                                                                            activeElementSet &&
+                                                                            activeElementSet.hex
+                                                                                ? activeElementSet.hex
+                                                                                : ''
+                                                                        }
+                                                                        bcolors={
+                                                                            activeElementSet &&
+                                                                            activeElementSet.rgba
+                                                                                ? '#eeeeef'
+                                                                                : ''
+                                                                        }
+                                                                        minW='160px'
+                                                                        direction='row'
+                                                                        justifyContent='center'
+                                                                        alignItems='center'>
+                                                                        <Text>
+                                                                            {' '}
+                                                                            {activeStatus &&
+                                                                            activeStatus
+                                                                                .projectStatusId
+                                                                                .status ===
+                                                                                'Graduated'
+                                                                                ? Moments(
+                                                                                      new Date(
+                                                                                          data.GraduationDate
+                                                                                      )
+                                                                                  ).format(
+                                                                                      'YYYY'
+                                                                                  )
+                                                                                : ''}
+                                                                        </Text>
+                                                                    </StatusItem>
+                                                                )}
+                                                        </Stack>
                                                     </Td>
                                                 ) : null}
 
@@ -1503,6 +1589,7 @@ const ProjectTable = ({
                                         } else {
                                         }
 
+                                        
                                         let allRegistrations = [
                                             ...data.registration,
                                         ]
@@ -1702,32 +1789,118 @@ const ProjectTable = ({
                                                     .display ? (
                                                     <Td>
                                                         {' '}
-                                                        <StatusItem
-                                                            tcolors={
-                                                                activeElementSet &&
-                                                                activeElementSet.hex
-                                                                    ? activeElementSet.hex
-                                                                    : ''
-                                                            }
-                                                            bcolors={
-                                                                activeElementSet &&
-                                                                activeElementSet.rgba
-                                                                    ? activeElementSet.rgba
-                                                                    : ''
-                                                            }
-                                                            minW='160px'
-                                                            direction='row'
-                                                            alignItems='center'>
-                                                            <div />
-                                                            <Text>
-                                                                {' '}
-                                                                {activeElementSet &&
-                                                                activeElementSet.tagName !==
-                                                                    undefined
-                                                                    ? activeElementSet.tagName
-                                                                    : ''}
-                                                            </Text>
-                                                        </StatusItem>
+                                                        <Stack>
+                                                            <StatusItem
+                                                                tcolors={
+                                                                    activeElementSet &&
+                                                                    activeElementSet.hex
+                                                                        ? activeElementSet.hex
+                                                                        : ''
+                                                                }
+                                                                bcolors={
+                                                                    activeElementSet &&
+                                                                    activeElementSet.rgba
+                                                                        ? activeElementSet.rgba
+                                                                        : ''
+                                                                }
+                                                                minW='160px'
+                                                                direction='row'
+                                                                alignItems='center'>
+                                                                <div className='tag_point' />
+                                                                <Text>
+                                                                    {' '}
+                                                                    {activeElementSet &&
+                                                                    activeElementSet.tagName !==
+                                                                        undefined
+                                                                        ? activeElementSet.tagName
+                                                                        : ''}
+                                                                </Text>
+                                                            </StatusItem>
+
+                                                            {/** if statusDate */}
+                                                            {activeStatus &&
+                                                                activeStatus
+                                                                    .projectStatusId
+                                                                    .statusDate !==
+                                                                    undefined && (
+                                                                    <StatusItem
+                                                                        tcolors={
+                                                                            activeElementSet &&
+                                                                            activeElementSet.hex
+                                                                                ? activeElementSet.hex
+                                                                                : ''
+                                                                        }
+                                                                        bcolors={
+                                                                            activeElementSet &&
+                                                                            activeElementSet.rgba
+                                                                                ? '#eeeeef'
+                                                                                : ''
+                                                                        }
+                                                                        minW='160px'
+                                                                        direction='row'
+                                                                        justifyContent='center'
+                                                                        alignItems='center'>
+                                                                        <Text>
+                                                                            {' '}
+                                                                            {activeStatus &&
+                                                                            activeStatus
+                                                                                .projectStatusId
+                                                                                .statusDate !==
+                                                                                undefined
+                                                                                ? Moments(
+                                                                                      new Date(
+                                                                                          activeStatus.projectStatusId.statusDate
+                                                                                      )
+                                                                                  ).format(
+                                                                                      'DD MMM YY'
+                                                                                  )
+                                                                                : ''}
+                                                                        </Text>
+                                                                    </StatusItem>
+                                                                )}
+
+                                                            {/** if graduated */}
+                                                            {activeStatus &&
+                                                                activeStatus
+                                                                    .projectStatusId
+                                                                    .status ===
+                                                                    'Graduated' && (
+                                                                    <StatusItem
+                                                                        tcolors={
+                                                                            activeElementSet &&
+                                                                            activeElementSet.hex
+                                                                                ? activeElementSet.hex
+                                                                                : ''
+                                                                        }
+                                                                        bcolors={
+                                                                            activeElementSet &&
+                                                                            activeElementSet.rgba
+                                                                                ? '#eeeeef'
+                                                                                : ''
+                                                                        }
+                                                                        minW='160px'
+                                                                        direction='row'
+                                                                        justifyContent='center'
+                                                                        alignItems='center'>
+                                                                        <Text>
+                                                                            {' '}
+                                                                            {activeStatus &&
+                                                                            activeStatus
+                                                                                .projectStatusId
+                                                                                .status ===
+                                                                                'Graduated'
+                                                                                ? Moments(
+                                                                                      new Date(
+                                                                                          data.GraduationDate
+                                                                                      )
+                                                                                  ).format(
+                                                                                      'YYYY'
+                                                                                  )
+                                                                                : ''}
+                                                                        </Text>
+                                                                    </StatusItem>
+                                                                )}
+                                                        </Stack>
                                                     </Td>
                                                 ) : null}
 
@@ -2350,7 +2523,7 @@ const StatusItem = styled(Stack)`
 
     padding: 3px 8px 3px 8px;
     background: ${({ bcolors }) => bcolors};
-    div {
+    .tag_point {
         border-radius: 2px;
         width: 6px;
         height: 6px;
