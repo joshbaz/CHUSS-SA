@@ -857,7 +857,7 @@ const ExaminerTable = ({
                                                                         <MenuItem
                                                                             onClick={() =>
                                                                                 routeNavigate(
-                                                                                    `/m-examiners/view/${data._id}`
+                                                                                    `/m-examiners/examiners/view/${data._id}`
                                                                                 )
                                                                             }>
                                                                             View

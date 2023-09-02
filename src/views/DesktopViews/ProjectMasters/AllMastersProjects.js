@@ -64,9 +64,6 @@ const AllMastersProjects = () => {
         {
             title: 'Status',
         },
-        {
-            title: 'School',
-        },
 
         {
             title: 'Topic',
