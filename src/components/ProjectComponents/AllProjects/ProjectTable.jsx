@@ -43,6 +43,7 @@ import {
     projectDeletion,
     reset,
 } from '../../../store/features/project/projectSlice'
+import TimelineCountdown from './TimelineCountdown'
 const ProjectTable = ({
     allTagData,
     studentType,
@@ -1220,87 +1221,90 @@ const ProjectTable = ({
 
                                                             {/** if statusDate */}
                                                             {activeStatus &&
-                                                                activeStatus
-                                                                    .projectStatusId
-                                                                    .statusDate !==
-                                                                    undefined && (
-                                                                    <StatusItem
-                                                                        tcolors={
-                                                                            activeElementSet &&
-                                                                            activeElementSet.hex
-                                                                                ? activeElementSet.hex
-                                                                                : ''
-                                                                        }
-                                                                        bcolors={
-                                                                            activeElementSet &&
-                                                                            activeElementSet.rgba
-                                                                                ? '#eeeeef'
-                                                                                : ''
-                                                                        }
-                                                                        minW='160px'
-                                                                        direction='row'
-                                                                        justifyContent='center'
-                                                                        alignItems='center'>
-                                                                        <Text>
-                                                                            {' '}
-                                                                            {activeStatus &&
-                                                                            activeStatus
-                                                                                .projectStatusId
-                                                                                .statusDate !==
-                                                                                undefined
-                                                                                ? Moments(
-                                                                                      new Date(
-                                                                                          activeStatus.projectStatusId.statusDate
-                                                                                      )
-                                                                                  ).format(
-                                                                                      'DD MMM YY'
+                                                            activeStatus
+                                                                .projectStatusId
+                                                                .statusDate !==
+                                                                undefined &&
+                                                            activeStatus
+                                                                .projectStatusId
+                                                                .statusDate ? (
+                                                                <StatusItem
+                                                                    tcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.hex
+                                                                            ? activeElementSet.hex
+                                                                            : ''
+                                                                    }
+                                                                    bcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.rgba
+                                                                            ? '#eeeeef'
+                                                                            : ''
+                                                                    }
+                                                                    minW='160px'
+                                                                    direction='row'
+                                                                    justifyContent='center'
+                                                                    alignItems='center'>
+                                                                    <Text>
+                                                                        {' '}
+                                                                        {activeStatus &&
+                                                                        activeStatus
+                                                                            .projectStatusId
+                                                                            .statusDate !==
+                                                                            undefined
+                                                                            ? Moments(
+                                                                                  new Date(
+                                                                                      activeStatus.projectStatusId.statusDate
                                                                                   )
-                                                                                : ''}
-                                                                        </Text>
-                                                                    </StatusItem>
-                                                                )}
+                                                                              ).format(
+                                                                                  'DD MMM YY'
+                                                                              )
+                                                                            : ''}
+                                                                    </Text>
+                                                                </StatusItem>
+                                                            ) : null}
 
                                                             {/** if graduated */}
                                                             {activeStatus &&
-                                                                activeStatus
-                                                                    .projectStatusId
-                                                                    .status ===
-                                                                    'Graduated' && (
-                                                                    <StatusItem
-                                                                        tcolors={
-                                                                            activeElementSet &&
-                                                                            activeElementSet.hex
-                                                                                ? activeElementSet.hex
-                                                                                : ''
-                                                                        }
-                                                                        bcolors={
-                                                                            activeElementSet &&
-                                                                            activeElementSet.rgba
-                                                                                ? '#eeeeef'
-                                                                                : ''
-                                                                        }
-                                                                        minW='160px'
-                                                                        direction='row'
-                                                                        justifyContent='center'
-                                                                        alignItems='center'>
-                                                                        <Text>
-                                                                            {' '}
-                                                                            {activeStatus &&
-                                                                            activeStatus
-                                                                                .projectStatusId
-                                                                                .status ===
-                                                                                'Graduated'
-                                                                                ? Moments(
-                                                                                      new Date(
-                                                                                          data.GraduationDate
-                                                                                      )
-                                                                                  ).format(
-                                                                                      'YYYY'
+                                                            activeStatus
+                                                                .projectStatusId
+                                                                .status ===
+                                                                'Graduated' ? (
+                                                                <StatusItem
+                                                                    tcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.hex
+                                                                            ? activeElementSet.hex
+                                                                            : ''
+                                                                    }
+                                                                    bcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.rgba
+                                                                            ? '#eeeeef'
+                                                                            : ''
+                                                                    }
+                                                                    minW='160px'
+                                                                    direction='row'
+                                                                    justifyContent='center'
+                                                                    alignItems='center'>
+                                                                    <Text>
+                                                                        {' '}
+                                                                        {activeStatus &&
+                                                                        activeStatus
+                                                                            .projectStatusId
+                                                                            .status ===
+                                                                            'Graduated'
+                                                                            ? Moments(
+                                                                                  new Date(
+                                                                                      data.GraduationDate
                                                                                   )
-                                                                                : ''}
-                                                                        </Text>
-                                                                    </StatusItem>
-                                                                )}
+                                                                              ).format(
+                                                                                  'YYYY'
+                                                                              )
+                                                                            : ''}
+                                                                    </Text>
+                                                                </StatusItem>
+                                                            ) : null}
                                                         </Stack>
                                                     </Td>
                                                 ) : null}
@@ -1589,7 +1593,20 @@ const ProjectTable = ({
                                         } else {
                                         }
 
-                                        
+                                        /** handle timeline countdown */
+                                        console.log(
+                                            'activeStatus',
+                                            activeStatus,
+                                            activeStatus &&
+                                                activeStatus.projectStatusId
+                                                    .expectedEndDate
+                                                ? activeStatus.projectStatusId
+                                                      .startDate
+                                                : null
+                                        )
+
+                                       
+
                                         let allRegistrations = [
                                             ...data.registration,
                                         ]
@@ -1817,89 +1834,123 @@ const ProjectTable = ({
                                                                 </Text>
                                                             </StatusItem>
 
+                                                            {/** if status has timeline */}
+                                                            {activeStatus &&
+                                                            activeStatus
+                                                                .projectStatusId
+                                                                .timeline !==
+                                                                undefined &&
+                                                            activeStatus
+                                                                .projectStatusId
+                                                                .timeline ===
+                                                                'true' ? (
+                                                                <StatusItem
+                                                                    tcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.hex
+                                                                            ? activeElementSet.hex
+                                                                            : ''
+                                                                    }
+                                                                    bcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.rgba
+                                                                            ? '#eeeeef'
+                                                                            : ''
+                                                                    }
+                                                                    minW='160px'
+                                                                    direction='row'
+                                                                    justifyContent='center'
+                                                                    alignItems='center'>
+                                                                    <TimelineCountdown expectedEndDate={activeStatus.projectStatusId.expectedEndDate ? activeStatus.projectStatusId.expectedEndDate : null } startDate={activeStatus.projectStatusId.startDate ? activeStatus.projectStatusId.startDate : null} />
+                                                                </StatusItem>
+                                                            ) : null}
+
                                                             {/** if statusDate */}
                                                             {activeStatus &&
-                                                                activeStatus
-                                                                    .projectStatusId
-                                                                    .statusDate !==
-                                                                    undefined && (
-                                                                    <StatusItem
-                                                                        tcolors={
-                                                                            activeElementSet &&
-                                                                            activeElementSet.hex
-                                                                                ? activeElementSet.hex
-                                                                                : ''
-                                                                        }
-                                                                        bcolors={
-                                                                            activeElementSet &&
-                                                                            activeElementSet.rgba
-                                                                                ? '#eeeeef'
-                                                                                : ''
-                                                                        }
-                                                                        minW='160px'
-                                                                        direction='row'
-                                                                        justifyContent='center'
-                                                                        alignItems='center'>
-                                                                        <Text>
-                                                                            {' '}
-                                                                            {activeStatus &&
-                                                                            activeStatus
-                                                                                .projectStatusId
-                                                                                .statusDate !==
-                                                                                undefined
-                                                                                ? Moments(
-                                                                                      new Date(
-                                                                                          activeStatus.projectStatusId.statusDate
-                                                                                      )
-                                                                                  ).format(
-                                                                                      'DD MMM YY'
+                                                            activeStatus
+                                                                .projectStatusId
+                                                                .statusDate !==
+                                                                undefined &&
+                                                            activeStatus
+                                                                .projectStatusId
+                                                                .statusDate ? (
+                                                                <StatusItem
+                                                                    tcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.hex
+                                                                            ? activeElementSet.hex
+                                                                            : ''
+                                                                    }
+                                                                    bcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.rgba
+                                                                            ? '#eeeeef'
+                                                                            : ''
+                                                                    }
+                                                                    minW='160px'
+                                                                    direction='row'
+                                                                    justifyContent='center'
+                                                                    alignItems='center'>
+                                                                    <Text>
+                                                                        {' '}
+                                                                        {activeStatus &&
+                                                                        activeStatus
+                                                                            .projectStatusId
+                                                                            .statusDate !==
+                                                                            undefined
+                                                                            ? Moments(
+                                                                                  new Date(
+                                                                                      activeStatus.projectStatusId.statusDate
                                                                                   )
-                                                                                : ''}
-                                                                        </Text>
-                                                                    </StatusItem>
-                                                                )}
+                                                                              ).format(
+                                                                                  'DD MMM YY'
+                                                                              )
+                                                                            : ''}
+                                                                    </Text>
+                                                                </StatusItem>
+                                                            ) : null}
 
                                                             {/** if graduated */}
                                                             {activeStatus &&
-                                                                activeStatus
-                                                                    .projectStatusId
-                                                                    .status ===
-                                                                    'Graduated' && (
-                                                                    <StatusItem
-                                                                        tcolors={
-                                                                            activeElementSet &&
-                                                                            activeElementSet.hex
-                                                                                ? activeElementSet.hex
-                                                                                : ''
-                                                                        }
-                                                                        bcolors={
-                                                                            activeElementSet &&
-                                                                            activeElementSet.rgba
-                                                                                ? '#eeeeef'
-                                                                                : ''
-                                                                        }
-                                                                        minW='160px'
-                                                                        direction='row'
-                                                                        justifyContent='center'
-                                                                        alignItems='center'>
-                                                                        <Text>
-                                                                            {' '}
-                                                                            {activeStatus &&
-                                                                            activeStatus
-                                                                                .projectStatusId
-                                                                                .status ===
-                                                                                'Graduated'
-                                                                                ? Moments(
-                                                                                      new Date(
-                                                                                          data.GraduationDate
-                                                                                      )
-                                                                                  ).format(
-                                                                                      'YYYY'
+                                                            activeStatus
+                                                                .projectStatusId
+                                                                .status ===
+                                                                'Graduated' ? (
+                                                                <StatusItem
+                                                                    tcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.hex
+                                                                            ? activeElementSet.hex
+                                                                            : ''
+                                                                    }
+                                                                    bcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.rgba
+                                                                            ? '#eeeeef'
+                                                                            : ''
+                                                                    }
+                                                                    minW='160px'
+                                                                    direction='row'
+                                                                    justifyContent='center'
+                                                                    alignItems='center'>
+                                                                    <Text>
+                                                                        {' '}
+                                                                        {activeStatus &&
+                                                                        activeStatus
+                                                                            .projectStatusId
+                                                                            .status ===
+                                                                            'Graduated'
+                                                                            ? Moments(
+                                                                                  new Date(
+                                                                                      data.GraduationDate
                                                                                   )
-                                                                                : ''}
-                                                                        </Text>
-                                                                    </StatusItem>
-                                                                )}
+                                                                              ).format(
+                                                                                  'YYYY'
+                                                                              )
+                                                                            : ''}
+                                                                    </Text>
+                                                                </StatusItem>
+                                                            ) : null}
                                                         </Stack>
                                                     </Td>
                                                 ) : null}
