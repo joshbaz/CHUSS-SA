@@ -70,39 +70,39 @@ const PhdDegreePrograms = [
 ]
 
 const MaDegreePrograms = [
-    { title: 'MASTER OF ARTS IN GENDER STUDIES' },
-    { title: 'MASTER OF ARTS IN HUMAN RIGHTS' },
-    { title: 'MASTER OF ARTS IN PHILOSOPHY ' },
-    { title: 'MASTER OF ARTS IN PHILOSOPHY IN APPLIED ETHICS' },
-    { title: 'MASTER OF ARTS IN HISTORY' },
-    { title: 'MASTER OF ARTS IN MUSIC' },
-    { title: 'MASTER OF ARTS IN PEACE AND CONFLICT STUDIES' },
-    { title: 'MASTER OF ARTS IN RELIGIOUS AND THEOLOGICAL STUDIES(Ggaba)' },
+    { title: 'Master of Arts in Gender Studies' },
+    { title: 'Master of Arts in Human Rights' },
+    { title: 'Master of Arts in Philosophy ' },
+    { title: 'Master of Arts in Philosophy in Applied Ethics' },
+    { title: 'Master of Arts in History' },
+    { title: 'Master of Arts in Music' },
+    { title: 'Master of Arts in Peace and Conflict Studies' },
+    { title: 'Master of Arts in Religious and Theological Studies(ggaba)' },
     {
-        title: 'MASTER OF ARTS IN RELIGIOUS AND THEOLOGICAL STUDIES(Kinyamasika)',
+        title: 'Master of Arts in Religious and Theological Studies(kinyamasika)',
     },
-    { title: 'MASTER OF ARTS IN DEVELOPMENT STUDIES' },
-    { title: 'MASTER OF ARTS IN LITERATURE' },
-    { title: 'MASTER OF ARTS IN FRENCH LANGUAGE STUDIES' },
-    { title: 'MASTER OF ARTS IN JOURNALISM AND COMMUNICATION' },
-    { title: 'MASTER OF ARTS IN STRATEGIC AND CORPORATE COMMUNICATION' },
-    { title: 'MASTER OF ARTS IN JOURNALISM AND MULTIMEDIA' },
-    { title: 'MASTER OF ARTS IN AFRICAN LANGUAGES' },
-    { title: 'MASTER OF ARTS LINGUISTICS' },
-    { title: 'MASTER OF ARTS IN PUBLIC ADMINISTRATION AND MANAGEMENT' },
-    { title: 'MASTER OF ARTS IN SOCIOLOGY' },
+    { title: 'Master of Arts in Development Studies' },
+    { title: 'Master of Arts in Literature' },
+    { title: 'Master of Arts in French Language Studies' },
+    { title: 'Master of Arts in Journalism and Communication' },
+    { title: 'Master of Arts in Strategic and Corporate Communication' },
+    { title: 'Master of Arts in Journalism and Multimedia' },
+    { title: 'Master of Arts in African Languages' },
+    { title: 'Master of Arts in Linguistics' },
+    { title: 'Master of Arts in Public Administration and Management' },
+    { title: 'Master of Arts in Sociology' },
     {
-        title: 'MASTER OF ARTS IN INTERNATIONAL RELATIONS AND DIPLOMATIC STUDIES',
+        title: 'Master of Arts in International Relations and Diplomatic Studies',
     },
-    { title: 'MASTER OF ARTS IN RURAL DEVELOPMENT' },
-    { title: 'MASTER OF ARTS IN SOCIAL WORK' },
-    { title: 'MASTER OF DEFENSE AND SECURITY STUDIES' },
-    { title: 'MASTER OF SECURITY AND STRATEGY' },
-    { title: 'MASTER OF EDUCATION IN EDUCATIONAL PSYCHOLOGY' },
-    { title: 'MASTER OF ORGANIZATIONAL PSYCHOLOGY' },
-    { title: 'MASTER OF ARTS IN COUNSELLING' },
-    { title: 'MASTER OF SCIENCE IN CLINICAL PSYCHOLOGY' },
-    { title: 'MASTER OF ARTS IN SOCIAL SECTOR PLANNING AND MANAGEMENT' },
+    { title: 'Master of Arts in Rural Development' },
+    { title: 'Master of Arts in Social Work' },
+    { title: 'Master ofArts in Defense and Security Studies' },
+    { title: 'Master of Arts in Security and Strategy' },
+    { title: 'Master of Education in Educational Psychology' },
+    { title: 'Master of Arts in Organizational Psychology' },
+    { title: 'Master of Arts in Counselling' },
+    { title: 'Master of Science in Clinical Psychology' },
+    { title: 'Master of Arts in Social Sector Planning and Management' },
 ]
 
 const StudentDetailForm = ({
@@ -274,7 +274,7 @@ const StudentDetailForm = ({
                             </label>
                             <fieldset>
                                 <Select
-                                    readOnly
+                                    onChange={handleChange}
                                     placeholder='select gender'
                                     name='gender'
                                     value={values.gender}>
@@ -322,17 +322,16 @@ const StudentDetailForm = ({
                             </fieldset>
                         </Stack>
                     </Stack>
-                  
 
                     {/** degree program */}
                     <Box className='formfields__Sfieldset'>
-                        <Stack spacing='8px' className='form_wrap'>
+                        <Stack spacing='8px' className='form_wrap degreeProg'>
                             <label>
                                 Degree Program <span>*</span>
                             </label>
                             <fieldset>
                                 <Select
-                                    readOnly
+                                   
                                     placeholder='select option'
                                     name='degreeProgram'
                                     onChange={handleChange}
@@ -501,7 +500,7 @@ const StudentDetailForm = ({
 export default StudentDetailForm
 
 const FormContainer = styled(Box)`
-    font-family: Inter;
+    font-family: 'Inter', sans-serif;
 
     .form_container {
         width: 100%;
@@ -530,9 +529,9 @@ const FormContainer = styled(Box)`
     }
 
     label {
-        font-family: Inter;
+        font-family: 'Inter', sans-serif;
         font-weight: 500;
-        font-size: 14px;
+        font-size: 13px;
         line-height: 20px;
         color: #464f60;
         letter-spacing: 0.02em;
@@ -560,6 +559,8 @@ const FormContainer = styled(Box)`
         border-color: red !important;
         box-shadow: none;
     }
+
+    
 `
 
 const ErrorMsg = styled(Box)`

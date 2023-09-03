@@ -253,6 +253,12 @@ const PhDProjectReport = ({ ...props }) => {
                                     values={individual}
                                     allTagData={tagsData.allTagItems.items}
                                     type={'Phd'}
+                                    sNames={
+                                        individual !== null &&
+                                        individual.student.studentName
+                                            ? individual.student.studentName
+                                            : ''
+                                    }
                                 />
                             </Box>
 
@@ -309,6 +315,12 @@ const PhDProjectReport = ({ ...props }) => {
                                     <ExaminersReports
                                         values={individual}
                                         rlink={'/phd'}
+                                        sNames={
+                                            individual !== null &&
+                                            individual.student.studentName
+                                                ? individual.student.studentName
+                                                : ''
+                                        }
                                     />
                                 </Box>
 

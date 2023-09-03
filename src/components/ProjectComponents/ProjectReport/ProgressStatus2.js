@@ -40,7 +40,7 @@ import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 import Moments from 'moment-timezone'
 
-const ProgressStatus2 = ({ values, allTagData, type }) => {
+const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
     const [projectId, setProjectId] = React.useState(null)
     const [projectTagData, setProjectTagData] = React.useState([])
     const [colorPicked, setColorPicked] = React.useState({ hex: '' })
@@ -230,7 +230,7 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
                 },
             ])
         }
-    }, [values])
+    }, [values, sNames])
 
     //new trial
     useEffect(() => {
@@ -273,7 +273,7 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
         } else {
             setDisplayListState(() => [...listState])
         }
-    }, [values, listState, type])
+    }, [values, listState, type, sNames])
 
     useEffect(() => {
         let allInfoData = allTagData.filter(
@@ -305,12 +305,24 @@ const ProgressStatus2 = ({ values, allTagData, type }) => {
 
                 if (activeElementSet) {
                     setActiveStatus(activeElementSet)
+                    
                 }
             }
         } else {
+            setActiveStatus(null)
+            setNewActiveStatus({
+                status: '',
+                startDate: '',
+                expectedEnd: '',
+                statusEntryType: '',
+                endDate: '',
+                dateOfGraduation: '',
+                timeline: 'false',
+                statusDate: '',
+            })
         }
         setProjectTagData(allInfoData)
-    }, [allTagData, values, type])
+    }, [allTagData, values, type, sNames])
 
     /**
      * effect for projectId to change

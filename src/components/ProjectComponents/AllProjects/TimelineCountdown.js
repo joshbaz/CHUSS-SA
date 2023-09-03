@@ -175,12 +175,12 @@ const TimelineCountdown = ({ expectedEndDate, startDate }) => {
                         <span>years</span>
                     </div>
                 ) : null}
-                {countdownDates.months && (
+                {countdownDates.months ? (
                     <div className='countdown-item'>
                         {countdownDates.months ? countdownDates.months : 0}
                         <span>months</span>
                     </div>
-                )}
+                ): null}
 
                 <div className='countdown-item'>
                     {countdownDates.days ? countdownDates.days : 0}
@@ -231,7 +231,7 @@ const Container = styled.div`
 
     .countdown-item span {
         color: #333;
-        font-size: 8px;
+        font-size: 9px;
         font-weight: 600;
         text-transform: uppercase;
     }

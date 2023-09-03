@@ -55,7 +55,7 @@ const TableHead = [
     },
     { title: '' },
 ]
-const ExaminersReports = ({ values, rlink }) => {
+const ExaminersReports = ({ values, rlink, sNames }) => {
     // eslint-disable-next-line no-unused-vars
     const [reportLists, setReportLists] = React.useState([])
     const [normalReports, setNormalReports] = React.useState([])
@@ -92,6 +92,8 @@ const ExaminersReports = ({ values, rlink }) => {
             setReportLists(arrayData)
         } else {
             setReportLists([])
+            setNormalReports([])
+            setResubmissionReports([])
         }
     }, [values])
     return (

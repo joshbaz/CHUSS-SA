@@ -246,6 +246,12 @@ const MastersProjectReport = () => {
                                     values={individual}
                                     allTagData={tagsData.allTagItems.items}
                                     type={'Masters'}
+                                    sNames={
+                                        individual !== null &&
+                                        individual.student.studentName
+                                            ? individual.student.studentName
+                                            : ''
+                                    }
                                 />
                             </Stack>
 
@@ -303,6 +309,12 @@ const MastersProjectReport = () => {
                                     <ExaminersReports
                                         values={individual}
                                         rlink={'/masters'}
+                                        sNames={
+                                            individual !== null &&
+                                            individual.student.studentName
+                                                ? individual.student.studentName
+                                                : ''
+                                        }
                                     />
                                 </Box>
 

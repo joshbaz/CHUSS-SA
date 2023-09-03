@@ -1219,6 +1219,56 @@ const ProjectTable = ({
                                                                 </Text>
                                                             </StatusItem>
 
+                                                            {/** if status has timeline */}
+                                                            {activeStatus &&
+                                                            activeStatus
+                                                                .projectStatusId
+                                                                .timeline !==
+                                                                undefined &&
+                                                            activeStatus
+                                                                .projectStatusId
+                                                                .timeline ===
+                                                                'true' ? (
+                                                                <StatusItem
+                                                                    tcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.hex
+                                                                            ? activeElementSet.hex
+                                                                            : ''
+                                                                    }
+                                                                    bcolors={
+                                                                        activeElementSet &&
+                                                                        activeElementSet.rgba
+                                                                            ? '#eeeeef'
+                                                                            : ''
+                                                                    }
+                                                                    minW='160px'
+                                                                    direction='row'
+                                                                    justifyContent='center'
+                                                                    alignItems='center'>
+                                                                    <TimelineCountdown
+                                                                        expectedEndDate={
+                                                                            activeStatus
+                                                                                .projectStatusId
+                                                                                .expectedEndDate
+                                                                                ? activeStatus
+                                                                                      .projectStatusId
+                                                                                      .expectedEndDate
+                                                                                : null
+                                                                        }
+                                                                        startDate={
+                                                                            activeStatus
+                                                                                .projectStatusId
+                                                                                .startDate
+                                                                                ? activeStatus
+                                                                                      .projectStatusId
+                                                                                      .startDate
+                                                                                : null
+                                                                        }
+                                                                    />
+                                                                </StatusItem>
+                                                            ) : null}
+
                                                             {/** if statusDate */}
                                                             {activeStatus &&
                                                             activeStatus
@@ -1594,17 +1644,6 @@ const ProjectTable = ({
                                         }
 
                                         /** handle timeline countdown */
-                                        console.log(
-                                            'activeStatus',
-                                            activeStatus,
-                                            activeStatus &&
-                                                activeStatus.projectStatusId
-                                                    .expectedEndDate
-                                                ? activeStatus.projectStatusId
-                                                      .startDate
-                                                : null
-                                        )
-
                                        
 
                                         let allRegistrations = [

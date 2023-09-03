@@ -41,8 +41,10 @@ const UpdateOverallScores = ({ values, errors, handleChange }) => {
                                 <Box w='109px'>
                                     <Input
                                         type='number'
+                                       
                                         placeholder='1 - 99'
                                         name='score'
+                                        step='.01'
                                         value={
                                             values !== null && values.score
                                                 ? values.score
