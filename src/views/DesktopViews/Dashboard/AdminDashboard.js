@@ -285,9 +285,167 @@ const AdminDashboard = () => {
                         direction='column'
                         padding={'0 0px'}
                         pb='20px'
-                        pt='40px'
+                        pt='0px'
                         bg={backgroundMainColor}
                         spacing='41px'>
+                        {/** search */}
+                        <Stack
+                            direction='row'
+                            alignItems={'center'}
+                            justifyContent='space-between'
+                            padding={'0 20px'}
+                            borderRadius={'0px'}
+                            m={'0 0px'}
+                            bg='#FEF9EF'
+                            minH='70px'>
+                            <Stack
+                                direction='row'
+                                spacing='40px'
+                                alignItems={'center'}>
+                                <Box className='s_title'>
+                                    <Text>Find Student</Text>
+                                </Box>
+                                <Popover
+                                    isOpen={isEditing}
+                                    onOpen={setIsEditing.on}
+                                    onClose={setIsEditing.off}
+                                    closeOnBlur={false}
+                                    isLazy
+                                    lazyBehavior='keepMounted'>
+                                    <InputStack
+                                        direction='row'
+                                        alignItems='center'
+                                        spacing='15px'>
+                                        <PopoverAnchor>
+                                            <InputGroup>
+                                                <InputLeftElement
+                                                    h='35px'
+                                                    children={<BiSearch />}
+                                                />
+                                                <Input
+                                                    h='35px'
+                                                    type='text'
+                                                    value={searchWord}
+                                                    bg={'#ffffff'}
+                                                    placeholder='Search name, student registration number...'
+                                                    minW={{
+                                                        base: '40px',
+                                                        xl: '360px',
+                                                    }}
+                                                    onChange={handleSearchInput}
+                                                />
+                                            </InputGroup>
+                                        </PopoverAnchor>
+
+                                        <PopoverTrigger>
+                                            {isEditing ? (
+                                                <Button className='button'>
+                                                    Close
+                                                </Button>
+                                            ) : (
+                                                <Button className='button'>
+                                                    Search
+                                                </Button>
+                                            )}
+                                        </PopoverTrigger>
+                                    </InputStack>
+
+                                    <PopoverContent>
+                                        <PopoverBody w='100%'>
+                                            <InputStack
+                                                direction='column'
+                                                alignItems='center'
+                                                spacing='15px'>
+                                                {allSearchedData.items.length >
+                                                0 ? (
+                                                    <>
+                                                        {allSearchedData.items.map(
+                                                            (data, index) => {
+                                                                let linksto =
+                                                                    data.student.graduate_program_type.toLowerCase() ===
+                                                                    'masters'
+                                                                        ? 'masters'
+                                                                        : 'phd'
+                                                                return (
+                                                                    <Stack
+                                                                        w='100%'
+                                                                        borderBottom={
+                                                                            '1px solid gray'
+                                                                        }
+                                                                        direction='row'
+                                                                        alignItems='center'
+                                                                        justifyContent='space-between'>
+                                                                        <Stack
+                                                                            direction='column'
+                                                                            pb='10px'>
+                                                                            <Box className='stname'>
+                                                                                {
+                                                                                    data
+                                                                                        .student
+                                                                                        .studentName
+                                                                                }
+                                                                            </Box>
+                                                                            <Box
+                                                                                className='streg'
+                                                                                style={{
+                                                                                    fontSize:
+                                                                                        '13px',
+                                                                                    fontWeight:
+                                                                                        'bold',
+                                                                                }}>
+                                                                                {
+                                                                                    data
+                                                                                        .student
+                                                                                        .registrationNumber
+                                                                                }
+                                                                            </Box>
+                                                                        </Stack>
+
+                                                                        <Button
+                                                                            h='30px'
+                                                                            style={{
+                                                                                fontSize:
+                                                                                    '14px',
+                                                                            }}
+                                                                            onClick={() =>
+                                                                                routeNavigate(
+                                                                                    `/${linksto}/projects/projectreport/${data._id}`
+                                                                                )
+                                                                            }>
+                                                                            {
+                                                                                data
+                                                                                    .student
+                                                                                    .graduate_program_type
+                                                                            }
+                                                                        </Button>
+                                                                    </Stack>
+                                                                )
+                                                            }
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <Box>No Student Found</Box>
+                                                )}
+                                            </InputStack>
+                                        </PopoverBody>
+                                    </PopoverContent>
+                                </Popover>
+                            </Stack>
+                            <AdStack
+                                direction='row'
+                                alignItems={'center'}
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => routeNavigate('/m-reports')}>
+                                <Box className='ad_icon'>
+                                    <MdManageSearch />
+                                </Box>
+
+                                <Box className='ad_text'>
+                                    <Text>manage reports</Text>
+                                </Box>
+                            </AdStack>
+                        </Stack>
+
                         {/** shorts */}
                         {/** shortLinks */}
                         <LinksStack direction='column' padding={'0 20px'}>
@@ -587,162 +745,6 @@ const AdminDashboard = () => {
                                 <AdminLineGraph />
                             </Box>
                         </StatStack>
-
-                        {/** search */}
-                        <Stack
-                            direction='row'
-                            alignItems={'center'}
-                            justifyContent='space-between'
-                            padding={'0 20px'}
-                            bg='#FEF9EF'
-                            minH='70px'>
-                            <Stack
-                                direction='row'
-                                spacing='40px'
-                                alignItems={'center'}>
-                                <Box className='s_title'>
-                                    <Text>Find Student</Text>
-                                </Box>
-                                <Popover
-                                    isOpen={isEditing}
-                                    onOpen={setIsEditing.on}
-                                    onClose={setIsEditing.off}
-                                    closeOnBlur={false}
-                                    isLazy
-                                    lazyBehavior='keepMounted'>
-                                    <InputStack
-                                        direction='row'
-                                        alignItems='center'
-                                        spacing='15px'>
-                                        <PopoverAnchor>
-                                            <InputGroup>
-                                                <InputLeftElement
-                                                    h='35px'
-                                                    children={<BiSearch />}
-                                                />
-                                                <Input
-                                                    h='35px'
-                                                    type='text'
-                                                    value={searchWord}
-                                                    bg={'#ffffff'}
-                                                    placeholder='Search name, student registration number...'
-                                                    minW={{
-                                                        base: '40px',
-                                                        xl: '360px',
-                                                    }}
-                                                    onChange={handleSearchInput}
-                                                />
-                                            </InputGroup>
-                                        </PopoverAnchor>
-
-                                        <PopoverTrigger>
-                                            {isEditing ? (
-                                                <Button className='button'>
-                                                    Close
-                                                </Button>
-                                            ) : (
-                                                <Button className='button'>
-                                                    Search
-                                                </Button>
-                                            )}
-                                        </PopoverTrigger>
-                                    </InputStack>
-
-                                    <PopoverContent>
-                                        <PopoverBody w='100%'>
-                                            <InputStack
-                                                direction='column'
-                                                alignItems='center'
-                                                spacing='15px'>
-                                                {allSearchedData.items.length >
-                                                0 ? (
-                                                    <>
-                                                        {allSearchedData.items.map(
-                                                            (data, index) => {
-                                                                let linksto =
-                                                                    data.student.graduate_program_type.toLowerCase() ===
-                                                                    'masters'
-                                                                        ? 'masters'
-                                                                        : 'phd'
-                                                                return (
-                                                                    <Stack
-                                                                        w='100%'
-                                                                        borderBottom={
-                                                                            '1px solid gray'
-                                                                        }
-                                                                        direction='row'
-                                                                        alignItems='center'
-                                                                        justifyContent='space-between'>
-                                                                        <Stack
-                                                                            direction='column'
-                                                                            pb='10px'>
-                                                                            <Box className='stname'>
-                                                                                {
-                                                                                    data
-                                                                                        .student
-                                                                                        .studentName
-                                                                                }
-                                                                            </Box>
-                                                                            <Box
-                                                                                className='streg'
-                                                                                style={{
-                                                                                    fontSize:
-                                                                                        '13px',
-                                                                                    fontWeight:
-                                                                                        'bold',
-                                                                                }}>
-                                                                                {
-                                                                                    data
-                                                                                        .student
-                                                                                        .registrationNumber
-                                                                                }
-                                                                            </Box>
-                                                                        </Stack>
-
-                                                                        <Button
-                                                                            h='30px'
-                                                                            style={{
-                                                                                fontSize:
-                                                                                    '14px',
-                                                                            }}
-                                                                            onClick={() =>
-                                                                                routeNavigate(
-                                                                                    `/${linksto}/projects/projectreport/${data._id}`
-                                                                                )
-                                                                            }>
-                                                                            {
-                                                                                data
-                                                                                    .student
-                                                                                    .graduate_program_type
-                                                                            }
-                                                                        </Button>
-                                                                    </Stack>
-                                                                )
-                                                            }
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    <Box>No Student Found</Box>
-                                                )}
-                                            </InputStack>
-                                        </PopoverBody>
-                                    </PopoverContent>
-                                </Popover>
-                            </Stack>
-                            <AdStack
-                                direction='row'
-                                alignItems={'center'}
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => routeNavigate('/m-reports')}>
-                                <Box className='ad_icon'>
-                                    <MdManageSearch />
-                                </Box>
-
-                                <Box className='ad_text'>
-                                    <Text>manage reports</Text>
-                                </Box>
-                            </AdStack>
-                        </Stack>
 
                         {/** stats */}
                         <StatStack
