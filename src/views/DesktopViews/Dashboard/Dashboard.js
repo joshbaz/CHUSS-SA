@@ -40,6 +40,7 @@ import { allSupervisors } from '../../../store/features/supervisors/supervisorSl
 import { tagGetAll } from '../../../store/features/tags/tagSlice'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+import toast from 'react-hot-toast'
 
 const tiledata = [
     {
@@ -70,7 +71,7 @@ const Dashboard = () => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let Location = useLocation()
-    let toast = useToast()
+
     const [searchWord, setSearchWord] = React.useState('')
     let { allprojects, isError, isSuccess, message } = useSelector(
         (state) => state.project
@@ -92,41 +93,170 @@ const Dashboard = () => {
     //websocket trial
     React.useEffect(() => {
         const io = initSocketConnection()
-        dispatch(getAllProjects())
-        dispatch(allOpponents())
-        dispatch(allExaminers())
-        dispatch(allSupervisors())
-        dispatch(tagGetAll())
+        toast.promise(
+            dispatch(getAllProjects())
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        if (res.payload.includes('ECONNREFUSED')) {
+                            throw new Error('Check your internet connection')
+                        } else {
+                            let errorMessage = res.payload
+                            throw new Error(errorMessage)
+                        }
+                    } else {
+                        return dispatch(allOpponents())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        if (res.payload.includes('ECONNREFUSED')) {
+                            throw new Error('Check your internet connection')
+                        } else {
+                            let errorMessage = res.payload
+                            throw new Error(errorMessage)
+                        }
+                    } else {
+                        return dispatch(allExaminers())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        if (res.payload.includes('ECONNREFUSED')) {
+                            throw new Error('Check your internet connection')
+                        } else {
+                            let errorMessage = res.payload
+                            throw new Error(errorMessage)
+                        }
+                    } else {
+                        return dispatch(allSupervisors())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        if (res.payload.includes('ECONNREFUSED')) {
+                            throw new Error('Check your internet connection')
+                        } else {
+                            let errorMessage = res.payload
+                            throw new Error(errorMessage)
+                        }
+                    } else {
+                        return dispatch(tagGetAll())
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    console.log(err)
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
+
         io.on('updatestudent', (data) => {
             if (data.actions === 'update-all-student') {
-                dispatch(getAllProjects())
-                dispatch(allOpponents())
-                dispatch(allExaminers())
-                dispatch(allSupervisors())
+                toast.promise(
+                    dispatch(getAllProjects())
+                        .then((res) => {
+                            if (res.meta.requestStatus === 'rejected') {
+                                if (res.payload.includes('ECONNREFUSED')) {
+                                    throw new Error(
+                                        'Check your internet connection'
+                                    )
+                                } else {
+                                    let errorMessage = res.payload
+                                    throw new Error(errorMessage)
+                                }
+                            } else {
+                                return dispatch(allOpponents())
+                            }
+                        })
+                        .then((res) => {
+                            if (res.meta.requestStatus === 'rejected') {
+                                if (res.payload.includes('ECONNREFUSED')) {
+                                    throw new Error(
+                                        'Check your internet connection'
+                                    )
+                                } else {
+                                    let errorMessage = res.payload
+                                    throw new Error(errorMessage)
+                                }
+                            } else {
+                                return dispatch(allExaminers())
+                            }
+                        })
+                        .then((res) => {
+                            if (res.meta.requestStatus === 'rejected') {
+                                if (res.payload.includes('ECONNREFUSED')) {
+                                    throw new Error(
+                                        'Check your internet connection'
+                                    )
+                                } else {
+                                    let errorMessage = res.payload
+                                    throw new Error(errorMessage)
+                                }
+                            } else {
+                                return dispatch(allSupervisors())
+                            }
+                        }),
+                    {
+                        loading: 'updating Information',
+                        success: (data) => `Successfully updated`,
+                        error: (err) => {
+                            console.log(err)
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    }
+                )
+
+               
+               
+               
             }
         })
+
+         return () => {
+             io.disconnect()
+             toast.dismiss()
+         }
     }, [])
 
-    React.useEffect(() => {
-        let page = Location.search.split('').slice(3).join('')
-        let values = {
-            page: page,
-        }
+    // React.useEffect(() => {
+    //     let page = Location.search.split('').slice(3).join('')
+    //     let values = {
+    //         page: page,
+    //     }
 
-        dispatch(getPProjects(values))
-        dispatch(getAllProjects())
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [Location])
+    //     dispatch(getPProjects(values))
+    //     dispatch(getAllProjects())
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [Location])
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
 
             if (message === 'Not authenticated') {
                 dispatch(Logout())
@@ -149,8 +279,6 @@ const Dashboard = () => {
         // }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, isError, message])
-
-    useEffect(() => {}, [])
 
     const handleSearchInput = (e) => {
         e.preventDefault()

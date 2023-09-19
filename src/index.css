@@ -1,64 +1,99 @@
 @font-face {
-  font-family: 'Inter', sans-serif;
-  font-size: 30px;
-  font-style: italic;
-  src: url(fonts/Inter-VariableFont_slnt\,wght.ttf) format('truetype'),
-  url(fonts/static/Inter-Black.ttf) format('truetype'),
-  url(fonts/static/Inter-Bold.ttf) format('truetype'),
-  url(fonts/static/Inter-ExtraBold.ttf) format('truetype'),
-  url(fonts/static/Inter-ExtraLight.ttf) format('truetype'),
-  url(fonts/static/Inter-Light.ttf) format('truetype'),
-  url(fonts/static/Inter-Medium.ttf) format('truetype'),
-  url(fonts/static/Inter-Regular.ttf) format('truetype'),
-  url(fonts/static/Inter-SemiBold.ttf) format('truetype'),
-  url(fonts/static/Inter-Thin.ttf) format('truetype');
+    font-family: 'Inter', sans-serif;
+    font-size: 30px;
+    font-style: italic;
+    src: url(fonts/Inter-VariableFont_slnt\wght.ttf) format('truetype'),
+        url(fonts/static/Inter-Black.ttf) format('truetype'),
+        url(fonts/static/Inter-Bold.ttf) format('truetype'),
+        url(fonts/static/Inter-ExtraBold.ttf) format('truetype'),
+        url(fonts/static/Inter-ExtraLight.ttf) format('truetype'),
+        url(fonts/static/Inter-Light.ttf) format('truetype'),
+        url(fonts/static/Inter-Medium.ttf) format('truetype'),
+        url(fonts/static/Inter-Regular.ttf) format('truetype'),
+        url(fonts/static/Inter-SemiBold.ttf) format('truetype'),
+        url(fonts/static/Inter-Thin.ttf) format('truetype');
 }
 
 * {
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-
-
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont,'Inter', 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
+        'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+        'Helvetica Neue', sans-serif;
     font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-     box-sizing:border-box;
-        overflow-x:hidden;
-       
-
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 code {
- font-family: 'Inter', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 ::-webkit-scrollbar {
-  width: 15px;
+    width: 15px;
 }
-
-
-
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+    background: rgba(10, 59, 28, 0.4);
 }
-
- 
 
 ::-webkit-scrollbar-thumb {
-  background: #888; 
+    background: rgba(253, 197, 78, 0.8);
 }
 
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+    background: #555;
+}
+
+::-webkit-scrollbar-button {
+    display: block;
+}
+
+::-webkit-scrollbar-button {
+    display: block;
+    background-color: #b91c1c;
+    background-repeat: no-repeat;
+    background-size: 80%;
+    background-position: center;
+}
+
+::-webkit-scrollbar-button:vertical:start:decrement {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/7e/Chevron-up.svg');
+}
+
+::-webkit-scrollbar-button:vertical:end:decrement {
+    display: none;
+}
+
+::-webkit-scrollbar-button:vertical:end:increment {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/ee/Chevron-down.svg');
+}
+
+::-webkit-scrollbar-button:vertical:start:increment {
+    display: none;
+}
+
+::-webkit-scrollbar-button:horizontal:start:decrement {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/7e/Chevron-up.svg');
+    background-repeat: no-repeat;
+   
+}
+
+::-webkit-scrollbar-button:horizontal:end:decrement {
+    display: none;
+}
+
+::-webkit-scrollbar-button:horizontal:end:increment {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/7e/Chevron-up.svg');
+}
+
+::-webkit-scrollbar-button:horizontal:start:increment {
+    display: none;
 }

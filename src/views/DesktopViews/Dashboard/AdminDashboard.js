@@ -46,9 +46,11 @@ import { allOpponents } from '../../../store/features/opponents/opponentSlice'
 import { allExaminers } from '../../../store/features/Examiner/examinerSlice'
 import { allSupervisors } from '../../../store/features/supervisors/supervisorSlice'
 import { tagGetAll } from '../../../store/features/tags/tagSlice'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import AdminLineGraph from '../../../components/Dashboard/Graph/AdminLineGraph'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+//import { ThreeDots } from 'react-loader-spinner'
+import toast from 'react-hot-toast'
 
 const tiledata = [
     {
@@ -103,8 +105,8 @@ const { backgroundMainColor, textLightColor } = dashboardLightTheme
 const AdminDashboard = () => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let Location = useLocation()
-    let toast = useToast()
+    //  let Location = useLocation()
+
     const [searchWord, setSearchWord] = React.useState('')
     let { allprojects, isError, isSuccess, message } = useSelector(
         (state) => state.project
@@ -129,59 +131,241 @@ const AdminDashboard = () => {
     //     }
     // }, [])
 
+    /** load the page  */
+
     //websocket trial
     React.useEffect(() => {
-        dispatch(getAllProjects())
-        dispatch(allOpponents())
-        dispatch(allExaminers())
-        dispatch(allSupervisors())
-        dispatch(tagGetAll())
-        dispatch(allFacilitators())
-        dispatch(allLoginActivities())
+        toast.promise(
+            dispatch(getAllProjects())
+                .then((res) => {
+                    console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        if (res.payload.includes('ECONNREFUSED')) {
+                            throw new Error('Check your internet connection')
+                        } else {
+                            let errorMessage = res.payload
+                            throw new Error(errorMessage)
+                        }
+                    } else {
+                        return dispatch(allOpponents())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        if (res.payload.includes('ECONNREFUSED')) {
+                            throw new Error('Check your internet connection')
+                        } else {
+                            let errorMessage = res.payload
+                            throw new Error(errorMessage)
+                        }
+                    } else {
+                        return dispatch(allExaminers())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        if (res.payload.includes('ECONNREFUSED')) {
+                            throw new Error('Check your internet connection')
+                        } else {
+                            let errorMessage = res.payload
+                            throw new Error(errorMessage)
+                        }
+                    } else {
+                        return dispatch(allSupervisors())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        if (res.payload.includes('ECONNREFUSED')) {
+                            throw new Error('Check your internet connection')
+                        } else {
+                            let errorMessage = res.payload
+                            throw new Error(errorMessage)
+                        }
+                    } else {
+                        return dispatch(tagGetAll())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        if (res.payload.includes('ECONNREFUSED')) {
+                            throw new Error('Check your internet connection')
+                        } else {
+                            let errorMessage = res.payload
+                            throw new Error(errorMessage)
+                        }
+                    } else {
+                        return dispatch(allFacilitators())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        if (res.payload.includes('ECONNREFUSED')) {
+                            throw new Error('Check your internet connection')
+                        } else {
+                            let errorMessage = res.payload
+                            throw new Error(errorMessage)
+                        }
+                    } else {
+                        return dispatch(allLoginActivities())
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    console.log(err)
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
 
+        // dispatch(allOpponents())
+        // dispatch(allExaminers())
+        // dispatch(allSupervisors())
+        //  dispatch(tagGetAll())
+        // dispatch(allFacilitators())
+        // dispatch(allLoginActivities())
+        //checkout finally
         const io = initSocketConnection()
         io.on('updatestudent', (data) => {
             if (data.actions === 'update-all-student') {
-                dispatch(getAllProjects())
-                dispatch(allOpponents())
-                dispatch(allExaminers())
-                dispatch(allSupervisors())
+                toast.promise(
+                    dispatch(getAllProjects())
+                        .then((res) => {
+                            if (res.meta.requestStatus === 'rejected') {
+                                if (res.payload.includes('ECONNREFUSED')) {
+                                    throw new Error(
+                                        'Check your internet connection'
+                                    )
+                                } else {
+                                    let errorMessage = res.payload
+                                    throw new Error(errorMessage)
+                                }
+                            } else {
+                                return dispatch(allOpponents())
+                            }
+                        })
+                        .then((res) => {
+                            if (res.meta.requestStatus === 'rejected') {
+                                if (res.payload.includes('ECONNREFUSED')) {
+                                    throw new Error(
+                                        'Check your internet connection'
+                                    )
+                                } else {
+                                    let errorMessage = res.payload
+                                    throw new Error(errorMessage)
+                                }
+                            } else {
+                                return dispatch(allExaminers())
+                            }
+                        })
+                        .then((res) => {
+                            if (res.meta.requestStatus === 'rejected') {
+                                if (res.payload.includes('ECONNREFUSED')) {
+                                    throw new Error(
+                                        'Check your internet connection'
+                                    )
+                                } else {
+                                    let errorMessage = res.payload
+                                    throw new Error(errorMessage)
+                                }
+                            } else {
+                                return dispatch(allSupervisors())
+                            }
+                        }),
+                    {
+                        loading: 'updating Information',
+                        success: (data) => `Successfully updated`,
+                        error: (err) => {
+                            console.log(err)
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    }
+                )
             }
         })
 
         io.on('updatedAdmin', (data) => {
             if (data.actions === 'update-admin') {
                 //dispatch(tagGetAll())
-                dispatch(allFacilitators())
-                dispatch(allLoginActivities())
+                toast.promise(
+                    dispatch(allFacilitators()).then((res) => {
+                        if (res.meta.requestStatus === 'rejected') {
+                            if (res.payload.includes('ECONNREFUSED')) {
+                                throw new Error(
+                                    'Check your internet connection'
+                                )
+                            } else {
+                                let errorMessage = res.payload
+                                throw new Error(errorMessage)
+                            }
+                        } else {
+                            return dispatch(allLoginActivities())
+                        }
+                    }),
+                    {
+                        loading: 'updating Information',
+                        success: (data) => `Successfully updated`,
+                        error: (err) => {
+                            console.log(err)
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    }
+                )
             }
         })
 
         return () => {
             io.disconnect()
+            toast.dismiss()
         }
     }, [])
 
-    React.useEffect(() => {
-        let page = Location.search.split('').slice(3).join('')
-        let values = {
-            page: page,
-        }
+    // React.useEffect(() => {
+    //     let page = Location.search.split('').slice(3).join('')
+    //     let values = {
+    //         page: page,
+    //     }
 
-        dispatch(getPProjects(values))
-        dispatch(getAllProjects())
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [Location])
+    //     dispatch(getPProjects(values))
+    //     dispatch(getAllProjects())
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [Location])
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            // Toasts({
+            //     position: 'top',
+            //     title: message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
 
             if (message === 'Not authenticated') {
                 dispatch(Logout())
@@ -194,7 +378,7 @@ const AdminDashboard = () => {
         }
 
         // if (isSuccess) {
-        //     toast({
+        //     Toasts({
         //         position: 'top',
         //         title:'collected data',
         //         status: 'success',
@@ -207,13 +391,13 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         if (facilitatorState.isError) {
-            toast({
-                position: 'top',
-                title: facilitatorState.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            // Toasts({
+            //     position: 'top',
+            //     title: facilitatorState.message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
 
             dispatch(freset())
         }
@@ -258,7 +442,8 @@ const AdminDashboard = () => {
 
         allDetails.splice(3)
         setDisplayRecentFacilitator([...allDetails])
-    }, [allprojects.items])
+    }, [allprojects.items, facilitatorState.allLoginActivityItems.items])
+
     return (
         <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
@@ -279,6 +464,29 @@ const AdminDashboard = () => {
                 </Box>
 
                 {/** loading effect {windowloading && <h1>Loading...</h1>} */}
+
+                {
+                    //   <LoaderContainer spacing='27px'>
+                    //     <Stack alignItems={'center'} spacing='16px'>
+                    //         <Box>
+                    //             <ThreeDots
+                    //                 height='80'
+                    //                 width='80'
+                    //                 radius='9'
+                    //                 color='#2D2D2D'
+                    //                 ariaLabel='line-wave'
+                    //                 wrapperStyle={{}}
+                    //                 wrapperClassName=''
+                    //                 visible={true}
+                    //             />
+                    //         </Box>
+                    //         <Text className='Int_head'>Connecting...</Text>
+                    //     </Stack>
+                    //     <Text className='Int_subhead'>
+                    //         Wait on the screen until the process is complete.
+                    //     </Text>
+                    // </LoaderContainer>
+                }
 
                 <Stack direction='column' padding={'0 20px'}>
                     <Stack
@@ -464,7 +672,10 @@ const AdminDashboard = () => {
                                             spacing='20px'
                                             key={index}
                                             className='sumbox'
-                                            w={{ base: '100%', xl: '200px' }}>
+                                            w={{
+                                                base: '100%',
+                                                xl: '200px',
+                                            }}>
                                             <Box
                                                 className='link_icon'
                                                 bg={data.bg}
@@ -490,7 +701,10 @@ const AdminDashboard = () => {
                                             spacing='20px'
                                             key={index}
                                             className='sumbox'
-                                            w={{ base: '100%', xl: '200px' }}>
+                                            w={{
+                                                base: '100%',
+                                                xl: '200px',
+                                            }}>
                                             <Box
                                                 className='link_icon'
                                                 bg={data.bg}
@@ -879,6 +1093,29 @@ const Container = styled(Stack)`
         font-size: 13px;
         line-height: 20px;
         color: #1f273a;
+    }
+`
+
+const LoaderContainer = styled(Stack)`
+    width: 100%;
+    min-height: 70vh;
+    justify-content: center;
+    align-items: center;
+
+    .Int_subhead {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        color: #abaaaf;
+    }
+
+    .Int_head {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 21px;
+        color: #838389;
     }
 `
 

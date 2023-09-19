@@ -5,32 +5,93 @@ import styled, { ThemeProvider } from 'styled-components'
 import CheckConnection from './components/common/CheckConnection/CheckConnection'
 import { Box, Stack, Text } from '@chakra-ui/react'
 import { ThreeDots } from 'react-loader-spinner'
+import { Toaster } from 'react-hot-toast'
+import CustomErrorToast from './components/common/CustomErrorToast/CustomErrorToast'
 function App() {
-    const [windowloading, setwindowloading] = React.useState(true)
+    const [windowloading, setwindowloading] = React.useState(false)
 
-    React.useEffect(() => {
-        if (document.readyState === 'loading') {
+    // React.useEffect(() => {
+    //     if (document.readyState === 'loading') {
+    //         setwindowloading(() => true)
+    //     } else if (document.readyState === 'interactive') {
+    //         setwindowloading(() => true)
+    //     } else if (document.readyState === 'complete') {
+    //         setwindowloading(() => false)
+    //     }
+    // }, [])
+    // const loadedHandler = () => {
+    //     if (document.readyState === 'loading') {
+    //         setwindowloading(() => true)
+    //     } else if (document.readyState === 'interactive') {
+    //         setwindowloading(() => true)
+    //     } else if (document.readyState === 'complete') {
+    //         setwindowloading(() => false)
+    //     }
+    // }
+
+    // document.addEventListener('readystatechange', loadedHandler)
+
+    const loadedHandler = (event) => {
+        console.log(event.target.readyState)
+        if (event.target.readyState === 'loading') {
             setwindowloading(() => true)
-        } else if (document.readyState === 'interactive') {
+        } else if (event.target.readyState === 'interactive') {
             setwindowloading(() => true)
-        } else if (document.readyState === 'complete') {
-            setwindowloading(() => false)
-        }
-    }, [])
-    const loadedHandler = () => {
-        if (document.readyState === 'loading') {
-            setwindowloading(() => true)
-        } else if (document.readyState === 'interactive') {
-            setwindowloading(() => true)
-        } else if (document.readyState === 'complete') {
+        } else if (event.target.readyState === 'complete') {
+            console.log('complete')
             setwindowloading(() => false)
         }
     }
 
     document.addEventListener('readystatechange', loadedHandler)
+    // React.useEffect(() => {
+    //     window.addEventListener('load', (event) => {
+    //        console.log('lodaing')
+    //     })
+    //     document.addEventListener('readystatechange', loadedHandler)
+
+    //     return () => {
+    //         document.removeEventListener('readystatechange', loadedHandler)
+    //     }
+    // }, [])
     return (
         <>
-            {windowloading ? (
+            <CustomErrorToast />
+
+            {
+                // {<Toaster
+                //     position='top-center'
+                //     reverseOrder={false}
+                //     gutter={8}
+                //     containerClassName=''
+                //     containerStyle={{}}
+                //     toastOptions={{
+                //         // Define default options
+                //         className: '',
+                //         duration: 5000,
+                //         style: {
+                //             background: '#363636',
+                //             color: '#fff',
+                //         },
+                //         // Default options for specific types
+                //         success: {
+                //             duration: 7000,
+                //             theme: {
+                //                 primary: 'green',
+                //                 secondary: 'black',
+                //             },
+                //         },
+                //         loading: {
+                //             duration: Infinity,
+                //             style: {
+                //                 background: '#363636',
+                //                 color: '#fff',
+                //             },
+                //         },
+                //     }}
+                // />}
+            }
+            {windowloading === true ? (
                 <Container spacing='27px'>
                     <Stack alignItems={'center'} spacing='16px'>
                         <Box>
