@@ -1,11 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { Box, Stack, Input, Select, useToast } from '@chakra-ui/react'
-import {
-    allSchools,
-    reset,
-} from '../../../../store/features/schools/schoolSlice'
+import { Box, Stack, Input, Select } from '@chakra-ui/react'
+import { reset } from '../../../../store/features/schools/schoolSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
 const PhdDegreePrograms = [
@@ -96,11 +93,11 @@ const MaDegreePrograms = [
     },
     { title: 'Master of Arts in Rural Development' },
     { title: 'Master of Arts in Social Work' },
-    { title: 'Master ofArts in Defense and Security Studies' },
+    { title: 'Master of Arts in Defense and Security Studies' },
     { title: 'Master of Arts in Security and Strategy' },
     { title: 'Master of Education in Educational Psychology' },
     { title: 'Master of Arts in Organizational Psychology' },
-    { title: 'Master of Arts in Counselling' },
+    { title: 'Master of Arts in Counselling Psychology' },
     { title: 'Master of Science in Clinical Psychology' },
     { title: 'Master of Arts in Social Sector Planning and Management' },
 ]
@@ -117,10 +114,6 @@ const StudentDetailForm = ({
     const [allDegreeProgram, setAllDegreeProgram] = React.useState([])
 
     let dispatch = useDispatch()
-    let toast = useToast()
-    useEffect(() => {
-        dispatch(allSchools())
-    }, [])
 
     let { allSchoolItems, isError, message } = useSelector(
         (state) => state.school
@@ -178,16 +171,9 @@ const StudentDetailForm = ({
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
             dispatch(reset())
         }
+        dispatch(reset())
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isError, message, dispatch])
@@ -331,7 +317,6 @@ const StudentDetailForm = ({
                             </label>
                             <fieldset>
                                 <Select
-                                   
                                     placeholder='select option'
                                     name='degreeProgram'
                                     onChange={handleChange}
@@ -559,8 +544,6 @@ const FormContainer = styled(Box)`
         border-color: red !important;
         box-shadow: none;
     }
-
-    
 `
 
 const ErrorMsg = styled(Box)`

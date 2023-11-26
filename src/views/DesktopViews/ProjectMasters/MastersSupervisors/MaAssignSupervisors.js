@@ -7,7 +7,6 @@ import {
     InputGroup,
     Input,
     InputLeftElement,
-    useToast,
     useDisclosure,
     Modal,
     ModalOverlay,
@@ -32,6 +31,11 @@ import {
     reset as preset,
 } from '../../../../store/features/project/projectSlice'
 import SupervisorTable from '../../../../components/ProjectComponents/AssignSupervisors/SupervisorTable'
+import {
+    Logout,
+    reset as areset,
+} from '../../../../store/features/auth/authSlice'
+import toast from 'react-hot-toast'
 
 const MaAssignSupervisors = () => {
     // eslint-disable-next-line no-unused-vars
@@ -68,85 +72,118 @@ const MaAssignSupervisors = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     let dispatch = useDispatch()
     let params = useParams()
-    let toast = useToast()
+    //let toast = useToast()
     let { allSupervisorItems, isSuccess, isError, message } = useSelector(
         (state) => state.supervisor
     )
     let IndividualProject = useSelector((state) => state.project)
+
+    /** error handler for toast response */
+    let errorHandler = (errorResponse) => {
+        if (errorResponse.payload.includes('ECONNREFUSED')) {
+            return 'Check your internet connection'
+        } else if (errorResponse.payload.includes('jwt expired')) {
+            return 'Authentication expired'
+        } else if (
+            errorResponse.payload.includes('jwt malformed') ||
+            errorResponse.payload.includes('invalid token')
+        ) {
+            return 'Authentication expired'
+        } else if (errorResponse.payload.includes('Not authenticated')) {
+            return 'Authentication required'
+        } else if (errorResponse.payload.includes('Not authorized')) {
+            return 'Authentication required'
+        } else {
+            let errorMessage = errorResponse.payload
+            return errorMessage
+        }
+    }
+
+    //function to handle smooth Logout
+    let handleLogout = () => {
+        toast.dismiss()
+
+        toast.loading('Logging out. please wait...')
+
+        //inner logout toast function
+        let handleLogoutToast = () => {
+            toast.dismiss()
+            toast.promise(
+                dispatch(Logout()).then((res) => {
+                    // routeNavigate('/auth/signin', { replace: true })
+                }),
+                {
+                    loading: 'Logging out',
+                    success: (data) => 'Logged out successfully',
+                    error: (err) => {
+                        return 'error while Logging out'
+                    },
+                }
+            )
+        }
+
+        setTimeout(handleLogoutToast, 3000)
+    }
 
     const handleSearchInput = (e) => {
         e.preventDefault()
 
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
-        // let filterSelected = {
-        //     title: filterSearchOption,
-        //     searchfor: e.target.value,
-        // }
-        // setFilterInfo([...filterInfo, filterSelected])
     }
 
-    // const handleSubmitFilter = () => {
-    //     if (searchWord) {
-    //         if (filterInfo.length > 0) {
-    //             let newFilterInfo = [...filterInfo]
-
-    //             for (let i = 0; i < newFilterInfo.length; i++) {
-    //                 let iteration = i + 1
-
-    //                 if (newFilterInfo[i].title === filterSearchOption) {
-    //                     if (newFilterInfo[i].searchfor.includes(searchWord)) {
-    //                         return null
-    //                     } else {
-    //                         let filterSelected = {
-    //                             title: filterSearchOption,
-    //                             searchfor: [
-    //                                 ...newFilterInfo[i].searchfor,
-    //                                 searchWord,
-    //                             ],
-    //                         }
-    //                         newFilterInfo.splice(i, 1, filterSelected)
-    //                         setFilterInfo(newFilterInfo)
-    //                         setSearchWord('')
-    //                         return filterSelected
-    //                     }
-    //                 } else if (
-    //                     newFilterInfo[i].title !== filterSearchOption &&
-    //                     iteration === newFilterInfo.length
-    //                 ) {
-    //                     let filterSelected = {
-    //                         title: filterSearchOption,
-    //                         searchfor: [searchWord],
-    //                     }
-
-    //                     setFilterInfo([...newFilterInfo, filterSelected])
-    //                     setSearchWord('')
-    //                 }
-    //             }
-    //         } else {
-    //             let filterSelected = {
-    //                 title: filterSearchOption,
-    //                 searchfor: [searchWord],
-    //             }
-
-    //             setFilterInfo([...filterInfo, filterSelected])
-    //             setSearchWord('')
-    //             //setFilterSearchOption('All')
-    //             // console.log('filtered Info', filterInfo)
-    //         }
-    //     }
-    // }
     let routeNavigate = useNavigate()
 
     useEffect(() => {
         if (params.pid) {
             setProjectId(params.pid)
-            dispatch(getIndividualProject(params.pid))
+            toast.dismiss()
+            toast.promise(
+                dispatch(getIndividualProject(params.pid))
+                    .then((res) => {
+                        //console.log('res', res)
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return dispatch(allSupervisors())
+                        }
+                    })
+                    .then((res) => {
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return 'retrieving data successfully'
+                        }
+                    }),
+                {
+                    loading: 'Retrieving Information',
+                    success: (data) => `Successfully retrieved`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
-    }, [])
-
-    useEffect(() => {
-        dispatch(allSupervisors())
     }, [])
 
     /** set all the display Data */
@@ -181,25 +218,26 @@ const MaAssignSupervisors = () => {
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && message) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message.message,
+            //     status: 'success',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
             setSelectedExaminers([])
             setIsSubmittingp(false)
 
@@ -208,16 +246,20 @@ const MaAssignSupervisors = () => {
                 replace: true,
             })
             dispatch(reset())
+            dispatch(areset())
         }
 
         dispatch(reset())
+        dispatch(areset())
     }, [isSuccess, isError, message])
 
     useEffect(() => {
         if (IndividualProject.isError) {
             dispatch(preset())
+            dispatch(areset())
         }
         dispatch(preset())
+        dispatch(areset())
     }, [
         IndividualProject.isError,
         IndividualProject.isSuccess,
@@ -231,7 +273,44 @@ const MaAssignSupervisors = () => {
             items: selectedExaminers,
             projectId,
         }
-        dispatch(assignSupervisor(allValues))
+
+        toast.dismiss()
+        toast.promise(
+            dispatch(assignSupervisor(allValues)).then((res) => {
+                //console.log('res', res)
+                if (res.meta.requestStatus === 'rejected') {
+                    let responseCheck = errorHandler(res)
+                    throw new Error(responseCheck)
+                } else {
+                    return res.payload.message
+                }
+            }),
+            {
+                loading: 'Assigning Supervisor(s) to student',
+                success: (data) => `${data}`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(handleLogout, 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(handleLogout, 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }
 
     /** function to handle search supervisors */

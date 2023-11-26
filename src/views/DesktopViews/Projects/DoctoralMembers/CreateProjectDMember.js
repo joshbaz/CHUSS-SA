@@ -21,6 +21,15 @@ import {
 import DoctoralADetailForm from '../../../../components/ProjectComponents/AssignDoctoralMembers/DoctoralA_DetailForm'
 import { dashboardLightTheme } from '../../../../theme/dashboard_theme'
 
+import { reset as areset } from '../../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -30,7 +39,7 @@ const CreateProjectDMember = () => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let routeNavigate = useNavigate()
     let params = useParams()
-    let toast = useToast()
+
     let dispatch = useDispatch()
     const { isError, isSuccess, message } = useSelector(
         (state) => state.doctoralMembers
@@ -39,7 +48,43 @@ const CreateProjectDMember = () => {
     useEffect(() => {
         if (params.pid) {
             setProjectId(params.pid)
-            dispatch(getIndividualProject(params.pid))
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(getIndividualProject(params.pid)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'Retrieving Information',
+                    success: (data) => `Successfully retrieved`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }, [])
 
@@ -49,31 +94,19 @@ const CreateProjectDMember = () => {
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
                 setHelperFunctions(null)
             }
+            dispatch(areset())
             dispatch(reset())
         }
     }, [isError, isSuccess, message])
@@ -85,16 +118,11 @@ const CreateProjectDMember = () => {
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
             }
-            toast({
-                position: 'top',
-                title: IndividualProject.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
 
+            dispatch(areset())
             dispatch(preset())
         }
+        dispatch(areset())
         dispatch(preset())
     }, [
         IndividualProject.isError,
@@ -161,7 +189,66 @@ const CreateProjectDMember = () => {
                                 ...values,
                                 projectId,
                             }
-                            dispatch(projectDCMemberCreate(values2))
+
+                            toast.dismiss()
+                            toast.promise(
+                                dispatch(projectDCMemberCreate(values2)).then(
+                                    (res) => {
+                                        if (
+                                            res.meta.requestStatus ===
+                                            'rejected'
+                                        ) {
+                                            let responseCheck =
+                                                errorHandler(res)
+                                            throw new Error(responseCheck)
+                                        } else {
+                                            return res.payload.message
+                                        }
+                                    }
+                                ),
+                                {
+                                    loading:
+                                        'creating and assigning new DC Member',
+                                    success: (data) => `${data}`,
+                                    error: (err) => {
+                                        if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Check your internet connection'
+                                                )
+                                        ) {
+                                            return 'Check Internet Connection'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication required'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Not Authenticated'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication expired'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Authentication Expired'
+                                        } else {
+                                            return `${err}`
+                                        }
+                                    },
+                                }
+                            )
                         }}>
                         {({
                             values,

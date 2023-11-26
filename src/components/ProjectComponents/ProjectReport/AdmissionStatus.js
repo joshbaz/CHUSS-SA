@@ -8,7 +8,6 @@ import {
     ModalOverlay,
     ModalContent,
     ModalBody,
-    useToast,
     Button,
     Radio,
     RadioGroup,
@@ -20,7 +19,12 @@ import {
     updateResubmission,
     reset,
 } from '../../../store/features/project/projectSlice'
-const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
+
+import { Logout, reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+
+const AdmissionStatus = ({ values, nameValues }) => {
     const [projectId, setProjectId] = React.useState('')
     const [submissionType, setSubmissionType] = React.useState({
         submissionStatus: '',
@@ -35,7 +39,7 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
     const [changeMade, setChangeMade] = React.useState(false)
     // const [helperFunctions, setHelperFunctions] = React.useState(null)
     let dispatch = useDispatch()
-    let toast = useToast()
+    //let toast = useToast()
     let { isSuccess, isError, message } = useSelector((state) => state.project)
     React.useEffect(() => {
         if (values !== null && values._id && values.submissionStatus) {
@@ -74,31 +78,117 @@ const AdmissionStatus = ({ values, nameValues = 'joshua' }) => {
         }
     }
 
+    /** error handler for toast response */
+    let errorHandler = (errorResponse) => {
+        if (errorResponse.payload.includes('ECONNREFUSED')) {
+            return 'Check your internet connection'
+        } else if (errorResponse.payload.includes('jwt expired')) {
+            return 'Authentication expired'
+        } else if (
+            errorResponse.payload.includes('jwt malformed') ||
+            errorResponse.payload.includes('invalid token')
+        ) {
+            return 'Authentication expired'
+        } else if (errorResponse.payload.includes('Not authenticated')) {
+            return 'Authentication required'
+        } else if (errorResponse.payload.includes('Not authorized')) {
+            return 'Authentication required'
+        } else {
+            let errorMessage = errorResponse.payload
+            return errorMessage
+        }
+    }
+
+    /**function to handle smooth Logout*/
+    let handleLogout = () => {
+        toast.dismiss()
+
+        toast.loading('Logging out. please wait...')
+
+        //inner logout toast function
+        let handleLogoutToast = () => {
+            toast.dismiss()
+            toast.promise(
+                dispatch(Logout()).then((res) => {
+                    // routeNavigate('/auth/signin', { replace: true })
+                }),
+                {
+                    loading: 'Logging out',
+                    success: (data) => 'Logged out successfully',
+                    error: (err) => {
+                        return 'error while Logging out'
+                    },
+                }
+            )
+        }
+
+        setTimeout(handleLogoutToast, 3000)
+    }
+
     const onHandleSubmitting = () => {
-        dispatch(updateResubmission(editSubmissionType))
         setIsSubmittingp(true)
+
+        toast.dismiss()
+        toast.promise(
+            dispatch(updateResubmission(editSubmissionType)).then((res) => {
+                //console.log('res', res)
+                if (res.meta.requestStatus === 'rejected') {
+                    let responseCheck = errorHandler(res)
+                    throw new Error(responseCheck)
+                } else {
+                    return res.payload.message
+                }
+            }),
+            {
+                loading: 'updating submission status',
+                success: (data) => `${data}`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(handleLogout, 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(handleLogout, 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }
 
     React.useEffect(() => {
         if (isError) {
             setIsSubmittingp(() => false)
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && isSubmittingp && message) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message.message,
+            //     status: 'success',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
 
             setIsSubmittingp(() => false)
             setChangeMade(() => false)
             setEditStatusActive(() => false)
             // setFileUploadActive(false)
             dispatch(reset())
+            dispatch(areset())
         }
         dispatch(reset())
     }, [isError, isSuccess, message, dispatch])

@@ -1,4 +1,4 @@
-const { BrowserWindow, app, dialog, ipcMain, screen } = require('electron')
+const { BrowserWindow, app, dialog, ipcMain, screen, session } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const XLSX = require('xlsx')
@@ -55,6 +55,14 @@ function createWindow() {
             : `file://${path.join(__dirname, '../build/index.html#')}`
     )
 
+    if (!isDev) {
+        session.defaultSession.clearCache()
+        autoUpdater.checkForUpdates()
+        /** deals with system auto update */
+        /** check for any updates */
+        //session clear
+    }
+
     // mainWindow.loadURL(
     //     isDev
     //         ? 'http://localhost:3000'
@@ -67,7 +75,9 @@ function createWindow() {
     // mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
     // mainWindow.loadURL(`file://${__dirname}/../build/index.html#`)
     mainWindow.on('closed', () => {
+       
         mainWindow = null
+         session.defaultSession.clearStorageData()
         //localStorage.removeItem('user')
     })
 }
@@ -81,33 +91,42 @@ app.whenReady().then(() => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
 
-    /** deals with system auto update */
-    /** check for any updates */
-    autoUpdater.checkForUpdates()
-    const messageOptions = {
-        message: 'Checking for updates',
-    }
-    dialog.showMessageBox(null, messageOptions)
 })
 
 /** deals with system auto update */
 /** an update of the system is available */
-autoUpdater.on('update-available', (info) => {
-    dialog.showMessageBox(null, { message: 'Update available.' })
-    let pth = autoUpdater.downloadUpdate()
-    dialog.showMessageBox(null, { message: pth })
+autoUpdater.on('update-available', (_event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+        type: 'info',
+        buttons: ['OK'],
+        title: 'Application Update',
+        message: process.platform === 'win32' ? releaseNotes : releaseName,
+        detail: 'A new version is being downloaded'
+    }
+    dialog.showMessageBox(dialogOpts, (response)=>{})
+    // let pth = autoUpdater.downloadUpdate()
+    // dialog.showMessageBox(null, { message: pth })
 })
 
 /** deals with system auto update */
 /** update not available */
 autoUpdater.on('update-not-available', (info) => {
-    dialog.showMessageBox(null, { message: 'No update available' })
+    //dialog.showMessageBox(null, { message: 'No update available' })
 })
 
 /** deals with system auto update */
 /** download of the system update complete */
-autoUpdater.on('update-downloaded', (info) => {
-    dialog.showMessageBox(null, { message: 'Update downloaded' })
+autoUpdater.on('update-downloaded', (_event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+        type: 'info',
+        buttons: ['Restart', 'Later'],
+        title: 'Application Update',
+        message: process.platform === 'win32' ? releaseNotes : releaseName,
+        detail: 'A new version has been downloaded. Restart the application to apply the updates.',
+    }
+    dialog.showMessageBox(dialogOpts).then((returnValue) => {
+        if(returnValue.response === 0) autoUpdater.quitAndInstall()
+    })
 })
 
 //installer
@@ -786,12 +805,40 @@ ipcMain.handle('export-student-csv', async (event, values) => {
             let allRegistrations = [...data2.registration]
             /** function to return latest registration */
             let returnedData = getLatestRegistration(allRegistrations)
+
+            let activeStatus
+            let activeElementSet
+            if (
+                data2.projectStatus &&
+                data2.projectStatus.length > 0 &&
+                values.projectTagData.length > 0
+            ) {
+                activeStatus = data2.projectStatus.find(
+                    (element) => element.projectStatusId.active
+                )
+                if (activeStatus) {
+                    activeElementSet = values.projectTagData.find(
+                        (element) =>
+                            element.tagName ===
+                            activeStatus.projectStatusId.status
+                    )
+                }
+            } else {
+            }
             return {
                 No: index + 1,
                 'Student Name': data2.student.studentName,
                 'Registration No.': data2.student.registrationNumber,
                 Topic: data2.topic,
-                Status: data2.activeStatus,
+                'Award': data2.student.degree_program,
+                Status:
+                    activeStatus &&
+                    activeStatus.projectStatusId.statusDate !== undefined &&
+                    activeStatus.projectStatusId.statusDate
+                        ? `${data2.activeStatus} ${Moments(
+                              new Date(activeStatus.projectStatusId.statusDate)
+                          ).format('DD MMM YY')}`
+                        : data2.activeStatus,
                 Registration: returnedData.toUpperCase(),
                 'Submission Status': data2.submissionStatus,
             }

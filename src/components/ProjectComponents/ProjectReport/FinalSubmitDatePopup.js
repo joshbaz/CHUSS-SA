@@ -11,7 +11,6 @@ import {
     ModalBody,
     Input,
     Button,
-    useToast,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -21,6 +20,9 @@ import {
 //import { useNavigate } from 'react-router-dom'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
+import toast from 'react-hot-toast'
+
+import { Logout, reset as areset } from '../../../store/features/auth/authSlice'
 
 const FinalSubmitDatePopup = ({
     projectId,
@@ -34,8 +36,55 @@ const FinalSubmitDatePopup = ({
     const [dateOfSubmission, setDateOfSubmission] = React.useState('')
     //  let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let toast = useToast()
+    //let toast = useToast()
     let { isSuccess, isError, message } = useSelector((state) => state.project)
+
+    /** error handler for toast response */
+    let errorHandler = (errorResponse) => {
+        if (errorResponse.payload.includes('ECONNREFUSED')) {
+            return 'Check your internet connection'
+        } else if (errorResponse.payload.includes('jwt expired')) {
+            return 'Authentication expired'
+        } else if (
+            errorResponse.payload.includes('jwt malformed') ||
+            errorResponse.payload.includes('invalid token')
+        ) {
+            return 'Authentication expired'
+        } else if (errorResponse.payload.includes('Not authenticated')) {
+            return 'Authentication required'
+        } else if (errorResponse.payload.includes('Not authorized')) {
+            return 'Authentication required'
+        } else {
+            let errorMessage = errorResponse.payload
+            return errorMessage
+        }
+    }
+
+    //function to handle smooth Logout
+    let handleLogout = () => {
+        toast.dismiss()
+
+        toast.loading('Logging out. please wait...')
+
+        //inner logout toast function
+        let handleLogoutToast = () => {
+            toast.dismiss()
+            toast.promise(
+                dispatch(Logout()).then((res) => {
+                    // routeNavigate('/auth/signin', { replace: true })
+                }),
+                {
+                    loading: 'Logging out',
+                    success: (data) => 'Logged out successfully',
+                    error: (err) => {
+                        return 'error while Logging out'
+                    },
+                }
+            )
+        }
+
+        setTimeout(handleLogoutToast, 3000)
+    }
 
     /**
      * function to cancel submit change
@@ -69,37 +118,38 @@ const FinalSubmitDatePopup = ({
     React.useEffect(() => {
         if (isError) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'error',
-                    duration: 10000,
-                    isClosable: true,
-                })
+                // toast({
+                //     position: 'top',
+                //     title: message.message,
+                //     status: 'error',
+                //     duration: 10000,
+                //     isClosable: true,
+                // })
                 setIsSubmittingp(false)
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
             }
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message.message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && isSubmittingp && message) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
+                // toast({
+                //     position: 'top',
+                //     title: message.message,
+                //     status: 'success',
+                //     duration: 10000,
+                //     isClosable: true,
+                // })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
@@ -107,9 +157,11 @@ const FinalSubmitDatePopup = ({
 
                 // setDefenseUploadActive(false)
                 dispatch(reset())
+                dispatch(areset())
             }
         }
         dispatch(reset())
+        dispatch(areset())
     }, [isError, isSuccess, message, dispatch])
     return (
         <Modal
@@ -131,7 +183,61 @@ const FinalSubmitDatePopup = ({
                                     ...values,
                                     projectId,
                                 }
-                                dispatch(updateSubmissionDate(values2))
+                                
+                                toast.dismiss()
+                                toast.promise(
+                                    dispatch(
+                                        updateSubmissionDate(values2)
+                                    ).then((res) => {
+                                        //console.log('res', res)
+                                        if (
+                                            res.meta.requestStatus ===
+                                            'rejected'
+                                        ) {
+                                            let responseCheck =
+                                                errorHandler(res)
+                                            throw new Error(responseCheck)
+                                        } else {
+                                            return res.payload.message
+                                        }
+                                    }),
+                                    {
+                                        loading: 'setting submission date',
+                                        success: (data) =>
+                                            `${data}`,
+                                        error: (err) => {
+                                            if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Check your internet connection'
+                                                    )
+                                            ) {
+                                                return 'Check Internet Connection'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication required'
+                                                    )
+                                            ) {
+                                                setTimeout(handleLogout, 3000)
+                                                return 'Not Authenticated'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication expired'
+                                                    )
+                                            ) {
+                                                setTimeout(handleLogout, 3000)
+                                                return 'Authentication Expired'
+                                            } else {
+                                                return `${err}`
+                                            }
+                                        },
+                                    }
+                                )
                             }
                         }}>
                         {({

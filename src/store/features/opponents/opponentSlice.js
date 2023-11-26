@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import opponentService from './opponentService'
-import authService from '../auth/authService'
+//import authService from '../auth/authService'
 const getToken = localStorage.getItem('_tk')
 
 /** initial State for examiners */
@@ -48,8 +48,8 @@ export const projectOpponentCreate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                 await authService.logout()
-                window.location.reload()
+                //  await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -75,8 +75,8 @@ export const assignOpponent = createAsyncThunk(
                 assignAttempt.message === 'Not authenticated' ||
                 assignAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(assignAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(assignAttempt.message)
@@ -102,8 +102,8 @@ export const paginatedOpponent = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -129,8 +129,8 @@ export const allOpponents = createAsyncThunk(
                 allAttempt.message === 'Not authenticated' ||
                 allAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(allAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(allAttempt.message)
@@ -158,8 +158,8 @@ export const getIndividualOpponent = createAsyncThunk(
                 individualAttempt.message === 'Not authenticated' ||
                 individualAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(individualAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(individualAttempt.message)
@@ -186,8 +186,8 @@ export const opponentUpdate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -216,8 +216,8 @@ export const deleteFileOpponent = createAsyncThunk(
                 deleteAttempt.message === 'Not authenticated' ||
                 deleteAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(deleteAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(deleteAttempt.message)
@@ -244,8 +244,8 @@ export const addFileOpponent = createAsyncThunk(
                 addAttempt.message === 'Not authenticated' ||
                 addAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(addAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(addAttempt.message)
@@ -274,8 +274,8 @@ export const removeProjectOpponent = createAsyncThunk(
                 removeAttempt.message === 'Not authenticated' ||
                 removeAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(removeAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(removeAttempt.message)
@@ -304,8 +304,8 @@ export const OpponentMainCreate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                 await authService.logout()
-                window.location.reload()
+                //  await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)

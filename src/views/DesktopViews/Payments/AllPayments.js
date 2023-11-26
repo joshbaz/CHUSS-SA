@@ -34,6 +34,15 @@ import {
 } from '../../../store/features/payments/paymentSlice'
 import PaymentTable from '../../../components/PaymentComponents/AllPayments/PaymentTable'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const AllPayments = () => {
     const [filterSearchOption, setFilterSearchOption] =
         React.useState('Examiner Name')
@@ -215,7 +224,6 @@ const AllPayments = () => {
     let { isError, isSuccess, message } = useSelector((state) => state.payment)
 
     let Location = useLocation()
-    let toast = useToast()
 
     useEffect(() => {
         // let page = Location.search.split('').slice(3).join('')
@@ -223,33 +231,62 @@ const AllPayments = () => {
         //     page: page,
         // }
 
-        dispatch(getPaginatedPayments())
-        dispatch(getAllPayments())
+        toast.dismiss()
+        toast.promise(
+            dispatch(getPaginatedPayments())
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getAllPayments())
+                    }
+                })
+
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [Location])
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
             dispatch(reset())
+            dispatch(areset())
         }
-
-        // if (isSuccess) {
-        //     toast({
-        //         position: 'top',
-        //         title:'collected data',
-        //         status: 'success',
-        //         duration: 10000,
-        //         isClosable: true,
-        //     })
-        // }
+        dispatch(areset())
     }, [isSuccess, isError, message])
 
     return (

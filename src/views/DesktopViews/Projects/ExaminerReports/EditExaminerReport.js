@@ -23,6 +23,15 @@ import { useSelector, useDispatch } from 'react-redux'
 import { initSocketConnection } from '../../../../socketio.service.js'
 import { dashboardLightTheme } from '../../../../theme/dashboard_theme'
 
+import { reset as areset } from '../../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -42,8 +51,53 @@ const EditExaminerReport = (props) => {
         (state) => state.report
     )
     useEffect(() => {
-        dispatch(getAllExaminerReports())
-        dispatch(getExaminerReport(params.rp_id))
+        toast.dismiss()
+        toast.promise(
+            dispatch(getAllExaminerReports())
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getExaminerReport(params.rp_id))
+                    }
+                })
+
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
 
         const io = initSocketConnection()
         io.on('updatereport', (data) => {
@@ -51,8 +105,60 @@ const EditExaminerReport = (props) => {
                 data.actions === 'update-report' &&
                 data.data === params.rp_id.toString()
             ) {
-                dispatch(getAllExaminerReports())
-                dispatch(getExaminerReport(params.rp_id))
+                toast.dismiss()
+                toast.promise(
+                    dispatch(getAllExaminerReports())
+                        .then((res) => {
+                            //console.log('res', res)
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return dispatch(getExaminerReport(params.rp_id))
+                            }
+                        })
+
+                        .then((res) => {
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return res.payload.message
+                            }
+                        }),
+                    {
+                        loading: 'updating reports',
+                        success: (data) => `Successfully updated`,
+                        error: (err) => {
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    },
+                    {
+                        position: 'bottom-right',
+                    }
+                )
             }
         })
     }, [dispatch, params.rp_id])
@@ -79,35 +185,22 @@ const EditExaminerReport = (props) => {
         }
     }, [params.rp_id, allreports])
 
-    let toast = useToast()
-
     useEffect(() => {
         if (projectCase.isError && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: projectCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(() => false)
             setChnageMade(false)
 
             dispatch(aureset())
+            dispatch(areset())
         }
 
         if (projectCase.isSuccess && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: projectCase.message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChnageMade(false)
+            dispatch(areset())
             dispatch(aureset())
         }
+        dispatch(areset())
         dispatch(aureset())
     }, [
         projectCase.isError,
@@ -118,31 +211,20 @@ const EditExaminerReport = (props) => {
 
     useEffect(() => {
         if (isError && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(() => false)
             setChnageMade(false)
 
+            dispatch(areset())
             dispatch(reset())
         }
 
         if (isSuccess && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChnageMade(false)
+            dispatch(areset())
             dispatch(reset())
         }
+        dispatch(areset())
         dispatch(reset())
     }, [isError, isSuccess, message, dispatch, isSubmittingp])
 
@@ -199,8 +281,45 @@ const EditExaminerReport = (props) => {
                 ...newRDeat,
                 reportId: newRDeat._id,
             }
-            dispatch(updateRRport(newInitals))
+
             setChnageMade(() => false)
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(updateRRport(newInitals)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'updating report',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         } else if (
             Object.keys(errors).length > 0 &&
             isSubmittingp &&

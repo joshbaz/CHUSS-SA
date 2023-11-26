@@ -23,11 +23,13 @@ import {
     MenuList,
     MenuItem,
     Button,
-    useToast,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalBody,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverHeader,
+    PopoverArrow,
+    PopoverCloseButton,
+    PopoverBody
 } from '@chakra-ui/react'
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
 
@@ -35,6 +37,8 @@ import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 import { TbDotsVertical } from 'react-icons/tb'
 import { IoIosArrowDown } from 'react-icons/io'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
 
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -44,6 +48,16 @@ import {
     reset,
 } from '../../../store/features/project/projectSlice'
 import TimelineCountdown from './TimelineCountdown'
+import toast from 'react-hot-toast'
+
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+import DeleteStudentModal from './DeleteStudentModal'
+import EditReportModal from './EditReportModal'
+import ViewReportModal from './ViewReportModal'
+
 const ProjectTable = ({
     allTagData,
     studentType,
@@ -52,6 +66,8 @@ const ProjectTable = ({
     filterInfo,
     exportData,
     setExportData,
+    searchButtonState,
+    searchWord,
 }) => {
     const [projectTagData, setProjectTagData] = React.useState([])
     // eslint-disable-next-line no-unused-vars
@@ -88,21 +104,31 @@ const ProjectTable = ({
 
     const [mastersTableColumn, setMastersTableColumn] = React.useState([
         {
-            title: 'STUDENT(SRN)',
-            display: true,
-        },
-        {
             title: 'Student Name',
             display: true,
         },
+        {
+            title: 'STUDENT(SRN)',
+            display: true,
+        },
+
         {
             title: 'Gender',
             display: false,
         },
         {
+            title: 'Award',
+            display: true,
+        },
+        {
             title: 'TOPIC',
             filter: true,
-            display: true,
+            display: false,
+        },
+
+        {
+            title: 'School',
+            display: false,
         },
         {
             title: 'STATUS',
@@ -112,23 +138,23 @@ const ProjectTable = ({
 
         {
             title: 'EXAMINERS',
-            display: true,
+            display: false,
         },
         {
             title: 'Internal Examiners',
-            display: false,
+            display: true,
         },
         {
             title: 'External Examiner',
-            display: false,
+            display: true,
         },
         {
             title: 'Registration',
-            display: true,
+            display: false,
         },
         {
             title: 'Submission',
-            display: true,
+            display: false,
         },
     ])
 
@@ -146,17 +172,10 @@ const ProjectTable = ({
     }, [])
 
     let dispatch = useDispatch()
-    let toast = useToast()
+    //let toast = useToast()
     let { allprojects, message, isSuccess, isError } = useSelector(
         (state) => state.project
     )
-
-    //const [activityDrpdown, setActivityDropDown] = React.useState(false)
-    // let activeDrop = React.useRef(null)
-
-    // const handleDropDown = () => {
-    //     setActivityDropDown(!activityDrpdown)
-    // }
 
     let routeNavigate = useNavigate()
 
@@ -307,14 +326,6 @@ const ProjectTable = ({
                     name.includes(details)
                 )
 
-                // let check = filterInfo[0].searchfor.some(({ details }) => {
-                //     console.log('details', details)
-                //     if (name.includes(details)) {
-                //         return true
-                //     }
-                // })
-                // console.log('check', check)
-
                 return check
             }
 
@@ -325,13 +336,16 @@ const ProjectTable = ({
                     name.includes(details)
                 )
 
-                // let check = filterInfo[0].searchfor.some(({ details }) => {
-                //     console.log('details', details)
-                //     if (name.includes(details)) {
-                //         return true
-                //     }
-                // })
-                // console.log('check', check)
+                return check
+            }
+
+            /** Award search */
+            if (filterInfo[0].title === 'Award') {
+                let name = data1.student.degree_program.toLowerCase()
+                //console.log('name', name)
+                let check = filterInfo[0].searchfor.some((details) =>
+                    name.includes(details)
+                )
 
                 return check
             }
@@ -339,13 +353,23 @@ const ProjectTable = ({
             /** topic */
             if (filterInfo[0].title === 'Topic') {
                 let topic = data1.topic.toLowerCase()
-
                 let check = filterInfo[0].searchfor.some((details) =>
                     topic.includes(details)
+                )
+                return check
+            }
+
+            /** Award search */
+            if (filterInfo[0].title === 'School') {
+                let name = data1.student.schoolName.toLowerCase()
+                //console.log('name', name)
+                let check = filterInfo[0].searchfor.some((details) =>
+                    name.includes(details)
                 )
 
                 return check
             }
+
             /** status */
             if (filterInfo[0].title === 'Status') {
                 let status = data1.activeStatus
@@ -361,11 +385,9 @@ const ProjectTable = ({
             /** registration */
             if (filterInfo[0].title === 'Registration') {
                 let allRegistrations = [...data1.registration]
-
                 /** function to return latest registration */
                 let returnedData = getLatestRegistration(allRegistrations)
                 let status = returnedData.toLowerCase()
-
                 let check = filterInfo[0].searchfor.some((details) =>
                     status.includes(details)
                 )
@@ -376,11 +398,9 @@ const ProjectTable = ({
             if (filterInfo[0].title === 'Submission') {
                 //  console.log('submission', data1.submissionStatus.toLowerCase())
                 let status = data1.submissionStatus.toLowerCase()
-
                 let check = filterInfo[0].searchfor.some((details) =>
                     status.includes(details)
                 )
-
                 return check
             }
 
@@ -391,12 +411,8 @@ const ProjectTable = ({
         if (searchResults.length > 0 && filterInfo.length > 1) {
             let newFilterArray = [...filterInfo]
             newFilterArray.splice(0, 1)
-            //console.log('new arrayS', newFilterArray)
-            //stopped here
-
             //make a new copy of the searched Data
             let newSearchedData = [...searchResults]
-
             //iterate through the queries
             for (
                 let iteration = 0;
@@ -420,9 +436,6 @@ const ProjectTable = ({
                                 ].searchfor.some((details) =>
                                     name.includes(details)
                                 )
-
-                                //  console.log('check', check)
-
                                 return check
                             }
 
@@ -439,33 +452,59 @@ const ProjectTable = ({
                                 ].searchfor.some((details) =>
                                     name.includes(details)
                                 )
+                                return check
+                            }
 
-                                //   console.log('check', check)
+                            /** Award search */
+                            if (newFilterArray[iteration].title === 'Award') {
+                                let name =
+                                    data1.student.degree_program.toLowerCase()
+                                //console.log('name', name)
+                                let check = newFilterArray[
+                                    iteration
+                                ].searchfor.some((details) =>
+                                    name.includes(details)
+                                )
 
                                 return check
                             }
+
+                            /** School search */
+                            if (newFilterArray[iteration].title === 'School') {
+                                let name =
+                                    data1.student.schoolName.toLowerCase()
+                                //console.log('name', name)
+                                let check = newFilterArray[
+                                    iteration
+                                ].searchfor.some((details) =>
+                                    name.includes(details)
+                                )
+
+                                return check
+                            }
+
                             /** topic */
                             if (newFilterArray[iteration].title === 'Topic') {
-                                let topic = data1.topic.toLowerCase()
-
+                                let topic = data1.topic
+                                    ? data1.topic.toLowerCase()
+                                    : ''
                                 let check = newFilterArray[
                                     iteration
                                 ].searchfor.some((details) =>
                                     topic.includes(details)
                                 )
-
                                 return check
                             }
                             /** status */
                             if (newFilterArray[iteration].title === 'Status') {
-                                let status = data1.activeStatus.toLowerCase()
-
+                                let status = data1.activeStatus
+                                    ? data1.activeStatus.toLowerCase()
+                                    : ''
                                 let check = newFilterArray[
                                     iteration
                                 ].searchfor.some((details) =>
                                     status.includes(details)
                                 )
-
                                 return check
                             }
                             /** registration */
@@ -484,7 +523,6 @@ const ProjectTable = ({
                                 ].searchfor.some((details) =>
                                     status.includes(details)
                                 )
-
                                 return check
                             }
                             /** resubmission */
@@ -506,16 +544,13 @@ const ProjectTable = ({
                             return null
                         }
                     )
-
                     /** assign the new results */
-
                     newSearchedData = [...newResults]
                 } else {
                     return
                 }
             }
             // perform state update of the results
-
             //items collected
             const allItemsCollected = newSearchedData
             //total all items
@@ -524,14 +559,11 @@ const ProjectTable = ({
             const currentPage = 1
             const indexOfLastItem = currentPage * itemsPerPage
             const indexOfFirstItem = indexOfLastItem - itemsPerPage
-
             const currentItems = allItemsCollected.slice(
                 indexOfFirstItem,
                 indexOfLastItem
             )
-
             const pageLength = Math.ceil(totalItems / itemsPerPage)
-
             setSearchData({
                 currentPage: currentPage,
                 itemsPerPage: itemsPerPage,
@@ -544,7 +576,6 @@ const ProjectTable = ({
         } else {
             /** filter info less than 2 and no searched data */
             /** set the records */
-            //items collected
             const allItemsCollected = searchResults
             //total all items
             const totalItems = searchResults.length
@@ -572,11 +603,68 @@ const ProjectTable = ({
         }
     }
 
+    /** handle the default search functionality */
+    const handleDefaultSearch = (word) => {
+        const searchResults = allDisplayData.allItems.filter((data1, index) => {
+             let name = data1.student.studentName.toLowerCase()
+            let registrationNo = data1.student.registrationNumber.toLowerCase()
+            
+             if (name.includes(searchWord)) {
+                 return data1
+             }
+
+             if (registrationNo.includes(searchWord)) {
+                 return data1
+             }
+
+             return null
+        })
+
+
+        const allItemsCollected = searchResults
+
+        const totalItems = searchResults.length
+
+        let itemsPerPage = perPage
+        const currentPage = 1
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+
+  const currentItems = allItemsCollected.slice(
+      indexOfFirstItem,
+      indexOfLastItem
+  )
+
+  const pageLength = Math.ceil(totalItems / itemsPerPage)
+
+  setSearchData({
+      currentPage: currentPage,
+      itemsPerPage: itemsPerPage,
+      items: currentItems,
+      allSearchItems: searchResults,
+      totalItemsDisplayed: currentItems.length,
+      totalSearchedItems: totalItems,
+      totalPages: pageLength,
+  })
+
+    }
+
     useEffect(() => {
         if (filterInfo.length > 0) {
             handleFilters()
         }
-    }, [filterInfo])
+    }, [filterInfo, searchButtonState])
+
+    useEffect(() => {
+        if (searchButtonState === 'DefaultSearch' && searchWord) {
+            if (searchWord !== '') {
+              handleDefaultSearch(searchWord)  
+            } else {
+
+            }
+            
+        }
+    }, [, searchButtonState, searchWord])
 
     /** function to handle general checkbox */
     const handleGeneralCheckbox = (e) => {
@@ -604,7 +692,6 @@ const ProjectTable = ({
             setExportData([])
         }
     }
-
     /** function to handle checkbox on each item */
     const handleIndivCheckbox = (e, data) => {
         if (exportData.length > 0) {
@@ -690,7 +777,6 @@ const ProjectTable = ({
                     indexOfFirstItem,
                     indexOfLastItem
                 )
-
                 setSearchData({
                     ...searchData,
                     currentPage: page,
@@ -710,7 +796,6 @@ const ProjectTable = ({
                     indexOfFirstItem,
                     indexOfLastItem
                 )
-
                 setAllDisplayData(() => ({
                     ...allDisplayData,
                     currentPage: page,
@@ -731,6 +816,7 @@ const ProjectTable = ({
                         ? 'Master Students'
                         : 'PHD Students',
                 data: exportData,
+                projectTagData: projectTagData,
             }
             await window.electronAPI.exportStudentCSV(values)
         }
@@ -750,36 +836,65 @@ const ProjectTable = ({
 
     const onRemoveUpload = () => {
         if (removeDetails.projectId) {
-            dispatch(projectDeletion(removeDetails))
             setIsSubmittingp(true)
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(projectDeletion(removeDetails)).then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'Deleting Student ....',
+                    success: (data) => `Successfully Deleted`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
     const cancelRemoveUpload = () => {
         setRemoveActive(false)
         setRemoveDetails(null)
-
-        // onClose()
     }
-
     React.useEffect(() => {
         if (isError && isSubmittingp) {
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
         if (isSuccess && message && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setRemoveActive(false)
             setRemoveDetails(null)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         dispatch(reset())
@@ -787,8 +902,6 @@ const ProjectTable = ({
 
     /** function to handle the columns table checkbox */
     const handleColumnsChange = (e, value) => {
-        //alert(e.target.checked)
-
         let ColumnData = [...mastersTableColumn]
         let newColumnssData = ColumnData.map((data) => {
             if (data.title === value) {
@@ -805,6 +918,265 @@ const ProjectTable = ({
 
         setMastersTableColumn(() => newColumnssData)
         localStorage.setItem('Ma_columnSet', JSON.stringify(newColumnssData))
+    }
+
+    const handleCompiledExaminers = (examinerDatas) => {
+        let compiledExaminer = []
+
+        if (examinerDatas.length > 1) {
+            for (
+                let iteration = 0;
+                iteration < examinerDatas.length;
+                iteration++
+            ) {
+                let totalIterations = iteration + 1
+                if (examinerDatas[iteration].submissionType === 'normal') {
+                    compiledExaminer.push(examinerDatas[iteration])
+                }
+
+                if (totalIterations === examinerDatas.length) {
+                    return compiledExaminer
+                }
+            }
+        } else {
+            return []
+        }
+    }
+
+    const handleCompiledResubmitExaminers = (examinerDatas) => {
+        let compiledExaminer = []
+
+        if (examinerDatas.length > 0) {
+            for (
+                let iteration = 0;
+                iteration < examinerDatas.length;
+                iteration++
+            ) {
+                let totalIterations = iteration + 1
+                if (
+                    examinerDatas[iteration].submissionType === 'resubmission'
+                ) {
+                    compiledExaminer.push(examinerDatas[iteration])
+                }
+
+                if (totalIterations === examinerDatas.length) {
+                    return compiledExaminer
+                }
+            }
+        } else {
+            return []
+        }
+    }
+
+    const handleCompiledExRp = (rpDatas) => {
+        let compiledReports = []
+
+        if (rpDatas.length > 0) {
+            for (let iteration = 0; iteration < rpDatas.length; iteration++) {
+                let totalIterations = iteration + 1
+                if (rpDatas[iteration].submissionType === 'normal') {
+                    compiledReports.push(rpDatas[iteration])
+                }
+
+                if (totalIterations === rpDatas.length) {
+                    return compiledReports
+                }
+            }
+        } else {
+            return []
+        }
+    }
+
+    const handleCompiledResubmittedRp = (rpDatas) => {
+        let compiledReports = []
+
+        if (rpDatas.length > 0) {
+            for (let iteration = 0; iteration < rpDatas.length; iteration++) {
+                let totalIterations = iteration + 1
+                if (rpDatas[iteration].submissionType === 'resubmission') {
+                    compiledReports.push(rpDatas[iteration])
+                }
+
+                if (totalIterations === rpDatas.length) {
+                    return compiledReports
+                }
+            }
+        } else {
+            return []
+        }
+    }
+
+    /** reports - final compiled (normal version) */
+    const handleCompiledIEReports = (ceData, rpData) => {
+        let compiledIEReports = []
+        if (rpData.length > 0 && ceData.length > 0) {
+            for (let iteration = 0; iteration < rpData.length; iteration++) {
+                let totalIterations = iteration + 1
+                let pushExaminerReport = {
+                    ...rpData[iteration],
+                    examinerName: '',
+                }
+
+                for (
+                    let ceIteration = 0;
+                    ceIteration < ceData.length;
+                    ceIteration++
+                ) {
+                    let totalCeIteration = ceIteration + 1
+
+                    if (
+                        ceData[ceIteration].examinerId._id ===
+                            pushExaminerReport.reportId.examiner &&
+                        ceData[ceIteration].examinerId.typeOfExaminer ===
+                            'Internal'
+                    ) {
+                        pushExaminerReport.examinerName =
+                            ceData[ceIteration].examinerId.jobtitle +
+                            ' ' +
+                            ceData[ceIteration].examinerId.name
+                        compiledIEReports.push(pushExaminerReport)
+                    }
+
+                    if (
+                        totalCeIteration === ceData.length &&
+                        totalIterations === rpData.length
+                    ) {
+                        return compiledIEReports
+                    }
+                }
+            }
+        } else {
+            return []
+        }
+    }
+    const handleCompiledEEReports = (ceData, rpData) => {
+        let compiledEEReports = []
+        if (rpData.length > 0 && ceData.length > 0) {
+            for (let iteration = 0; iteration < rpData.length; iteration++) {
+                let totalIterations = iteration + 1
+                let pushExaminerReport = {
+                    ...rpData[iteration],
+                    examinerName: '',
+                }
+
+                for (
+                    let ceIteration = 0;
+                    ceIteration < ceData.length;
+                    ceIteration++
+                ) {
+                    let totalCeIteration = ceIteration + 1
+
+                    if (
+                        ceData[ceIteration].examinerId._id ===
+                            pushExaminerReport.reportId.examiner &&
+                        ceData[ceIteration].examinerId.typeOfExaminer ===
+                            'External'
+                    ) {
+                        pushExaminerReport.examinerName =
+                            ceData[ceIteration].examinerId.jobtitle +
+                            ' ' +
+                            ceData[ceIteration].examinerId.name
+                        compiledEEReports.push(pushExaminerReport)
+                    }
+
+                    if (
+                        totalCeIteration === ceData.length &&
+                        totalIterations === rpData.length
+                    ) {
+                        return compiledEEReports
+                    }
+                }
+            }
+        } else {
+            return []
+        }
+    }
+
+    /** reports - final compiled (resubmission version) */
+    const handleCompiledIEResubmitted = (ceData, rpData) => {
+        let compiledResubIEReports = []
+        if (rpData.length > 0 && ceData.length > 0) {
+            for (let iteration = 0; iteration < rpData.length; iteration++) {
+                let totalIterations = iteration + 1
+                let pushExaminerReport = {
+                    ...rpData[iteration],
+                    examinerName: '',
+                }
+
+                for (
+                    let ceIteration = 0;
+                    ceIteration < ceData.length;
+                    ceIteration++
+                ) {
+                    let totalCeIteration = ceIteration + 1
+
+                    if (
+                        ceData[ceIteration].examinerId._id ===
+                            pushExaminerReport.reportId.examiner &&
+                        ceData[ceIteration].examinerId.typeOfExaminer ===
+                            'Internal'
+                    ) {
+                        pushExaminerReport.examinerName =
+                            ceData[ceIteration].examinerId.jobtitle +
+                            ' ' +
+                            ceData[ceIteration].examinerId.name
+                        compiledResubIEReports.push(pushExaminerReport)
+                    }
+
+                    if (
+                        totalCeIteration === ceData.length &&
+                        totalIterations === rpData.length
+                    ) {
+                        return compiledResubIEReports
+                    }
+                }
+            }
+        } else {
+            return []
+        }
+    }
+
+    const handleCompiledEERebsubmitted = (ceData, rpData) => {
+        let compiledResubEEReports = []
+        if (rpData.length > 0 && ceData.length > 0) {
+            for (let iteration = 0; iteration < rpData.length; iteration++) {
+                let totalIterations = iteration + 1
+                let pushExaminerReport = {
+                    ...rpData[iteration],
+                    examinerName: '',
+                }
+
+                for (
+                    let ceIteration = 0;
+                    ceIteration < ceData.length;
+                    ceIteration++
+                ) {
+                    let totalCeIteration = ceIteration + 1
+
+                    if (
+                        ceData[ceIteration].examinerId._id ===
+                            pushExaminerReport.reportId.examiner &&
+                        ceData[ceIteration].examinerId.typeOfExaminer ===
+                            'External'
+                    ) {
+                        pushExaminerReport.examinerName =
+                            ceData[ceIteration].examinerId.jobtitle +
+                            ' ' +
+                            ceData[ceIteration].examinerId.name
+                        compiledResubEEReports.push(pushExaminerReport)
+                    }
+
+                    if (
+                        totalCeIteration === ceData.length &&
+                        totalIterations === rpData.length
+                    ) {
+                        return compiledResubEEReports
+                    }
+                }
+            }
+        } else {
+            return []
+        }
     }
 
     return (
@@ -892,7 +1264,6 @@ const ProjectTable = ({
                     </TableButton>
                 </SearchActivity>
             </Stack>
-
             {/** student table */}
             {/** student table head */}
             <Box minH='50vh' className='table_wrapper'>
@@ -1016,77 +1387,49 @@ const ProjectTable = ({
                                             includedInExport = false
                                         }
 
-                                        let examiners_reports = [
-                                            ...data.examinerReports,
-                                        ]
+                                        /** examiners - compiled (normal version) */
+                                        let compiledEx =
+                                            handleCompiledExaminers(
+                                                data.examiners
+                                            )
 
-                                        let studentExaminers = [
-                                            ...data.examiners,
-                                        ]
+                                        let compiledResubmitted =
+                                            handleCompiledResubmitExaminers(
+                                                data.examiners
+                                            )
 
-                                        let compiledInternalExaminerReports = []
+                                        /** examiners - compiled (resubmission) */
+                                        let compiledExRp = handleCompiledExRp(
+                                            data.examinerReports
+                                        )
+                                        let compiledResubmittedRp =
+                                            handleCompiledResubmittedRp(
+                                                data.examinerReports
+                                            )
 
-                                        let compiledExternalExaminerReports = []
+                                        /** reports - compiled (normal version) */
+                                        let compiledInternalExaminerReports =
+                                            handleCompiledIEReports(
+                                                compiledEx,
+                                                compiledExRp
+                                            )
+                                        let compiledExternalExaminerReports =
+                                            handleCompiledEEReports(
+                                                compiledEx,
+                                                compiledExRp
+                                            )
 
-                                        if (
-                                            examiners_reports.length > 0 &&
-                                            studentExaminers.length > 0
-                                        ) {
-                                            for (
-                                                let iteration = 0;
-                                                iteration <
-                                                examiners_reports.length;
-                                                iteration++
-                                            ) {
-                                                let pushExaminerReport = {
-                                                    ...examiners_reports[
-                                                        iteration
-                                                    ],
-                                                    examinerName: '',
-                                                }
-
-                                                studentExaminers.filter(
-                                                    (IEData) => {
-                                                        if (
-                                                            IEData.examinerId
-                                                                ._id ===
-                                                            pushExaminerReport
-                                                                .reportId
-                                                                .examiner
-                                                        ) {
-                                                            pushExaminerReport.examinerName =
-                                                                IEData
-                                                                    .examinerId
-                                                                    .jobtitle +
-                                                                ' ' +
-                                                                IEData
-                                                                    .examinerId
-                                                                    .name
-
-                                                            if (
-                                                                IEData
-                                                                    .examinerId
-                                                                    .typeOfExaminer ===
-                                                                'Internal'
-                                                            ) {
-                                                                compiledInternalExaminerReports.push(
-                                                                    pushExaminerReport
-                                                                )
-                                                            } else {
-                                                                compiledExternalExaminerReports.push(
-                                                                    pushExaminerReport
-                                                                )
-                                                            }
-
-                                                            return null
-                                                        } else {
-                                                            return null
-                                                        }
-                                                    }
-                                                )
-                                            }
-                                        } else {
-                                        }
+                                        /** reports - compiled (resubmission) */
+                                        let compiledInternalResubmittedReports =
+                                            handleCompiledIEResubmitted(
+                                                compiledResubmitted,
+                                                compiledResubmittedRp
+                                            )
+                                        let compiledExternalResubmittedReports =
+                                            handleCompiledEERebsubmitted(
+                                                compiledResubmitted,
+                                                compiledResubmittedRp
+                                            )
 
                                         return (
                                             <Tr
@@ -1096,6 +1439,7 @@ const ProjectTable = ({
                                                         : ''
                                                 }`}
                                                 key={data._id}>
+                                                {/** checkbox */}
                                                 <Td w='46px'>
                                                     <Checkbox
                                                         isChecked={
@@ -1128,21 +1472,8 @@ const ProjectTable = ({
                                                     </Box>
                                                 </Td> */}
 
+                                                {/** student name */}
                                                 {mastersTableColumn[0]
-                                                    .display ? (
-                                                    <Td
-                                                        style={{
-                                                            color: '#5E5C60',
-                                                            fontWeight: 500,
-                                                        }}>
-                                                        {
-                                                            data.student
-                                                                .registrationNumber
-                                                        }
-                                                    </Td>
-                                                ) : null}
-
-                                                {mastersTableColumn[1]
                                                     .display ? (
                                                     <Td
                                                         minW='150px'
@@ -1159,6 +1490,21 @@ const ProjectTable = ({
                                                         }
                                                     </Td>
                                                 ) : null}
+                                                {/** student registration name */}
+                                                {mastersTableColumn[1]
+                                                    .display ? (
+                                                    <Td
+                                                        style={{
+                                                            color: '#5E5C60',
+                                                            fontWeight: 500,
+                                                        }}>
+                                                        {
+                                                            data.student
+                                                                .registrationNumber
+                                                        }
+                                                    </Td>
+                                                ) : null}
+                                                {/** gender */}
                                                 {mastersTableColumn[2]
                                                     .display ? (
                                                     <Td
@@ -1174,7 +1520,22 @@ const ProjectTable = ({
                                                     </Td>
                                                 ) : null}
 
+                                                {/** Award */}
                                                 {mastersTableColumn[3]
+                                                    .display ? (
+                                                    <Td
+                                                        style={{
+                                                            color: '#5E5C60',
+                                                            fontWeight: 500,
+                                                        }}>
+                                                        {
+                                                            data.student
+                                                                .degree_program
+                                                        }
+                                                    </Td>
+                                                ) : null}
+                                                {/** topic */}
+                                                {mastersTableColumn[4]
                                                     .display ? (
                                                     <Td
                                                         minW='250px'
@@ -1187,7 +1548,24 @@ const ProjectTable = ({
                                                     </Td>
                                                 ) : null}
 
-                                                {mastersTableColumn[4]
+                                                {/** school */}
+                                                {mastersTableColumn[5]
+                                                    .display ? (
+                                                    <Td
+                                                        minW='250px'
+                                                        maxW='250px'
+                                                        style={{
+                                                            fontWeight: 500,
+                                                            color: '#15151D',
+                                                        }}>
+                                                        {
+                                                            data.student
+                                                                .schoolName
+                                                        }
+                                                    </Td>
+                                                ) : null}
+                                                {/** status of student */}
+                                                {mastersTableColumn[6]
                                                     .display ? (
                                                     <Td>
                                                         {' '}
@@ -1205,7 +1583,7 @@ const ProjectTable = ({
                                                                         ? activeElementSet.rgba
                                                                         : ''
                                                                 }
-                                                                minW='160px'
+                                                                minW='260px'
                                                                 direction='row'
                                                                 alignItems='center'>
                                                                 <div className='tag_point' />
@@ -1242,7 +1620,7 @@ const ProjectTable = ({
                                                                             ? '#eeeeef'
                                                                             : ''
                                                                     }
-                                                                    minW='160px'
+                                                                    minW='260px'
                                                                     direction='row'
                                                                     justifyContent='center'
                                                                     alignItems='center'>
@@ -1291,7 +1669,7 @@ const ProjectTable = ({
                                                                             ? '#eeeeef'
                                                                             : ''
                                                                     }
-                                                                    minW='160px'
+                                                                    minW='260px'
                                                                     direction='row'
                                                                     justifyContent='center'
                                                                     alignItems='center'>
@@ -1333,7 +1711,7 @@ const ProjectTable = ({
                                                                             ? '#eeeeef'
                                                                             : ''
                                                                     }
-                                                                    minW='160px'
+                                                                    minW='260px'
                                                                     direction='row'
                                                                     justifyContent='center'
                                                                     alignItems='center'>
@@ -1358,8 +1736,8 @@ const ProjectTable = ({
                                                         </Stack>
                                                     </Td>
                                                 ) : null}
-
-                                                {mastersTableColumn[5]
+                                                {/** number of examiners */}
+                                                {mastersTableColumn[7]
                                                     .display ? (
                                                     <Td>
                                                         <Box
@@ -1449,9 +1827,10 @@ const ProjectTable = ({
                                                     </Td>
                                                 ) : null}
                                                 {/** internal examiners */}
-                                                {mastersTableColumn[6]
+                                                {mastersTableColumn[8]
                                                     .display ? (
                                                     <Td minW='250px'>
+                                                        {/** normal reports */}
                                                         {compiledInternalExaminerReports.length >
                                                         0 ? (
                                                             <Stack direction='column'>
@@ -1461,18 +1840,197 @@ const ProjectTable = ({
                                                                         iEIndex
                                                                     ) => {
                                                                         return (
-                                                                            <Box
-                                                                                m='auto'
-                                                                                w='100%'
+                                                                            <Stack
+                                                                                className={`iereport_container ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus &&
+                                                                                    internalEData.reportId.reportStatus.toLowerCase() ==
+                                                                                        'passed'
+                                                                                        ? 'passed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'failed'
+                                                                                        ? 'failed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'pending'
+                                                                                        ? 'pending'
+                                                                                        : null
+                                                                                }`}
+                                                                                key={
+                                                                                    iEIndex
+                                                                                }
                                                                                 display='flex'
-                                                                                className='subtype'
                                                                                 justifyContent={
                                                                                     'center'
-                                                                                }>
-                                                                                {
-                                                                                    internalEData.examinerName
                                                                                 }
-                                                                            </Box>
+                                                                                alignItems={
+                                                                                    'center'
+                                                                                }
+                                                                                bg={
+                                                                                    'red'
+                                                                                }
+                                                                                padding='0'
+                                                                                gap='0px'
+                                                                                direction='column'>
+                                                                                <Box
+                                                                                    w='100%'
+                                                                                    style={{
+                                                                                        textTransform:
+                                                                                            'capitalize',
+                                                                                        fontSize:
+                                                                                            '15px',
+
+                                                                                        fontWeight:
+                                                                                            '500',
+                                                                                        letterSpacing:
+                                                                                            '0.4px',
+                                                                                        textAlign:
+                                                                                            'center',
+                                                                                    }}
+                                                                                    display='flex'
+                                                                                    justifyContent={
+                                                                                        'center'
+                                                                                    }>
+                                                                                    {
+                                                                                        internalEData.examinerName
+                                                                                    }
+                                                                                </Box>
+                                                                                {/** status and marks */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            paddingLeft:
+                                                                                                '3px',
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            marginTop:
+                                                                                                '10px',
+                                                                                            fontSize:
+                                                                                                '11px',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            internalEData
+                                                                                                .reportId
+                                                                                                .reportStatus
+                                                                                        }
+                                                                                    </Box>
+                                                                                ) : null}
+                                                                                {/** status and marks */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? null : (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '4px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            fontWeight:
+                                                                                                '500',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            internalEData
+                                                                                                .reportId
+                                                                                                .score
+                                                                                        }
+
+                                                                                        %{' '}
+                                                                                        {
+                                                                                            '-'
+                                                                                        }{' '}
+                                                                                        <span
+                                                                                            style={{
+                                                                                                paddingLeft:
+                                                                                                    '3px',
+                                                                                                fontSize:
+                                                                                                    '11px',
+                                                                                                letterSpacing:
+                                                                                                    '0.4px',
+                                                                                            }}>
+                                                                                            {
+                                                                                                internalEData
+                                                                                                    .reportId
+                                                                                                    .reportStatus
+                                                                                            }
+                                                                                        </span>
+                                                                                    </Box>
+                                                                                )}
+
+                                                                                {/** marked submission Date */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                    false &&
+                                                                                !internalEData
+                                                                                    .reportId
+                                                                                    .submissionDate ? null : (
+                                                                                    <Box
+                                                                                        w='100%'
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'lowercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '10px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                internalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'DD/MM/YYYY'
+                                                                                        )}{' '}
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                internalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'hh:mm a'
+                                                                                        )}
+                                                                                    </Box>
+                                                                                )}
+                                                                            </Stack>
                                                                         )
                                                                     }
                                                                 )}
@@ -1491,13 +2049,226 @@ const ProjectTable = ({
                                                                 </Box>
                                                             </Stack>
                                                         )}
+                                                        {/** resubmitted reports */}
+                                                        {compiledInternalResubmittedReports.length >
+                                                        0 ? (
+                                                            <Stack
+                                                                mt='10px'
+                                                                direction='column'>
+                                                                <ResubmissionHead>
+                                                                    Resubmitted
+                                                                    reports
+                                                                </ResubmissionHead>
+                                                                {compiledInternalResubmittedReports.map(
+                                                                    (
+                                                                        internalEData,
+                                                                        iEIndex
+                                                                    ) => {
+                                                                        return (
+                                                                            <Stack
+                                                                                className={`iereport_container ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus &&
+                                                                                    internalEData.reportId.reportStatus.toLowerCase() ==
+                                                                                        'passed'
+                                                                                        ? 'passed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'failed'
+                                                                                        ? 'failed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'pending'
+                                                                                        ? 'pending'
+                                                                                        : null
+                                                                                }`}
+                                                                                key={
+                                                                                    iEIndex
+                                                                                }
+                                                                                display='flex'
+                                                                                justifyContent={
+                                                                                    'center'
+                                                                                }
+                                                                                alignItems={
+                                                                                    'center'
+                                                                                }
+                                                                                bg={
+                                                                                    'red'
+                                                                                }
+                                                                                padding='0'
+                                                                                gap='0px'
+                                                                                direction='column'>
+                                                                                {/** examiner name */}
+                                                                                <Box
+                                                                                    w='100%'
+                                                                                    style={{
+                                                                                        textTransform:
+                                                                                            'capitalize',
+                                                                                        fontSize:
+                                                                                            '15px',
+
+                                                                                        fontWeight:
+                                                                                            '500',
+                                                                                        letterSpacing:
+                                                                                            '0.4px',
+                                                                                        textAlign:
+                                                                                            'center',
+                                                                                    }}
+                                                                                    display='flex'
+                                                                                    justifyContent={
+                                                                                        'center'
+                                                                                    }>
+                                                                                    {
+                                                                                        internalEData.examinerName
+                                                                                    }
+                                                                                </Box>
+                                                                                {/** umarked report status  */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            paddingLeft:
+                                                                                                '3px',
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            marginTop:
+                                                                                                '10px',
+                                                                                            fontSize:
+                                                                                                '11px',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            internalEData
+                                                                                                .reportId
+                                                                                                .reportStatus
+                                                                                        }
+                                                                                    </Box>
+                                                                                ) : null}
+                                                                                {/** marked report status  */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? null : (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '4px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            fontWeight:
+                                                                                                '500',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            internalEData
+                                                                                                .reportId
+                                                                                                .score
+                                                                                        }
+
+                                                                                        %{' '}
+                                                                                        {
+                                                                                            '-'
+                                                                                        }{' '}
+                                                                                        <span
+                                                                                            style={{
+                                                                                                paddingLeft:
+                                                                                                    '3px',
+                                                                                                fontSize:
+                                                                                                    '11px',
+                                                                                                letterSpacing:
+                                                                                                    '0.4px',
+                                                                                            }}>
+                                                                                            {
+                                                                                                internalEData
+                                                                                                    .reportId
+                                                                                                    .reportStatus
+                                                                                            }
+                                                                                        </span>
+                                                                                    </Box>
+                                                                                )}
+
+                                                                                {/** marked submission Date */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                    false &&
+                                                                                !internalEData
+                                                                                    .reportId
+                                                                                    .submissionDate ? null : (
+                                                                                    <Box
+                                                                                        w='100%'
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'lowercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '10px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                internalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'DD/MM/YYYY'
+                                                                                        )}{' '}
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                internalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'hh:mm a'
+                                                                                        )}
+                                                                                    </Box>
+                                                                                )}
+                                                                            </Stack>
+                                                                        )
+                                                                    }
+                                                                )}
+                                                            </Stack>
+                                                        ) : null}
                                                     </Td>
                                                 ) : null}
-
                                                 {/** external examiners */}
-                                                {mastersTableColumn[7]
+                                                {mastersTableColumn[9]
                                                     .display ? (
                                                     <Td minW='250px'>
+                                                        {/** normal reports */}
                                                         {compiledExternalExaminerReports.length >
                                                         0 ? (
                                                             <Stack direction='column'>
@@ -1507,18 +2278,238 @@ const ProjectTable = ({
                                                                         iEIndex
                                                                     ) => {
                                                                         return (
-                                                                            <Box
-                                                                                m='auto'
-                                                                                w='100%'
-                                                                                display='flex'
-                                                                                className='subtype'
-                                                                                justifyContent={
-                                                                                    'center'
-                                                                                }>
-                                                                                {
-                                                                                    externalEData.examinerName
-                                                                                }
-                                                                            </Box>
+                                                                            <Popover>
+                                                                                <PopoverTrigger>
+                                                                                    <Stack
+                                                                                        className={`iereport_container ${
+                                                                                            externalEData
+                                                                                                .reportId
+                                                                                                .reportStatus &&
+                                                                                            externalEData.reportId.reportStatus.toLowerCase() ==
+                                                                                                'passed'
+                                                                                                ? 'passed'
+                                                                                                : null
+                                                                                        } ${
+                                                                                            externalEData
+                                                                                                .reportId
+                                                                                                .reportStatus ===
+                                                                                            'failed'
+                                                                                                ? 'failed'
+                                                                                                : null
+                                                                                        } ${
+                                                                                            externalEData
+                                                                                                .reportId
+                                                                                                .reportStatus ===
+                                                                                            'pending'
+                                                                                                ? 'pending'
+                                                                                                : null
+                                                                                        }`}
+                                                                                        key={
+                                                                                            iEIndex
+                                                                                        }
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }
+                                                                                        alignItems={
+                                                                                            'center'
+                                                                                        }
+                                                                                        bg={
+                                                                                            'red'
+                                                                                        }
+                                                                                        padding='0'
+                                                                                        gap='0px'
+                                                                                        direction='column'>
+                                                                                        {/** examiner name */}
+                                                                                        <Box
+                                                                                            w='100%'
+                                                                                            style={{
+                                                                                                textTransform:
+                                                                                                    'capitalize',
+                                                                                                fontSize:
+                                                                                                    '15px',
+
+                                                                                                fontWeight:
+                                                                                                    '500',
+                                                                                                letterSpacing:
+                                                                                                    '0.4px',
+                                                                                                textAlign:
+                                                                                                    'center',
+                                                                                            }}
+                                                                                            display='flex'
+                                                                                            justifyContent={
+                                                                                                'center'
+                                                                                            }>
+                                                                                            {
+                                                                                                externalEData.examinerName
+                                                                                            }
+                                                                                        </Box>
+                                                                                        {/** umarked report status  */}
+                                                                                        {externalEData
+                                                                                            .reportId
+                                                                                            .marked ===
+                                                                                        false ? (
+                                                                                            <Box
+                                                                                                style={{
+                                                                                                    paddingLeft:
+                                                                                                        '3px',
+                                                                                                    textTransform:
+                                                                                                        'uppercase',
+                                                                                                    marginTop:
+                                                                                                        '10px',
+                                                                                                    fontSize:
+                                                                                                        '11px',
+                                                                                                    letterSpacing:
+                                                                                                        '0.4px',
+                                                                                                }}
+                                                                                                w='100%'
+                                                                                                display='flex'
+                                                                                                justifyContent={
+                                                                                                    'center'
+                                                                                                }>
+                                                                                                {
+                                                                                                    externalEData
+                                                                                                        .reportId
+                                                                                                        .reportStatus
+                                                                                                }
+                                                                                            </Box>
+                                                                                        ) : null}
+                                                                                        {/** marked report status  */}
+                                                                                        {externalEData
+                                                                                            .reportId
+                                                                                            .marked ===
+                                                                                        false ? null : (
+                                                                                            <Box
+                                                                                                style={{
+                                                                                                    textTransform:
+                                                                                                        'uppercase',
+                                                                                                    fontSize:
+                                                                                                        '14px',
+                                                                                                    marginTop:
+                                                                                                        '4px',
+
+                                                                                                    fontFamily:
+                                                                                                        'Inter',
+                                                                                                    fontWeight:
+                                                                                                        '500',
+                                                                                                    letterSpacing:
+                                                                                                        '0.4px',
+                                                                                                }}
+                                                                                                w='100%'
+                                                                                                display='flex'
+                                                                                                justifyContent={
+                                                                                                    'center'
+                                                                                                }>
+                                                                                                {
+                                                                                                    externalEData
+                                                                                                        .reportId
+                                                                                                        .score
+                                                                                                }
+
+                                                                                                %{' '}
+                                                                                                {
+                                                                                                    '-'
+                                                                                                }{' '}
+                                                                                                <span
+                                                                                                    style={{
+                                                                                                        paddingLeft:
+                                                                                                            '3px',
+                                                                                                        fontSize:
+                                                                                                            '11px',
+                                                                                                        letterSpacing:
+                                                                                                            '0.4px',
+                                                                                                    }}>
+                                                                                                    {
+                                                                                                        externalEData
+                                                                                                            .reportId
+                                                                                                            .reportStatus
+                                                                                                    }
+                                                                                                </span>
+                                                                                            </Box>
+                                                                                        )}
+
+                                                                                        {/** marked submission Date */}
+                                                                                        {externalEData
+                                                                                            .reportId
+                                                                                            .marked ===
+                                                                                            false &&
+                                                                                        !externalEData
+                                                                                            .reportId
+                                                                                            .submissionDate ? null : (
+                                                                                            <Box
+                                                                                                w='100%'
+                                                                                                style={{
+                                                                                                    textTransform:
+                                                                                                        'lowercase',
+                                                                                                    fontSize:
+                                                                                                        '14px',
+                                                                                                    marginTop:
+                                                                                                        '10px',
+
+                                                                                                    fontFamily:
+                                                                                                        'Inter',
+                                                                                                    letterSpacing:
+                                                                                                        '0.4px',
+                                                                                                }}
+                                                                                                display='flex'
+                                                                                                justifyContent={
+                                                                                                    'center'
+                                                                                                }>
+                                                                                                {Moments(
+                                                                                                    new Date(
+                                                                                                        externalEData.reportId.submissionDate
+                                                                                                    )
+                                                                                                ).format(
+                                                                                                    'DD/MM/YYYY'
+                                                                                                )}{' '}
+                                                                                                {Moments(
+                                                                                                    new Date(
+                                                                                                        externalEData.reportId.submissionDate
+                                                                                                    )
+                                                                                                ).format(
+                                                                                                    'hh:mm a'
+                                                                                                )}
+                                                                                            </Box>
+                                                                                        )}
+                                                                                    </Stack>
+                                                                                </PopoverTrigger>
+
+                                                                                <PopoverContent w='200px'>
+                                                                                    <PopoverHeader
+                                                                                        className='reportAction_title'
+                                                                                        textAlign={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        Manage
+                                                                                        Report
+                                                                                    </PopoverHeader>
+                                                                                    <PopoverArrow bg='blue.800' />
+                                                                                    <PopoverCloseButton />
+                                                                                    <PopoverBody>
+                                                                                        <Stack direction='column'>
+                                                                                            <Button
+                                                                                                colorScheme={
+                                                                                                    'red'
+                                                                                                }
+                                                                                                className='reportAction_button'
+                                                                                                variant='solid'>
+                                                                                                Edit
+                                                                                                Report
+                                                                                            </Button>
+
+                                                                                            <Button
+                                                                                                colorScheme={
+                                                                                                    'red'
+                                                                                                }
+                                                                                                className='reportAction_button'
+                                                                                                variant='solid'>
+                                                                                                View
+                                                                                                Report
+                                                                                            </Button>
+                                                                                        </Stack>
+                                                                                    </PopoverBody>
+                                                                                </PopoverContent>
+                                                                            </Popover>
                                                                         )
                                                                     }
                                                                 )}
@@ -1537,10 +2528,224 @@ const ProjectTable = ({
                                                                 </Box>
                                                             </Stack>
                                                         )}
+
+                                                        {/** resubmitted reports */}
+                                                        {compiledExternalResubmittedReports.length >
+                                                        0 ? (
+                                                            <Stack
+                                                                mt='10px'
+                                                                direction='column'>
+                                                                <ResubmissionHead>
+                                                                    Resubmitted
+                                                                    reports
+                                                                </ResubmissionHead>
+                                                                {compiledExternalResubmittedReports.map(
+                                                                    (
+                                                                        externalEData,
+                                                                        iEIndex
+                                                                    ) => {
+                                                                        return (
+                                                                            <Stack
+                                                                                className={`iereport_container ${
+                                                                                    externalEData
+                                                                                        .reportId
+                                                                                        .reportStatus &&
+                                                                                    externalEData.reportId.reportStatus.toLowerCase() ==
+                                                                                        'passed'
+                                                                                        ? 'passed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    externalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'failed'
+                                                                                        ? 'failed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    externalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'pending'
+                                                                                        ? 'pending'
+                                                                                        : null
+                                                                                }`}
+                                                                                key={
+                                                                                    iEIndex
+                                                                                }
+                                                                                display='flex'
+                                                                                justifyContent={
+                                                                                    'center'
+                                                                                }
+                                                                                alignItems={
+                                                                                    'center'
+                                                                                }
+                                                                                bg={
+                                                                                    'red'
+                                                                                }
+                                                                                padding='0'
+                                                                                gap='0px'
+                                                                                direction='column'>
+                                                                                {/** examiner name */}
+                                                                                <Box
+                                                                                    w='100%'
+                                                                                    style={{
+                                                                                        textTransform:
+                                                                                            'capitalize',
+                                                                                        fontSize:
+                                                                                            '15px',
+
+                                                                                        fontWeight:
+                                                                                            '500',
+                                                                                        letterSpacing:
+                                                                                            '0.4px',
+                                                                                        textAlign:
+                                                                                            'center',
+                                                                                    }}
+                                                                                    display='flex'
+                                                                                    justifyContent={
+                                                                                        'center'
+                                                                                    }>
+                                                                                    {
+                                                                                        externalEData.examinerName
+                                                                                    }
+                                                                                </Box>
+                                                                                {/** umarked report status  */}
+                                                                                {externalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            paddingLeft:
+                                                                                                '3px',
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            marginTop:
+                                                                                                '10px',
+                                                                                            fontSize:
+                                                                                                '11px',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            externalEData
+                                                                                                .reportId
+                                                                                                .reportStatus
+                                                                                        }
+                                                                                    </Box>
+                                                                                ) : null}
+                                                                                {/** marked report status  */}
+                                                                                {externalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? null : (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '4px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            fontWeight:
+                                                                                                '500',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            externalEData
+                                                                                                .reportId
+                                                                                                .score
+                                                                                        }
+
+                                                                                        %{' '}
+                                                                                        {
+                                                                                            '-'
+                                                                                        }{' '}
+                                                                                        <span
+                                                                                            style={{
+                                                                                                paddingLeft:
+                                                                                                    '3px',
+                                                                                                fontSize:
+                                                                                                    '11px',
+                                                                                                letterSpacing:
+                                                                                                    '0.4px',
+                                                                                            }}>
+                                                                                            {
+                                                                                                externalEData
+                                                                                                    .reportId
+                                                                                                    .reportStatus
+                                                                                            }
+                                                                                        </span>
+                                                                                    </Box>
+                                                                                )}
+
+                                                                                {/** marked submission Date */}
+                                                                                {externalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                    false &&
+                                                                                !externalEData
+                                                                                    .reportId
+                                                                                    .submissionDate ? null : (
+                                                                                    <Box
+                                                                                        w='100%'
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'lowercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '10px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                externalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'DD/MM/YYYY'
+                                                                                        )}{' '}
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                externalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'hh:mm a'
+                                                                                        )}
+                                                                                    </Box>
+                                                                                )}
+                                                                            </Stack>
+                                                                        )
+                                                                    }
+                                                                )}
+                                                            </Stack>
+                                                        ) : null}
                                                     </Td>
                                                 ) : null}
-
-                                                {mastersTableColumn[8]
+                                                {/** registration status */}
+                                                {mastersTableColumn[10]
                                                     .display ? (
                                                     <Td>
                                                         <Box className='registration'>
@@ -1548,8 +2753,8 @@ const ProjectTable = ({
                                                         </Box>
                                                     </Td>
                                                 ) : null}
-
-                                                {mastersTableColumn[9]
+                                                {/** submission status */}
+                                                {mastersTableColumn[11]
                                                     .display ? (
                                                     <Td>
                                                         <Box
@@ -1566,6 +2771,8 @@ const ProjectTable = ({
                                                         </Box>
                                                     </Td>
                                                 ) : null}
+
+                                                {/** operation links  */}
                                                 <Td>
                                                     <Menu>
                                                         <MenuButton>
@@ -1644,7 +2851,6 @@ const ProjectTable = ({
                                         }
 
                                         /** handle timeline countdown */
-                                       
 
                                         let allRegistrations = [
                                             ...data.registration,
@@ -1668,79 +2874,50 @@ const ProjectTable = ({
                                             includedInExport = false
                                         }
 
-                                        // console.log('data', data)
+                                        /** examiners - compiled (normal version) */
+                                        let compiledEx =
+                                            handleCompiledExaminers(
+                                                data.examiners
+                                            )
 
-                                        let examiners_reports = [
-                                            ...data.examinerReports,
-                                        ]
+                                        let compiledResubmitted =
+                                            handleCompiledResubmitExaminers(
+                                                data.examiners
+                                            )
 
-                                        let studentExaminers = [
-                                            ...data.examiners,
-                                        ]
+                                        /** examiners - compiled (resubmission) */
+                                        let compiledExRp = handleCompiledExRp(
+                                            data.examinerReports
+                                        )
+                                        let compiledResubmittedRp =
+                                            handleCompiledResubmittedRp(
+                                                data.examinerReports
+                                            )
 
-                                        let compiledInternalExaminerReports = []
+                                        /** reports - compiled (normal version) */
+                                        let compiledInternalExaminerReports =
+                                            handleCompiledIEReports(
+                                                compiledEx,
+                                                compiledExRp
+                                            )
+                                        let compiledExternalExaminerReports =
+                                            handleCompiledEEReports(
+                                                compiledEx,
+                                                compiledExRp
+                                            )
 
-                                        let compiledExternalExaminerReports = []
+                                        /** reports - compiled (resubmission) */
+                                        let compiledInternalResubmittedReports =
+                                            handleCompiledIEResubmitted(
+                                                compiledResubmitted,
+                                                compiledResubmittedRp
+                                            )
+                                        let compiledExternalResubmittedReports =
+                                            handleCompiledEERebsubmitted(
+                                                compiledResubmitted,
+                                                compiledResubmittedRp
+                                            )
 
-                                        if (
-                                            examiners_reports.length > 0 &&
-                                            studentExaminers.length > 0
-                                        ) {
-                                            for (
-                                                let iteration = 0;
-                                                iteration <
-                                                examiners_reports.length;
-                                                iteration++
-                                            ) {
-                                                let pushExaminerReport = {
-                                                    ...examiners_reports[
-                                                        iteration
-                                                    ],
-                                                    examinerName: '',
-                                                }
-
-                                                studentExaminers.filter(
-                                                    (IEData) => {
-                                                        if (
-                                                            IEData.examinerId
-                                                                ._id ===
-                                                            pushExaminerReport
-                                                                .reportId
-                                                                .examiner
-                                                        ) {
-                                                            pushExaminerReport.examinerName =
-                                                                IEData
-                                                                    .examinerId
-                                                                    .jobtitle +
-                                                                ' ' +
-                                                                IEData
-                                                                    .examinerId
-                                                                    .name
-
-                                                            if (
-                                                                IEData
-                                                                    .examinerId
-                                                                    .typeOfExaminer ===
-                                                                'Internal'
-                                                            ) {
-                                                                compiledInternalExaminerReports.push(
-                                                                    pushExaminerReport
-                                                                )
-                                                            } else {
-                                                                compiledExternalExaminerReports.push(
-                                                                    pushExaminerReport
-                                                                )
-                                                            }
-
-                                                            return null
-                                                        } else {
-                                                            return null
-                                                        }
-                                                    }
-                                                )
-                                            }
-                                        } else {
-                                        }
                                         return (
                                             <Tr
                                                 className={`table_row ${
@@ -1749,6 +2926,7 @@ const ProjectTable = ({
                                                         : ''
                                                 }`}
                                                 key={data._id}>
+                                                {/**checkbox */}
                                                 <Td w='46px'>
                                                     <Checkbox
                                                         isChecked={
@@ -1763,39 +2941,9 @@ const ProjectTable = ({
                                                         colorScheme='pink'
                                                     />
                                                 </Td>
-                                                {/** <Td>{index + 1}</Td> */}
 
-                                                {/**   <Td w='36px'>
-                                                    <Box
-                                                        onClick={handleDropDown}
-                                                        ref={activeDrop}
-                                                        style={{
-                                                            color: '#5E5C60',
-                                                            fontSize: '16px',
-                                                        }}>
-                                                        {activityDrpdown ? (
-                                                            <IoIosArrowDropdown />
-                                                        ) : (
-                                                            <IoIosArrowDropright />
-                                                        )}
-                                                    </Box>
-                                                </Td>*/}
-
+                                                {/** student name */}
                                                 {mastersTableColumn[0]
-                                                    .display ? (
-                                                    <Td
-                                                        style={{
-                                                            color: '#5E5C60',
-                                                            fontWeight: 500,
-                                                        }}>
-                                                        {
-                                                            data.student
-                                                                .registrationNumber
-                                                        }
-                                                    </Td>
-                                                ) : null}
-
-                                                {mastersTableColumn[1]
                                                     .display ? (
                                                     <Td
                                                         minW='150px'
@@ -1812,7 +2960,22 @@ const ProjectTable = ({
                                                         }
                                                     </Td>
                                                 ) : null}
+                                                {/** student registration name */}
+                                                {mastersTableColumn[1]
+                                                    .display ? (
+                                                    <Td
+                                                        style={{
+                                                            color: '#5E5C60',
+                                                            fontWeight: 500,
+                                                        }}>
+                                                        {
+                                                            data.student
+                                                                .registrationNumber
+                                                        }
+                                                    </Td>
+                                                ) : null}
 
+                                                {/** gender */}
                                                 {mastersTableColumn[2]
                                                     .display ? (
                                                     <Td
@@ -1828,7 +2991,22 @@ const ProjectTable = ({
                                                     </Td>
                                                 ) : null}
 
+                                                {/** Award */}
                                                 {mastersTableColumn[3]
+                                                    .display ? (
+                                                    <Td
+                                                        style={{
+                                                            color: '#5E5C60',
+                                                            fontWeight: 500,
+                                                        }}>
+                                                        {
+                                                            data.student
+                                                                .degree_program
+                                                        }
+                                                    </Td>
+                                                ) : null}
+                                                {/** topic */}
+                                                {mastersTableColumn[4]
                                                     .display ? (
                                                     <Td
                                                         minW='250px'
@@ -1841,7 +3019,24 @@ const ProjectTable = ({
                                                     </Td>
                                                 ) : null}
 
-                                                {mastersTableColumn[4]
+                                                {/** school */}
+                                                {mastersTableColumn[5]
+                                                    .display ? (
+                                                    <Td
+                                                        minW='250px'
+                                                        maxW='250px'
+                                                        style={{
+                                                            fontWeight: 500,
+                                                            color: '#15151D',
+                                                        }}>
+                                                        {
+                                                            data.student
+                                                                .schoolName
+                                                        }
+                                                    </Td>
+                                                ) : null}
+                                                {/** status of student */}
+                                                {mastersTableColumn[6]
                                                     .display ? (
                                                     <Td>
                                                         {' '}
@@ -1859,7 +3054,7 @@ const ProjectTable = ({
                                                                         ? activeElementSet.rgba
                                                                         : ''
                                                                 }
-                                                                minW='160px'
+                                                                minW='260px'
                                                                 direction='row'
                                                                 alignItems='center'>
                                                                 <div className='tag_point' />
@@ -1896,11 +3091,30 @@ const ProjectTable = ({
                                                                             ? '#eeeeef'
                                                                             : ''
                                                                     }
-                                                                    minW='160px'
+                                                                    minW='260px'
                                                                     direction='row'
                                                                     justifyContent='center'
                                                                     alignItems='center'>
-                                                                    <TimelineCountdown expectedEndDate={activeStatus.projectStatusId.expectedEndDate ? activeStatus.projectStatusId.expectedEndDate : null } startDate={activeStatus.projectStatusId.startDate ? activeStatus.projectStatusId.startDate : null} />
+                                                                    <TimelineCountdown
+                                                                        expectedEndDate={
+                                                                            activeStatus
+                                                                                .projectStatusId
+                                                                                .expectedEndDate
+                                                                                ? activeStatus
+                                                                                      .projectStatusId
+                                                                                      .expectedEndDate
+                                                                                : null
+                                                                        }
+                                                                        startDate={
+                                                                            activeStatus
+                                                                                .projectStatusId
+                                                                                .startDate
+                                                                                ? activeStatus
+                                                                                      .projectStatusId
+                                                                                      .startDate
+                                                                                : null
+                                                                        }
+                                                                    />
                                                                 </StatusItem>
                                                             ) : null}
 
@@ -1926,7 +3140,7 @@ const ProjectTable = ({
                                                                             ? '#eeeeef'
                                                                             : ''
                                                                     }
-                                                                    minW='160px'
+                                                                    minW='260px'
                                                                     direction='row'
                                                                     justifyContent='center'
                                                                     alignItems='center'>
@@ -1968,7 +3182,7 @@ const ProjectTable = ({
                                                                             ? '#eeeeef'
                                                                             : ''
                                                                     }
-                                                                    minW='160px'
+                                                                    minW='260px'
                                                                     direction='row'
                                                                     justifyContent='center'
                                                                     alignItems='center'>
@@ -1993,8 +3207,8 @@ const ProjectTable = ({
                                                         </Stack>
                                                     </Td>
                                                 ) : null}
-
-                                                {mastersTableColumn[5]
+                                                {/** number of examiners */}
+                                                {mastersTableColumn[7]
                                                     .display ? (
                                                     <Td>
                                                         <Box
@@ -2084,9 +3298,10 @@ const ProjectTable = ({
                                                     </Td>
                                                 ) : null}
                                                 {/** internal examiners */}
-                                                {mastersTableColumn[6]
+                                                {mastersTableColumn[8]
                                                     .display ? (
                                                     <Td minW='250px'>
+                                                        {/** normal reports */}
                                                         {compiledInternalExaminerReports.length >
                                                         0 ? (
                                                             <Stack direction='column'>
@@ -2096,18 +3311,197 @@ const ProjectTable = ({
                                                                         iEIndex
                                                                     ) => {
                                                                         return (
-                                                                            <Box
-                                                                                m='auto'
-                                                                                w='100%'
+                                                                            <Stack
+                                                                                className={`iereport_container ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus &&
+                                                                                    internalEData.reportId.reportStatus.toLowerCase() ==
+                                                                                        'passed'
+                                                                                        ? 'passed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'failed'
+                                                                                        ? 'failed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'pending'
+                                                                                        ? 'pending'
+                                                                                        : null
+                                                                                }`}
+                                                                                key={
+                                                                                    iEIndex
+                                                                                }
                                                                                 display='flex'
-                                                                                className='subtype'
                                                                                 justifyContent={
                                                                                     'center'
-                                                                                }>
-                                                                                {
-                                                                                    internalEData.examinerName
                                                                                 }
-                                                                            </Box>
+                                                                                alignItems={
+                                                                                    'center'
+                                                                                }
+                                                                                bg={
+                                                                                    'red'
+                                                                                }
+                                                                                padding='0'
+                                                                                gap='0px'
+                                                                                direction='column'>
+                                                                                <Box
+                                                                                    w='100%'
+                                                                                    style={{
+                                                                                        textTransform:
+                                                                                            'capitalize',
+                                                                                        fontSize:
+                                                                                            '15px',
+
+                                                                                        fontWeight:
+                                                                                            '500',
+                                                                                        letterSpacing:
+                                                                                            '0.4px',
+                                                                                        textAlign:
+                                                                                            'center',
+                                                                                    }}
+                                                                                    display='flex'
+                                                                                    justifyContent={
+                                                                                        'center'
+                                                                                    }>
+                                                                                    {
+                                                                                        internalEData.examinerName
+                                                                                    }
+                                                                                </Box>
+                                                                                {/** status and marks */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            paddingLeft:
+                                                                                                '3px',
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            marginTop:
+                                                                                                '10px',
+                                                                                            fontSize:
+                                                                                                '11px',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            internalEData
+                                                                                                .reportId
+                                                                                                .reportStatus
+                                                                                        }
+                                                                                    </Box>
+                                                                                ) : null}
+                                                                                {/** status and marks */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? null : (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '4px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            fontWeight:
+                                                                                                '500',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            internalEData
+                                                                                                .reportId
+                                                                                                .score
+                                                                                        }
+
+                                                                                        %{' '}
+                                                                                        {
+                                                                                            '-'
+                                                                                        }{' '}
+                                                                                        <span
+                                                                                            style={{
+                                                                                                paddingLeft:
+                                                                                                    '3px',
+                                                                                                fontSize:
+                                                                                                    '11px',
+                                                                                                letterSpacing:
+                                                                                                    '0.4px',
+                                                                                            }}>
+                                                                                            {
+                                                                                                internalEData
+                                                                                                    .reportId
+                                                                                                    .reportStatus
+                                                                                            }
+                                                                                        </span>
+                                                                                    </Box>
+                                                                                )}
+
+                                                                                {/** marked submission Date */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                    false &&
+                                                                                !internalEData
+                                                                                    .reportId
+                                                                                    .submissionDate ? null : (
+                                                                                    <Box
+                                                                                        w='100%'
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'lowercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '10px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                internalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'DD/MM/YYYY'
+                                                                                        )}{' '}
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                internalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'hh:mm a'
+                                                                                        )}
+                                                                                    </Box>
+                                                                                )}
+                                                                            </Stack>
                                                                         )
                                                                     }
                                                                 )}
@@ -2126,13 +3520,229 @@ const ProjectTable = ({
                                                                 </Box>
                                                             </Stack>
                                                         )}
+
+                                                        {/** resubmitted reports */}
+
+                                                        {compiledInternalResubmittedReports.length >
+                                                        0 ? (
+                                                            <Stack
+                                                                mt='10px'
+                                                                direction='column'>
+                                                                <ResubmissionHead>
+                                                                    Resubmitted
+                                                                    reports
+                                                                </ResubmissionHead>
+                                                                {compiledInternalResubmittedReports.map(
+                                                                    (
+                                                                        internalEData,
+                                                                        iEIndex
+                                                                    ) => {
+                                                                        return (
+                                                                            <Stack
+                                                                                className={`iereport_container ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus &&
+                                                                                    internalEData.reportId.reportStatus.toLowerCase() ==
+                                                                                        'passed'
+                                                                                        ? 'passed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'failed'
+                                                                                        ? 'failed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    internalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'pending'
+                                                                                        ? 'pending'
+                                                                                        : null
+                                                                                }`}
+                                                                                key={
+                                                                                    iEIndex
+                                                                                }
+                                                                                display='flex'
+                                                                                justifyContent={
+                                                                                    'center'
+                                                                                }
+                                                                                alignItems={
+                                                                                    'center'
+                                                                                }
+                                                                                bg={
+                                                                                    'red'
+                                                                                }
+                                                                                padding='0'
+                                                                                gap='0px'
+                                                                                direction='column'>
+                                                                                {/** examiner name */}
+                                                                                <Box
+                                                                                    w='100%'
+                                                                                    style={{
+                                                                                        textTransform:
+                                                                                            'capitalize',
+                                                                                        fontSize:
+                                                                                            '15px',
+
+                                                                                        fontWeight:
+                                                                                            '500',
+                                                                                        letterSpacing:
+                                                                                            '0.4px',
+                                                                                        textAlign:
+                                                                                            'center',
+                                                                                    }}
+                                                                                    display='flex'
+                                                                                    justifyContent={
+                                                                                        'center'
+                                                                                    }>
+                                                                                    {
+                                                                                        internalEData.examinerName
+                                                                                    }
+                                                                                </Box>
+                                                                                {/** umarked report status  */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            paddingLeft:
+                                                                                                '3px',
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            marginTop:
+                                                                                                '10px',
+                                                                                            fontSize:
+                                                                                                '11px',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            internalEData
+                                                                                                .reportId
+                                                                                                .reportStatus
+                                                                                        }
+                                                                                    </Box>
+                                                                                ) : null}
+                                                                                {/** marked report status  */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? null : (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '4px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            fontWeight:
+                                                                                                '500',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            internalEData
+                                                                                                .reportId
+                                                                                                .score
+                                                                                        }
+
+                                                                                        %{' '}
+                                                                                        {
+                                                                                            '-'
+                                                                                        }{' '}
+                                                                                        <span
+                                                                                            style={{
+                                                                                                paddingLeft:
+                                                                                                    '3px',
+                                                                                                fontSize:
+                                                                                                    '11px',
+                                                                                                letterSpacing:
+                                                                                                    '0.4px',
+                                                                                            }}>
+                                                                                            {
+                                                                                                internalEData
+                                                                                                    .reportId
+                                                                                                    .reportStatus
+                                                                                            }
+                                                                                        </span>
+                                                                                    </Box>
+                                                                                )}
+
+                                                                                {/** marked submission Date */}
+                                                                                {internalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                    false &&
+                                                                                !internalEData
+                                                                                    .reportId
+                                                                                    .submissionDate ? null : (
+                                                                                    <Box
+                                                                                        w='100%'
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'lowercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '10px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                internalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'DD/MM/YYYY'
+                                                                                        )}{' '}
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                internalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'hh:mm a'
+                                                                                        )}
+                                                                                    </Box>
+                                                                                )}
+                                                                            </Stack>
+                                                                        )
+                                                                    }
+                                                                )}
+                                                            </Stack>
+                                                        ) : null}
                                                     </Td>
                                                 ) : null}
 
                                                 {/** external examiners */}
-                                                {mastersTableColumn[7]
+                                                {mastersTableColumn[9]
                                                     .display ? (
                                                     <Td minW='250px'>
+                                                        {/** normal reports */}
                                                         {compiledExternalExaminerReports.length >
                                                         0 ? (
                                                             <Stack direction='column'>
@@ -2142,18 +3752,198 @@ const ProjectTable = ({
                                                                         iEIndex
                                                                     ) => {
                                                                         return (
-                                                                            <Box
-                                                                                m='auto'
-                                                                                w='100%'
+                                                                            <Stack
+                                                                                className={`iereport_container ${
+                                                                                    externalEData
+                                                                                        .reportId
+                                                                                        .reportStatus &&
+                                                                                    externalEData.reportId.reportStatus.toLowerCase() ==
+                                                                                        'passed'
+                                                                                        ? 'passed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    externalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'failed'
+                                                                                        ? 'failed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    externalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'pending'
+                                                                                        ? 'pending'
+                                                                                        : null
+                                                                                }`}
+                                                                                key={
+                                                                                    iEIndex
+                                                                                }
                                                                                 display='flex'
-                                                                                className='subtype'
                                                                                 justifyContent={
                                                                                     'center'
-                                                                                }>
-                                                                                {
-                                                                                    externalEData.examinerName
                                                                                 }
-                                                                            </Box>
+                                                                                alignItems={
+                                                                                    'center'
+                                                                                }
+                                                                                bg={
+                                                                                    'red'
+                                                                                }
+                                                                                padding='0'
+                                                                                gap='0px'
+                                                                                direction='column'>
+                                                                                {/** examiner name */}
+                                                                                <Box
+                                                                                    w='100%'
+                                                                                    style={{
+                                                                                        textTransform:
+                                                                                            'capitalize',
+                                                                                        fontSize:
+                                                                                            '15px',
+
+                                                                                        fontWeight:
+                                                                                            '500',
+                                                                                        letterSpacing:
+                                                                                            '0.4px',
+                                                                                        textAlign:
+                                                                                            'center',
+                                                                                    }}
+                                                                                    display='flex'
+                                                                                    justifyContent={
+                                                                                        'center'
+                                                                                    }>
+                                                                                    {
+                                                                                        externalEData.examinerName
+                                                                                    }
+                                                                                </Box>
+                                                                                {/** umarked report status  */}
+                                                                                {externalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            paddingLeft:
+                                                                                                '3px',
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            marginTop:
+                                                                                                '10px',
+                                                                                            fontSize:
+                                                                                                '11px',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            externalEData
+                                                                                                .reportId
+                                                                                                .reportStatus
+                                                                                        }
+                                                                                    </Box>
+                                                                                ) : null}
+                                                                                {/** marked report status  */}
+                                                                                {externalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? null : (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '4px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            fontWeight:
+                                                                                                '500',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            externalEData
+                                                                                                .reportId
+                                                                                                .score
+                                                                                        }
+
+                                                                                        %{' '}
+                                                                                        {
+                                                                                            '-'
+                                                                                        }{' '}
+                                                                                        <span
+                                                                                            style={{
+                                                                                                paddingLeft:
+                                                                                                    '3px',
+                                                                                                fontSize:
+                                                                                                    '11px',
+                                                                                                letterSpacing:
+                                                                                                    '0.4px',
+                                                                                            }}>
+                                                                                            {
+                                                                                                externalEData
+                                                                                                    .reportId
+                                                                                                    .reportStatus
+                                                                                            }
+                                                                                        </span>
+                                                                                    </Box>
+                                                                                )}
+
+                                                                                {/** marked submission Date */}
+                                                                                {externalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                    false &&
+                                                                                !externalEData
+                                                                                    .reportId
+                                                                                    .submissionDate ? null : (
+                                                                                    <Box
+                                                                                        w='100%'
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'lowercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '10px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                externalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'DD/MM/YYYY'
+                                                                                        )}{' '}
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                externalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'hh:mm a'
+                                                                                        )}
+                                                                                    </Box>
+                                                                                )}
+                                                                            </Stack>
                                                                         )
                                                                     }
                                                                 )}
@@ -2172,10 +3962,224 @@ const ProjectTable = ({
                                                                 </Box>
                                                             </Stack>
                                                         )}
+
+                                                        {/** resubmitted reports */}
+                                                        {compiledExternalResubmittedReports.length >
+                                                        0 ? (
+                                                            <Stack
+                                                                mt='10px'
+                                                                direction='column'>
+                                                                <ResubmissionHead>
+                                                                    Resubmitted
+                                                                    reports
+                                                                </ResubmissionHead>
+                                                                {compiledExternalResubmittedReports.map(
+                                                                    (
+                                                                        externalEData,
+                                                                        iEIndex
+                                                                    ) => {
+                                                                        return (
+                                                                            <Stack
+                                                                                className={`iereport_container ${
+                                                                                    externalEData
+                                                                                        .reportId
+                                                                                        .reportStatus &&
+                                                                                    externalEData.reportId.reportStatus.toLowerCase() ==
+                                                                                        'passed'
+                                                                                        ? 'passed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    externalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'failed'
+                                                                                        ? 'failed'
+                                                                                        : null
+                                                                                } ${
+                                                                                    externalEData
+                                                                                        .reportId
+                                                                                        .reportStatus ===
+                                                                                    'pending'
+                                                                                        ? 'pending'
+                                                                                        : null
+                                                                                }`}
+                                                                                key={
+                                                                                    iEIndex
+                                                                                }
+                                                                                display='flex'
+                                                                                justifyContent={
+                                                                                    'center'
+                                                                                }
+                                                                                alignItems={
+                                                                                    'center'
+                                                                                }
+                                                                                bg={
+                                                                                    'red'
+                                                                                }
+                                                                                padding='0'
+                                                                                gap='0px'
+                                                                                direction='column'>
+                                                                                {/** examiner name */}
+                                                                                <Box
+                                                                                    w='100%'
+                                                                                    style={{
+                                                                                        textTransform:
+                                                                                            'capitalize',
+                                                                                        fontSize:
+                                                                                            '15px',
+
+                                                                                        fontWeight:
+                                                                                            '500',
+                                                                                        letterSpacing:
+                                                                                            '0.4px',
+                                                                                        textAlign:
+                                                                                            'center',
+                                                                                    }}
+                                                                                    display='flex'
+                                                                                    justifyContent={
+                                                                                        'center'
+                                                                                    }>
+                                                                                    {
+                                                                                        externalEData.examinerName
+                                                                                    }
+                                                                                </Box>
+                                                                                {/** umarked report status  */}
+                                                                                {externalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            paddingLeft:
+                                                                                                '3px',
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            marginTop:
+                                                                                                '10px',
+                                                                                            fontSize:
+                                                                                                '11px',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            externalEData
+                                                                                                .reportId
+                                                                                                .reportStatus
+                                                                                        }
+                                                                                    </Box>
+                                                                                ) : null}
+                                                                                {/** marked report status  */}
+                                                                                {externalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                false ? null : (
+                                                                                    <Box
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'uppercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '4px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            fontWeight:
+                                                                                                '500',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        w='100%'
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {
+                                                                                            externalEData
+                                                                                                .reportId
+                                                                                                .score
+                                                                                        }
+
+                                                                                        %{' '}
+                                                                                        {
+                                                                                            '-'
+                                                                                        }{' '}
+                                                                                        <span
+                                                                                            style={{
+                                                                                                paddingLeft:
+                                                                                                    '3px',
+                                                                                                fontSize:
+                                                                                                    '11px',
+                                                                                                letterSpacing:
+                                                                                                    '0.4px',
+                                                                                            }}>
+                                                                                            {
+                                                                                                externalEData
+                                                                                                    .reportId
+                                                                                                    .reportStatus
+                                                                                            }
+                                                                                        </span>
+                                                                                    </Box>
+                                                                                )}
+
+                                                                                {/** marked submission Date */}
+                                                                                {externalEData
+                                                                                    .reportId
+                                                                                    .marked ===
+                                                                                    false &&
+                                                                                !externalEData
+                                                                                    .reportId
+                                                                                    .submissionDate ? null : (
+                                                                                    <Box
+                                                                                        w='100%'
+                                                                                        style={{
+                                                                                            textTransform:
+                                                                                                'lowercase',
+                                                                                            fontSize:
+                                                                                                '14px',
+                                                                                            marginTop:
+                                                                                                '10px',
+
+                                                                                            fontFamily:
+                                                                                                'Inter',
+                                                                                            letterSpacing:
+                                                                                                '0.4px',
+                                                                                        }}
+                                                                                        display='flex'
+                                                                                        justifyContent={
+                                                                                            'center'
+                                                                                        }>
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                externalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'DD/MM/YYYY'
+                                                                                        )}{' '}
+                                                                                        {Moments(
+                                                                                            new Date(
+                                                                                                externalEData.reportId.submissionDate
+                                                                                            )
+                                                                                        ).format(
+                                                                                            'hh:mm a'
+                                                                                        )}
+                                                                                    </Box>
+                                                                                )}
+                                                                            </Stack>
+                                                                        )
+                                                                    }
+                                                                )}
+                                                            </Stack>
+                                                        ) : null}
                                                     </Td>
                                                 ) : null}
-
-                                                {mastersTableColumn[8]
+                                                {/** registration status */}
+                                                {mastersTableColumn[10]
                                                     .display ? (
                                                     <Td>
                                                         <Box className='registration'>
@@ -2183,8 +4187,8 @@ const ProjectTable = ({
                                                         </Box>
                                                     </Td>
                                                 ) : null}
-
-                                                {mastersTableColumn[9]
+                                                {/** submission status */}
+                                                {mastersTableColumn[11]
                                                     .display ? (
                                                     <Td>
                                                         <Box
@@ -2201,7 +4205,7 @@ const ProjectTable = ({
                                                         </Box>
                                                     </Td>
                                                 ) : null}
-
+                                                {/** operation links  */}
                                                 <Td>
                                                     <Menu>
                                                         <MenuButton>
@@ -2365,75 +4369,30 @@ const ProjectTable = ({
             )}
 
             {/** handle delete registration */}
-            <Modal
-                w='100vw'
-                isOpen={removeActive}
-                p='0'
-                onClose={() => cancelRemoveUpload()}>
-                <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
-                <ModalContent p='0'>
-                    <ModalBody p='0'>
-                        <PopupForm
-                            p='0px'
-                            direction='column'
-                            spacing='0'
-                            justifyContent='space-between'>
-                            <Stack direction='column' spacing={'10px'} h='50%'>
-                                <Stack
-                                    className='pop_title'
-                                    direction='row'
-                                    w='100%'
-                                    alignItems='center'
-                                    justifyContent='space-between'>
-                                    <Box>
-                                        <h1>Delete Student</h1>
-                                    </Box>
-                                </Stack>
+            <DeleteStudentModal
+                cancelRemoveUpload={cancelRemoveUpload}
+                removeActive={removeActive}
+                removeDetails={removeDetails}
+                onRemoveUpload={onRemoveUpload}
+                isSubmittingp={isSubmittingp}
+            />
 
-                                <Stack
-                                    p='10px 20px 10px 20px'
-                                    spacing={'2px'}
-                                    direction='row'
-                                    className='list_text'>
-                                    <p>
-                                        Are you sure you want to delete
-                                        <span>
-                                            <li>
-                                                {removeDetails !== null &&
-                                                    removeDetails.name}
-                                            </li>
-                                        </span>
-                                        from the system.
-                                    </p>
-                                </Stack>
-                            </Stack>
-                            <Stack
-                                p='0px 20px'
-                                h='65px'
-                                bg='#ffffff'
-                                direction='row'
-                                borderTop='1px solid #E9EDF5'
-                                borderRadius='0 0 8px 8px'
-                                justifyContent='flex-end'
-                                alignItems='center'>
-                                <Button
-                                    variant='outline'
-                                    className='cancel_button'
-                                    onClick={() => cancelRemoveUpload()}>
-                                    Cancel
-                                </Button>
-                                <Button
-                                    onClick={onRemoveUpload}
-                                    disabled={false}
-                                    isLoading={isSubmittingp ? true : false}
-                                    className='apply_button'>
-                                    Confirm
-                                </Button>
-                            </Stack>
-                        </PopupForm>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+            {/** temporarily remove before upload of new version */}
+
+            <EditReportModal
+                cancelRemoveUpload={cancelRemoveUpload}
+                removeActive={removeActive}
+                removeDetails={removeDetails}
+                onRemoveUpload={onRemoveUpload}
+                isSubmittingp={isSubmittingp}
+            />
+            <ViewReportModal
+                cancelRemoveUpload={cancelRemoveUpload}
+                removeActive={removeActive}
+                removeDetails={removeDetails}
+                onRemoveUpload={onRemoveUpload}
+                isSubmittingp={isSubmittingp}
+            />
         </Container>
     )
 }
@@ -2559,14 +4518,61 @@ const Container = styled(Stack)`
         font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 500;
-        font-size: 11px;
-        text-transform: uppercase;
+        font-size: 12.5px;
+        text-transform: capitalize;
         padding: 4px 8px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: #eeeeef;
         border-radius: 4px;
+    }
+
+    .iereport_container {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+
+        font-size: 12.5px;
+        text-transform: capitalize;
+        padding: 8px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eeeeef;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .reportAction_title {
+        font-weight: bold;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .reportAction_button {
+        height: 32px;
+        color: #ffffff;
+        background: #edafb2;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #edafb2;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        font-size: 14px;
+    }
+
+    .pending {
+        color: #fff;
+        background: #745f3ccb;
+    }
+
+    .failed {
+        color: white;
+        background: #f63636;
+    }
+
+    .passed {
+        color: white;
+        background: #02994b;
     }
 
     .registration {
@@ -2787,104 +4793,7 @@ const TableButton = styled(Box)`
         line-height: 20px;
     }
 `
-
-const PopupForm = styled(Stack)`
+const ResubmissionHead = styled(Box)`
     width: 100%;
-    min-height: 182px;
-    height: 100%;
-    background: #fbfbfb;
-    box-shadow: 0px 0px 0px 1px rgba(152, 161, 178, 0.1),
-        0px 30px 70px -10px rgba(17, 24, 38, 0.25),
-        0px 10px 30px rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
-    font-family: 'Inter', sans-serif;
-    span {
-        margin: 0 5px;
-    }
-
-    .pop_title {
-        height: 45px;
-        width: 100%;
-
-        border-bottom: 1px solid #ebeefa;
-        padding: 0 30px;
-        h1 {
-            width: 100%;
-
-            font-style: normal;
-            font-weight: bold;
-            font-size: 17px;
-            line-height: 21px;
-            color: #111827;
-        }
-    }
-
-    .list_text {
-        font-style: normal;
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 24px;
-
-        li {
-            list-style: none;
-            display: inline-block;
-            font-weight: 700;
-            color: #20202a;
-        }
-        li:after {
-            content: ', ';
-            padding-right: 10px;
-        }
-        li:last-child:after {
-            content: '';
-            padding-right: 0px;
-        }
-    }
-
-    input {
-        border-radius: 6px;
-        width: 100%;
-        font-style: normal;
-        font-weight: 500;
-
-        line-height: 20px;
-    }
-    .cancel_button {
-        padding: 6px 12px;
-        height: 32px;
-        color: #464f60;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-
-        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1),
-            0px 0px 0px 1px rgba(70, 79, 96, 0.16);
-        border-radius: 6px;
-        background: #ffffff;
-    }
-    .apply_button {
-        height: 32px;
-        padding: 6px 12px;
-        color: #ffffff;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        letter-spacing: 0.02em;
-
-        background: #f4797f;
-        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #f4797f;
-        border-radius: 6px;
-
-        &:hover {
-            background: #f4797f;
-        }
-    }
+    text-align: center;
 `

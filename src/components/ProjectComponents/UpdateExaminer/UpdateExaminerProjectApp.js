@@ -14,7 +14,6 @@ import {
     ModalContent,
     ModalBody,
     Button,
-    useToast,
 } from '@chakra-ui/react'
 import { MdOutlineFilePresent } from 'react-icons/md'
 
@@ -28,9 +27,17 @@ import {
 } from '../../../store/features/project/projectSlice'
 import { useNavigate } from 'react-router-dom'
 import { BASE_API_2 } from '../../../utils/base_url.config'
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 
 const UpdateExaminerProjectApp = ({ values, projectValues }) => {
-   // const [filesList, setFilesList] = React.useState([])
+    // const [filesList, setFilesList] = React.useState([])
     const [filesList2, setFilesList2] = React.useState([])
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [selectedFile, setSelectedFile] = React.useState(null)
@@ -42,7 +49,7 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const [updateSubmitting, setUpdateSubmitting] = React.useState(false)
     let dispatch = useDispatch()
-    let toast = useToast()
+    //let toast = useToast()
     let routeNavigate = useNavigate()
     let { isError, isSuccess, message } = useSelector((state) => state.project)
 
@@ -60,15 +67,51 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
                 },
             }
 
-            dispatch(addFileExaminer(newValues))
             setChangeMade(false)
             setUpdateSubmitting(true)
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(addFileExaminer(newValues)).then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'uploading files',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
     /** activate delete project App file */
     const handleRemove = (fdetail) => {
-      
         if (projectValues._id && fdetail._id) {
             let rvalues = {
                 fileId: fdetail._id,
@@ -83,8 +126,44 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
     /** handle confirm delete */
     const onRemoveUpload = () => {
         if (removeDetails.projectId && removeDetails.fileId) {
-            dispatch(deleteFileExaminer(removeDetails))
             setIsSubmittingp(true)
+            toast.dismiss()
+            toast.promise(
+                dispatch(deleteFileExaminer(removeDetails)).then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'deleting file',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -106,41 +185,31 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
         }
 
         if (isSuccess && message && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setRemoveActive(false)
             setRemoveDetails(null)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && message && updateSubmitting) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setUpdateSubmitting(false)
             routeNavigate(-1)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         dispatch(reset())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        dispatch(areset())
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, message, isSubmittingp, updateSubmitting])
 
     const handlefile = async () => {
         const getfiles = await window.electronAPI.oppDetail()
-      
+
         if (getfiles === null) {
         } else {
             setChangeMade(true)
@@ -153,7 +222,6 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
 
     React.useEffect(() => {
         if (projectValues !== null && values !== null) {
-           
             setNameValues(values.name)
 
             let examinerToFind = values._id
@@ -168,7 +236,6 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
             } else {
                 setFilesList2([])
             }
-           
         }
     }, [projectValues, values])
 
@@ -185,14 +252,12 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
     /** function to download file */
     const handleDownloadFile = async (data) => {
         const dataGiven = await window.electronAPI.getdownloadFile(data.fileId)
-      
 
         if (!dataGiven.message) {
             let newData = {
                 ...dataGiven,
             }
             if (nameValues !== null) {
-              
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -208,7 +273,6 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
                 newData
             )
 
-         
             // if (performDowload.message) {
             //     alert(performDowload.message)
             // }
@@ -223,7 +287,6 @@ const UpdateExaminerProjectApp = ({ values, projectValues }) => {
 
         const dataGiven = 'herer'
 
-       
         setSelectedFile([
             {
                 uri: `${BASE_API_2}/docs/files/${data.fileId}`,

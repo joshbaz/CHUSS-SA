@@ -11,7 +11,6 @@ import {
     ModalContent,
     ModalBody,
     Button,
-    useToast,
     Input,
     RadioGroup,
     Radio,
@@ -39,6 +38,8 @@ import { SketchPicker } from 'react-color'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 import Moments from 'moment-timezone'
+import toast from 'react-hot-toast'
+import { Logout, reset as areset } from '../../../store/features/auth/authSlice'
 
 const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
     const [projectId, setProjectId] = React.useState(null)
@@ -55,7 +56,7 @@ const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
         expectedEnd: '',
         statusEntryType: '',
         endDate: '',
-        dateOfGraduation: '',
+        GraduationDate: '',
         timeline: 'false',
         statusDate: '',
     })
@@ -112,9 +113,55 @@ const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
     // const ref = useElementSize((size, prevSize, elem) => {})
     const ref = React.useRef(null)
     let dispatch = useDispatch()
-    let toast = useToast()
+    //  let toast = useToast()
     let { isSuccess, isError, message } = useSelector((state) => state.project)
     let tagGStates = useSelector((state) => state.tag)
+
+    let errorHandler = (errorResponse) => {
+        if (errorResponse.payload.includes('ECONNREFUSED')) {
+            return 'Check your internet connection'
+        } else if (errorResponse.payload.includes('jwt expired')) {
+            return 'Authentication expired'
+        } else if (
+            errorResponse.payload.includes('jwt malformed') ||
+            errorResponse.payload.includes('invalid token')
+        ) {
+            return 'Authentication expired'
+        } else if (errorResponse.payload.includes('Not authenticated')) {
+            return 'Authentication required'
+        } else if (errorResponse.payload.includes('Not authorized')) {
+            return 'Authentication required'
+        } else {
+            let errorMessage = errorResponse.payload
+            return errorMessage
+        }
+    }
+
+    //function to handle smooth Logout
+    let handleLogout = () => {
+        toast.dismiss()
+
+        toast.loading('Logging out. please wait...')
+
+        //inner logout toast function
+        let handleLogoutToast = () => {
+            toast.dismiss()
+            toast.promise(
+                dispatch(Logout()).then((res) => {
+                    // routeNavigate('/auth/signin', { replace: true })
+                }),
+                {
+                    loading: 'Logging out',
+                    success: (data) => 'Logged out successfully',
+                    error: (err) => {
+                        return 'error while Logging out'
+                    },
+                }
+            )
+        }
+
+        setTimeout(handleLogoutToast, 3000)
+    }
 
     useEffect(() => {
         let newList = []
@@ -305,7 +352,6 @@ const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
 
                 if (activeElementSet) {
                     setActiveStatus(activeElementSet)
-                    
                 }
             }
         } else {
@@ -316,7 +362,7 @@ const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
                 expectedEnd: '',
                 statusEntryType: '',
                 endDate: '',
-                dateOfGraduation: '',
+                GraduationDate: '',
                 timeline: 'false',
                 statusDate: '',
             })
@@ -424,22 +470,25 @@ const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
             setChangeMade(false)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && message) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message.message,
+            //     status: 'success',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
             setIsSubmittingp(false)
             setChangeMade(false)
             onClose()
             dispatch(reset())
+            dispatch(areset())
         }
         dispatch(reset())
+        dispatch(areset())
     }, [isError, isSuccess, message, dispatch])
 
     //tag responses
@@ -456,6 +505,7 @@ const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
             setChangeMade(false)
 
             dispatch(treset())
+            dispatch(areset())
 
             if (helperFunctions !== null) {
                 helperFunctions.setSubmitting(false)
@@ -463,17 +513,18 @@ const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
         }
 
         if (tagGStates.isSuccess && tagGStates.message) {
-            toast({
-                position: 'top',
-                title: tagGStates.message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: tagGStates.message.message,
+            //     status: 'success',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
             setIsSubmittingp(false)
             setChangeMade(false)
             onClose()
             dispatch(treset())
+            dispatch(areset())
 
             if (newStatusPopup) {
                 handleCloseNewStatusPopup()
@@ -486,17 +537,55 @@ const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
             }
         }
         dispatch(treset())
+        dispatch(areset())
     }, [tagGStates.isError, tagGStates.isSuccess, tagGStates.message, dispatch])
 
     /** submittion of the changes */
     React.useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-            dispatch(
-                updateProjectStatus({
-                    ...newActiveStatus,
-                    projectId,
-                })
+            toast.dismiss()
+
+            toast.promise(
+                dispatch(
+                    updateProjectStatus({
+                        ...newActiveStatus,
+                        projectId,
+                    })
+                ).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'updating student progress',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
             )
+
             //setIsSubmittingp(false)
         }
 
@@ -976,12 +1065,12 @@ const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
                                                                 placeholder='Select Date and Time'
                                                                 size='md'
                                                                 type='date'
-                                                                name='graduationDate'
+                                                                name='GraduationDate'
                                                                 value={
                                                                     newActiveStatus !==
                                                                         null &&
-                                                                    newActiveStatus.graduationDate
-                                                                        ? newActiveStatus.graduationDate
+                                                                    newActiveStatus.GraduationDate
+                                                                        ? newActiveStatus.GraduationDate
                                                                         : ''
                                                                 }
                                                                 onChange={
@@ -1235,7 +1324,59 @@ const ProgressStatus2 = ({ values, allTagData, type, sNames }) => {
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
-                                dispatch(tagCreate(values))
+
+                                toast.dismiss()
+                                toast.promise(
+                                    dispatch(tagCreate(values)).then((res) => {
+                                        //console.log('res', res)
+                                        if (
+                                            res.meta.requestStatus ===
+                                            'rejected'
+                                        ) {
+                                            let responseCheck =
+                                                errorHandler(res)
+                                            throw new Error(responseCheck)
+                                        } else {
+                                            return res.payload.message
+                                        }
+                                    }),
+                                    {
+                                        loading: 'creating new status',
+                                        success: (data) =>
+                                            `Successfully created`,
+                                        error: (err) => {
+                                            if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Check your internet connection'
+                                                    )
+                                            ) {
+                                                return 'Check Internet Connection'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication required'
+                                                    )
+                                            ) {
+                                                setTimeout(handleLogout, 3000)
+                                                return 'Not Authenticated'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication expired'
+                                                    )
+                                            ) {
+                                                setTimeout(handleLogout, 3000)
+                                                return 'Authentication Expired'
+                                            } else {
+                                                return `${err}`
+                                            }
+                                        },
+                                    }
+                                )
                             }}>
                             {({
                                 values,

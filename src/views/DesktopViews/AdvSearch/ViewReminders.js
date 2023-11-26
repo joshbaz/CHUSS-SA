@@ -14,7 +14,6 @@ import {
     Input,
     InputLeftElement,
     Text,
-    useToast,
     SimpleGrid,
     Select,
 } from '@chakra-ui/react'
@@ -47,6 +46,15 @@ import {
     reset as treset,
     tagGetAll,
 } from '../../../store/features/tags/tagSlice'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 
 //import FacilitatorTable from '../../../components/Facilitators/AllFacilitators/FacilitatorTable'
 //import { initSocketConnection } from '../../../socketio.service'
@@ -296,13 +304,65 @@ const ViewReminders = () => {
     const tagsData = useSelector((state) => state.tag)
 
     //let Location = useLocation()
-    let toast = useToast()
 
     useEffect(() => {
-        dispatch(getAllProjects())
         // dispatch(allExaminers())
-        dispatch(getReportReminders())
-        dispatch(tagGetAll())
+
+        toast.dismiss()
+        toast.promise(
+            dispatch(getAllProjects())
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getReportReminders())
+                    }
+                })
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(tagGetAll())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
 
         // const io = initSocketConnection()
         // io.on('updatedAdmin', (data) => {
@@ -316,15 +376,8 @@ const ViewReminders = () => {
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
             dispatch(reset())
+            dispatch(areset())
         }
 
         // if (isSuccess) {
@@ -340,15 +393,8 @@ const ViewReminders = () => {
 
     useEffect(() => {
         if (tagsData.isError) {
-            toast({
-                position: 'top',
-                title: tagsData.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
             dispatch(treset())
+            dispatch(areset())
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
@@ -375,15 +421,8 @@ const ViewReminders = () => {
 
     useEffect(() => {
         if (reportCollectedDatas.isError) {
-            toast({
-                position: 'top',
-                title: reportCollectedDatas.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
             dispatch(rpReset())
+            dispatch(areset())
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [

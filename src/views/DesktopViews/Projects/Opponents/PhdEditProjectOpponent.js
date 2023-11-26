@@ -20,6 +20,15 @@ import {
     reset as pReset,
 } from '../../../../store/features/project/projectSlice'
 
+import { reset as areset } from '../../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
+
 import EditOpponentDetailForm from '../../../../components/ProjectComponents/AssignOpponents/EditOpponentDetailForm'
 import EditOpponentPayInfo from '../../../../components/ProjectComponents/AssignOpponents/EditOpponentPayInfo'
 import ViewUpdatedOpponentFiles from '../../../../components/ProjectComponents/AssignOpponents/ViewUpdatedOpponentFiles'
@@ -40,29 +49,145 @@ const PhdEditProjectOpponent = () => {
     let examinerCase = useSelector((state) => state.opponent)
     useEffect(() => {
         /** dispatch to get project */
-        dispatch(getIndividualProject(params.p_id))
         /** dispatch to get examiner */
-        dispatch(getIndividualOpponent(params.o_id))
     }, [params.o_id, params.p_id, dispatch])
 
     useEffect(() => {
         const io = initSocketConnection()
-        dispatch(allOpponents(params.p_id))
+
+        toast.dismiss()
+        toast.promise(
+            dispatch(getIndividualProject(params.p_id))
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getIndividualOpponent(params.o_id))
+                    }
+                })
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        dispatch(getAllProjects(params.p_id))
+                        return dispatch(allOpponents(params.p_id))
+                    }
+                })
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getAllProjects(params.p_id))
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
 
         io.on('updateop-project', (data) => {
             if (
                 data.actions === 'update-app-letter' &&
                 data.data === params.o_id
             ) {
-                dispatch(allOpponents(params.p_id))
-                dispatch(getAllProjects(params.p_id))
+                toast.dismiss()
+                toast.promise(
+                    dispatch(getAllProjects(params.p_id))
+                        .then((res) => {
+                            //console.log('res', res)
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return dispatch(allOpponents(params.p_id))
+                            }
+                        })
+                        .then((res) => {
+                            //console.log('res', res)
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return dispatch(allOpponents(params.p_id))
+                            }
+                        })
+                        .then((res) => {
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return res.payload.message
+                            }
+                        }),
+                    {
+                        loading: 'updating informatin',
+                        success: (data) => `Successfully updated`,
+                        error: (err) => {
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    }
+                )
             }
         })
-    }, [])
-
-    useEffect(() => {
-        dispatch(getAllProjects(params.p_id))
-    }, [])
+    }, [params.o_id, params.p_id])
 
     useEffect(() => {
         let findExaminer = examinerCase.allOpponentItems.items.find(
@@ -89,46 +214,29 @@ const PhdEditProjectOpponent = () => {
         }
     }, [projectCase.allprojects, params.p_id])
 
-    let toast = useToast()
     useEffect(() => {
         if (projectCase.isError) {
-            toast({
-                position: 'top',
-                title: projectCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            dispatch(areset())
             dispatch(pReset())
         }
         dispatch(pReset())
+        dispatch(areset())
     }, [projectCase.isError, projectCase.isSuccess, projectCase.message])
 
     useEffect(() => {
         if (examinerCase.isError) {
-            toast({
-                position: 'top',
-                title: examinerCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             dispatch(eReset())
+            dispatch(areset())
         }
 
         if (examinerCase.isSuccess && examinerCase.message) {
-            toast({
-                position: 'top',
-                title: examinerCase.message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChnageMade(false)
             dispatch(eReset())
+            dispatch(areset())
         }
         dispatch(eReset())
+        dispatch(areset())
     }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
 
     /** function to handle value changes */
@@ -192,7 +300,41 @@ const PhdEditProjectOpponent = () => {
 
     React.useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-            dispatch(opponentUpdate(examinerValues))
+            toast.promise(
+                dispatch(opponentUpdate(examinerValues)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'updating opponent information',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         } else if (
             Object.keys(errors).length > 0 &&
             isSubmittingp &&
@@ -247,7 +389,7 @@ const PhdEditProjectOpponent = () => {
                                     className='back_button'
                                     direction='row'
                                     alignItems='center'>
-                                    <Text>Edit Project Opponent</Text>
+                                    <Text>Edit Opponent</Text>
                                 </BackButtonStack>
 
                                 <SubmitButton

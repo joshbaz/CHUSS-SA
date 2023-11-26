@@ -14,7 +14,6 @@ import {
     Input,
     InputLeftElement,
     Text,
-    useToast,
     SimpleGrid,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
@@ -38,6 +37,8 @@ import {
 
 import FacilitatorTable from '../../../components/Facilitators/AllFacilitators/FacilitatorTable'
 import { initSocketConnection } from '../../../socketio.service'
+import { Logout, reset as areset } from '../../../store/features/auth/authSlice'
+import toast from 'react-hot-toast'
 
 const AllFacilitators = () => {
     const [filterSearchOption, setFilterSearchOption] =
@@ -212,11 +213,101 @@ const AllFacilitators = () => {
     )
 
     //let Location = useLocation()
-    let toast = useToast()
+    // let toast = useToast()
 
     useEffect(() => {
-        dispatch(allFacilitators())
-        dispatch(allLoginActivities())
+        /** error handler for toast response */
+        let errorHandler = (errorResponse) => {
+            if (errorResponse.payload.includes('ECONNREFUSED')) {
+                return 'Check your internet connection'
+            } else if (errorResponse.payload.includes('jwt expired')) {
+                return 'Authentication expired'
+            } else if (
+                errorResponse.payload.includes('jwt malformed') ||
+                errorResponse.payload.includes('invalid token')
+            ) {
+                return 'Authentication expired'
+            } else if (errorResponse.payload.includes('Not authenticated')) {
+                return 'Authentication required'
+            } else {
+                let errorMessage = errorResponse.payload
+                return errorMessage
+            }
+        }
+
+        //function to handle smooth Logout
+        let handleLogout = () => {
+            toast.dismiss()
+
+            toast.loading('Logging out. please wait...')
+
+            //inner logout toast function
+            let handleLogoutToast = () => {
+                toast.dismiss()
+                toast.promise(
+                    dispatch(Logout()).then((res) => {
+                        // routeNavigate('/auth/signin', { replace: true })
+                    }),
+                    {
+                        loading: 'Logging out',
+                        success: (data) => 'Logged out successfully',
+                        error: (err) => {
+                            return 'error while Logging out'
+                        },
+                    }
+                )
+            }
+
+            setTimeout(handleLogoutToast, 3000)
+        }
+
+        toast.dismiss()
+
+        toast.promise(
+            dispatch(allFacilitators())
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(allLoginActivities())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(handleLogout, 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(handleLogout, 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
 
         const io = initSocketConnection()
         io.on('updatedAdmin', (data) => {
@@ -230,15 +321,16 @@ const AllFacilitators = () => {
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         // if (isSuccess) {
@@ -250,6 +342,7 @@ const AllFacilitators = () => {
         //         isClosable: true,
         //     })
         // }
+        dispatch(areset())
     }, [isSuccess, isError, message])
 
     return (

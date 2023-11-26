@@ -9,7 +9,6 @@ import {
     Tab,
     TabPanel,
     Text,
-    useToast,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -33,30 +32,81 @@ import ProjectTabTags from '../../../components/SettingComponents/ProjectTabTags
 import GradingReportTableTags from '../../../components/SettingComponents/GradingReportTableTags'
 import ExaminerReportTableTags from '../../../components/SettingComponents/ExaminerReportTableTags'
 import PaymentTableTags from '../../../components/SettingComponents/PaymentTableTags'
+import { reset as areset } from '../../../store/features/auth/authSlice'
 
-
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 
 const Settings = () => {
     let dispatch = useDispatch()
-    let toast = useToast()
+
     const tagsData = useSelector((state) => state.tag)
     const preferencesData = useSelector((state) => state.preference)
     useEffect(() => {
-        dispatch(tagGetAll())
-        dispatch(programTypeGetAll())
-        dispatch(academicYearGetAll())
+        toast.dismiss()
+        toast.promise(
+            dispatch(tagGetAll())
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(programTypeGetAll())
+                    }
+                })
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(academicYearGetAll())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }, [])
 
     useEffect(() => {
         if (preferencesData.isError) {
-            toast({
-                position: 'top',
-                title: tagsData.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
+            dispatch(areset())
             dispatch(preset())
         }
     }, [
@@ -67,15 +117,8 @@ const Settings = () => {
 
     useEffect(() => {
         if (tagsData.isError) {
-            toast({
-                position: 'top',
-                title: tagsData.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
             dispatch(treset())
+            dispatch(areset())
         }
     }, [tagsData.isError, tagsData.isSuccess, tagsData.message])
 
@@ -228,7 +271,7 @@ export default Settings
 const Container = styled(Stack)`
     overflow-x: hidden !important;
 
-    .overwrap { 
+    .overwrap {
         overflow: hidden;
     }
     .tab {

@@ -31,6 +31,15 @@ import {
 
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -113,13 +122,72 @@ const ManageExaminers = () => {
         },
     ])
     let dispatch = useDispatch()
-    let toast = useToast()
 
     React.useEffect(() => {
-        dispatch(allExaminers())
-        dispatch(allSupervisors())
-        dispatch(allOpponents())
-        dispatch(allDCMembers())
+        toast.dismiss()
+        toast.promise(
+            dispatch(allExaminers())
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(allSupervisors())
+                    }
+                })
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(allOpponents())
+                    }
+                })
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(allDCMembers())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }, [])
 
     let examinerCase = useSelector((state) => state.examiner)
@@ -171,50 +239,22 @@ const ManageExaminers = () => {
 
     React.useEffect(() => {
         if (examinerCase.isError) {
-            toast({
-                position: 'top',
-                title: examinerCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (opponentCase.isError) {
-            toast({
-                position: 'top',
-                title: opponentCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
+            dispatch(areset())
             dispatch(reset())
         }
 
         if (supervisorCase.isError) {
-            toast({
-                position: 'top',
-                title: supervisorCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
+            dispatch(areset())
             dispatch(sreset())
         }
 
         if (dcmemberCase.isError) {
-            toast({
-                position: 'top',
-                title: dcmemberCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
+            dispatch(areset())
             dispatch(dreset())
         }
 

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
-import { Box, Stack, Text, useToast } from '@chakra-ui/react'
+import { Box, Stack, Text } from '@chakra-ui/react'
 import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -21,6 +21,15 @@ import GEViewSupportFiles from '../../../components/ExaminerComponents/ViewExami
 import GEViewVerification from '../../../components/ExaminerComponents/ViewExaminer/GEViewVerification'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -35,22 +44,61 @@ const ViewExaminer = (props) => {
         /** dispatch to get project */
         // dispatch(getIndividualProject(params.p_id))
         /** dispatch to get examiner */
-        dispatch(getIndividualExaminer(params.id))
+
         /** dispatch to get all students by examiner */
-        dispatch(getStudentsByExaminer(params.id))
+
+        toast.dismiss()
+        toast.promise(
+            dispatch(getIndividualExaminer(params.id))
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getStudentsByExaminer(params.id))
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }, [params.id, dispatch])
 
-    let toast = useToast()
     useEffect(() => {
         if (examinerCase.isError) {
-            toast({
-                position: 'top',
-                title: examinerCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             dispatch(eReset())
+            dispatch(areset())
         }
     }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
     return (

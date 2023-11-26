@@ -21,6 +21,15 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 import { initSocketConnection } from '../../../../socketio.service'
 import { dashboardLightTheme } from '../../../../theme/dashboard_theme'
+import { reset as areset } from '../../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
+
 
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
@@ -42,23 +51,129 @@ const ViewExaminerReport = (props) => {
     let IndividualProject = useSelector((state) => state.project)
     useEffect(() => {
         if (params.p_id) {
-            dispatch(getIndividualProject(params.p_id))
         }
     }, [])
     useEffect(() => {
-        dispatch(getAllExaminerReports())
-        dispatch(getExaminerReport(params.rp_id))
+        toast.dismiss()
+        toast.promise(
+            dispatch(getIndividualProject(params.p_id))
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getAllExaminerReports())
+                    }
+                })
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getExaminerReport(params.rp_id))
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
         const io = initSocketConnection()
         io.on('updatereport', (data) => {
             if (
                 data.actions === 'update-report' &&
                 data.data === params.rp_id
             ) {
-                dispatch(getAllExaminerReports())
-                dispatch(getExaminerReport(params.rp_id))
+                //dispatch(getAllExaminerReports())
+
+                toast.dismiss()
+                toast.promise(
+                    dispatch(getAllExaminerReports())
+                        .then((res) => {
+                            //console.log('res', res)
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return dispatch(getExaminerReport(params.rp_id))
+                            }
+                        })
+
+                        .then((res) => {
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return res.payload.message
+                            }
+                        }),
+                    {
+                        loading: 'updating information',
+                        success: (data) => `Successfully updated`,
+                        error: (err) => {
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    },
+                    {
+                        position: 'bottom-right',
+                    }
+                )
             }
         })
-    }, [dispatch, params.rp_id])
+    }, [dispatch, params.rp_id, params.p_id])
 
     useEffect(() => {
         if (allreports.items.length > 0) {
@@ -81,32 +196,21 @@ const ViewExaminerReport = (props) => {
         }
     }, [params.rp_id, allreports])
 
-    let toast = useToast()
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             dispatch(reset())
+            dispatch(areset())
         }
+        dispatch(areset())
         dispatch(reset())
     }, [isError, isSuccess, message])
 
     useEffect(() => {
         if (IndividualProject.isError) {
-            toast({
-                position: 'top',
-                title: IndividualProject.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            dispatch(areset())
             dispatch(preset())
         }
+        dispatch(areset())
         dispatch(preset())
     }, [
         IndividualProject.isError,

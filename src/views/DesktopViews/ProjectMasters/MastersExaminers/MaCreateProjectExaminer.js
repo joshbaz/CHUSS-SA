@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
-import { Box, Stack, Button, Text, useToast } from '@chakra-ui/react'
+import { Box, Stack, Button, Text } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../../components/common/Navigation/Navigation'
 import TopBar from '../../../../components/common/Navigation/TopBar'
@@ -24,6 +24,14 @@ import {
     reset as preset,
 } from '../../../../store/features/project/projectSlice'
 import { dashboardLightTheme } from '../../../../theme/dashboard_theme'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
+import { reset as areset } from '../../../../store/features/auth/authSlice'
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -33,7 +41,7 @@ const MaCreateProjectExaminer = () => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
 
     let params = useParams()
-    let toast = useToast()
+    //let toast = useToast()
     let dispatch = useDispatch()
     const { isError, isSuccess, message } = useSelector(
         (state) => state.examiner
@@ -42,7 +50,44 @@ const MaCreateProjectExaminer = () => {
     useEffect(() => {
         if (params.pid) {
             setProjectId(params.pid)
-            dispatch(getIndividualProject(params.pid))
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(getIndividualProject(params.pid)).then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return 'data retrieved'
+                    }
+                }),
+                {
+                    loading: 'Retrieving Information',
+                    success: (data) => `Successfully retrieved`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }, [])
 
@@ -52,26 +97,26 @@ const MaCreateProjectExaminer = () => {
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
 
             dispatch(reset())
         }
 
         if (isSuccess) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
+                // toast({
+                //     position: 'top',
+                //     title: message.message,
+                //     status: 'success',
+                //     duration: 10000,
+                //     isClosable: true,
+                // })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
@@ -85,21 +130,24 @@ const MaCreateProjectExaminer = () => {
     /** individual project reset state values */
     useEffect(() => {
         if (IndividualProject.isError) {
-            toast({
-                position: 'top',
-                title: IndividualProject.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: IndividualProject.message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
 
             dispatch(preset())
+            dispatch(areset())
         }
 
         if (IndividualProject.isSuccess) {
             dispatch(preset())
+            dispatch(areset())
         }
         dispatch(preset())
+        dispatch(areset())
     }, [
         IndividualProject.isError,
         IndividualProject.isSuccess,
@@ -181,7 +229,67 @@ const MaCreateProjectExaminer = () => {
                                 ...values,
                                 projectId,
                             }
-                            dispatch(projectExaminerCreate(values2))
+
+                            toast.dismiss()
+                            toast.promise(
+                                dispatch(projectExaminerCreate(values2)).then(
+                                    (res) => {
+                                        //console.log('res', res)
+                                        if (
+                                            res.meta.requestStatus ===
+                                            'rejected'
+                                        ) {
+                                            let responseCheck =
+                                                errorHandler(res)
+                                            throw new Error(responseCheck)
+                                        } else {
+                                            return res.payload.message
+                                        }
+                                    }
+                                ),
+                                {
+                                    loading:
+                                        'creating and assigning new examiner',
+                                    success: (data) => `${data}`,
+                                    error: (err) => {
+                                        if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Check your internet connection'
+                                                )
+                                        ) {
+                                            return 'Check Internet Connection'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication required'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Not Authenticated'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication expired'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Authentication Expired'
+                                        } else {
+                                            return `${err}`
+                                        }
+                                    },
+                                }
+                            )
                         }}>
                         {({
                             values,

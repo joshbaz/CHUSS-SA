@@ -70,7 +70,7 @@ const { backgroundMainColor, textLightColor } = dashboardLightTheme
 const Dashboard = () => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let Location = useLocation()
+  //  let Location = useLocation()
 
     const [searchWord, setSearchWord] = React.useState('')
     let { allprojects, isError, isSuccess, message } = useSelector(
@@ -80,65 +80,89 @@ const Dashboard = () => {
     const [allSearchedData, setAllSearchedData] = React.useState({
         items: [],
     })
-    const [windowloading, setwindowloading] = React.useState(false)
+ 
 
-    useEffect(() => {
-        if (document.readyState === 'loading') {
-            setwindowloading(true)
-        } else if (document.readyState === 'complete') {
-            setwindowloading(false)
-        }
-    }, [])
 
     //websocket trial
     React.useEffect(() => {
         const io = initSocketConnection()
+        /** error handler for toast response */
+        let errorHandler = (errorResponse) => {
+            if (errorResponse.payload.includes('ECONNREFUSED')) {
+                return 'Check your internet connection'
+            } else if (errorResponse.payload.includes('jwt expired')) {
+                return 'Authentication expired'
+            } else if (
+                errorResponse.payload.includes('jwt malformed') ||
+                errorResponse.payload.includes('invalid token')
+            ) {
+                return 'Authentication expired'
+            } else if (errorResponse.payload.includes('Not authenticated')) {
+                return 'Authentication required'
+            } else if (errorResponse.payload.includes('Not authorized')) {
+                return 'Authentication required'
+            } else {
+                let errorMessage = errorResponse.payload
+                return errorMessage
+            }
+        }
+
+        //function to handle smooth Logout
+        let handleLogout = () => {
+            toast.dismiss()
+
+            toast.loading('Logging out. please wait...')
+
+            //inner logout toast function
+            let handleLogoutToast = () => {
+                toast.dismiss()
+                toast.promise(
+                    dispatch(Logout()).then((res) => {
+                        // routeNavigate('/auth/signin', { replace: true })
+                    }),
+                    {
+                        loading: 'Logging out',
+                        success: (data) => 'Logged out successfully',
+                        error: (err) => {
+                            return 'error while Logging out'
+                        },
+                    }
+                )
+            }
+
+            setTimeout(handleLogoutToast, 3000)
+        }
+
         toast.promise(
             dispatch(getAllProjects())
                 .then((res) => {
                     if (res.meta.requestStatus === 'rejected') {
-                        if (res.payload.includes('ECONNREFUSED')) {
-                            throw new Error('Check your internet connection')
-                        } else {
-                            let errorMessage = res.payload
-                            throw new Error(errorMessage)
-                        }
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
                     } else {
                         return dispatch(allOpponents())
                     }
                 })
                 .then((res) => {
                     if (res.meta.requestStatus === 'rejected') {
-                        if (res.payload.includes('ECONNREFUSED')) {
-                            throw new Error('Check your internet connection')
-                        } else {
-                            let errorMessage = res.payload
-                            throw new Error(errorMessage)
-                        }
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
                     } else {
                         return dispatch(allExaminers())
                     }
                 })
                 .then((res) => {
                     if (res.meta.requestStatus === 'rejected') {
-                        if (res.payload.includes('ECONNREFUSED')) {
-                            throw new Error('Check your internet connection')
-                        } else {
-                            let errorMessage = res.payload
-                            throw new Error(errorMessage)
-                        }
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
                     } else {
                         return dispatch(allSupervisors())
                     }
                 })
                 .then((res) => {
                     if (res.meta.requestStatus === 'rejected') {
-                        if (res.payload.includes('ECONNREFUSED')) {
-                            throw new Error('Check your internet connection')
-                        } else {
-                            let errorMessage = res.payload
-                            throw new Error(errorMessage)
-                        }
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
                     } else {
                         return dispatch(tagGetAll())
                     }
@@ -147,13 +171,22 @@ const Dashboard = () => {
                 loading: 'Retrieving Information',
                 success: (data) => `Successfully retrieved`,
                 error: (err) => {
-                    console.log(err)
                     if (
                         err
                             .toString()
                             .includes('Check your internet connection')
                     ) {
                         return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(handleLogout, 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(handleLogout, 3000)
+                        return 'Authentication Expired'
                     } else {
                         return `${err}`
                     }
@@ -211,30 +244,42 @@ const Dashboard = () => {
                         loading: 'updating Information',
                         success: (data) => `Successfully updated`,
                         error: (err) => {
-                            console.log(err)
                             if (
                                 err
                                     .toString()
                                     .includes('Check your internet connection')
                             ) {
                                 return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(handleLogout, 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(handleLogout, 3000)
+                                return 'Authentication Expired'
                             } else {
                                 return `${err}`
                             }
                         },
+                    },
+                    {
+                        position: 'bottom-right',
                     }
                 )
-
-               
-               
-               
             }
         })
 
-         return () => {
-             io.disconnect()
-             toast.dismiss()
-         }
+        return () => {
+            io.disconnect()
+            //toast.dismiss()
+        }
     }, [])
 
     // React.useEffect(() => {
@@ -259,9 +304,9 @@ const Dashboard = () => {
             // })
 
             if (message === 'Not authenticated') {
-                dispatch(Logout())
-                dispatch(areset())
-                routeNavigate('/auth/signin', { replace: true })
+               // dispatch(Logout())
+              //  dispatch(areset())
+               // routeNavigate('/auth/signin', { replace: true })
             } else {
             }
 

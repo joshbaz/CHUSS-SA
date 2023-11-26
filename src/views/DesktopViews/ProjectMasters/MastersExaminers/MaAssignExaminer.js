@@ -7,7 +7,6 @@ import {
     InputGroup,
     Input,
     InputLeftElement,
-    useToast,
     useDisclosure,
     Modal,
     ModalOverlay,
@@ -31,6 +30,14 @@ import {
     getIndividualProject,
     reset as preset,
 } from '../../../../store/features/project/projectSlice'
+import { reset as areset } from '../../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
 
 const MaAssignExaminer = () => {
     // eslint-disable-next-line no-unused-vars
@@ -68,7 +75,7 @@ const MaAssignExaminer = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     let dispatch = useDispatch()
     let params = useParams()
-    let toast = useToast()
+    //let toast = useToast()
     let { allExaminerItems, isSuccess, isError, message } = useSelector(
         (state) => state.examiner
     )
@@ -79,74 +86,61 @@ const MaAssignExaminer = () => {
 
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
-        // let filterSelected = {
-        //     title: filterSearchOption,
-        //     searchfor: e.target.value,
-        // }
-        // setFilterInfo([...filterInfo, filterSelected])
     }
 
-    // const handleSubmitFilter = () => {
-    //     if (searchWord) {
-    //         if (filterInfo.length > 0) {
-    //             let newFilterInfo = [...filterInfo]
-
-    //             for (let i = 0; i < newFilterInfo.length; i++) {
-    //                 let iteration = i + 1
-
-    //                 if (newFilterInfo[i].title === filterSearchOption) {
-    //                     if (newFilterInfo[i].searchfor.includes(searchWord)) {
-    //                         return null
-    //                     } else {
-    //                         let filterSelected = {
-    //                             title: filterSearchOption,
-    //                             searchfor: [
-    //                                 ...newFilterInfo[i].searchfor,
-    //                                 searchWord,
-    //                             ],
-    //                         }
-    //                         newFilterInfo.splice(i, 1, filterSelected)
-    //                         setFilterInfo(newFilterInfo)
-    //                         setSearchWord('')
-    //                         return filterSelected
-    //                     }
-    //                 } else if (
-    //                     newFilterInfo[i].title !== filterSearchOption &&
-    //                     iteration === newFilterInfo.length
-    //                 ) {
-    //                     let filterSelected = {
-    //                         title: filterSearchOption,
-    //                         searchfor: [searchWord],
-    //                     }
-
-    //                     setFilterInfo([...newFilterInfo, filterSelected])
-    //                     setSearchWord('')
-    //                 }
-    //             }
-    //         } else {
-    //             let filterSelected = {
-    //                 title: filterSearchOption,
-    //                 searchfor: [searchWord],
-    //             }
-
-    //             setFilterInfo([...filterInfo, filterSelected])
-    //             setSearchWord('')
-    //             //setFilterSearchOption('All')
-    //             // console.log('filtered Info', filterInfo)
-    //         }
-    //     }
-    // }
     let routeNavigate = useNavigate()
 
     useEffect(() => {
         if (params.pid) {
             setProjectId(params.pid)
-            dispatch(getIndividualProject(params.pid))
+            toast.dismiss()
+            toast.promise(
+                dispatch(allExaminers())
+                    .then((res) => {
+                        //console.log('res', res)
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return dispatch(getIndividualProject(params.pid))
+                        }
+                    })
+                    .then((res) => {
+                        //console.log('res', res)
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return 'data retrieved'
+                        }
+                    }),
+                {
+                    loading: 'Retrieving Information',
+                    success: (data) => `Successfully retrieved`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
-    }, [])
-
-    useEffect(() => {
-        dispatch(allExaminers())
     }, [])
 
     /** set all the display Data */
@@ -181,25 +175,12 @@ const MaAssignExaminer = () => {
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && message) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setSelectedExaminers([])
             setIsSubmittingp(false)
 
@@ -208,16 +189,20 @@ const MaAssignExaminer = () => {
                 replace: true,
             })
             dispatch(reset())
+            dispatch(areset())
         }
 
         dispatch(reset())
+        dispatch(areset())
     }, [isSuccess, isError, message])
 
     useEffect(() => {
         if (IndividualProject.isError) {
             dispatch(preset())
+            dispatch(areset())
         }
         dispatch(preset())
+        dispatch(areset())
     }, [
         IndividualProject.isError,
         IndividualProject.isSuccess,
@@ -231,7 +216,46 @@ const MaAssignExaminer = () => {
             items: selectedExaminers,
             projectId,
         }
-        dispatch(assignExaminer(allValues))
+
+        toast.dismiss()
+        toast.promise(
+            dispatch(assignExaminer(allValues))
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                })
+                ,
+            {
+                loading: 'assigning examiner(s) to student',
+                success: (data) => `${data}`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }
 
     /** function to handle search examiners */

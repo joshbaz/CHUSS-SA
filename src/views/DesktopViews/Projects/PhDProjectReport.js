@@ -33,6 +33,15 @@ import RegistrationReports from '../../../components/ProjectComponents/ProjectRe
 import { initSocketConnection } from '../../../socketio.service.js'
 import ProgressStatus2 from '../../../components/ProjectComponents/ProjectReport/ProgressStatus2'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 const PageLinks = [
@@ -63,7 +72,7 @@ const PhDProjectReport = ({ ...props }) => {
     //let location = useLocation()
     let params = useParams()
 
-    let toast = useToast()
+    //let toast = useToast()
     let dispatch = useDispatch()
     let { individual, isSuccess, isError, message } = useSelector(
         (state) => state.project
@@ -72,70 +81,212 @@ const PhDProjectReport = ({ ...props }) => {
     const preferenceData = useSelector((state) => state.preference)
     useEffect(() => {
         let id = params.id
-        dispatch(getIndividualProject(id))
-        dispatch(tagGetAll())
-        dispatch(academicYearGetAll())
+        toast.dismiss()
+        toast.promise(
+            dispatch(academicYearGetAll())
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(tagGetAll())
+                    }
+                })
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getIndividualProject(id))
+                    }
+                })
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
+
         const io = initSocketConnection()
 
         io.on('updatestudent', (data) => {
             if (data.actions === 'update-student' && data.data === params.id) {
-                dispatch(getIndividualProject(id))
-                dispatch(tagGetAll())
-                dispatch(academicYearGetAll())
+                // dispatch(getIndividualProject(id))
+                // dispatch(tagGetAll())
+                // dispatch(academicYearGetAll())
+                toast.dismiss()
+                toast.promise(
+                    dispatch(academicYearGetAll())
+                        .then((res) => {
+                            //console.log('res', res)
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return dispatch(tagGetAll())
+                            }
+                        })
+                        .then((res) => {
+                            //console.log('res', res)
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return dispatch(getIndividualProject(id))
+                            }
+                        })
+                        .then((res) => {
+                            //console.log('res', res)
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return res.payload.message
+                            }
+                        }),
+                    {
+                        loading: 'Retrieving Information',
+                        success: (data) => `Successfully retrieved`,
+                        error: (err) => {
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    },
+                    {
+                        position: 'bottom-right',
+                    }
+                )
             }
         })
 
         io.on('updatetag', (data) => {
             if (data.actions === 'update-tag') {
-                dispatch(tagGetAll())
+                toast.dismiss()
+                toast.promise(
+                    dispatch(tagGetAll()).then((res) => {
+                        //console.log('res', res)
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return res.payload.message
+                        }
+                    }),
+                    {
+                        loading: 'updating Information',
+                        success: (data) => `Successfully updated`,
+                        error: (err) => {
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    },
+                    {
+                        position: 'bottom-right',
+                    }
+                )
             }
         })
     }, [params.id, dispatch])
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
+            dispatch(areset())
             dispatch(reset())
         }
 
+        dispatch(areset())
         dispatch(reset())
     }, [isSuccess, isError, message])
 
     useEffect(() => {
         if (tagsData.isError) {
-            toast({
-                position: 'top',
-                title: tagsData.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
+            dispatch(areset())
             dispatch(treset())
         }
+        dispatch(areset())
         dispatch(treset())
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
 
     useEffect(() => {
         if (preferenceData.isError) {
-            toast({
-                position: 'top',
-                title: preferenceData.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
+            dispatch(areset())
             dispatch(acreset())
         }
+        dispatch(areset())
         dispatch(acreset())
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
@@ -329,6 +480,12 @@ const PhDProjectReport = ({ ...props }) => {
                                         values={individual}
                                         allTagData={tagsData.allTagItems.items}
                                         type={'Phd'}
+                                        nameValues={
+                                            individual !== null &&
+                                            individual.student.studentName
+                                                ? individual.student.studentName
+                                                : ''
+                                        }
                                     />
                                 </Box>
                                 <Box id='finalsubmissionss'>
@@ -354,7 +511,7 @@ const Container = styled(Stack)`
 
 const BackButtonStack = styled(Stack)`
     color: #ffffff;
-     p {
+    p {
         font-family: 'Inter', sans-serif;
         font-style: normal;
         font-weight: 600;

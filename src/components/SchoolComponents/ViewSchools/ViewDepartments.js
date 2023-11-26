@@ -24,6 +24,15 @@ import {
 import CreateDepartment from '../../../views/DesktopViews/Schools&Depts/CreateDepartment'
 import ViewIndividualDept from '../../../views/DesktopViews/Schools&Depts/ViewIndividualDept'
 import EditIndividualDept from '../../../views/DesktopViews/Schools&Depts/EditIndividualDept'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 const ViewDepartments = ({ indivdualValues }) => {
     const [helperFunctions, setHelperFunctions] = React.useState(null)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
@@ -54,7 +63,7 @@ const ViewDepartments = ({ indivdualValues }) => {
         email: '',
         otherEmail: '',
         officeNumber: '',
-        mobileNumber: ''
+        mobileNumber: '',
     })
 
     const [editValues, setEditValues] = React.useState({
@@ -67,7 +76,7 @@ const ViewDepartments = ({ indivdualValues }) => {
     })
 
     //let routeNavigate = useNavigate()
-    let toast = useToast()
+
     let dispatch = useDispatch()
 
     const { isError, isSuccess, message } = useSelector((state) => state.school)
@@ -199,28 +208,16 @@ const ViewDepartments = ({ indivdualValues }) => {
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+
             setIsSubmittingp(false)
             setIsSubmittingedits(false)
             setChnageMade(false)
+            dispatch(areset())
             dispatch(reset())
         }
 
         if (isSuccess && message) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
@@ -230,20 +227,13 @@ const ViewDepartments = ({ indivdualValues }) => {
             }
 
             if (isSubmittingedits) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
-
                 setIsSubmittingp(false)
                 setIsSubmittingedits(false)
                 setChnageMade(false)
                 setHelperFunctions(null)
             }
             dispatch(reset())
+            dispatch(areset())
         }
     }, [isError, isSuccess, message])
 
@@ -259,14 +249,13 @@ const ViewDepartments = ({ indivdualValues }) => {
     }
 
     /** handle phone change */
-     const handleEditPhoneChange = (name, phoneVal) => {
-         
-         setChnageMade(true)
-         setEditValues({
-             ...editValues,
-             [name]: phoneVal,
-         })
-     }
+    const handleEditPhoneChange = (name, phoneVal) => {
+        setChnageMade(true)
+        setEditValues({
+            ...editValues,
+            [name]: phoneVal,
+        })
+    }
 
     let validate = (values) => {
         const errors = {}
@@ -306,7 +295,43 @@ const ViewDepartments = ({ indivdualValues }) => {
                 ...editValues,
                 schoolId: editValues.id,
             }
-            dispatch(departmentUpdate(values2))
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(departmentUpdate(values2)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'updating department',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         } else if (
             Object.keys(errors).length > 0 &&
             isSubmittingedits &&

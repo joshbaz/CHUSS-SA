@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
-import { Box, Stack, Text, useToast } from '@chakra-ui/react'
+import { Box, Stack, Text } from '@chakra-ui/react'
 import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -13,62 +13,93 @@ import {
     reset,
 } from '../../../store/features/doctoralmembers/doctoralSlice'
 
-
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 import ViewDoctoralDetailForm from '../../../components/ProjectComponents/AssignDoctoralMembers/ViewDoctoralDetailForm'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
 const ViewDcMember = () => {
-     let routeNavigate = useNavigate()
-     let params = useParams()
-     let dispatch = useDispatch()
-     let toast = useToast()
-     const [individual, setIndividual] = React.useState(null)
+    let routeNavigate = useNavigate()
+    let params = useParams()
+    let dispatch = useDispatch()
 
-     useEffect(() => {
-         dispatch(allDCMembers())
-     }, [])
+    const [individual, setIndividual] = React.useState(null)
 
-     let { allDCMemberItems, isSuccess, isError, message } = useSelector(
-         (state) => state.doctoralMembers
-     )
-     useEffect(() => {
-         if (isError) {
-             toast({
-                 position: 'top',
-                 title: message,
-                 status: 'error',
-                 duration: 10000,
-                 isClosable: true,
-             })
-         }
+    useEffect(() => {
+        toast.dismiss()
+        toast.promise(
+            dispatch(allDCMembers()).then((res) => {
+                if (res.meta.requestStatus === 'rejected') {
+                    let responseCheck = errorHandler(res)
+                    throw new Error(responseCheck)
+                } else {
+                    return res.payload.message
+                }
+            }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
+    }, [])
 
-         if (isSuccess && message) {
-             toast({
-                 position: 'top',
-                 title: message.message,
-                 status: 'success',
-                 duration: 10000,
-                 isClosable: true,
-             })
+    let { allDCMemberItems, isSuccess, isError, message } = useSelector(
+        (state) => state.doctoralMembers
+    )
+    useEffect(() => {
+        if (isError) {
+            dispatch(areset())
+        }
 
-             dispatch(reset())
-         }
+        if (isSuccess && message) {
+            dispatch(areset())
+            dispatch(reset())
+        }
 
-         dispatch(reset())
-     }, [isSuccess, isError, message])
+        dispatch(areset())
+        dispatch(reset())
+    }, [isSuccess, isError, message])
 
-     useEffect(() => {
-         let findSupervisor = allDCMemberItems.items.find(
-             (element) => element._id === params.id
-         )
+    useEffect(() => {
+        let findSupervisor = allDCMemberItems.items.find(
+            (element) => element._id === params.id
+        )
 
-         if (findSupervisor) {
-             setIndividual(findSupervisor)
-         }
-     }, [allDCMemberItems, params.id])
+        if (findSupervisor) {
+            setIndividual(findSupervisor)
+        }
+    }, [allDCMemberItems, params.id])
     return (
         <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>

@@ -19,6 +19,15 @@ import OpponentViewFile from '../../../../components/ProjectComponents/OpponentR
 import OpponentReportDetails from '../../../../components/ProjectComponents/OpponentReportView/OpponentReportDetails'
 import { dashboardLightTheme } from '../../../../theme/dashboard_theme'
 
+import { reset as areset } from '../../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -33,7 +42,6 @@ const ViewOpponentReport = (props) => {
     let IndividualProject = useSelector((state) => state.project)
     useEffect(() => {
         if (params.p_id) {
-            dispatch(getIndividualProject(params.p_id))
         }
     }, [])
     useEffect(() => {
@@ -41,40 +49,121 @@ const ViewOpponentReport = (props) => {
             individualReport !== null &&
             individualReport._id !== params.rp_id
         ) {
-            dispatch(getOpponentReport(params.rp_id))
+            toast.dismiss()
+            toast.promise(
+                dispatch(getIndividualProject(params.p_id))
+                    .then((res) => {
+                        //console.log('res', res)
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return dispatch(getOpponentReport(params.rp_id))
+                        }
+                    })
+
+                    .then((res) => {
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return res.payload.message
+                        }
+                    }),
+                {
+                    loading: 'Retrieving Information',
+                    success: (data) => `Successfully retrieved`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
         if (individualReport === null) {
-            dispatch(getOpponentReport(params.rp_id))
+            toast.dismiss()
+            toast.promise(
+                dispatch(getIndividualProject(params.p_id))
+                    .then((res) => {
+                        //console.log('res', res)
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return dispatch(getOpponentReport(params.rp_id))
+                        }
+                    })
+
+                    .then((res) => {
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return res.payload.message
+                        }
+                    }),
+                {
+                    loading: 'Retrieving Information',
+                    success: (data) => `Successfully retrieved`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }, [props, dispatch, individualReport])
 
-    let toast = useToast()
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             dispatch(reset())
+            dispatch(areset())
         }
         dispatch(reset())
+        dispatch(areset())
     }, [isError, isSuccess, message])
 
     useEffect(() => {
         if (IndividualProject.isError) {
-            toast({
-                position: 'top',
-                title: IndividualProject.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             dispatch(preset())
+            dispatch(areset())
         }
         dispatch(preset())
+        dispatch(areset())
     }, [
         IndividualProject.isError,
         IndividualProject.isSuccess,

@@ -3,7 +3,6 @@ import {
     Box,
     Stack,
     Text,
-    useToast,
     InputGroup,
     InputRightElement,
     Button,
@@ -22,9 +21,11 @@ import {
     reset,
 } from '../../store/features/auth/authSlice'
 import { BsEyeSlash, BsEye } from 'react-icons/bs'
+import toast from 'react-hot-toast'
+
 const Reset = () => {
     let routeNavigate = useNavigate()
-    let toast = useToast()
+    //let toast = useToast()
     let dispatch = useDispatch()
     const [helperFunctions, setHelperFunctions] = React.useState(null)
 
@@ -60,37 +61,56 @@ const Reset = () => {
 
                 setIsSubmittingp(false)
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
 
             dispatch(reset())
         }
 
         if (isSuccess && message) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: 'successfully Updated',
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
+                // toast({
+                //     position: 'top',
+                //     title: 'successfully Updated',
+                //     status: 'success',
+                //     duration: 10000,
+                //     isClosable: true,
+                // })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
                 setHelperFunctions(null)
-                routeNavigate('/auth/signin', { replace: true })
+                // routeNavigate('/auth/signin', { replace: true })
             }
             dispatch(reset())
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isError, isSuccess, message, dispatch])
+
+    /** error handler for toast response */
+    let errorHandler = (errorResponse) => {
+        if (errorResponse.payload.includes('ECONNREFUSED')) {
+            return 'Check your internet connection'
+        } else if (errorResponse.payload.includes('jwt expired')) {
+            return 'Authentication expired'
+        } else if (
+            errorResponse.payload.includes('jwt malformed') ||
+            errorResponse.payload.includes('invalid token')
+        ) {
+            return 'Authentication expired'
+        } else if (errorResponse.payload.includes('Not authenticated')) {
+            return 'Authentication required'
+        } else {
+            let errorMessage = errorResponse.payload
+            return errorMessage
+        }
+    }
 
     return (
         <Container w='100vw' h='100vh'>
@@ -171,7 +191,49 @@ const Reset = () => {
                         let values2 = {
                             ...values,
                         }
-                        dispatch(facilitatorNewPasskey(values2))
+
+                        toast.dismiss()
+
+                        toast.promise(
+                            dispatch(facilitatorNewPasskey(values2)).then(
+                                (res) => {
+                                    if (res.meta.requestStatus === 'rejected') {
+                                        // dispatch(reset())
+                                        let responseCheck = errorHandler(res)
+                                        throw new Error(responseCheck)
+                                    } else {
+                                        return res
+                                    }
+                                }
+                            ),
+                            {
+                                loading: 'requesting.. please wait ...',
+                                success: (data) => {
+                                    //handle delayed stream to Signin
+                                    let handleRouteChange = () => {
+                                       routeNavigate('/auth/signin', {
+                                           replace: true,
+                                       })
+                                        setTimeout(toast.dismiss(), 1000)
+                                    }
+                                    setTimeout(handleRouteChange, 1000)
+                                    return 'Successfully requested'
+                                },
+                                error: (err) => {
+                                    if (
+                                        err
+                                            .toString()
+                                            .includes(
+                                                'Check your internet connection'
+                                            )
+                                    ) {
+                                        return 'Check Internet Connection'
+                                    } else {
+                                        return `${err}`
+                                    }
+                                },
+                            }
+                        )
                     }}>
                     {({
                         values,

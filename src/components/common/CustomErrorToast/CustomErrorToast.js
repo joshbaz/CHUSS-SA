@@ -42,9 +42,11 @@ const Content = styled('div')`
 `
 
 const CustomErrorToast = () => {
+    //let routeNavigate = useNavigate()
+
     React.useEffect(() => {
         return () => {
-            toast.dismiss()
+            //  toast.dismiss()
         }
     }, [])
 
@@ -94,7 +96,7 @@ const CustomErrorToast = () => {
             {(t) => (
                 <>
                     {t.type === 'loading' && (
-                        <ToastBar toast={t}>
+                        <ToastBar toast={t} position='bottom'>
                             {({ icon, message }) => (
                                 <>
                                     {icon}
@@ -168,18 +170,61 @@ const CustomErrorToast = () => {
 
                     {t.type === 'error' &&
                     t.message !== 'Check Internet Connection' ? (
-                        <ToastBar toast={t}>
+                        <ToastBar
+                            toast={t}
+                            style={{
+                                maxWidth: '500px !important',
+                                minWidth: '200px',
+                                width: '100%',
+                            }}>
                             {({ icon, message }) => (
-                                <>
-                                    {icon}
-                                    {message}
-                                    {t.type !== 'loading' && (
-                                        <button
-                                            onClick={() => toast.dismiss(t.id)}>
-                                            X
-                                        </button>
-                                    )}
-                                </>
+                                <BaseToast
+                                    className={`${
+                                        t.visible
+                                            ? 'animate-enter'
+                                            : 'animate-leave'
+                                    } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+                                    borderRadius='5px'
+                                    minW={'400px'}>
+                                    <Stack
+                                        direction={'row'}
+                                        w='100%'
+                                        alignItems={'center'}
+                                        justifyContent={'space-between'}>
+                                        <Box
+                                            height='100%'
+                                            w='100%'
+                                            style={{
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                            }}>
+                                            <Content>
+                                                {message} 
+                                            </Content>
+                                        </Box>
+
+                                        {t.type !== 'loading' && (
+                                            <Box
+                                                borderLeft={'1px solid gray'}
+                                                height='100%'
+                                                pl='10px'
+                                                pr='10px'
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                }}>
+                                                <DismissButton
+                                                    onClick={() =>
+                                                        toast.dismiss(t.id)
+                                                    }>
+                                                    dismiss
+                                                </DismissButton>
+                                            </Box>
+                                        )}
+                                    </Stack>
+                                </BaseToast>
                             )}
                         </ToastBar>
                     ) : null}

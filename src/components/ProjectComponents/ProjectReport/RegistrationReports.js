@@ -19,13 +19,12 @@ import {
     ModalOverlay,
     ModalContent,
     ModalBody,
-    useToast,
     Button,
 } from '@chakra-ui/react'
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti'
 
 import { TbDotsVertical } from 'react-icons/tb'
-import { useNavigate } from 'react-router-dom'
+//import { useNavigate } from 'react-router-dom'
 
 import { BsFileEarmark, BsThreeDots } from 'react-icons/bs'
 import RegistrationRpCreatePopup from './RegistrationRpCreatePopup'
@@ -40,6 +39,9 @@ import {
 } from '../../../store/features/registration/registrationSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { BASE_API_2 } from '../../../utils/base_url.config'
+import { Logout, reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
 const TableHead = [
     {
         title: '#',
@@ -65,7 +67,7 @@ const TableHead = [
     },
     { title: '' },
 ]
-const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
+const RegistrationReports = ({ values, yearData, nameValues  }) => {
     const [reportLists, setReportLists] = React.useState([])
     const [projectId, setProjectId] = React.useState(null)
     const [createRegister, setCreateRegister] = React.useState(false)
@@ -81,7 +83,7 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
 
     // let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let toast = useToast()
+   // let toast = useToast()
     let { isSuccess, message, isError } = useSelector(
         (state) => state.registration
     )
@@ -97,10 +99,93 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
         }
     }
 
+    /** error handler for toast response */
+    let errorHandler = (errorResponse) => {
+        if (errorResponse.payload.includes('ECONNREFUSED')) {
+            return 'Check your internet connection'
+        } else if (errorResponse.payload.includes('jwt expired')) {
+            return 'Authentication expired'
+        } else if (
+            errorResponse.payload.includes('jwt malformed') ||
+            errorResponse.payload.includes('invalid token')
+        ) {
+            return 'Authentication expired'
+        } else if (errorResponse.payload.includes('Not authenticated')) {
+            return 'Authentication required'
+        } else if (errorResponse.payload.includes('Not authorized')) {
+            return 'Authentication required'
+        } else {
+            let errorMessage = errorResponse.payload
+            return errorMessage
+        }
+    }
+
+    //function to handle smooth Logout
+    let handleLogout = () => {
+        toast.dismiss()
+
+        toast.loading('Logging out. please wait...')
+
+        //inner logout toast function
+        let handleLogoutToast = () => {
+            toast.dismiss()
+            toast.promise(
+                dispatch(Logout()).then((res) => {
+                    // routeNavigate('/auth/signin', { replace: true })
+                }),
+                {
+                    loading: 'Logging out',
+                    success: (data) => 'Logged out successfully',
+                    error: (err) => {
+                        return 'error while Logging out'
+                    },
+                }
+            )
+        }
+
+        setTimeout(handleLogoutToast, 3000)
+    }
+
     const onRemoveUpload = () => {
         if (removeDetails.projectId && removeDetails.regId) {
-            dispatch(removeRegistration(removeDetails))
             setIsSubmittingp(true)
+            toast.dismiss()
+            toast.promise(
+                dispatch(removeRegistration(removeDetails)).then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'Retrieving Information',
+                    success: (data) => `Successfully retrieved`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -215,32 +300,35 @@ const RegistrationReports = ({ values, yearData, nameValues = 'student' }) => {
 
     React.useEffect(() => {
         if (isError && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message,
+            //     status: 'error',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
         if (isSuccess && message && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message.message,
+            //     status: 'success',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
             setIsSubmittingp(false)
             setRemoveActive(false)
             setRemoveDetails(null)
 
             dispatch(reset())
+             dispatch(areset())
         }
 
         dispatch(reset())
+         dispatch(areset())
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, message, isSubmittingp, isError])
     return (

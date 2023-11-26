@@ -6,7 +6,6 @@ import {
     Stack,
     Text,
     useDisclosure,
-    useToast,
     Modal,
     ModalOverlay,
     ModalContent,
@@ -27,6 +26,15 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 import { BASE_API_2 } from '../../../utils/base_url.config'
 
 const ViewUpdatedFiles = ({ values }) => {
@@ -35,7 +43,7 @@ const ViewUpdatedFiles = ({ values }) => {
 
     let params = useParams()
     let dispatch = useDispatch()
-    let toast = useToast()
+    // let toast = useToast()
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [selectedFile, setSelectedFile] = React.useState(null)
     const [removeActive, setRemoveActive] = React.useState(false)
@@ -45,41 +53,29 @@ const ViewUpdatedFiles = ({ values }) => {
     let { isSuccess, isError, message } = useSelector((state) => state.report)
 
     React.useEffect(() => {
-      
         if (values !== null && values.reportFiles.length > 0) {
             setFilesList(values.reportFiles)
-        }else {
-             setFilesList([])
+        } else {
+            setFilesList([])
         }
     }, [values, params.rp_id])
 
     React.useEffect(() => {
         if (isError && isSubmittingsp) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingsp(() => false)
 
+            dispatch(areset())
             dispatch(reset())
         }
 
         if (isSuccess && isSubmittingsp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingsp(() => false)
             setRemoveActive(() => false)
+            dispatch(areset())
             dispatch(reset())
         }
         dispatch(reset())
+        dispatch(areset())
     }, [isError, isSuccess, message, dispatch, isSubmittingsp])
 
     /** handle viewing file */
@@ -98,7 +94,6 @@ const ViewUpdatedFiles = ({ values }) => {
         const dataGiven = await window.electronAPI.getdownloadFile(
             data.files.fileId
         )
-      
 
         if (!dataGiven.message) {
             let newData = {
@@ -106,7 +101,6 @@ const ViewUpdatedFiles = ({ values }) => {
             }
             let nameValues = 'examiners'
             if (nameValues !== null) {
-               
                 let newNameValue = nameValues.toString().split(' ')[0]
 
                 newData = {
@@ -123,9 +117,8 @@ const ViewUpdatedFiles = ({ values }) => {
                 newData
             )
 
-          
             if (performDowload.message) {
-               // alert(performDowload.message)
+                // alert(performDowload.message)
             }
         }
     }
@@ -133,7 +126,6 @@ const ViewUpdatedFiles = ({ values }) => {
     /** removing the file */
 
     const handleRemove = (fId, nam, secId) => {
-       
         if (params.rp_id && fId) {
             let rvalues = {
                 fId: fId,
@@ -149,8 +141,45 @@ const ViewUpdatedFiles = ({ values }) => {
     /** on press remove */
     const onRemoveUpload = () => {
         if (removeDetails.reportId && removeDetails.fId) {
-            dispatch(removeExRpfiles(removeDetails))
             setIsSubmittingsp(true)
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(removeExRpfiles(removeDetails)).then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'removing files',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
