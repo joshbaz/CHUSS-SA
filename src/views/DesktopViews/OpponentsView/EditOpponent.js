@@ -20,6 +20,15 @@ import EditOpponentPayInfo from '../../../components/ProjectComponents/AssignOpp
 import { initSocketConnection } from '../../../socketio.service'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -37,14 +46,92 @@ const EditOpponent = () => {
 
     useEffect(() => {
         const io = initSocketConnection()
-        dispatch(allOpponents())
+
+        toast.dismiss()
+        toast.promise(
+            dispatch(allOpponents()).then((res) => {
+                if (res.meta.requestStatus === 'rejected') {
+                    let responseCheck = errorHandler(res)
+                    throw new Error(responseCheck)
+                } else {
+                    return res.payload.message
+                }
+            }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
 
         io.on('updateop-project', (data) => {
             if (
                 data.actions === 'update-app-letter' &&
                 data.data === params.id
             ) {
-                dispatch(allOpponents())
+                toast.dismiss()
+                toast.promise(
+                    dispatch(allOpponents()).then((res) => {
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return res.payload.message
+                        }
+                    }),
+                    {
+                        loading: 'updating information',
+                        success: (data) => `successfully updated`,
+                        error: (err) => {
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    },
+                    {
+                        position: 'bottom-right',
+                    }
+                )
             }
         })
     }, [])
@@ -63,32 +150,19 @@ const EditOpponent = () => {
         }
     }, [examinerCase.allOpponentItems, params.id])
 
-    let toast = useToast()
-
     useEffect(() => {
         if (examinerCase.isError) {
-            toast({
-                position: 'top',
-                title: examinerCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            dispatch(areset())
             dispatch(eReset())
         }
 
         if (examinerCase.isSuccess && examinerCase.message) {
-            toast({
-                position: 'top',
-                title: examinerCase.message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChnageMade(false)
+            dispatch(areset())
             dispatch(eReset())
         }
+        dispatch(areset())
         dispatch(eReset())
     }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
 
@@ -153,7 +227,42 @@ const EditOpponent = () => {
 
     React.useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-            dispatch(opponentUpdate(examinerValues))
+            toast.dismiss()
+            toast.promise(
+                dispatch(opponentUpdate(examinerValues)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'updating opponent',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         } else if (
             Object.keys(errors).length > 0 &&
             isSubmittingp &&

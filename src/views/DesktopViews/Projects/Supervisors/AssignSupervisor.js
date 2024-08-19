@@ -34,6 +34,15 @@ import {
 } from '../../../../store/features/project/projectSlice'
 import SupervisorTable from '../../../../components/ProjectComponents/AssignSupervisors/SupervisorTable'
 
+import { reset as areset } from '../../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const AssignSupervisor = () => {
     const [filterSearchOption, setFilterSearchOption] = React.useState('All')
     const [searchWord, setSearchWord] = React.useState('')
@@ -67,7 +76,7 @@ const AssignSupervisor = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     let dispatch = useDispatch()
     let params = useParams()
-    let toast = useToast()
+    //let toast = useToast()
     let { allSupervisorItems, isSuccess, isError, message } = useSelector(
         (state) => state.supervisor
     )
@@ -140,12 +149,54 @@ const AssignSupervisor = () => {
     useEffect(() => {
         if (params.pid) {
             setProjectId(params.pid)
-            dispatch(getIndividualProject(params.pid))
+            toast.dismiss()
+            toast.promise(
+                dispatch(allSupervisors())
+                    .then((res) => {
+                        //console.log('res', res)
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return dispatch(getIndividualProject(params.pid))
+                        }
+                    })
+                    .then((res) => {
+                        //console.log('res', res)
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return res.payload.message
+                        }
+                    }),
+                {
+                    loading: 'Retrieving Information',
+                    success: (data) => `Successfully retrieved`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
-    }, [])
-
-    useEffect(() => {
-        dispatch(allSupervisors())
     }, [])
 
     /** set all the display Data */
@@ -180,25 +231,12 @@ const AssignSupervisor = () => {
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && message) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setSelectedExaminers([])
             setIsSubmittingp(false)
 
@@ -207,6 +245,7 @@ const AssignSupervisor = () => {
                 replace: true,
             })
             dispatch(reset())
+            dispatch(areset())
         }
 
         dispatch(reset())
@@ -219,7 +258,43 @@ const AssignSupervisor = () => {
             items: selectedExaminers,
             projectId,
         }
-        dispatch(assignSupervisor(allValues))
+
+        toast.dismiss()
+        toast.promise(
+            dispatch(assignSupervisor(allValues)).then((res) => {
+                if (res.meta.requestStatus === 'rejected') {
+                    let responseCheck = errorHandler(res)
+                    throw new Error(responseCheck)
+                } else {
+                    return res.payload.message
+                }
+            }),
+            {
+                loading: 'assigning supervisor(s) to student',
+                success: (data) => `${data}`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }
 
     /** function to handle search supervisors */
@@ -460,7 +535,7 @@ const AssignSupervisor = () => {
                                                 )
                                             )}
                                         </span>
-                                        for this project.
+                                        to supervise this student.
                                     </p>
                                 </Stack>
                             </Stack>

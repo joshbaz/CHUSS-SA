@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import registrationService from './registrationService'
-import authService from '../auth/authService'
+//import authService from '../auth/authService'
 const getToken = localStorage.getItem('_tk')
 
 let initialState = {
@@ -30,8 +30,8 @@ export const createPRegistration = createAsyncThunk(
                 createAttempt.message === 'Not authenticated' ||
                 createAttempt.message === 'jwt malformed'
             ) {
-                 await authService.logout()
-                window.location.reload()
+                //  await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(createAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(createAttempt.message)
@@ -61,8 +61,8 @@ export const updateRegistration = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                 await authService.logout()
-                window.location.reload()
+                //  await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)
@@ -92,8 +92,8 @@ export const removeRegistration = createAsyncThunk(
                 removeAttempt.message === 'Not authenticated' ||
                 removeAttempt.message === 'jwt malformed'
             ) {
-                 await authService.logout()
-                window.location.reload()
+                //  await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(removeAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(removeAttempt.message)

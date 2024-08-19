@@ -17,7 +17,6 @@ import {
     ModalOverlay,
     ModalContent,
     ModalBody,
-    useToast,
 } from '@chakra-ui/react'
 import { HiPencil } from 'react-icons/hi'
 import { ImBin2 } from 'react-icons/im'
@@ -27,6 +26,15 @@ import { reset, tagCreate, tagUpdate } from '../../store/features/tags/tagSlice'
 import { SketchPicker } from 'react-color'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
+
+import { reset as areset } from '../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../components/common/CustomToastFunctions/ToastFunctions'
 
 const PaymentTableTags = ({ allTagData }) => {
     const TableHead = [
@@ -54,7 +62,6 @@ const PaymentTableTags = ({ allTagData }) => {
     const [editActive, setEditActive] = React.useState(false)
     const [editDetails, setEditDetails] = React.useState(null)
     let dispatch = useDispatch()
-    let toast = useToast()
 
     const handleColorPicked = (color, setFieldValue) => {
         let rgba = `rbga(${color.rgb.r},${color.rgb.g},${color.rgb.b}, 0.34)`
@@ -85,27 +92,15 @@ const PaymentTableTags = ({ allTagData }) => {
             if (helperFunctions !== null) {
                 helperFunctions.setSubmitting(false)
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+
             setIsSubmittingp(false)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
@@ -115,6 +110,7 @@ const PaymentTableTags = ({ allTagData }) => {
                 setHelperFunctions(null)
             }
             dispatch(reset())
+            dispatch(areset())
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isError, isSuccess, message, dispatch])
@@ -280,7 +276,65 @@ const PaymentTableTags = ({ allTagData }) => {
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
-                                dispatch(tagCreate(values))
+
+                                toast.dismiss()
+                                toast.promise(
+                                    dispatch(tagCreate(values)).then((res) => {
+                                        if (
+                                            res.meta.requestStatus ===
+                                            'rejected'
+                                        ) {
+                                            let responseCheck =
+                                                errorHandler(res)
+                                            throw new Error(responseCheck)
+                                        } else {
+                                            return res.payload.message
+                                        }
+                                    }),
+                                    {
+                                        loading: 'creating new status',
+                                        success: (data) => `${data}`,
+                                        error: (err) => {
+                                            if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Check your internet connection'
+                                                    )
+                                            ) {
+                                                return 'Check Internet Connection'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication required'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Not Authenticated'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication expired'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Authentication Expired'
+                                            } else {
+                                                return `${err}`
+                                            }
+                                        },
+                                    }
+                                )
                             }}>
                             {({
                                 values,
@@ -412,7 +466,64 @@ const PaymentTableTags = ({ allTagData }) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
 
-                                dispatch(tagUpdate(values))
+                                toast.dismiss()
+                                toast.promise(
+                                    dispatch(tagUpdate(values)).then((res) => {
+                                        if (
+                                            res.meta.requestStatus ===
+                                            'rejected'
+                                        ) {
+                                            let responseCheck =
+                                                errorHandler(res)
+                                            throw new Error(responseCheck)
+                                        } else {
+                                            return res.payload.message
+                                        }
+                                    }),
+                                    {
+                                        loading: 'updatinf status',
+                                        success: (data) => `${data}`,
+                                        error: (err) => {
+                                            if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Check your internet connection'
+                                                    )
+                                            ) {
+                                                return 'Check Internet Connection'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication required'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Not Authenticated'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication expired'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Authentication Expired'
+                                            } else {
+                                                return `${err}`
+                                            }
+                                        },
+                                    }
+                                )
                             }}>
                             {({
                                 values,

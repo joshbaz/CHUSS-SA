@@ -5,7 +5,6 @@ import {
     Stack,
     Button,
     Text,
-    useToast,
     Modal,
     ModalOverlay,
     ModalContent,
@@ -28,6 +27,15 @@ import ViewDepartments from '../../../components/SchoolComponents/ViewSchools/Vi
 import EditSchool from './EditSchool'
 import { initSocketConnection } from '../../../socketio.service'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -58,7 +66,7 @@ const ViewSchool = (props) => {
     let dispatch = useDispatch()
     let routeNavigate = useNavigate()
     let Location = useLocation()
-    let toast = useToast()
+
     let params = useParams()
 
     useEffect(() => {
@@ -67,7 +75,42 @@ const ViewSchool = (props) => {
             page: page,
         }
 
-        dispatch(allSchools(values))
+        toast.dismiss()
+        toast.promise(
+            dispatch(allSchools(values)).then((res) => {
+                if (res.meta.requestStatus === 'rejected') {
+                    let responseCheck = errorHandler(res)
+                    throw new Error(responseCheck)
+                } else {
+                    return res.payload.message
+                }
+            }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }, [Location])
 
     useEffect(() => {
@@ -76,20 +119,147 @@ const ViewSchool = (props) => {
         io.on('updatedepartment', (data) => {
             if (data.actions === 'add-department' && data.data === params.id) {
                 //dispatch(tagGetAll())
-                dispatch(allSchools())
+
+                toast.dismiss()
+                toast.promise(
+                    dispatch(allSchools()).then((res) => {
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return res.payload.message
+                        }
+                    }),
+                    {
+                        loading: 'Retrieving Information',
+                        success: (data) => `Successfully retrieved`,
+                        error: (err) => {
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    },
+                    {
+                        position: 'bottom-right',
+                    }
+                )
             }
         })
 
         io.on('updatedepartment', (data) => {
             if (data.actions === 'update-department') {
                 //dispatch(tagGetAll())
-                dispatch(allSchools())
+                toast.dismiss()
+                toast.promise(
+                    dispatch(allSchools()).then((res) => {
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return res.payload.message
+                        }
+                    }),
+                    {
+                        loading: 'Retrieving Information',
+                        success: (data) => `Successfully retrieved`,
+                        error: (err) => {
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    },
+                    {
+                        position: 'bottom-right',
+                    }
+                )
             }
         })
 
         io.on('school-entity', (data) => {
             if (data.actions === 'update-school' && data.data === params.id) {
-                dispatch(allSchools())
+                toast.dismiss()
+                toast.promise(
+                    dispatch(allSchools()).then((res) => {
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return res.payload.message
+                        }
+                    }),
+                    {
+                        loading: 'Retrieving Information',
+                        success: (data) => `Successfully retrieved`,
+                        error: (err) => {
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    },
+                    {
+                        position: 'bottom-right',
+                    }
+                )
             }
         })
     }, [])
@@ -192,21 +362,15 @@ const ViewSchool = (props) => {
             setIsSubmittingedits(false)
             setChnageMade(false)
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && message) {
             if (isSubmittingedits) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
-
                 setIsSubmittingedits(false)
                 setChnageMade(false)
             }
+            dispatch(areset())
             dispatch(reset())
         }
     }, [isError, isSuccess, message])
@@ -221,7 +385,43 @@ const ViewSchool = (props) => {
                 ...editValues,
                 schoolId: editValues._id,
             }
-            dispatch(schoolUpdate(values2))
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(schoolUpdate(values2)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'updating school information',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         } else if (
             Object.keys(errors).length > 0 &&
             isSubmittingedits &&

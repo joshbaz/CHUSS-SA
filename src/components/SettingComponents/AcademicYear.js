@@ -10,7 +10,6 @@ import {
     ModalOverlay,
     ModalContent,
     ModalBody,
-    useToast,
 } from '@chakra-ui/react'
 import { HiPencil } from 'react-icons/hi'
 import { ImBin2 } from 'react-icons/im'
@@ -23,6 +22,13 @@ import {
     academicYearUpdate,
 } from '../../store/features/preferences/preferenceSlice'
 
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../components/common/CustomToastFunctions/ToastFunctions'
+
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 const AcademicYear = ({ handleChange, yearData }) => {
@@ -34,7 +40,6 @@ const AcademicYear = ({ handleChange, yearData }) => {
     const [editActive, setEditActive] = React.useState(false)
     const [editDetails, setEditDetails] = React.useState(null)
     let dispatch = useDispatch()
-    let toast = useToast()
 
     const validationSchema = yup.object().shape({
         academicYear: yup.string().required('academic year is required'),
@@ -48,13 +53,7 @@ const AcademicYear = ({ handleChange, yearData }) => {
             if (helperFunctions !== null) {
                 helperFunctions.setSubmitting(false)
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+
             setIsSubmittingp(false)
 
             dispatch(reset())
@@ -62,13 +61,6 @@ const AcademicYear = ({ handleChange, yearData }) => {
 
         if (isSuccess) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
@@ -189,7 +181,67 @@ const AcademicYear = ({ handleChange, yearData }) => {
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
-                                dispatch(academicYearCreate(values))
+
+                                toast.dismiss()
+                                toast.promise(
+                                    dispatch(academicYearCreate(values)).then(
+                                        (res) => {
+                                            if (
+                                                res.meta.requestStatus ===
+                                                'rejected'
+                                            ) {
+                                                let responseCheck =
+                                                    errorHandler(res)
+                                                throw new Error(responseCheck)
+                                            } else {
+                                                return res.payload.message
+                                            }
+                                        }
+                                    ),
+                                    {
+                                        loading: 'creating new academic year',
+                                        success: (data) => `${data}`,
+                                        error: (err) => {
+                                            if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Check your internet connection'
+                                                    )
+                                            ) {
+                                                return 'Check Internet Connection'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication required'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Not Authenticated'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication expired'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Authentication Expired'
+                                            } else {
+                                                return `${err}`
+                                            }
+                                        },
+                                    }
+                                )
                             }}>
                             {({
                                 values,
@@ -285,7 +337,66 @@ const AcademicYear = ({ handleChange, yearData }) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
 
-                                dispatch(academicYearUpdate(values))
+                                toast.dismiss()
+                                toast.promise(
+                                    dispatch(academicYearUpdate(values)).then(
+                                        (res) => {
+                                            if (
+                                                res.meta.requestStatus ===
+                                                'rejected'
+                                            ) {
+                                                let responseCheck =
+                                                    errorHandler(res)
+                                                throw new Error(responseCheck)
+                                            } else {
+                                                return res.payload.message
+                                            }
+                                        }
+                                    ),
+                                    {
+                                        loading: 'updating academic year',
+                                        success: (data) => `${data}`,
+                                        error: (err) => {
+                                            if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Check your internet connection'
+                                                    )
+                                            ) {
+                                                return 'Check Internet Connection'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication required'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Not Authenticated'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication expired'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Authentication Expired'
+                                            } else {
+                                                return `${err}`
+                                            }
+                                        },
+                                    }
+                                )
                             }}>
                             {({
                                 values,

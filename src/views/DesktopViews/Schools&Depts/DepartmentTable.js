@@ -38,6 +38,15 @@ import {
     reset,
 } from '../../../store/features/schools/schoolSlice'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const TableHead = [
     // {
     //     title: '#',
@@ -78,7 +87,7 @@ const DepartmentTable = ({
     const [removeDetails, setRemoveDetails] = React.useState(null)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let dispatch = useDispatch()
-    let toast = useToast()
+
     //let routeNavigate = useNavigate()
     let { message, isSuccess, isError } = useSelector((state) => state.school)
     /** pagination */
@@ -232,8 +241,44 @@ const DepartmentTable = ({
 
     const onRemoveUpload = () => {
         if (removeDetails.deptId && removeDetails.schoolId) {
-            dispatch(deleteDepartment(removeDetails))
             setIsSubmittingp(true)
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(deleteDepartment(removeDetails)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'removing department',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -248,23 +293,19 @@ const DepartmentTable = ({
         if (isError && isSubmittingp) {
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
         if (isSuccess && message && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setRemoveActive(false)
             setRemoveDetails(null)
 
+            dispatch(areset())
             dispatch(reset())
         }
 
-        dispatch(reset())
+            dispatch(areset())
+            dispatch(reset())
     }, [isSuccess, message, isSubmittingp, isError])
     return (
         <Container>

@@ -11,6 +11,15 @@ import {
     getOpponentReport,
     updateOpponentReport,
 } from '../../../../store/features/opponentReports/opponentReportSlice'
+
+import { reset as areset } from '../../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
 import { useSelector, useDispatch } from 'react-redux'
 import OpponentUpdatedFile from '../../../../components/ProjectComponents/OpponentReportUpdate/OpponentUpdatedFile'
 import OpponentDetailsView from '../../../../components/ProjectComponents/OpponentReportUpdate/OpponentDetailsView'
@@ -38,36 +47,23 @@ const EditOpponentReport = (props) => {
         (state) => state.opponentReport
     )
 
-    let toast = useToast()
-
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(() => false)
             setChnageMade(false)
 
+            dispatch(areset())
             dispatch(reset())
         }
 
         if (isSuccess && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChnageMade(false)
             dispatch(reset())
+            dispatch(areset())
         }
         dispatch(reset())
+        dispatch(areset())
     }, [isError, isSuccess, message, dispatch])
 
     useEffect(() => {
@@ -145,7 +141,42 @@ const EditOpponentReport = (props) => {
             setIsSubmittingp &&
             changeMade
         ) {
-            dispatch(updateOpponentReport(initials))
+            toast.dismiss()
+            toast.promise(
+                dispatch(updateOpponentReport(initials)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'updating opponent report',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         } else if (
             Object.keys(errors).length > 0 &&
             setIsSubmittingp &&

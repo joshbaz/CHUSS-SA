@@ -1,6 +1,6 @@
 {
-  "short_name": "CHUSS",
-  "name": "CHUSS SYSTEM",
+  "short_name": "GPMS",
+  "name": "Graduate Program Management System",
   "icons": [
     {
       "src": "favicon.ico",
@@ -13,8 +13,8 @@
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
+      "src": "chuss512.ico",
+      "type": "image/x-icon",
       "sizes": "512x512"
     }
   ],

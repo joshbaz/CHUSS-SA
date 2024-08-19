@@ -27,6 +27,15 @@ import {
 } from '../../../store/features/Examiner/examinerSlice'
 import { BASE_API_2 } from '../../../utils/base_url.config'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const GEViewSupportFiles = ({ values }) => {
     const [selectedView, setSelectedView] = React.useState('list')
     const [filesList, setFilesList] = React.useState([])
@@ -37,7 +46,7 @@ const GEViewSupportFiles = ({ values }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
 
     let { isError, isSuccess, message } = useSelector((state) => state.examiner)
-    let toast = useToast()
+
     let dispatch = useDispatch()
 
     useEffect(() => {
@@ -128,8 +137,44 @@ const GEViewSupportFiles = ({ values }) => {
     /** handle confirm delete */
     const onRemoveUpload = () => {
         if (removeDetails.exId && removeDetails.fileId) {
-            dispatch(examinerDeletesFiles(removeDetails))
             setIsSubmittingp(true)
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(examinerDeletesFiles(removeDetails)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'deleting examiner files',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -147,20 +192,15 @@ const GEViewSupportFiles = ({ values }) => {
         }
 
         if (isSuccess && message && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setRemoveActive(false)
             setRemoveDetails(null)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
+        dispatch(areset())
         dispatch(reset())
     }, [isSuccess, message, isSubmittingp])
     return (
@@ -501,7 +541,7 @@ const GEViewSupportFiles = ({ values }) => {
                                                     removeDetails.name}
                                             </li>
                                         </span>
-                                        from this project.
+                                        's file from the system?.
                                     </p>
                                 </Stack>
                             </Stack>

@@ -13,7 +13,7 @@ import {
     ModalContent,
     ModalBody,
     useDisclosure,
-    useToast,
+   
 } from '@chakra-ui/react'
 import { BsListUl } from 'react-icons/bs'
 import { RiLayoutGridFill } from 'react-icons/ri'
@@ -25,7 +25,7 @@ const ViewFiles = ({ values, nameValues }) => {
     const [filesList, setFilesList] = React.useState([])
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [selectedFile, setSelectedFile] = React.useState(null)
-    let toast = useToast()
+    //let toast = useToast()
     React.useEffect(() => {
         if (values !== null && values.reportFiles.length > 0) {
             setFilesList(values.reportFiles)

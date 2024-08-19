@@ -27,6 +27,15 @@ import {
 } from '../../../store/features/preferences/preferenceSlice'
 import EntryType from '../../../components/ProjectComponents/CreateProject/CreateForms/EntryType'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -49,17 +58,12 @@ const CreatePhdProject = () => {
             if (helperFunctions !== null) {
                 helperFunctions.setSubmitting(false)
             }
-            toast({
-                position: 'top',
-                title: preferencesData.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
 
             dispatch(preset())
+            dispatch(areset())
         }
         dispatch(preset())
+        dispatch(areset())
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
@@ -75,33 +79,22 @@ const CreatePhdProject = () => {
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(() => false)
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+
             setIsSubmittingp(() => false)
 
+            dispatch(areset())
             dispatch(reset())
         }
 
         if (isSuccess) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(() => false)
 
                 setHelperFunctions(null)
             }
+            dispatch(areset())
             dispatch(reset())
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -136,7 +129,7 @@ const CreatePhdProject = () => {
         createdDate: '',
         fundingType: '',
     }
-    let toast = useToast()
+    // let toast = useToast()
     return (
         <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
@@ -163,8 +156,60 @@ const CreatePhdProject = () => {
                         validationSchema={validationSchema}
                         onSubmit={async (values, helpers) => {
                             setHelperFunctions(helpers)
-                            dispatch(projectCreate(values))
                             setIsSubmittingp(() => true)
+                            toast.dismiss()
+                            toast.promise(
+                                dispatch(projectCreate(values)).then((res) => {
+                                    //console.log('res', res)
+                                    if (res.meta.requestStatus === 'rejected') {
+                                        let responseCheck = errorHandler(res)
+                                        throw new Error(responseCheck)
+                                    } else {
+                                        return res.payload.message
+                                    }
+                                }),
+                                {
+                                    loading: 'creating student',
+                                    success: (data) => `${data}`,
+                                    error: (err) => {
+                                        if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Check your internet connection'
+                                                )
+                                        ) {
+                                            return 'Check Internet Connection'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication required'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Not Authenticated'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication expired'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Authentication Expired'
+                                        } else {
+                                            return `${err}`
+                                        }
+                                    },
+                                }
+                            )
                         }}>
                         {({
                             values,

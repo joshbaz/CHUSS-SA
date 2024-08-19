@@ -38,6 +38,15 @@ import {
     deleteSchool,
     reset,
 } from '../../../store/features/schools/schoolSlice'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 import { useDispatch, useSelector } from 'react-redux'
 const TableHead = [
     // {
@@ -86,7 +95,6 @@ const SchoolTable = ({
 
     let { message, isSuccess, isError } = useSelector((state) => state.school)
     let dispatch = useDispatch()
-    let toast = useToast()
 
     const [allDisplayData, setAllDisplayData] = React.useState({
         currentPage: 0,
@@ -166,7 +174,7 @@ const SchoolTable = ({
             totalAllItems: totalItems,
             totalPages: pageLength,
         })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allItems.items])
     /** pagination */
     let PaginationFirstNumber =
@@ -552,8 +560,44 @@ const SchoolTable = ({
 
     const onRemoveUpload = () => {
         if (removeDetails.schoolId) {
-            dispatch(deleteSchool(removeDetails))
             setIsSubmittingp(true)
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(deleteSchool(removeDetails)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'deleting school',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -568,22 +612,18 @@ const SchoolTable = ({
         if (isError && isSubmittingp) {
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
         if (isSuccess && message && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setRemoveActive(false)
             setRemoveDetails(null)
 
+            dispatch(areset())
             dispatch(reset())
         }
 
+        dispatch(areset())
         dispatch(reset())
     }, [isSuccess, message, isSubmittingp, isError])
 
@@ -1368,12 +1408,6 @@ const Container = styled(Stack)`
         }
     }
 `
-
-
-
-
-
-
 
 const NoItems = styled(Box)`
     position: absolute;

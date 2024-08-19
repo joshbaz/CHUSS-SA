@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
-import { Box, Stack, Text, useToast } from '@chakra-ui/react'
+import { Box, Stack, Text } from '@chakra-ui/react'
 import styled from 'styled-components'
 import { MdArrowBack } from 'react-icons/md'
 import Navigation from '../../../components/common/Navigation/Navigation'
@@ -16,6 +16,15 @@ import {
 import ViewSupervisorADetailForm from '../../../components/ProjectComponents/AssignSupervisors/ViewSupervisorADetailForm'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -23,11 +32,46 @@ const ViewSupervisor = () => {
     let routeNavigate = useNavigate()
     let params = useParams()
     let dispatch = useDispatch()
-    let toast = useToast()
+
     const [individual, setIndividual] = React.useState(null)
 
     useEffect(() => {
-        dispatch(allSupervisors())
+        toast.dismiss()
+        toast.promise(
+            dispatch(allSupervisors()).then((res) => {
+                if (res.meta.requestStatus === 'rejected') {
+                    let responseCheck = errorHandler(res)
+                    throw new Error(responseCheck)
+                } else {
+                    return res.payload.message
+                }
+            }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }, [])
 
     let { allSupervisorItems, isSuccess, isError, message } = useSelector(
@@ -35,27 +79,15 @@ const ViewSupervisor = () => {
     )
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+            dispatch(areset())
         }
 
         if (isSuccess && message) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
-
+            dispatch(areset())
             dispatch(reset())
         }
 
+        dispatch(areset())
         dispatch(reset())
     }, [isSuccess, isError, message])
 

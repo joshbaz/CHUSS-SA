@@ -20,6 +20,15 @@ import {
 import ExaminerATypeForm2 from '../../../components/ExaminerComponents/CreateExaminer/ExaminerATypeForm2'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -28,7 +37,7 @@ const CreateNewExaminer = (props) => {
 
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let routeNavigate = useNavigate()
-    let toast = useToast()
+
     let dispatch = useDispatch()
     const { isError, isSuccess, message } = useSelector(
         (state) => state.examiner
@@ -40,31 +49,19 @@ const CreateNewExaminer = (props) => {
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
                 setHelperFunctions(null)
             }
+            dispatch(areset())
             dispatch(reset())
         }
     }, [isError, isSuccess, message])
@@ -131,7 +128,65 @@ const CreateNewExaminer = (props) => {
                             let values2 = {
                                 ...values,
                             }
-                            dispatch(examinerCreate(values2))
+
+                            toast.dismiss()
+                            toast.promise(
+                                dispatch(examinerCreate(values2)).then(
+                                    (res) => {
+                                        if (
+                                            res.meta.requestStatus ===
+                                            'rejected'
+                                        ) {
+                                            let responseCheck =
+                                                errorHandler(res)
+                                            throw new Error(responseCheck)
+                                        } else {
+                                            return res.payload.message
+                                        }
+                                    }
+                                ),
+                                {
+                                    loading: 'creating new examiner',
+                                    success: (data) => `${data}`,
+                                    error: (err) => {
+                                        if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Check your internet connection'
+                                                )
+                                        ) {
+                                            return 'Check Internet Connection'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication required'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Not Authenticated'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication expired'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Authentication Expired'
+                                        } else {
+                                            return `${err}`
+                                        }
+                                    },
+                                }
+                            )
                         }}>
                         {({
                             values,

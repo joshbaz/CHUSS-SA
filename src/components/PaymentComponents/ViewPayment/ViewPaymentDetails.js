@@ -14,7 +14,6 @@ import {
     ModalContent,
     ModalBody,
     Button,
-    useToast,
 } from '@chakra-ui/react'
 
 import { MdKeyboardArrowDown } from 'react-icons/md'
@@ -24,6 +23,15 @@ import {
     updatePayment,
     reset,
 } from '../../../store/features/payments/paymentSlice'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 
 const ViewPaymentDetails = ({ values = null, projectValues }) => {
     const [projectId, setProjectId] = React.useState(null)
@@ -45,7 +53,7 @@ const ViewPaymentDetails = ({ values = null, projectValues }) => {
     let { isLoading, isSuccess, isError, message } = useSelector(
         (state) => state.payment
     )
-    let toast = useToast()
+
     let dispatch = useDispatch()
 
     React.useEffect(() => {
@@ -94,31 +102,19 @@ const ViewPaymentDetails = ({ values = null, projectValues }) => {
 
     React.useEffect(() => {
         if (isError && isSubmittingp) {
-            // toast({
-            //     position: 'top',
-            //     title: message.message,
-            //     status: 'error',
-            //     duration: 10000,
-            //     isClosable: true,
-            // })
             setIsSubmittingp(false)
             setChangeMade(false)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChangeMade(false)
             onClose()
             dispatch(reset())
+            dispatch(areset())
         }
         dispatch(reset())
     }, [isError, isSuccess, message, dispatch])
@@ -126,11 +122,46 @@ const ViewPaymentDetails = ({ values = null, projectValues }) => {
     /** submittion of the changes */
     React.useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-            dispatch(
-                updatePayment({
-                    ...newActiveStatus,
-                    _id: projectId,
-                })
+            toast.dismiss()
+            toast.promise(
+                dispatch(
+                    updatePayment({
+                        ...newActiveStatus,
+                        _id: projectId,
+                    })
+                ).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'updating payment',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
             )
             //setIsSubmittingp(false)
         }

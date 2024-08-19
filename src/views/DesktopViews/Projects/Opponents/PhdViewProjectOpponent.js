@@ -19,6 +19,15 @@ import {
     reset as pReset,
 } from '../../../../store/features/project/projectSlice'
 
+import { reset as areset } from '../../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
+
 import ViewOpponentDetailForm from '../../../../components/ProjectComponents/AssignOpponents/ViewOpponentDetailForm'
 import ViewOpponentFiles from '../../../../components/ProjectComponents/AssignOpponents/ViewOpponentFiles'
 import ViewOpponentPayInfo from '../../../../components/ProjectComponents/AssignOpponents/ViewOpponentPayInfo'
@@ -33,18 +42,72 @@ const PhdViewProjectOpponent = () => {
     let examinerCase = useSelector((state) => state.opponent)
     useEffect(() => {
         /** dispatch to get project */
-        dispatch(getIndividualProject(params.p_id))
+
         /** dispatch to get examiner */
-        dispatch(getIndividualOpponent(params.o_id))
+
+        toast.dismiss()
+        toast.promise(
+            dispatch(getAllProjects(params.p_id))
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(allOpponents(params.p_id))
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getIndividualProject(params.p_id))
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getIndividualOpponent(params.o_id))
+                    }
+                })
+
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }, [params.o_id, params.p_id, dispatch])
-
-    useEffect(() => {
-        dispatch(allOpponents(params.p_id))
-    }, [])
-
-    useEffect(() => {
-        dispatch(getAllProjects(params.p_id))
-    }, [])
 
     useEffect(() => {
         let findExaminer = examinerCase.allOpponentItems.items.find(
@@ -66,33 +129,22 @@ const PhdViewProjectOpponent = () => {
         }
     }, [projectCase.allprojects, params.p_id])
 
-    let toast = useToast()
     useEffect(() => {
         if (projectCase.isError) {
-            toast({
-                position: 'top',
-                title: examinerCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             dispatch(pReset())
+            dispatch(areset())
         }
         dispatch(pReset())
+        dispatch(areset())
     }, [projectCase.isError, projectCase.isSuccess, projectCase.message])
 
     useEffect(() => {
         if (examinerCase.isError) {
-            toast({
-                position: 'top',
-                title: examinerCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             dispatch(eReset())
+            dispatch(areset())
         }
         dispatch(eReset())
+        dispatch(areset())
     }, [examinerCase.isError, examinerCase.isSuccess, examinerCase.message])
     return (
         <Container direction='row' w='100vw'>

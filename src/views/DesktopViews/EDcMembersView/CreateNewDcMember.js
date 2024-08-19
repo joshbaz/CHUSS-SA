@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
-import { Box, Stack, Button, Text, useToast } from '@chakra-ui/react'
+import { Box, Stack, Button, Text } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
@@ -18,6 +18,15 @@ import {
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 import CreateDoctoralDetailForm from '../../../components/MExaminerDcMember/CreateDoctoralDetailForm'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -27,7 +36,6 @@ const CreateNewDcMember = () => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let routeNavigate = useNavigate()
 
-    let toast = useToast()
     let dispatch = useDispatch()
     const { isError, isSuccess, message } = useSelector(
         (state) => state.doctoralMembers
@@ -39,26 +47,13 @@ const CreateNewDcMember = () => {
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && message) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
@@ -66,6 +61,7 @@ const CreateNewDcMember = () => {
                 setHelperFunctions(null)
             }
             dispatch(reset())
+            dispatch(areset())
         }
     }, [isError, isSuccess, message])
 
@@ -121,7 +117,66 @@ const CreateNewDcMember = () => {
                             let values2 = {
                                 ...values,
                             }
-                            dispatch(DCMemberCreate(values2))
+
+                            toast.dismiss()
+                            toast.promise(
+                                dispatch(DCMemberCreate(values2)).then(
+                                    (res) => {
+                                        if (
+                                            res.meta.requestStatus ===
+                                            'rejected'
+                                        ) {
+                                            let responseCheck =
+                                                errorHandler(res)
+                                            throw new Error(responseCheck)
+                                        } else {
+                                            return res.payload.message
+                                        }
+                                    }
+                                ),
+                                {
+                                    loading:
+                                        'creating new doctoral committee member',
+                                    success: (data) => `${data}`,
+                                    error: (err) => {
+                                        if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Check your internet connection'
+                                                )
+                                        ) {
+                                            return 'Check Internet Connection'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication required'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Not Authenticated'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication expired'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Authentication Expired'
+                                        } else {
+                                            return `${err}`
+                                        }
+                                    },
+                                }
+                            )
                         }}>
                         {({
                             values,

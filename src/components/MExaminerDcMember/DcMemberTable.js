@@ -20,7 +20,6 @@ import {
     Tabs,
     TabList,
     Tab,
-    useToast,
     Button,
     Modal,
     ModalOverlay,
@@ -39,6 +38,15 @@ import {
     reset,
 } from '../../store/features/Examiner/examinerSlice'
 import { useDispatch, useSelector } from 'react-redux'
+
+import { reset as areset } from '../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../components/common/CustomToastFunctions/ToastFunctions'
 
 const TableHead = [
     {
@@ -91,7 +99,6 @@ const DcMemberTable = ({
 
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let toast = useToast()
 
     let { allDCMemberItems, isSuccess, isError, message } = useSelector(
         (state) => state.doctoralMembers
@@ -524,8 +531,44 @@ const DcMemberTable = ({
 
     const onRemoveUpload = () => {
         if (removeDetails.exId) {
-            dispatch(examinerDeletes(removeDetails))
             setIsSubmittingp(true)
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(examinerDeletes(removeDetails)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'deleting doctoral member',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -540,19 +583,14 @@ const DcMemberTable = ({
         if (isError && isSubmittingp) {
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
         if (isSuccess && message && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setRemoveActive(false)
             setRemoveDetails(null)
 
+            dispatch(areset())
             dispatch(reset())
         }
 

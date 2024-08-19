@@ -25,7 +25,6 @@ import {
     ModalOverlay,
     ModalContent,
     ModalBody,
-    useToast,
 } from '@chakra-ui/react'
 import { BiDownload } from 'react-icons/bi'
 import { AiOutlineMinus } from 'react-icons/ai'
@@ -38,8 +37,10 @@ import {
     deactivateFacilitator,
     reset,
 } from '../../../store/features/facilitators/facilitatorSlice'
+import { Logout, reset as areset } from '../../../store/features/auth/authSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import Moments from 'moment-timezone'
+import toast from 'react-hot-toast'
 
 const TableHead = [
     {
@@ -101,7 +102,7 @@ const FacilitatorTable = ({
 
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let toast = useToast()
+    //  let toast = useToast()
 
     let {
         allfacilitatorItems,
@@ -110,6 +111,52 @@ const FacilitatorTable = ({
         message,
         isError,
     } = useSelector((state) => state.facilitator)
+
+    /**error handler for toast functionality  */
+    let errorHandler = (errorResponse) => {
+        if (errorResponse.payload.includes('ECONNREFUSED')) {
+            return 'Check your internet connection'
+        } else if (errorResponse.payload.includes('jwt expired')) {
+            return 'Authentication expired'
+        } else if (
+            errorResponse.payload.includes('jwt malformed') ||
+            errorResponse.payload.includes('invalid token')
+        ) {
+            return 'Authentication expired'
+        } else if (errorResponse.payload.includes('Not authenticated')) {
+            return 'Authentication required'
+        } else {
+            let errorMessage = errorResponse.payload
+            return errorMessage
+        }
+    }
+
+    /**Logout handler for auth error in toast**/
+
+    let handleLogout = () => {
+        toast.dismiss()
+
+        toast.loading('Logging out. please wait...')
+
+        //inner logout toast function
+        let handleLogoutToast = () => {
+            toast.dismiss()
+            toast.promise(
+                dispatch(Logout()).then((res) => {
+                    // routeNavigate('/auth/signin', { replace: true })
+                }),
+                {
+                    loading: 'Logging out',
+                    success: (data) => 'Logged out successfully',
+                    error: (err) => {
+                        return 'error while Logging out'
+                    },
+                }
+            )
+        }
+
+        setTimeout(handleLogoutToast, 3000)
+    }
 
     /** changes all document tabs */
     useEffect(() => {
@@ -543,7 +590,46 @@ const FacilitatorTable = ({
 
     const onRemoveUpload = () => {
         if (removeDetails.exId) {
-            dispatch(deactivateFacilitator(removeDetails))
+            toast.dismiss()
+
+            //toast and deactivation handler
+            toast.promise(
+                dispatch(deactivateFacilitator(removeDetails)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                       // console.log('deactivation', res)
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'request loading...',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
+
             setIsSubmittingp(true)
         }
     }
@@ -559,20 +645,22 @@ const FacilitatorTable = ({
         if (isError) {
             setIsSubmittingp(() => false)
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && message) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message.message,
+            //     status: 'success',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
             setIsSubmittingp(() => false)
             setRemoveActive(false)
             setRemoveDetails(null)
             dispatch(reset())
+            dispatch(areset())
         }
     }, [isSuccess, isError, message])
 
@@ -1265,7 +1353,7 @@ const FacilitatorTable = ({
                 </Stack>
             </Stack>
 
-            {/** handle delete registration */}
+            {/** handle deactivate facilitator */}
             <Modal
                 w='100vw'
                 isOpen={removeActive}
@@ -1303,7 +1391,7 @@ const FacilitatorTable = ({
                                     className='list_text'>
                                     <p>
                                         Are you sure you want to
-                                        activate/deactivate
+                                        <span style={{fontWeight:'bold'}}>activate / deactivate</span>
                                         <span>
                                             <li>
                                                 {removeDetails !== null &&

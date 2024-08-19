@@ -15,7 +15,6 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
-    useToast,
     Grid,
 } from '@chakra-ui/react'
 import { BsListUl } from 'react-icons/bs'
@@ -33,7 +32,10 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 import { BASE_API_2 } from '../../../utils/base_url.config'
-const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
+import toast from 'react-hot-toast'
+import { Logout, reset as areset } from '../../../store/features/auth/authSlice'
+
+const FinalSubmission = ({ values, nameValues  }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
     const [filesList, setFilesList] = React.useState([])
     const [projectId, setProjectId] = React.useState('')
@@ -48,8 +50,56 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
     const [selectedFile, setSelectedFile] = React.useState(null)
     const { isOpen, onOpen, onClose } = useDisclosure()
     let dispatch = useDispatch()
-    let toast = useToast()
+    // let toast = useToast()
     let { isSuccess, message, isError } = useSelector((state) => state.project)
+
+    /** error handler for toast response */
+    let errorHandler = (errorResponse) => {
+        if (errorResponse.payload.includes('ECONNREFUSED')) {
+            return 'Check your internet connection'
+        } else if (errorResponse.payload.includes('jwt expired')) {
+            return 'Authentication expired'
+        } else if (
+            errorResponse.payload.includes('jwt malformed') ||
+            errorResponse.payload.includes('invalid token')
+        ) {
+            return 'Authentication expired'
+        } else if (errorResponse.payload.includes('Not authenticated')) {
+            return 'Authentication required'
+        } else if (errorResponse.payload.includes('Not authorized')) {
+            return 'Authentication required'
+        } else {
+            let errorMessage = errorResponse.payload
+            return errorMessage
+        }
+    }
+
+    //function to handle smooth Logout
+    let handleLogout = () => {
+        toast.dismiss()
+
+        toast.loading('Logging out. please wait...')
+
+        //inner logout toast function
+        let handleLogoutToast = () => {
+            toast.dismiss()
+            toast.promise(
+                dispatch(Logout()).then((res) => {
+                    // routeNavigate('/auth/signin', { replace: true })
+                }),
+                {
+                    loading: 'Logging out',
+                    success: (data) => 'Logged out successfully',
+                    error: (err) => {
+                        return 'error while Logging out'
+                    },
+                }
+            )
+        }
+
+        setTimeout(handleLogoutToast, 3000)
+    }
+
     React.useEffect(() => {
         if (values !== null && values._id) {
             setProjectId(values._id)
@@ -128,8 +178,43 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
 
     const onRemoveUpload = () => {
         if (removeDetails.projectId && removeDetails.fId) {
-            dispatch(removeFinalSFiles(removeDetails))
             setIsSubmittingp(true)
+            toast.dismiss()
+            toast.promise(
+                dispatch(removeFinalSFiles(removeDetails)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'Removing files',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -144,23 +229,27 @@ const FinalSubmission = ({ values, nameValues = 'joshua' }) => {
         if (isError && isSubmittingp) {
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
         if (isSuccess && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message.message,
+            //     status: 'success',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
             setIsSubmittingp(false)
             setRemoveActive(false)
             setRemoveDetails(null)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         dispatch(reset())
+        dispatch(areset())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, message, isError])
 
     return (
@@ -937,12 +1026,14 @@ const FileStack = styled(Stack)`
         }
     }
 
-    .pdf, .PDF {
+    .pdf,
+    .PDF {
         background: #fceded;
         color: #f14c54;
     }
 
-    .doc,.docx {
+    .doc,
+    .docx {
         color: #faa723;
         background: #feecd0;
     }

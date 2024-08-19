@@ -7,7 +7,6 @@ import {
     Input,
     InputGroup,
     InputRightElement,
-    useToast,
     Modal,
     ModalOverlay,
     ModalContent,
@@ -33,6 +32,16 @@ import {
     migrateSupervisortoDCMember,
     reset as dreset,
 } from '../../../store/features/doctoralmembers/doctoralSlice'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const ProjectDetails = ({ values, rlink }) => {
     const [removeActive, setRemoveActive] = React.useState(false)
     const [removeDetails, setRemoveDetails] = React.useState(null)
@@ -50,7 +59,7 @@ const ProjectDetails = ({ values, rlink }) => {
     const [fullAdm, setFullAdm] = React.useState(null)
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let toast = useToast()
+    //let toast = useToast()
     let { isSuccess, message, isError } = useSelector(
         (state) => state.supervisor
     )
@@ -71,8 +80,44 @@ const ProjectDetails = ({ values, rlink }) => {
 
     const onRemoveUpload = () => {
         if (removeDetails.projectId && removeDetails.supId) {
-            dispatch(supervisorRemove(removeDetails))
             setIsSubmittingp(true)
+            toast.dismiss()
+            toast.promise(
+                dispatch(supervisorRemove(removeDetails)).then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'removing supervisor from student',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -100,8 +145,47 @@ const ProjectDetails = ({ values, rlink }) => {
     const onMigrateUpload = () => {
         // alert(`details ${migrateDetails.projectId}, ${migrateDetails.supId}`)
         if (migrateDetails.projectId && migrateDetails.supId) {
-            dispatch(migrateSupervisortoDCMember(migrateDetails))
             setIsSubmittingp(() => true)
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(migrateSupervisortoDCMember(migrateDetails)).then(
+                    (res) => {
+                        //console.log('res', res)
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return res.payload.message
+                        }
+                    }
+                ),
+                {
+                    loading: 'migrating the supervisor to doctoral member',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -127,8 +211,45 @@ const ProjectDetails = ({ values, rlink }) => {
 
     const onRemoveUpload2 = () => {
         if (removeDetails2.projectId && removeDetails2.supId) {
-            dispatch(removeDCMember(removeDetails2))
             setIsSubmittingp(true)
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(removeDCMember(removeDetails2)).then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'removing doctoral member from student',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -143,23 +264,20 @@ const ProjectDetails = ({ values, rlink }) => {
         if (isError && isSubmittingp) {
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
         if (isSuccess && isSubmittingp && message) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setRemoveActive(false)
             setRemoveDetails(null)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         dispatch(reset())
+        dispatch(areset())
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, message])
 
@@ -169,15 +287,9 @@ const ProjectDetails = ({ values, rlink }) => {
         if (dcMState.isError && isSubmittingp) {
             setIsSubmittingp(false)
             dispatch(dreset())
+            dispatch(areset())
         }
         if (dcMState.isSuccess && isSubmittingp && dcMState.message) {
-            toast({
-                position: 'top',
-                title: dcMState.message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setRemoveActive2(false)
             setRemoveDetails2(null)
@@ -185,9 +297,12 @@ const ProjectDetails = ({ values, rlink }) => {
             setMigrateDetails(null)
 
             dispatch(dreset())
+            dispatch(areset())
         }
 
         dispatch(dreset())
+        dispatch(areset())
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dcMState.isSuccess, dcMState.message, dcMState.isError])
 

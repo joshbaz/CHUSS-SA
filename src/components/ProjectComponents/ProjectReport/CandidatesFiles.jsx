@@ -13,7 +13,7 @@ import {
     ModalOverlay,
     ModalContent,
     ModalBody,
-    useToast,
+
     Button,
     Grid,
 } from '@chakra-ui/react'
@@ -25,12 +25,28 @@ import {
     removeCaFiles,
     reset,
 } from '../../../store/features/project/projectSlice'
+
+import { Logout, reset as areset } from '../../../store/features/auth/authSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
+//import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer'
 import Moments from 'moment-timezone'
 import { BASE_API_2 } from '../../../utils/base_url.config'
+import {
+    Viewer,
+    ProgressBar,
+    SpecialZoomLevel,
+    PageLayout,
+} from '@react-pdf-viewer/core'
 
-const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
+import { thumbnailPlugin } from '@react-pdf-viewer/thumbnail'
+
+import { pageThumbnailPlugin } from '../../common/CustomPageThumbnail/CustomPageThumbnail.tsx'
+import toast from 'react-hot-toast'
+//import pdf viewer styles
+import '@react-pdf-viewer/core/lib/styles/index.css'
+import '@react-pdf-viewer/thumbnail/lib/styles/index.css'
+
+const CandidatesFiles = ({ values, nameValues }) => {
     const [selectedView, setSelectedView] = React.useState('grid')
     const [filesList, setFilesList] = React.useState([])
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -41,8 +57,26 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
     const [removeDetails, setRemoveDetails] = React.useState(null)
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let dispatch = useDispatch()
-    let toast = useToast()
+    //let toast = useToast()
     let { isSuccess, message, isError } = useSelector((state) => state.project)
+
+    const thumbnailPluginInstance = thumbnailPlugin({
+        thumbnailWidth: 800,
+    })
+
+    const { Cover } = thumbnailPluginInstance
+
+    const pageThumbnailPluginInstance = pageThumbnailPlugin({
+        PageThumbnail: <Cover getPageIndex={() => 0} />,
+        thumbnailWidth: 200,
+    })
+
+    const pageLayout = {
+        transformSize: ({ size }) => ({
+            height: size.height + 200,
+            width: '200px',
+        }),
+    }
     useEffect(() => {
         if (values !== null && values._id) {
             setProjectId(values._id)
@@ -121,10 +155,93 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
         }
     }
 
+    /** error handler for toast response */
+    let errorHandler = (errorResponse) => {
+        if (errorResponse.payload.includes('ECONNREFUSED')) {
+            return 'Check your internet connection'
+        } else if (errorResponse.payload.includes('jwt expired')) {
+            return 'Authentication expired'
+        } else if (
+            errorResponse.payload.includes('jwt malformed') ||
+            errorResponse.payload.includes('invalid token')
+        ) {
+            return 'Authentication expired'
+        } else if (errorResponse.payload.includes('Not authenticated')) {
+            return 'Authentication required'
+        } else if (errorResponse.payload.includes('Not authorized')) {
+            return 'Authentication required'
+        } else {
+            let errorMessage = errorResponse.payload
+            return errorMessage
+        }
+    }
+
+    //function to handle smooth Logout
+    let handleLogout = () => {
+        toast.dismiss()
+
+        toast.loading('Logging out. please wait...')
+
+        //inner logout toast function
+        let handleLogoutToast = () => {
+            toast.dismiss()
+            toast.promise(
+                dispatch(Logout()).then((res) => {
+                    // routeNavigate('/auth/signin', { replace: true })
+                }),
+                {
+                    loading: 'Logging out',
+                    success: (data) => 'Logged out successfully',
+                    error: (err) => {
+                        return 'error while Logging out'
+                    },
+                }
+            )
+        }
+
+        setTimeout(handleLogoutToast, 3000)
+    }
     const onRemoveUpload = () => {
         if (removeDetails.projectId && removeDetails.fId) {
-            dispatch(removeCaFiles(removeDetails))
             setIsSubmittingp(true)
+            toast.dismiss()
+
+            toast.promise(
+                dispatch(removeCaFiles(removeDetails)).then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'processing file removal',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -139,23 +256,27 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
         if (isError && isSubmittingp) {
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
         if (isSuccess && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message.message,
+            //     status: 'success',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
             setIsSubmittingp(false)
             setRemoveActive(false)
             setRemoveDetails(null)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         dispatch(reset())
+         dispatch(areset())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, message, isError, isSubmittingp])
     return (
         <FormContainer>
@@ -223,11 +344,12 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
                                             <FileStack
                                                 key={index}
                                                 w='202.6px'
-                                                h='168px'
+                                                h='350px'
                                                 direction='column'
                                                 alignitems='space-between'
                                                 className='filedoc'>
-                                                <Box
+                                                {/**
+                                            <Box
                                                     h='96px'
                                                     className='icon_wrap '>
                                                     <Stack
@@ -246,6 +368,37 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
                                                             }
                                                         </Text>
                                                     </Stack>
+                                                </Box>
+                                             */}
+                                                <Box
+                                                    h='100%'
+                                                    width='100%'
+                                                    className='icon_wrap rpv-core__viewer '>
+                                                    <div
+                                                        className='pageCovers '
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            display: 'flex',
+                                                            backgroundColor:
+                                                                'red',
+                                                            margin: '0 rem',
+                                                            padding: '0 rem',
+                                                        }}>
+                                                        <Viewer
+                                                            SpecialZoomLevel={
+                                                                ''
+                                                            }
+                                                            defaultScale={
+                                                                SpecialZoomLevel.PageWidth
+                                                            }
+                                                            fileUrl={`${BASE_API_2}/docs/files/${data.fileId.fileId}`}
+                                                            plugins={[
+                                                                pageThumbnailPluginInstance,
+                                                                thumbnailPluginInstance,
+                                                            ]}
+                                                        />
+                                                    </div>
                                                 </Box>
 
                                                 <Stack
@@ -466,22 +619,56 @@ const CandidatesFiles = ({ values, nameValues = 'joshua' }) => {
             {/** modal for viewing file */}
             <Modal w='100vw' isOpen={isOpen} p='0' onClose={onClose} size=''>
                 <ModalOverlay w='100vw' overflowY={'visible'} p='0' />
-                <ModalContent p='0' style={{ width: '60vw', height: '80vh' }}>
-                    <ModalBody p='0' style={{ width: '100%', height: '80vh' }}>
-                        <Box style={{ width: '100%', height: '80vh' }}>
-                            <DocViewer
-                                className='documentViewer'
-                                prefetchMethod='GET'
-                                documents={selectedFile}
-                                pluginRenderers={DocViewerRenderers}
-                                config={{
-                                    header: {
-                                        disableHeader: true,
-                                        disableFileName: true,
-                                        retainURLParams: false,
-                                    },
+                <ModalContent
+                    p='0'
+                    style={{
+                        width: '60vw',
+                        height: '90vh',
+                        marginTop: '10px',
+                        marginBottom: '10px',
+                    }}>
+                    <ModalBody
+                        p='0'
+                        style={{
+                            width: '100%',
+                            height: '90vh',
+                            marginTop: '0px',
+                            marginBottom: '0px',
+                        }}>
+                        <Box style={{ width: '100%', height: '100%' }}>
+                            {
+                                //     <DocViewer
+                                //     className='documentViewer'
+                                //     prefetchMethod='GET'
+                                //     documents={selectedFile}
+                                //     pluginRenderers={DocViewerRenderers}
+                                //     config={{
+                                //         header: {
+                                //             disableHeader: true,
+                                //             disableFileName: true,
+                                //             retainURLParams: false,
+                                //         },
+                                //     }}
+                                //     style={{ width: '100%', height: '80vh' }}
+                                // />
+                            }
+
+                            <Viewer
+                                fileUrl={
+                                    selectedFile !== null
+                                        ? selectedFile[0].uri
+                                        : ''
+                                }
+                                renderLoader={(percentages) => (
+                                    <div style={{ width: '240px' }}>
+                                        <ProgressBar
+                                            progress={Math.round(percentages)}
+                                        />
+                                    </div>
+                                )}
+                                theme={{
+                                    theme: 'dark',
                                 }}
-                                style={{ width: '100%', height: '80vh' }}
                             />
                         </Box>
                     </ModalBody>
@@ -663,6 +850,22 @@ const FileStack = styled(Stack)`
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .rpv-core__viewer {
+        position: relative;
+    }
+
+    .rpv-core__viewer,
+    .pageCovers {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        & .rpv-core__inner-page {
+            margin: 0rem;
+            padding: 0rem;
+        }
     }
 
     .icon_stack {

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
-import { Box, Stack, Button, Text, useToast } from '@chakra-ui/react'
+import { Box, Stack, Button, Text } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
@@ -18,6 +18,15 @@ import {
 import SupervisorADetailForm from '../../../components/ProjectComponents/AssignSupervisors/SupervisorA_DetailForm'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -27,7 +36,6 @@ const CreateNewSupervisor = () => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let routeNavigate = useNavigate()
 
-    let toast = useToast()
     let dispatch = useDispatch()
     const { isError, isSuccess, message } = useSelector(
         (state) => state.supervisor
@@ -39,32 +47,20 @@ const CreateNewSupervisor = () => {
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && message) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
 
                 setHelperFunctions(null)
             }
+            dispatch(areset())
             dispatch(reset())
         }
     }, [isError, isSuccess, message])
@@ -121,7 +117,65 @@ const CreateNewSupervisor = () => {
                             let values2 = {
                                 ...values,
                             }
-                            dispatch(SupervisorCreate(values2))
+
+                            toast.dismiss()
+                            toast.promise(
+                                dispatch(SupervisorCreate(values2)).then(
+                                    (res) => {
+                                        if (
+                                            res.meta.requestStatus ===
+                                            'rejected'
+                                        ) {
+                                            let responseCheck =
+                                                errorHandler(res)
+                                            throw new Error(responseCheck)
+                                        } else {
+                                            return res.payload.message
+                                        }
+                                    }
+                                ),
+                                {
+                                    loading: 'creating new supervisor',
+                                    success: (data) => `${data}`,
+                                    error: (err) => {
+                                        if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Check your internet connection'
+                                                )
+                                        ) {
+                                            return 'Check Internet Connection'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication required'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Not Authenticated'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication expired'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Authentication Expired'
+                                        } else {
+                                            return `${err}`
+                                        }
+                                    },
+                                }
+                            )
                         }}>
                         {({
                             values,

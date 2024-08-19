@@ -14,15 +14,38 @@ import { MdArrowBack } from 'react-icons/md'
 import { useSelector, useDispatch } from 'react-redux'
 import { Logout, reset } from '../../../store/features/auth/authSlice'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+
 const TopBar = ({ topbarData }) => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     const { user } = useSelector((state) => state.auth)
 
     const onLogout = () => {
-        dispatch(Logout())
-        dispatch(reset())
-        routeNavigate('/auth/signin', { replace: true })
+        toast.dismiss()
+        toast.loading('Logging out. please wait ...')
+
+        //inner logout toast function
+        let handleLogoutToast = () => {
+            toast.dismiss()
+            toast.promise(
+                dispatch(Logout()).then((res) => {
+                    // routeNavigate('/auth/signin', { replace: true })
+                    dispatch(reset())
+                }),
+                {
+                    loading: 'Logging out',
+                    success: (data) => 'Logged out successfully',
+                    error: (err) => {
+                        return 'error while Logging out'
+                    },
+                }
+            )
+        }
+        setTimeout(handleLogoutToast, 3000)
+        // dispatch(Logout())
+
+        // routeNavigate('/auth/signin', { replace: true })
     }
 
     useEffect(() => {
@@ -31,7 +54,6 @@ const TopBar = ({ topbarData }) => {
 
     return (
         <Container
-           
             direction='row'
             h='56px'
             alignItems='center'

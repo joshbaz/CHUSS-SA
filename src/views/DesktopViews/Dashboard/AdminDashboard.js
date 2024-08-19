@@ -41,7 +41,7 @@ import {
     allFacilitators,
     allLoginActivities,
 } from '../../../store/features/facilitators/facilitatorSlice'
-import { Logout, reset as areset } from '../../../store/features/auth/authSlice'
+import { reset as areset } from '../../../store/features/auth/authSlice'
 import { allOpponents } from '../../../store/features/opponents/opponentSlice'
 import { allExaminers } from '../../../store/features/Examiner/examinerSlice'
 import { allSupervisors } from '../../../store/features/supervisors/supervisorSlice'
@@ -51,6 +51,11 @@ import AdminLineGraph from '../../../components/Dashboard/Graph/AdminLineGraph'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 //import { ThreeDots } from 'react-loader-spinner'
 import toast from 'react-hot-toast'
+
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 
 const tiledata = [
     {
@@ -135,92 +140,86 @@ const AdminDashboard = () => {
 
     //websocket trial
     React.useEffect(() => {
+ 
+        //Toast
         toast.promise(
             dispatch(getAllProjects())
                 .then((res) => {
-                    console.log('res', res)
+                    //console.log('res', res)
                     if (res.meta.requestStatus === 'rejected') {
-                        if (res.payload.includes('ECONNREFUSED')) {
-                            throw new Error('Check your internet connection')
-                        } else {
-                            let errorMessage = res.payload
-                            throw new Error(errorMessage)
-                        }
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
                     } else {
                         return dispatch(allOpponents())
                     }
                 })
                 .then((res) => {
                     if (res.meta.requestStatus === 'rejected') {
-                        if (res.payload.includes('ECONNREFUSED')) {
-                            throw new Error('Check your internet connection')
-                        } else {
-                            let errorMessage = res.payload
-                            throw new Error(errorMessage)
-                        }
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
                     } else {
                         return dispatch(allExaminers())
                     }
                 })
                 .then((res) => {
                     if (res.meta.requestStatus === 'rejected') {
-                        if (res.payload.includes('ECONNREFUSED')) {
-                            throw new Error('Check your internet connection')
-                        } else {
-                            let errorMessage = res.payload
-                            throw new Error(errorMessage)
-                        }
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
                     } else {
                         return dispatch(allSupervisors())
                     }
                 })
                 .then((res) => {
                     if (res.meta.requestStatus === 'rejected') {
-                        if (res.payload.includes('ECONNREFUSED')) {
-                            throw new Error('Check your internet connection')
-                        } else {
-                            let errorMessage = res.payload
-                            throw new Error(errorMessage)
-                        }
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
                     } else {
                         return dispatch(tagGetAll())
                     }
                 })
                 .then((res) => {
                     if (res.meta.requestStatus === 'rejected') {
-                        if (res.payload.includes('ECONNREFUSED')) {
-                            throw new Error('Check your internet connection')
-                        } else {
-                            let errorMessage = res.payload
-                            throw new Error(errorMessage)
-                        }
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
                     } else {
                         return dispatch(allFacilitators())
                     }
                 })
                 .then((res) => {
                     if (res.meta.requestStatus === 'rejected') {
-                        if (res.payload.includes('ECONNREFUSED')) {
-                            throw new Error('Check your internet connection')
-                        } else {
-                            let errorMessage = res.payload
-                            throw new Error(errorMessage)
-                        }
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
                     } else {
                         return dispatch(allLoginActivities())
+                    }
+                }).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
                     }
                 }),
             {
                 loading: 'Retrieving Information',
                 success: (data) => `Successfully retrieved`,
                 error: (err) => {
-                    console.log(err)
                     if (
                         err
                             .toString()
                             .includes('Check your internet connection')
                     ) {
                         return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(()=>handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(()=>handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
                     } else {
                         return `${err}`
                     }
@@ -235,6 +234,8 @@ const AdminDashboard = () => {
         // dispatch(allFacilitators())
         // dispatch(allLoginActivities())
         //checkout finally
+
+        /** run socket.io update Administrator **/
         const io = initSocketConnection()
         io.on('updatestudent', (data) => {
             if (data.actions === 'update-all-student') {
@@ -242,42 +243,24 @@ const AdminDashboard = () => {
                     dispatch(getAllProjects())
                         .then((res) => {
                             if (res.meta.requestStatus === 'rejected') {
-                                if (res.payload.includes('ECONNREFUSED')) {
-                                    throw new Error(
-                                        'Check your internet connection'
-                                    )
-                                } else {
-                                    let errorMessage = res.payload
-                                    throw new Error(errorMessage)
-                                }
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
                             } else {
                                 return dispatch(allOpponents())
                             }
                         })
                         .then((res) => {
                             if (res.meta.requestStatus === 'rejected') {
-                                if (res.payload.includes('ECONNREFUSED')) {
-                                    throw new Error(
-                                        'Check your internet connection'
-                                    )
-                                } else {
-                                    let errorMessage = res.payload
-                                    throw new Error(errorMessage)
-                                }
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
                             } else {
                                 return dispatch(allExaminers())
                             }
                         })
                         .then((res) => {
                             if (res.meta.requestStatus === 'rejected') {
-                                if (res.payload.includes('ECONNREFUSED')) {
-                                    throw new Error(
-                                        'Check your internet connection'
-                                    )
-                                } else {
-                                    let errorMessage = res.payload
-                                    throw new Error(errorMessage)
-                                }
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
                             } else {
                                 return dispatch(allSupervisors())
                             }
@@ -286,36 +269,47 @@ const AdminDashboard = () => {
                         loading: 'updating Information',
                         success: (data) => `Successfully updated`,
                         error: (err) => {
-                            console.log(err)
                             if (
                                 err
                                     .toString()
                                     .includes('Check your internet connection')
                             ) {
                                 return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(()=>handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(()=>handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
                             } else {
                                 return `${err}`
                             }
                         },
+                    },
+                    {
+                        position: 'bottom-right',
                     }
                 )
             }
         })
 
+        /** run socket.io update Administrator **/
         io.on('updatedAdmin', (data) => {
             if (data.actions === 'update-admin') {
                 //dispatch(tagGetAll())
                 toast.promise(
                     dispatch(allFacilitators()).then((res) => {
                         if (res.meta.requestStatus === 'rejected') {
-                            if (res.payload.includes('ECONNREFUSED')) {
-                                throw new Error(
-                                    'Check your internet connection'
-                                )
-                            } else {
-                                let errorMessage = res.payload
-                                throw new Error(errorMessage)
-                            }
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
                         } else {
                             return dispatch(allLoginActivities())
                         }
@@ -324,17 +318,33 @@ const AdminDashboard = () => {
                         loading: 'updating Information',
                         success: (data) => `Successfully updated`,
                         error: (err) => {
-                            console.log(err)
                             if (
                                 err
                                     .toString()
                                     .includes('Check your internet connection')
                             ) {
                                 return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(()=>handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(()=>handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
                             } else {
                                 return `${err}`
                             }
                         },
+                    },
+                    {
+                        position: 'bottom-right',
                     }
                 )
             }
@@ -342,7 +352,7 @@ const AdminDashboard = () => {
 
         return () => {
             io.disconnect()
-            toast.dismiss()
+            //toast.dismiss()
         }
     }, [])
 
@@ -359,45 +369,26 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         if (isError) {
-            // Toasts({
-            //     position: 'top',
-            //     title: message,
-            //     status: 'error',
-            //     duration: 10000,
-            //     isClosable: true,
-            // })
+            
 
             if (message === 'Not authenticated') {
-                dispatch(Logout())
-                dispatch(areset())
-                routeNavigate('/auth/signin', { replace: true })
+                // dispatch(Logout())
+                // dispatch(areset())
+                // routeNavigate('/auth/signin', { replace: true })
             } else {
             }
 
             dispatch(reset())
+            dispatch(areset())
         }
 
-        // if (isSuccess) {
-        //     Toasts({
-        //         position: 'top',
-        //         title:'collected data',
-        //         status: 'success',
-        //         duration: 10000,
-        //         isClosable: true,
-        //     })
-        // }
+        
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess, isError, message])
 
     useEffect(() => {
         if (facilitatorState.isError) {
-            // Toasts({
-            //     position: 'top',
-            //     title: facilitatorState.message,
-            //     status: 'error',
-            //     duration: 10000,
-            //     isClosable: true,
-            // })
+           
 
             dispatch(freset())
         }

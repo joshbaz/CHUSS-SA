@@ -18,8 +18,17 @@ import {
     getIndividualProject,
     reset as preset,
 } from '../../../../store/features/project/projectSlice'
+import { reset as areset } from '../../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
 import SupervisorADetailForm from '../../../../components/ProjectComponents/AssignSupervisors/SupervisorA_DetailForm'
 import { dashboardLightTheme } from '../../../../theme/dashboard_theme'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -29,7 +38,7 @@ const CreateProjectSupervisor = () => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     let routeNavigate = useNavigate()
     let params = useParams()
-    let toast = useToast()
+    //let toast = useToast()
     let dispatch = useDispatch()
     const { isError, isSuccess, message } = useSelector(
         (state) => state.supervisor
@@ -38,7 +47,44 @@ const CreateProjectSupervisor = () => {
     useEffect(() => {
         if (params.pid) {
             setProjectId(params.pid)
-            dispatch(getIndividualProject(params.pid))
+
+            toast.dismiss()
+            toast.promise(
+                dispatch(getIndividualProject(params.pid)).then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'Retrieving Information',
+                    success: (data) => `Successfully retrieved`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }, [])
 
@@ -47,27 +93,16 @@ const CreateProjectSupervisor = () => {
             if (helperFunctions !== null) {
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
+                dispatch(areset())
+                dispatch(reset())
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
 
+            dispatch(areset())
             dispatch(reset())
         }
 
         if (isSuccess && message) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
@@ -77,6 +112,7 @@ const CreateProjectSupervisor = () => {
                 setHelperFunctions(null)
             }
             dispatch(reset())
+            dispatch(areset())
         }
     }, [isError, isSuccess, message])
 
@@ -86,17 +122,12 @@ const CreateProjectSupervisor = () => {
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
             }
-            toast({
-                position: 'top',
-                title: IndividualProject.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
 
             dispatch(preset())
+            dispatch(areset())
         }
-         dispatch(preset())
+        dispatch(preset())
+        dispatch(areset())
     }, [
         IndividualProject.isError,
         IndividualProject.isSuccess,
@@ -163,7 +194,65 @@ const CreateProjectSupervisor = () => {
                                 ...values,
                                 projectId,
                             }
-                            dispatch(projectSupervisorCreate(values2))
+
+                            toast.dismiss()
+                            toast.promise(
+                                dispatch(projectSupervisorCreate(values2)).then(
+                                    (res) => {
+                                        if (
+                                            res.meta.requestStatus ===
+                                            'rejected'
+                                        ) {
+                                            let responseCheck =
+                                                errorHandler(res)
+                                            throw new Error(responseCheck)
+                                        } else {
+                                            return res.payload.message
+                                        }
+                                    }
+                                ),
+                                {
+                                    loading: 'creating and assigning new supervisor to student',
+                                    success: (data) => `${data}`,
+                                    error: (err) => {
+                                        if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Check your internet connection'
+                                                )
+                                        ) {
+                                            return 'Check Internet Connection'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication required'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Not Authenticated'
+                                        } else if (
+                                            err
+                                                .toString()
+                                                .includes(
+                                                    'Authentication expired'
+                                                )
+                                        ) {
+                                            setTimeout(
+                                                () => handleLogout(dispatch),
+                                                3000
+                                            )
+                                            return 'Authentication Expired'
+                                        } else {
+                                            return `${err}`
+                                        }
+                                    },
+                                }
+                            )
                         }}>
                         {({
                             values,

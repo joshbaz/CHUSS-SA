@@ -8,7 +8,6 @@ import {
     Input,
     InputGroup,
     InputRightElement,
-    useToast,
     Modal,
     ModalOverlay,
     ModalContent,
@@ -29,6 +28,10 @@ import {
     reset,
 } from '../../../store/features/supervisors/supervisorSlice'
 
+import { Logout, reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+
 const MastersProjectDetails = ({ values, rlink }) => {
     const [removeActive, setRemoveActive] = React.useState(false)
     const [removeDetails, setRemoveDetails] = React.useState(null)
@@ -39,10 +42,58 @@ const MastersProjectDetails = ({ values, rlink }) => {
     const [fullAdm, setFullAdm] = React.useState(null)
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let toast = useToast()
+    // let toast = useToast()
     let { isSuccess, message, isError } = useSelector(
         (state) => state.supervisor
     )
+
+    /** error handler for toast response */
+    let errorHandler = (errorResponse) => {
+        if (errorResponse.payload.includes('ECONNREFUSED')) {
+            return 'Check your internet connection'
+        } else if (errorResponse.payload.includes('jwt expired')) {
+            return 'Authentication expired'
+        } else if (
+            errorResponse.payload.includes('jwt malformed') ||
+            errorResponse.payload.includes('invalid token')
+        ) {
+            return 'Authentication expired'
+        } else if (errorResponse.payload.includes('Not authenticated')) {
+            return 'Authentication required'
+        } else if (errorResponse.payload.includes('Not authorized')) {
+            return 'Authentication required'
+        } else {
+            let errorMessage = errorResponse.payload
+            return errorMessage
+        }
+    }
+
+    //function to handle smooth Logout
+    let handleLogout = () => {
+        toast.dismiss()
+
+        toast.loading('Logging out. please wait...')
+
+        //inner logout toast function
+        let handleLogoutToast = () => {
+            toast.dismiss()
+            toast.promise(
+                dispatch(Logout()).then((res) => {
+                    // routeNavigate('/auth/signin', { replace: true })
+                }),
+                {
+                    loading: 'Logging out',
+                    success: (data) => 'Logged out successfully',
+                    error: (err) => {
+                        return 'error while Logging out'
+                    },
+                }
+            )
+        }
+
+        setTimeout(handleLogoutToast, 3000)
+    }
+
     const handleRemove = (supId, nam, title) => {
         if (values._id && supId) {
             let rvalues = {
@@ -57,8 +108,44 @@ const MastersProjectDetails = ({ values, rlink }) => {
 
     const onRemoveUpload = () => {
         if (removeDetails.projectId && removeDetails.supId) {
-            dispatch(supervisorRemove(removeDetails))
             setIsSubmittingp(true)
+            toast.dismiss()
+            toast.promise(
+                dispatch(supervisorRemove(removeDetails)).then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'removing supervisor',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
@@ -73,23 +160,26 @@ const MastersProjectDetails = ({ values, rlink }) => {
         if (isError && isSubmittingp) {
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
         if (isSuccess && isSubmittingp && message) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
+            // toast({
+            //     position: 'top',
+            //     title: message.message,
+            //     status: 'success',
+            //     duration: 10000,
+            //     isClosable: true,
+            // })
             setIsSubmittingp(false)
             setRemoveActive(false)
             setRemoveDetails(null)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         dispatch(reset())
+        dispatch(areset())
     }, [isSuccess, message])
 
     React.useEffect(() => {
@@ -137,7 +227,7 @@ const MastersProjectDetails = ({ values, rlink }) => {
                     alignItems='center'
                     justifyContent='space-between'>
                     <Box>
-                        <h1>Project Details</h1>
+                        <h1>Thesis Details</h1>
                     </Box>
                 </Stack>
 

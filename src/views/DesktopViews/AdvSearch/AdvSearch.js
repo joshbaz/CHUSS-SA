@@ -9,7 +9,6 @@ import {
     Input,
     InputLeftElement,
     Text,
-    useToast,
     Modal,
     ModalOverlay,
     ModalContent,
@@ -50,6 +49,15 @@ import { MdTableView } from 'react-icons/md'
 import AdvStudentTable from '../../../components/AdvSearchItems/AdvStudentTable'
 import AdvReportTable from '../../../components/AdvSearchItems/AdvReportTable'
 import AdvExaminerTable from '../../../components/AdvSearchItems/AdvExaminerTable'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 
 const dataModels = [
     {
@@ -139,12 +147,72 @@ const AdvSearch = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     let dispatch = useDispatch()
-    let toast = useToast()
+
     React.useEffect(() => {
-        dispatch(getAllProjects())
-        dispatch(allExaminers())
-        dispatch(getAllExaminerReports())
-        dispatch(tagGetAll())
+        toast.dismiss()
+        toast.promise(
+            dispatch(getAllProjects())
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(allExaminers())
+                    }
+                })
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getAllExaminerReports())
+                    }
+                })
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(tagGetAll())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }, [])
 
     let { allprojects } = useSelector((state) => state.project)
@@ -155,15 +223,8 @@ const AdvSearch = () => {
 
     useEffect(() => {
         if (tagsData.isError) {
-            toast({
-                position: 'top',
-                title: tagsData.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
             dispatch(treset())
+            dispatch(areset())
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])

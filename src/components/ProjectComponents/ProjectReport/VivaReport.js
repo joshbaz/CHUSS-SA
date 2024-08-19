@@ -14,7 +14,6 @@ import {
     InputGroup,
     InputRightElement,
     useDisclosure,
-    useToast,
     Menu,
     MenuButton,
     MenuList,
@@ -46,6 +45,14 @@ import {
     tagCreate,
 } from '../../../store/features/tags/tagSlice'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 import { FiCheck } from 'react-icons/fi'
 import VivaPopupFileUpload from './VivaPopupFileUpload'
 import VivaPopupDefense from './VivaPopupDefense'
@@ -57,12 +64,7 @@ import * as yup from 'yup'
 import { SketchPicker } from 'react-color'
 import { BASE_API_2 } from '../../../utils/base_url.config'
 
-const VivaReport = ({
-    values = null,
-    allTagData,
-    nameValues = 'joshua',
-    type,
-}) => {
+const VivaReport = ({ values = null, allTagData, nameValues, type }) => {
     const [helperFunctions, setHelperFunctions] = React.useState(null)
     const [selectedView, setSelectedView] = React.useState('grid')
     const [colorPicked, setColorPicked] = React.useState({ hex: '' })
@@ -96,7 +98,7 @@ const VivaReport = ({
     const [isViewFile, setIsViewFile] = React.useState(false)
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
-    let toast = useToast()
+
     let { isSuccess, isError, message } = useSelector((state) => state.project)
     let opponentCase = useSelector((state) => state.opponent)
     let tagGStates = useSelector((state) => state.tag)
@@ -147,36 +149,6 @@ const VivaReport = ({
         setProjectTagData(allInfoData)
     }, [allTagData, values])
 
-    /** handle popup defense submit */
-    // const handleDefenseSubmit = () => {
-    //     setIsSubmittingp(true)
-    //     let allValues = {
-    //         //items: selectedExaminers,
-    //         projectId,
-    //     }
-    //     //dispatch(assignOpponent(allValues))
-    // }
-
-    /** handle popup viva files submit */
-    // const handleFilesSubmit = () => {
-    //     setIsSubmittingp(true)
-    //     let allValues = {
-    //         //items: selectedExaminers,
-    //         projectId,
-    //     }
-    //     // dispatch(assignOpponent(allValues))
-    // }
-
-    /** handle popup status submit */
-    // const handleStatusSubmit = () => {
-    //     setIsSubmittingp(true)
-    //     let allValues = {
-    //         // items: selectedExaminers,
-    //         projectId,
-    //     }
-    //     //dispatch(assignOpponent(allValues))
-    // }
-
     /**
      * function to update status change
      *
@@ -204,7 +176,6 @@ const VivaReport = ({
 
     let validate = (values) => {
         const errors = {}
-
         return errors
     }
 
@@ -221,37 +192,21 @@ const VivaReport = ({
     /**
      * function to cancel submit change
      */
-
     const cancelStatusChange = () => {
         setChangeMade(false)
         setIsSubmittingp(false)
         onClose()
     }
-
     /** run after submission awaiting for response */
     React.useEffect(() => {
         if (isError && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChangeMade(false)
-
+            dispatch(areset())
             dispatch(reset())
         }
 
         if (isSuccess && isSubmittingp && message) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChangeMade(false)
             onClose()
@@ -260,66 +215,86 @@ const VivaReport = ({
             setRemoveDetails(null)
         }
         dispatch(reset())
+        dispatch(areset())
     }, [isError, isSuccess, message, dispatch])
 
     //tag responses
     React.useEffect(() => {
         if (tagGStates.isError && isSubmittingp) {
-            // toast({
-            //     position: 'top',
-            //     title: message.message,
-            //     status: 'error',
-            //     duration: 10000,
-            //     isClosable: true,
-            // })
             setIsSubmittingp(false)
             setChangeMade(false)
-
             dispatch(treset())
-
+            dispatch(areset())
             if (helperFunctions !== null) {
                 helperFunctions.setSubmitting(false)
             }
         }
 
         if (tagGStates.isSuccess && tagGStates.message) {
-            toast({
-                position: 'top',
-                title: tagGStates.message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChangeMade(false)
             onClose()
+            dispatch(areset())
             dispatch(treset())
-
             if (newStatusPopup) {
                 handleCloseNewStatusPopup()
             }
-
             if (helperFunctions !== null) {
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setHelperFunctions(null)
             }
         }
+        dispatch(areset())
         dispatch(treset())
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tagGStates.isError, tagGStates.isSuccess, tagGStates.message, dispatch])
 
-    /** submittion of the changes */
-    /** submittion of the changes */
+    /** submission of the changes */
     React.useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-            dispatch(
-                updateProjectStatus({
-                    ...newActiveStatus,
-                    projectId,
-                })
-            )
             //setIsSubmittingp(false)
+            toast.dismiss()
+            toast.promise(
+                dispatch(
+                    updateProjectStatus({
+                        ...newActiveStatus,
+                        projectId,
+                    })
+                ).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'updating status information',
+                    success: (data) => `Successfully updated`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
 
         if (Object.keys(errors).length > 0 && isSubmittingp && changeMade) {
@@ -395,16 +370,50 @@ const VivaReport = ({
 
     const onRemoveUpload = () => {
         if (removeDetails.projectId && removeDetails.fId) {
-            dispatch(removeViFiles(removeDetails))
+            
             setIsSubmittingp(true)
+            toast.dismiss()
+            toast.promise(
+                dispatch(removeViFiles(removeDetails)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'deleting files',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
     const cancelRemoveUpload = () => {
         setRemoveActive(false)
         setRemoveDetails(null)
-
-        // onClose()
     }
 
     /** remove opponent */
@@ -423,42 +432,61 @@ const VivaReport = ({
 
     const onRemoveUpload2 = () => {
         if (removeDetails2.projectId && removeDetails2.exId) {
-            dispatch(removeProjectOpponent(removeDetails2))
+            
             setIsSubmittingp(true)
+            toast.dismiss()
+            toast.promise(
+                dispatch(removeProjectOpponent(removeDetails2)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'removing opponent from student',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(handleLogout, 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         }
     }
 
     const cancelRemoveUpload2 = () => {
         setRemoveActive2(false)
         setRemoveDetails2(null)
-
-        // onClose()
     }
 
     /** awaiting response after submission of delete opponent */
     React.useEffect(() => {
         if (opponentCase.isError && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: opponentCase.message.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChangeMade(false)
-
             dispatch(rpreset())
         }
 
         if (opponentCase.isSuccess && isSubmittingp && opponentCase.message) {
-            toast({
-                position: 'top',
-                title: opponentCase.message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChangeMade(false)
             onClose()
@@ -501,7 +529,6 @@ const VivaReport = ({
 
     return (
         <Container>
-            {' '}
             <Box className='form_container'>
                 {/** form title */}
                 <Stack
@@ -540,8 +567,6 @@ const VivaReport = ({
                         </Box>
                     </Stack>
                 </Stack>
-
-                {/** details */}
                 {/** details */}
                 <Stack>
                     <Stack
@@ -787,9 +812,7 @@ const VivaReport = ({
                             </Stack>
                         </Stack>
                     </Stack>
-
                     {/** files */}
-
                     <Stack
                         h='100%'
                         p='30px 20px'
@@ -801,7 +824,6 @@ const VivaReport = ({
                             <Box className='form_subtitle'>
                                 <h1> Files</h1>
                             </Box>
-
                             <Stack spacing={'8px'}>
                                 {filesList.length > 0 ? (
                                     <Box>
@@ -818,7 +840,6 @@ const VivaReport = ({
                                                                     .fileSize
                                                             )
                                                         )
-
                                                         let createdDates =
                                                             Moments(
                                                                 data.fileId
@@ -1438,7 +1459,68 @@ const VivaReport = ({
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
-                                dispatch(tagCreate(values))
+                                
+                                toast.dismiss()
+                                     toast.promise(
+                                         dispatch(tagCreate(values)).then(
+                                             (res) => {
+                                                 if (
+                                                     res.meta.requestStatus ===
+                                                     'rejected'
+                                                 ) {
+                                                     let responseCheck =
+                                                         errorHandler(res)
+                                                     throw new Error(
+                                                         responseCheck
+                                                     )
+                                                 } else {
+                                                     return res.payload.message
+                                                 }
+                                             }
+                                         ),
+                                         {
+                                             loading:
+                                                 'creating new status',
+                                             success: (data) => `${data}`,
+                                             error: (err) => {
+                                                 if (
+                                                     err
+                                                         .toString()
+                                                         .includes(
+                                                             'Check your internet connection'
+                                                         )
+                                                 ) {
+                                                     return 'Check Internet Connection'
+                                                 } else if (
+                                                     err
+                                                         .toString()
+                                                         .includes(
+                                                             'Authentication required'
+                                                         )
+                                                 ) {
+                                                     setTimeout(
+                                                         handleLogout,
+                                                         3000
+                                                     )
+                                                     return 'Not Authenticated'
+                                                 } else if (
+                                                     err
+                                                         .toString()
+                                                         .includes(
+                                                             'Authentication expired'
+                                                         )
+                                                 ) {
+                                                     setTimeout(
+                                                         handleLogout,
+                                                         3000
+                                                     )
+                                                     return 'Authentication Expired'
+                                                 } else {
+                                                     return `${err}`
+                                                 }
+                                             },
+                                         }
+                                     )
                             }}>
                             {({
                                 values,
@@ -1880,7 +1962,6 @@ const Container = styled(Box)`
         aling-items: center;
     }
 `
-
 const EditIcon = styled(Box)`
     width: 24px;
     height: 24px;
@@ -1893,7 +1974,6 @@ const EditIcon = styled(Box)`
     color: #464f60;
     font-size: 14px;
 `
-
 const FileStack = styled(Stack)`
     .icon_wrap {
         display: flex;
@@ -1949,7 +2029,6 @@ const FileStack = styled(Stack)`
         line-height: 20px;
     }
 `
-
 const StatusItem = styled(Stack)`
     border-radius: 4px;
 
@@ -2076,7 +2155,6 @@ const PopupForm = styled(Stack)`
         }
     }
 `
-
 const StatusChangeItem = styled(Stack)`
     border-radius: 4px;
 
@@ -2104,7 +2182,6 @@ const StatusChangeItem = styled(Stack)`
         background: #f8a5a9;
     }
 `
-
 const SubmitButton = styled(Box)`
     width: 126px;
     height: 32px;
@@ -2120,7 +2197,6 @@ const SubmitButton = styled(Box)`
     font-size: 14px;
     line-height: 20px;
 `
-
 const NewStatusBtnStack = styled(Stack)`
     button {
         font-family: 'Inter', sans-serif;

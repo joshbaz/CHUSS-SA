@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import paymentService from './paymentService'
-import authService from '../auth/authService'
+//import authService from '../auth/authService'
 const getToken = localStorage.getItem('_tk')
 
 /** initial State */
@@ -39,8 +39,8 @@ export const updatePayment = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                 await authService.logout()
-                window.location.reload()
+                //  await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)
@@ -67,8 +67,8 @@ export const getPaginatedPayments = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                 await authService.logout()
-                window.location.reload()
+                //  await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -95,8 +95,8 @@ export const getSinglePayment = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                 await authService.logout()
-                window.location.reload()
+                //  await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -123,8 +123,8 @@ export const getAllPayments = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                 await authService.logout()
-                window.location.reload()
+                //  await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)

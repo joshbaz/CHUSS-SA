@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import reportService from './reportService'
-import authService from '../auth/authService'
+//import authService from '../auth/authService'
 const getToken = localStorage.getItem('_tk')
 
 let initialState = {
@@ -46,8 +46,8 @@ export const updateExaminerReport = createAsyncThunk(
                 updateAttempt.message === 'Not authenticated' ||
                 updateAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(updateAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(updateAttempt.message)
@@ -75,8 +75,8 @@ export const getExaminerReport = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -104,8 +104,8 @@ export const getAllExaminerReports = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -133,8 +133,8 @@ export const removeExRpfiles = createAsyncThunk(
                 removeAttempt.message === 'Not authenticated' ||
                 removeAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(removeAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(removeAttempt.message)
@@ -162,8 +162,8 @@ export const getReportStats = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -191,8 +191,8 @@ export const getReportReminders = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)
@@ -220,8 +220,8 @@ export const getLateReports = createAsyncThunk(
                 getAttempt.message === 'Not authenticated' ||
                 getAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.reload()
+                // await authService.logout()
+                // window.location.reload()
                 return thunkAPI.rejectWithValue(getAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(getAttempt.message)

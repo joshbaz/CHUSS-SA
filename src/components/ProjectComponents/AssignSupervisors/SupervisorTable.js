@@ -41,8 +41,6 @@ const SupervisorTable = ({
     setAllDisplayData,
     perPage,
 }) => {
-    useEffect(() => {}, [])
-
     const handleCheckChange = (e, dataCollected) => {
         e.preventDefault()
 

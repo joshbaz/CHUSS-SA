@@ -14,7 +14,6 @@ import {
     Input,
     InputLeftElement,
     Text,
-    useToast,
     SimpleGrid,
     Select,
 } from '@chakra-ui/react'
@@ -48,370 +47,406 @@ import {
     tagGetAll,
 } from '../../../store/features/tags/tagSlice'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 //import FacilitatorTable from '../../../components/Facilitators/AllFacilitators/FacilitatorTable'
 //import { initSocketConnection } from '../../../socketio.service'
-
 
 import LateReportTable from './LateReportTable'
 
 const ViewLateReports = () => {
-     const [filterSearchOption, setFilterSearchOption] =
-         React.useState('Student Name')
-     const [searchWord, setSearchWord] = React.useState('')
-     const [searchStatus, setSearchStatus] = React.useState('')
-     const [exportData, setExportData] = React.useState([])
-     const filterItems = [
-         {
-             title: 'Student Name',
-         },
-         {
-             title: 'topic',
-         },
-         {
-             title: 'Examiner Name',
-         },
+    const [filterSearchOption, setFilterSearchOption] =
+        React.useState('Student Name')
+    const [searchWord, setSearchWord] = React.useState('')
+    const [searchStatus, setSearchStatus] = React.useState('')
+    const [exportData, setExportData] = React.useState([])
+    const filterItems = [
+        {
+            title: 'Student Name',
+        },
+        {
+            title: 'topic',
+        },
+        {
+            title: 'Examiner Name',
+        },
 
-         {
-             title: 'Report Status',
-         },
-     ]
-     const [filterInfo, setFilterInfo] = React.useState([])
+        {
+            title: 'Report Status',
+        },
+    ]
+    const [filterInfo, setFilterInfo] = React.useState([])
 
-     const [searchActive, setSearchActive] = React.useState(false)
+    const [searchActive, setSearchActive] = React.useState(false)
 
-     /** handle search option change */
-     const handleSearchOptionChange = (valuet) => {
-         setSearchWord('')
-         setSearchStatus('')
-         setFilterSearchOption(valuet)
-     }
+    /** handle search option change */
+    const handleSearchOptionChange = (valuet) => {
+        setSearchWord('')
+        setSearchStatus('')
+        setFilterSearchOption(valuet)
+    }
 
-     /** handle status changes */
-     /** function to add a search status */
-     const handleSearchStatusChange = (e) => {
-         e.preventDefault()
+    /** handle status changes */
+    /** function to add a search status */
+    const handleSearchStatusChange = (e) => {
+        e.preventDefault()
 
-         setSearchStatus(e.target.value.toLowerCase())
-     }
+        setSearchStatus(e.target.value.toLowerCase())
+    }
 
-     const handleSearchInput = (e) => {
-         e.preventDefault()
+    const handleSearchInput = (e) => {
+        e.preventDefault()
 
-         let value = e.target.value || ''
-         setSearchWord(value.toLowerCase())
-         // let filterSelected = {
-         //     title: filterSearchOption,
-         //     searchfor: e.target.value,
-         // }
-         // setFilterInfo([...filterInfo, filterSelected])
-     }
+        let value = e.target.value || ''
+        setSearchWord(value.toLowerCase())
+        // let filterSelected = {
+        //     title: filterSearchOption,
+        //     searchfor: e.target.value,
+        // }
+        // setFilterInfo([...filterInfo, filterSelected])
+    }
 
-     const handleSubmitFilter = () => {
-         /** search word */
-         if (searchWord) {
-             if (filterInfo.length > 0) {
-                 let newFilterInfo = [...filterInfo]
+    const handleSubmitFilter = () => {
+        /** search word */
+        if (searchWord) {
+            if (filterInfo.length > 0) {
+                let newFilterInfo = [...filterInfo]
 
-                 for (let i = 0; i < newFilterInfo.length; i++) {
-                     let iteration = i + 1
+                for (let i = 0; i < newFilterInfo.length; i++) {
+                    let iteration = i + 1
 
-                     if (newFilterInfo[i].title === filterSearchOption) {
-                         if (newFilterInfo[i].searchfor.includes(searchWord)) {
-                             return null
-                         } else {
-                             let filterSelected = {
-                                 title: filterSearchOption,
-                                 searchfor: [
-                                     ...newFilterInfo[i].searchfor,
-                                     searchWord,
-                                 ],
-                             }
-                             newFilterInfo.splice(i, 1, filterSelected)
-                             setFilterInfo(newFilterInfo)
-                             setSearchWord('')
-                             return filterSelected
-                         }
-                     } else if (
-                         newFilterInfo[i].title !== filterSearchOption &&
-                         iteration === newFilterInfo.length
-                     ) {
-                         let filterSelected = {
-                             title: filterSearchOption,
-                             searchfor: [searchWord],
-                         }
+                    if (newFilterInfo[i].title === filterSearchOption) {
+                        if (newFilterInfo[i].searchfor.includes(searchWord)) {
+                            return null
+                        } else {
+                            let filterSelected = {
+                                title: filterSearchOption,
+                                searchfor: [
+                                    ...newFilterInfo[i].searchfor,
+                                    searchWord,
+                                ],
+                            }
+                            newFilterInfo.splice(i, 1, filterSelected)
+                            setFilterInfo(newFilterInfo)
+                            setSearchWord('')
+                            return filterSelected
+                        }
+                    } else if (
+                        newFilterInfo[i].title !== filterSearchOption &&
+                        iteration === newFilterInfo.length
+                    ) {
+                        let filterSelected = {
+                            title: filterSearchOption,
+                            searchfor: [searchWord],
+                        }
 
-                         setFilterInfo([...newFilterInfo, filterSelected])
-                         setSearchWord('')
-                     }
-                 }
-             } else {
-                 let filterSelected = {
-                     title: filterSearchOption,
-                     searchfor: [searchWord],
-                 }
+                        setFilterInfo([...newFilterInfo, filterSelected])
+                        setSearchWord('')
+                    }
+                }
+            } else {
+                let filterSelected = {
+                    title: filterSearchOption,
+                    searchfor: [searchWord],
+                }
 
-                 setFilterInfo([...filterInfo, filterSelected])
-                 setSearchWord('')
-                 //setFilterSearchOption('All')
-                 // console.log('filtered Info', filterInfo)
-             }
-         }
+                setFilterInfo([...filterInfo, filterSelected])
+                setSearchWord('')
+                //setFilterSearchOption('All')
+                // console.log('filtered Info', filterInfo)
+            }
+        }
 
-         /** search status */
-         if (searchStatus) {
-             if (filterInfo.length > 0) {
-                 let newFilterInfo = [...filterInfo]
+        /** search status */
+        if (searchStatus) {
+            if (filterInfo.length > 0) {
+                let newFilterInfo = [...filterInfo]
 
-                 for (let i = 0; i < newFilterInfo.length; i++) {
-                     let iteration = i + 1
+                for (let i = 0; i < newFilterInfo.length; i++) {
+                    let iteration = i + 1
 
-                     if (newFilterInfo[i].title === filterSearchOption) {
-                         if (
-                             newFilterInfo[i].searchfor.includes(searchStatus)
-                         ) {
-                             return null
-                         } else {
-                             let filterSelected = {
-                                 title: filterSearchOption,
-                                 searchfor: [
-                                     ...newFilterInfo[i].searchfor,
-                                     searchStatus,
-                                 ],
-                             }
-                             newFilterInfo.splice(i, 1, filterSelected)
-                             setFilterInfo(newFilterInfo)
-                             setSearchWord('')
-                             return filterSelected
-                         }
-                     } else if (
-                         newFilterInfo[i].title !== filterSearchOption &&
-                         iteration === newFilterInfo.length
-                     ) {
-                         let filterSelected = {
-                             title: filterSearchOption,
-                             searchfor: [searchStatus],
-                         }
+                    if (newFilterInfo[i].title === filterSearchOption) {
+                        if (newFilterInfo[i].searchfor.includes(searchStatus)) {
+                            return null
+                        } else {
+                            let filterSelected = {
+                                title: filterSearchOption,
+                                searchfor: [
+                                    ...newFilterInfo[i].searchfor,
+                                    searchStatus,
+                                ],
+                            }
+                            newFilterInfo.splice(i, 1, filterSelected)
+                            setFilterInfo(newFilterInfo)
+                            setSearchWord('')
+                            return filterSelected
+                        }
+                    } else if (
+                        newFilterInfo[i].title !== filterSearchOption &&
+                        iteration === newFilterInfo.length
+                    ) {
+                        let filterSelected = {
+                            title: filterSearchOption,
+                            searchfor: [searchStatus],
+                        }
 
-                         setFilterInfo([...newFilterInfo, filterSelected])
-                         setSearchWord('')
-                     }
-                 }
-             } else {
-                 let filterSelected = {
-                     title: filterSearchOption,
-                     searchfor: [searchStatus],
-                 }
+                        setFilterInfo([...newFilterInfo, filterSelected])
+                        setSearchWord('')
+                    }
+                }
+            } else {
+                let filterSelected = {
+                    title: filterSearchOption,
+                    searchfor: [searchStatus],
+                }
 
-                 setFilterInfo([...filterInfo, filterSelected])
-                 setSearchStatus('')
-                 //setFilterSearchOption('All')
-                 // console.log('filtered Info', filterInfo)
-             }
-         }
-     }
+                setFilterInfo([...filterInfo, filterSelected])
+                setSearchStatus('')
+                //setFilterSearchOption('All')
+                // console.log('filtered Info', filterInfo)
+            }
+        }
+    }
 
-     /** function to set the search active  */
-     const handleSearchActive = () => {
-         if (filterInfo.length > 0) {
-             setSearchActive(true)
-         }
-     }
+    /** function to set the search active  */
+    const handleSearchActive = () => {
+        if (filterInfo.length > 0) {
+            setSearchActive(true)
+        }
+    }
 
-     //this is for the checkbox filter
-     const checkboxesFilter = (title, value) => {
-         if (filterInfo.length > 0) {
-             let newFilterInfo = [...filterInfo]
+    //this is for the checkbox filter
+    const checkboxesFilter = (title, value) => {
+        if (filterInfo.length > 0) {
+            let newFilterInfo = [...filterInfo]
 
-             for (let i = 0; i < newFilterInfo.length; i++) {
-                 let iteration = i + 1
+            for (let i = 0; i < newFilterInfo.length; i++) {
+                let iteration = i + 1
 
-                 if (newFilterInfo[i].title === title) {
-                     //word is found
-                     if (value.length < 1) {
-                         newFilterInfo.splice(i, 1)
-                         return setFilterInfo(newFilterInfo)
-                     } else {
-                         let filterSelected = {
-                             title: title,
-                             searchfor: value,
-                         }
-                         newFilterInfo.splice(i, 1, filterSelected)
-                         setFilterInfo(newFilterInfo)
+                if (newFilterInfo[i].title === title) {
+                    //word is found
+                    if (value.length < 1) {
+                        newFilterInfo.splice(i, 1)
+                        return setFilterInfo(newFilterInfo)
+                    } else {
+                        let filterSelected = {
+                            title: title,
+                            searchfor: value,
+                        }
+                        newFilterInfo.splice(i, 1, filterSelected)
+                        setFilterInfo(newFilterInfo)
 
-                         return filterSelected
-                     }
-                 } else if (
-                     newFilterInfo[i].title !== title &&
-                     iteration === newFilterInfo.length
-                 ) {
-                     let filterSelected = {
-                         title: title,
-                         searchfor: value,
-                     }
+                        return filterSelected
+                    }
+                } else if (
+                    newFilterInfo[i].title !== title &&
+                    iteration === newFilterInfo.length
+                ) {
+                    let filterSelected = {
+                        title: title,
+                        searchfor: value,
+                    }
 
-                     setFilterInfo([...newFilterInfo, filterSelected])
-                 }
-             }
-         } else {
-             let filterSelected = {
-                 title: title,
-                 searchfor: value,
-             }
+                    setFilterInfo([...newFilterInfo, filterSelected])
+                }
+            }
+        } else {
+            let filterSelected = {
+                title: title,
+                searchfor: value,
+            }
 
-             setFilterInfo([...filterInfo, filterSelected])
+            setFilterInfo([...filterInfo, filterSelected])
 
-             //setFilterSearchOption('All')
-             // console.log('filtered Info', filterInfo)
-         }
-     }
+            //setFilterSearchOption('All')
+            // console.log('filtered Info', filterInfo)
+        }
+    }
 
-     const clearAllFilters = () => {
-         setFilterInfo([])
-         setSearchWord('')
-         setSearchStatus('')
-         setSearchActive(false)
-         setFilterSearchOption('Student Name')
-     }
+    const clearAllFilters = () => {
+        setFilterInfo([])
+        setSearchWord('')
+        setSearchStatus('')
+        setSearchActive(false)
+        setFilterSearchOption('Student Name')
+    }
 
-     const handleRemoveFilter = (Info) => {
-         let newFilterInfo = [...filterInfo]
+    const handleRemoveFilter = (Info) => {
+        let newFilterInfo = [...filterInfo]
 
-         newFilterInfo.filter((data, index) => {
-             if (data.title === Info.title) {
-                 newFilterInfo.splice(index, 1)
+        newFilterInfo.filter((data, index) => {
+            if (data.title === Info.title) {
+                newFilterInfo.splice(index, 1)
 
-                 return setFilterInfo([...newFilterInfo])
-             } else {
-                 return null
-             }
-         })
-     }
+                return setFilterInfo([...newFilterInfo])
+            } else {
+                return null
+            }
+        })
+    }
 
-     // let routeNavigate = useNavigate()
-     let dispatch = useDispatch()
+    // let routeNavigate = useNavigate()
+    let dispatch = useDispatch()
 
-     let { allprojects, isError, isSuccess, message } = useSelector(
-         (state) => state.project
-     )
+    let { allprojects, isError, isSuccess, message } = useSelector(
+        (state) => state.project
+    )
 
-     // let examinerCollectedDatas = useSelector((state) => state.examiner)
-     let reportCollectedDatas = useSelector((state) => state.report)
-     const tagsData = useSelector((state) => state.tag)
+    // let examinerCollectedDatas = useSelector((state) => state.examiner)
+    let reportCollectedDatas = useSelector((state) => state.report)
+    const tagsData = useSelector((state) => state.tag)
 
-     //let Location = useLocation()
-     let toast = useToast()
+    //let Location = useLocation()
 
-     useEffect(() => {
-         dispatch(getAllProjects())
-         // dispatch(allExaminers())
-         dispatch(getLateReports())
-         dispatch(tagGetAll())
+    useEffect(() => {
+        // dispatch(allExaminers())
 
-         // const io = initSocketConnection()
-         // io.on('updatedAdmin', (data) => {
-         //     if (data.actions === 'update-admin') {
-         //         //dispatch(tagGetAll())
-         //         dispatch(allFacilitators())
-         //         dispatch(allLoginActivities())
-         //     }
-         // })
-     }, [])
+        toast.dismiss()
+        toast.promise(
+            dispatch(getAllProjects())
+                .then((res) => {
+                    //console.log('res', res)
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getLateReports())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(tagGetAll())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
 
-     useEffect(() => {
-         if (isError) {
-             toast({
-                 position: 'top',
-                 title: message,
-                 status: 'error',
-                 duration: 10000,
-                 isClosable: true,
-             })
+        // const io = initSocketConnection()
+        // io.on('updatedAdmin', (data) => {
+        //     if (data.actions === 'update-admin') {
+        //         //dispatch(tagGetAll())
+        //         dispatch(allFacilitators())
+        //         dispatch(allLoginActivities())
+        //     }
+        // })
+    }, [])
 
-             dispatch(reset())
-         }
+    useEffect(() => {
+        if (isError) {
+            dispatch(reset())
+            dispatch(areset())
+        }
 
-         // if (isSuccess) {
-         //     toast({
-         //         position: 'top',
-         //         title:'collected data',
-         //         status: 'success',
-         //         duration: 10000,
-         //         isClosable: true,
-         //     })
-         // }
-     }, [isSuccess, isError, message])
+        // if (isSuccess) {
+        //     toast({
+        //         position: 'top',
+        //         title:'collected data',
+        //         status: 'success',
+        //         duration: 10000,
+        //         isClosable: true,
+        //     })
+        // }
+    }, [isSuccess, isError, message])
 
-     useEffect(() => {
-         if (tagsData.isError) {
-             toast({
-                 position: 'top',
-                 title: tagsData.message,
-                 status: 'error',
-                 duration: 10000,
-                 isClosable: true,
-             })
+    useEffect(() => {
+        if (tagsData.isError) {
+            dispatch(treset())
+            dispatch(areset())
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
 
-             dispatch(treset())
-         }
-         // eslint-disable-next-line react-hooks/exhaustive-deps
-     }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
+    // useEffect(() => {
+    //     if (examinerCollectedDatas.isError) {
+    //         toast({
+    //             position: 'top',
+    //             title: examinerCollectedDatas.message,
+    //             status: 'error',
+    //             duration: 10000,
+    //             isClosable: true,
+    //         })
 
-     // useEffect(() => {
-     //     if (examinerCollectedDatas.isError) {
-     //         toast({
-     //             position: 'top',
-     //             title: examinerCollectedDatas.message,
-     //             status: 'error',
-     //             duration: 10000,
-     //             isClosable: true,
-     //         })
+    //         dispatch(eReset())
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [
+    //     examinerCollectedDatas.isError,
+    //     examinerCollectedDatas.isSuccess,
+    //     examinerCollectedDatas.message,
+    //     dispatch,
+    // ])
 
-     //         dispatch(eReset())
-     //     }
-     //     // eslint-disable-next-line react-hooks/exhaustive-deps
-     // }, [
-     //     examinerCollectedDatas.isError,
-     //     examinerCollectedDatas.isSuccess,
-     //     examinerCollectedDatas.message,
-     //     dispatch,
-     // ])
+    useEffect(() => {
+        if (reportCollectedDatas.isError) {
+            dispatch(rpReset())
+            dispatch(areset())
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        reportCollectedDatas.isError,
+        reportCollectedDatas.isSuccess,
+        reportCollectedDatas.message,
+        dispatch,
+    ])
 
-     useEffect(() => {
-         if (reportCollectedDatas.isError) {
-             toast({
-                 position: 'top',
-                 title: reportCollectedDatas.message,
-                 status: 'error',
-                 duration: 10000,
-                 isClosable: true,
-             })
+    /** function to select statuses */
+    const TableStatuses = React.useMemo(() => {
+        if (filterSearchOption) {
+            if (filterSearchOption === 'Report Status') {
+                let allInfoData = tagsData.allTagItems.items.filter(
+                    (data, index) => data.table === 'examinerReport'
+                )
 
-             dispatch(rpReset())
-         }
-         // eslint-disable-next-line react-hooks/exhaustive-deps
-     }, [
-         reportCollectedDatas.isError,
-         reportCollectedDatas.isSuccess,
-         reportCollectedDatas.message,
-         dispatch,
-     ])
-
-     /** function to select statuses */
-     const TableStatuses = React.useMemo(() => {
-         if (filterSearchOption) {
-             if (filterSearchOption === 'Report Status') {
-                 let allInfoData = tagsData.allTagItems.items.filter(
-                     (data, index) => data.table === 'examinerReport'
-                 )
-
-                 return allInfoData
-             } else {
-                 return []
-             }
-         } else {
-             return []
-         }
-     }, [tagsData.allTagItems.items, filterSearchOption])
+                return allInfoData
+            } else {
+                return []
+            }
+        } else {
+            return []
+        }
+    }, [tagsData.allTagItems.items, filterSearchOption])
     return (
         <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
@@ -957,4 +992,3 @@ const TableButton = styled(Box)`
         line-height: 20px;
     }
 `
-

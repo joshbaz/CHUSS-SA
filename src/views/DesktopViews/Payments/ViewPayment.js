@@ -18,6 +18,15 @@ import ViewPayExaminerDetails from '../../../components/PaymentComponents/ViewPa
 import ViewPayStudent from '../../../components/PaymentComponents/ViewPayment/ViewPayStudent'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -25,27 +34,56 @@ const ViewPayment = (props) => {
     let routeNavigate = useNavigate()
     let params = useParams()
     let dispatch = useDispatch()
-    let toast = useToast()
 
     useEffect(() => {
         /** dispatch to getSinglePayment */
         let idValues = {
             id: params.id,
         }
-        dispatch(getSinglePayment(idValues))
+
+        toast.dismiss()
+        toast.promise(
+            dispatch(getSinglePayment(idValues)).then((res) => {
+                if (res.meta.requestStatus === 'rejected') {
+                    let responseCheck = errorHandler(res)
+                    throw new Error(responseCheck)
+                } else {
+                    return res.payload.message
+                }
+            }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }, [params.id, dispatch])
     let paymentCase = useSelector((state) => state.payment)
 
     useEffect(() => {
         if (paymentCase.isError) {
-            toast({
-                position: 'top',
-                title: paymentCase.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             dispatch(reset())
+            dispatch(areset())
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [paymentCase.isError, paymentCase.isSuccess, paymentCase.message])

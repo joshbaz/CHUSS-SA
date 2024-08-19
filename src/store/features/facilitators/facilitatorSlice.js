@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import facilitatorService from './facilitatorService'
-import authService from '../auth/authService'
+//import authService from '../auth/authService'
 
 const initialState = {
     allfacilitatorItems: {
@@ -35,8 +35,8 @@ export const facilitatorCreate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.replace('/')
+                // await authService.logout()
+                // window.location.replace('/')
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -61,8 +61,8 @@ export const allFacilitators = createAsyncThunk(
                 allAttempt.message === 'Not authenticated' ||
                 allAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.replace('/')
+                // await authService.logout()
+                // window.location.replace('/')
                 return thunkAPI.rejectWithValue(allAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(allAttempt.message)
@@ -90,8 +90,8 @@ export const facilitatorUpdate = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                 window.location.replace('/')
+                // await authService.logout()
+                //  window.location.replace('/')
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -118,8 +118,8 @@ export const allLoginActivities = createAsyncThunk(
                 allAttempt.message === 'Not authenticated' ||
                 allAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.replace('/')
+                // await authService.logout()
+                // window.location.replace('/')
                 return thunkAPI.rejectWithValue(allAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(allAttempt.message)
@@ -146,8 +146,8 @@ export const facilitatorResetPassword = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.replace('/')
+                // await authService.logout()
+                // window.location.replace('/')
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)
@@ -175,8 +175,8 @@ export const deactivateFacilitator = createAsyncThunk(
                 creationAttempt.message === 'Not authenticated' ||
                 creationAttempt.message === 'jwt malformed'
             ) {
-                await authService.logout()
-                window.location.replace('/')
+                // await authService.logout()
+                // window.location.replace('/')
                 return thunkAPI.rejectWithValue(creationAttempt.message)
             } else {
                 return thunkAPI.rejectWithValue(creationAttempt.message)

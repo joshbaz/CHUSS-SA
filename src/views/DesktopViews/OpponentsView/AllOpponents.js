@@ -36,6 +36,15 @@ import {
 } from '../../../store/features/opponents/opponentSlice'
 import OpponentTable from '../../../components/MExaminerOpponents/AllOpponents/OpponentTable'
 
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const AllOpponents = () => {
     const [filterSearchOption, setFilterSearchOption] =
         React.useState('Examiner Name')
@@ -207,34 +216,53 @@ const AllOpponents = () => {
     let { isSuccess, isError, message } = useSelector((state) => state.opponent)
 
     //let Location = useLocation()
-    let toast = useToast()
 
     useEffect(() => {
-        dispatch(allOpponents())
+        toast.dismiss()
+        toast.promise(
+            dispatch(allOpponents()).then((res) => {
+                if (res.meta.requestStatus === 'rejected') {
+                    let responseCheck = errorHandler(res)
+                    throw new Error(responseCheck)
+                } else {
+                    return res.payload.message
+                }
+            }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }, [])
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
             dispatch(reset())
+            dispatch(areset())
         }
 
-        // if (isSuccess) {
-        //     toast({
-        //         position: 'top',
-        //         title:'collected data',
-        //         status: 'success',
-        //         duration: 10000,
-        //         isClosable: true,
-        //     })
-        // }
+        dispatch(areset())
     }, [isSuccess, isError, message])
 
     return (

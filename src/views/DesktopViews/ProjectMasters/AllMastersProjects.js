@@ -4,26 +4,13 @@ import {
     Box,
     Stack,
     Button,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    MenuOptionGroup,
-    MenuItemOption,
-    InputGroup,
-    Input,
-    InputLeftElement,
     Text,
     SimpleGrid,
-    useToast,
-    Select,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
 import { AiOutlinePlus } from 'react-icons/ai'
-import { IoIosArrowDown, IoIosArrowForward } from 'react-icons/io'
-import { FaFilter } from 'react-icons/fa'
 import { BiSearch } from 'react-icons/bi'
 import { GrClose } from 'react-icons/gr'
 import ProjectTable from '../../../components/ProjectComponents/AllProjects/ProjectTable'
@@ -39,7 +26,23 @@ import {
     reset as treset,
     tagGetAll,
 } from '../../../store/features/tags/tagSlice'
+
+import {
+    allSchools,
+    reset as sreset,
+} from '../../../store/features/schools/schoolSlice'
 import { initSocketConnection } from '../../../socketio.service'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
+import OrdStudentSearch from '../../../components/common/SearhBars/OrdStudentSearch'
+import AdvStudentSearh from '../../../components/common/SearhBars/AdvStudentSearh'
 
 const AllMastersProjects = () => {
     const tagsData = useSelector((state) => state.tag)
@@ -48,6 +51,9 @@ const AllMastersProjects = () => {
     const [searchWord, setSearchWord] = React.useState('')
     const [searchStatus, setSearchStatus] = React.useState('')
     const [exportData, setExportData] = React.useState([])
+    /** button state */
+    const [searchButtonState, setSearchButtonState] =
+        React.useState('DefaultSearch')
     const filterItems = [
         {
             title: 'Student Name',
@@ -64,7 +70,12 @@ const AllMastersProjects = () => {
         {
             title: 'Status',
         },
-
+        {
+            title: 'School',
+        },
+        {
+            title: 'Award',
+        },
         {
             title: 'Topic',
         },
@@ -93,11 +104,11 @@ const AllMastersProjects = () => {
         e.preventDefault()
         let value = e.target.value || ''
         setSearchWord(value.toLowerCase())
-        // let filterSelected = {
-        //     title: filterSearchOption,
-        //     searchfor: e.target.value,
-        // }
-        // setFilterInfo([...filterInfo, filterSelected])
+        if (value !== '' && searchButtonState === 'DefaultSearch') {
+            setSearchActive(() => true)
+        } else if (value === '' && searchButtonState === 'DefaultSearch') {
+            setSearchActive(() => false)
+        }
     }
 
     const handleSubmitFilter = () => {
@@ -282,75 +293,203 @@ const AllMastersProjects = () => {
     let routeNavigate = useNavigate()
     let dispatch = useDispatch()
     let { isError, isSuccess, message } = useSelector((state) => state.project)
+    let { allSchoolItems } = useSelector((state) => state.school)
 
     let Location = useLocation()
-    let toast = useToast()
 
     useEffect(() => {
         let page = Location.search.split('').slice(3).join('')
         let values = {
             page: page,
         }
-
-        dispatch(getPProjects(values))
+        //  dispatch(getPProjects(values))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [Location])
 
     useEffect(() => {
         const io = initSocketConnection()
-        dispatch(tagGetAll())
-        dispatch(getAllProjects())
+        toast.dismiss()
+        toast.promise(
+            dispatch(getAllProjects())
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(tagGetAll())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(allSchools())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
+
         io.on('updatestudent', (data) => {
             if (data.actions === 'update-all-student') {
-                dispatch(tagGetAll())
-                dispatch(getAllProjects())
+                toast.dismiss()
+                toast.promise(
+                    dispatch(getAllProjects())
+                        .then((res) => {
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return dispatch(tagGetAll())
+                            }
+                        })
+                        .then((res) => {
+                            if (res.meta.requestStatus === 'rejected') {
+                                let responseCheck = errorHandler(res)
+                                throw new Error(responseCheck)
+                            } else {
+                                return res.payload.message
+                            }
+                        }),
+                    {
+                        loading: 'updating Information',
+                        success: (data) => `Successfully updated`,
+                        error: (err) => {
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    },
+                    {
+                        position: 'bottom-right',
+                    }
+                )
+
+                // dispatch(tagGetAll())
             }
         })
 
         io.on('updatetag', (data) => {
             if (data.actions === 'update-tag') {
-                dispatch(tagGetAll())
+                toast.dismiss()
+
+                toast.promise(
+                    dispatch(tagGetAll()).then((res) => {
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return 'data collected'
+                        }
+                    }),
+                    {
+                        loading: 'updating Information',
+                        success: (data) => `Successfully updated`,
+                        error: (err) => {
+                            if (
+                                err
+                                    .toString()
+                                    .includes('Check your internet connection')
+                            ) {
+                                return 'Check Internet Connection'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication required')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Not Authenticated'
+                            } else if (
+                                err
+                                    .toString()
+                                    .includes('Authentication expired')
+                            ) {
+                                setTimeout(() => handleLogout(dispatch), 3000)
+                                return 'Authentication Expired'
+                            } else {
+                                return `${err}`
+                            }
+                        },
+                    },
+                    {
+                        position: 'bottom-right',
+                    }
+                )
             }
         })
     }, [])
 
     useEffect(() => {
         if (tagsData.isError) {
-            toast({
-                position: 'top',
-                title: tagsData.message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
             dispatch(treset())
+            dispatch(sreset())
+            dispatch(areset())
         }
+        dispatch(sreset())
+        dispatch(areset())
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tagsData.isError, tagsData.isSuccess, tagsData.message, dispatch])
 
     useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
-
             dispatch(reset())
+            dispatch(sreset())
+            dispatch(areset())
         }
-
-        // if (isSuccess) {
-        //     toast({
-        //         position: 'top',
-        //         title:'collected data',
-        //         status: 'success',
-        //         duration: 10000,
-        //         isClosable: true,
-        //     })
-        // }
+        dispatch(sreset())
+        dispatch(areset())
     }, [isSuccess, isError, message])
 
     /** function to select statuses */
@@ -362,6 +501,64 @@ const AllMastersProjects = () => {
                         data.table === 'project' &&
                         data.projectType === 'Masters'
                 )
+
+                return allInfoData
+            } else if (filterSearchOption === 'School') {
+                let allInfoData = allSchoolItems.items.map((data) => {
+                    return {
+                        tagName: data.schoolName,
+                    }
+                })
+
+                return allInfoData
+            } else if (filterSearchOption === 'Award') {
+                let MaDegreePrograms = [
+                    { title: 'Master of Arts in Gender Studies' },
+                    { title: 'Master of Arts in Human Rights' },
+                    { title: 'Master of Arts in Philosophy ' },
+                    { title: 'Master of Arts in Philosophy in Applied Ethics' },
+                    { title: 'Master of Arts in History' },
+                    { title: 'Master of Arts in Music' },
+                    { title: 'Master of Arts in Peace and Conflict Studies' },
+                    {
+                        title: 'Master of Arts in Religious and Theological Studies(ggaba)',
+                    },
+                    {
+                        title: 'Master of Arts in Religious and Theological Studies(kinyamasika)',
+                    },
+                    { title: 'Master of Arts in Development Studies' },
+                    { title: 'Master of Arts in Literature' },
+                    { title: 'Master of Arts in French Language Studies' },
+                    { title: 'Master of Arts in Journalism and Communication' },
+                    {
+                        title: 'Master of Arts in Strategic and Corporate Communication',
+                    },
+                    { title: 'Master of Arts in Journalism and Multimedia' },
+                    { title: 'Master of Arts in African Languages' },
+                    { title: 'Master of Arts in Linguistics' },
+                    {
+                        title: 'Master of Arts in Public Administration and Management',
+                    },
+                    { title: 'Master of Arts in Sociology' },
+                    {
+                        title: 'Master of Arts in International Relations and Diplomatic Studies',
+                    },
+                    { title: 'Master of Arts in Rural Development' },
+                    { title: 'Master of Arts in Social Work' },
+                    { title: 'Master of Arts in Defense and Security Studies' },
+                    { title: 'Master of Arts in Security and Strategy' },
+                    { title: 'Master of Education in Educational Psychology' },
+                    { title: 'Master of Arts in Organizational Psychology' },
+                    { title: 'Master of Arts in Counselling Psychology' },
+                    { title: 'Master of Science in Clinical Psychology' },
+                    {
+                        title: 'Master of Arts in Social Sector Planning and Management',
+                    },
+                ]
+
+                let allInfoData = MaDegreePrograms.map((data) => ({
+                    tagName: data.title,
+                }))
 
                 return allInfoData
             } else if (filterSearchOption === 'Registration') {
@@ -397,6 +594,22 @@ const AllMastersProjects = () => {
         }
     }, [tagsData.allTagItems.items, filterSearchOption])
 
+    /** handle search change */
+    const handleSearchState = (searchButtonStatus) => {
+        setSearchButtonState(() => searchButtonStatus)
+        if (searchButtonStatus === 'DefaultSearch') {
+            setFilterInfo(() => [])
+            setSearchWord('')
+            setSearchStatus('')
+            setSearchActive(() => false)
+        } else {
+            setFilterInfo([])
+            setSearchWord('')
+            setSearchStatus('')
+            setSearchActive(() => false)
+        }
+    }
+
     return (
         <Container direction='row' w='100vw' spacing={'0px'}>
             <Box w='72px' position='relative'>
@@ -417,258 +630,111 @@ const AllMastersProjects = () => {
                 </Box>
 
                 <Stack direction='column' padding={'0 20px'}>
-                    {/** filter inputs && button */}
-                    <Stack
-                        h='50px'
-                        direction='row'
-                        justifyContent='space-between'
-                        alignItems={'center'}>
-                        {/** filter inputs */}
+                    <Stack direction='column'>
+                        {/** advanced search bar tabs */}
                         <Stack direction='row'>
-                            <Stack
-                                direction='row'
-                                spacing={'5px'}
-                                alignItems='center'>
-                                <Box>
-                                    <Menu closeOnSelect={true}>
-                                        <MenuButton
-                                            h='32px'
-                                            w='188px'
-                                            className='filter_button'
-                                            as={Button}
-                                            variant='solid'
-                                            leftIcon={<FaFilter />}
-                                            rightIcon={<IoIosArrowDown />}>
-                                            {filterSearchOption || 'All'}
-                                        </MenuButton>
-                                        <MenuList>
-                                            {filterItems.map((data, index) => {
-                                                if (data.subItems) {
-                                                    return (
-                                                        <MenuItem
-                                                            padding='0'
-                                                            key={index}
-                                                            w='100%'>
-                                                            <Menu
-                                                                offset={[
-                                                                    225, -40,
-                                                                ]}
-                                                                closeOnSelect={
-                                                                    false
-                                                                }>
-                                                                <MenuButton
-                                                                    borderRadius='none'
-                                                                    _hover={{
-                                                                        bg: 'gray.200',
-                                                                    }}
-                                                                    _expanded={{
-                                                                        bg: 'gray.200',
-                                                                    }}
-                                                                    _focus={{
-                                                                        boxShadow:
-                                                                            'none',
-                                                                    }}
-                                                                    w='100%'
-                                                                    bg='transparent'
-                                                                    className='subfilter_button'
-                                                                    as={Button}
-                                                                    rightIcon={
-                                                                        <IoIosArrowForward />
-                                                                    }>
-                                                                    {data.title}
-                                                                </MenuButton>
-                                                                <MenuList>
-                                                                    <MenuOptionGroup
-                                                                        onChange={(
-                                                                            value
-                                                                        ) => {
-                                                                            checkboxesFilter(
-                                                                                data.title,
-                                                                                value
-                                                                            )
-                                                                        }}
-                                                                        type='checkbox'>
-                                                                        {data.subItems.map(
-                                                                            (
-                                                                                item,
-                                                                                index
-                                                                            ) => (
-                                                                                <MenuItemOption
-                                                                                    className='menu_options'
-                                                                                    key={
-                                                                                        index
-                                                                                    }
-                                                                                    value={
-                                                                                        item
-                                                                                    }>
-                                                                                    {
-                                                                                        item
-                                                                                    }
-                                                                                </MenuItemOption>
-                                                                            )
-                                                                        )}
-                                                                    </MenuOptionGroup>
-                                                                </MenuList>
-                                                            </Menu>
-                                                        </MenuItem>
-                                                    )
-                                                } else {
-                                                    return (
-                                                        <MenuItem
-                                                            key={index}
-                                                            onClick={() =>
-                                                                handleSearchOptionChange(
-                                                                    data.title
-                                                                )
-                                                            }>
-                                                            {data.title}
-                                                        </MenuItem>
-                                                    )
-                                                }
-                                            })}
-                                        </MenuList>
-                                    </Menu>
-                                </Box>
-
-                                {/** input */}
-                                <Box h='32px'>
-                                    {filterSearchOption === 'Registration' ||
-                                    filterSearchOption === 'Submission' ||
-                                    filterSearchOption === 'Status' ? (
-                                        <InputGroup
-                                            h='32px'
-                                            minW='300px'
-                                            pr=''
-                                            p='0'
-                                            pl='30px'
-                                            m='0'
-                                            className='input_group'>
-                                            <InputLeftElement
-                                                h='32px'
-                                                bg='transparent'
-                                                p='0'
-                                                m='0'>
-                                                <Button
-                                                    p='0'
-                                                    m='0'
-                                                    bg='transparent'
-                                                    h='100%'
-                                                    w='100%'
-                                                    borderRadius='0px'
-                                                    size='28px'>
-                                                    <BiSearch />
-                                                </Button>
-                                            </InputLeftElement>
-                                            {TableStatuses.length > 0 ? (
-                                                <Select
-                                                    placeholder='select status'
-                                                    onChange={
-                                                        handleSearchStatusChange
-                                                    }
-                                                    value={searchStatus}>
-                                                    {TableStatuses.map(
-                                                        (data, index) => {
-                                                            return (
-                                                                <option
-                                                                    key={index}>
-                                                                    {data.tagName.toLowerCase()}
-                                                                </option>
-                                                            )
-                                                        }
-                                                    )}
-                                                </Select>
-                                            ) : (
-                                                <Select placeholder='select status'></Select>
-                                            )}
-                                        </InputGroup>
-                                    ) : (
-                                        <InputGroup
-                                            h='32px'
-                                            minW='300px'
-                                            pr='0'
-                                            p='0'
-                                            m='0'
-                                            className='input_group'>
-                                            <InputLeftElement
-                                                h='32px'
-                                                p='0'
-                                                m='0'>
-                                                <Button
-                                                    p='0'
-                                                    m='0'
-                                                    bg='transparent'
-                                                    h='100%'
-                                                    w='100%'
-                                                    borderRadius='0px'
-                                                    size='28px'>
-                                                    <BiSearch />
-                                                </Button>
-                                            </InputLeftElement>
-                                            <Input
-                                                h='32px'
-                                                type='text'
-                                                placeholder='Search'
-                                                onChange={handleSearchInput}
-                                                value={searchWord}
-                                                style={{ textIndent: '5px' }}
-                                            />
-                                        </InputGroup>
-                                    )}
-                                </Box>
-
-                                <TableButton>
-                                    <Button
-                                        onClick={handleSubmitFilter}
-                                        disabled={
-                                            searchWord || searchStatus
-                                                ? false
-                                                : true
-                                        }
-                                        leftIcon={<AiOutlinePlus />}
-                                        className='btn__rule'>
-                                        Add Rule
-                                    </Button>
-                                </TableButton>
-                                <TableButton>
-                                    <Button
-                                        onClick={handleSearchActive}
-                                        disabled={
-                                            filterInfo.length > 0 ? false : true
-                                        }
-                                        className='btn__print'>
-                                        Search
-                                    </Button>
-                                </TableButton>
-                            </Stack>
-                            {/**
-
-                          <Box>
+                            <Box>
                                 <Button
+                                    onClick={() =>
+                                        handleSearchState('DefaultSearch')
+                                    }
+                                    className={`searchState_button ${
+                                        searchButtonState === 'DefaultSearch'
+                                            ? 'activeSearchBtn'
+                                            : ''
+                                    }`}
+                                    leftIcon={<BiSearch />}
+                                    colorScheme={'red'}
+                                    variant='solid'>
+                                    Default Search
+                                </Button>
+                            </Box>
+
+                            <Box>
+                                <Button
+                                    onClick={() =>
+                                        handleSearchState('AdvSearch')
+                                    }
+                                    className={`searchState_button ${
+                                        searchButtonState === 'AdvSearch'
+                                            ? 'activeSearchBtn'
+                                            : ''
+                                    }`}
+                                    leftIcon={<BiSearch />}
+                                    colorScheme={'red'}
+                                    variant='solid'>
+                                    Advanced Search
+                                </Button>
+                            </Box>
+                        </Stack>
+                        {/** filter inputs && button */}
+                        <Stack
+                            h='50px'
+                            direction='row'
+                            justifyContent='space-between'
+                            alignItems={'center'}>
+                            {/** filter inputs */}
+                            <Stack direction='column'>
+                                {/** advanced search */}
+                                {searchButtonState === 'AdvSearch' && (
+                                    <AdvStudentSearh
+                                        filterSearchOption={filterSearchOption}
+                                        filterItems={filterItems}
+                                        handleSearchStatusChange={
+                                            handleSearchStatusChange
+                                        }
+                                        handleSearchOptionChange={
+                                            handleSearchOptionChange
+                                        }
+                                        handleSearchInput={handleSearchInput}
+                                        searchWord={searchWord}
+                                        handleSubmitFilter={handleSubmitFilter}
+                                        searchStatus={searchStatus}
+                                        handleSearchActive={handleSearchActive}
+                                        filterInfo={filterInfo}
+                                        checkboxesFilter={checkboxesFilter}
+                                        TableStatuses={TableStatuses}
+                                    />
+                                )}
+
+                                {searchButtonState === 'DefaultSearch' && (
+                                    <OrdStudentSearch
+                                        filterSearchOption={filterSearchOption}
+                                        filterItems={filterItems}
+                                        handleSearchStatusChange={
+                                            handleSearchStatusChange
+                                        }
+                                        handleSearchOptionChange={
+                                            handleSearchOptionChange
+                                        }
+                                        handleSearchInput={handleSearchInput}
+                                        searchWord={searchWord}
+                                        handleSubmitFilter={handleSubmitFilter}
+                                        searchStatus={searchStatus}
+                                        handleSearchActive={handleSearchActive}
+                                        filterInfo={filterInfo}
+                                        checkboxesFilter={checkboxesFilter}
+                                        TableStatuses={TableStatuses}
+                                    />
+                                )}
+                            </Stack>
+
+                            {/**  button */}
+                            <Box>
+                                <Button
+                                    onClick={() =>
+                                        routeNavigate(
+                                            '/masters/projects/create'
+                                        )
+                                    }
                                     className='add_button'
                                     leftIcon={<AiOutlinePlus />}
                                     colorScheme='red'
                                     variant='solid'>
-                                    Create report
+                                    New Student
                                 </Button>
                             </Box>
-                        
-                        
-                        */}
                         </Stack>
-
-                        {/**  button */}
-                        <Box>
-                            <Button
-                                onClick={() =>
-                                    routeNavigate('/masters/projects/create')
-                                }
-                                className='add_button'
-                                leftIcon={<AiOutlinePlus />}
-                                colorScheme='red'
-                                variant='solid'>
-                                New Student
-                            </Button>
-                        </Box>
                     </Stack>
 
                     <Stack direction='column' spacing='28px'>
@@ -750,6 +816,8 @@ const AllMastersProjects = () => {
                                 allTagData={tagsData.allTagItems.items}
                                 studentType={'masters'}
                                 rpath={'/masters/projects'}
+                                searchButtonState={searchButtonState}
+                                searchWord={searchWord}
                             />
                         </Box>
                     </Stack>
@@ -778,6 +846,22 @@ const Container = styled(Stack)`
         font-weight: 500;
         letter-spacing: 0.02em;
         font-size: 14px;
+    }
+
+    .searchState_button {
+        height: 32px;
+        color: #ffffff;
+        background: #edafb2;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px #edafb2;
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        font-size: 14px;
+    }
+
+    .activeSearchBtn {
+        background: #9c3439;
     }
 
     .subfilter_button {

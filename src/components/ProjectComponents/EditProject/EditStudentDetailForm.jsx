@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { Box, Stack, Input, Select } from '@chakra-ui/react'
-import { allSchools, reset } from '../../../store/features/schools/schoolSlice'
+import { reset } from '../../../store/features/schools/schoolSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
 const PhdDegreePrograms = [
@@ -92,11 +92,11 @@ const MaDegreePrograms = [
     },
     { title: 'Master of Arts in Rural Development' },
     { title: 'Master of Arts in Social Work' },
-    { title: 'Master ofArts in Defense and Security Studies' },
+    { title: 'Master of Arts in Defense and Security Studies' },
     { title: 'Master of Arts in Security and Strategy' },
     { title: 'Master of Education in Educational Psychology' },
     { title: 'Master of Arts in Organizational Psychology' },
-    { title: 'Master of Arts in Counselling' },
+    { title: 'Master of Arts in Counselling Psychology' },
     { title: 'Master of Science in Clinical Psychology' },
     { title: 'Master of Arts in Social Sector Planning and Management' },
 ]
@@ -112,7 +112,7 @@ const EditStudentDetailForm = ({
     const [allDegreeProgram, setAllDegreeProgram] = React.useState([])
     let dispatch = useDispatch()
     useEffect(() => {
-        dispatch(allSchools())
+        // dispatch(allSchools())
     }, [dispatch])
 
     let { allSchoolItems, isError, message, isSuccess } = useSelector(

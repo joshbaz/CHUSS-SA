@@ -34,6 +34,15 @@ import {
 } from '../../../../store/features/project/projectSlice'
 import DoctoralTable from '../../../../components/ProjectComponents/AssignDoctoralMembers/DoctoralTable'
 
+import { reset as areset } from '../../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../../components/common/CustomToastFunctions/ToastFunctions'
+
 const AssignDoctoralMember = () => {
     const [filterSearchOption, setFilterSearchOption] = React.useState('All')
     const [searchWord, setSearchWord] = React.useState('')
@@ -68,7 +77,7 @@ const AssignDoctoralMember = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     let dispatch = useDispatch()
     let params = useParams()
-    let toast = useToast()
+
     let { allDCMemberItems, isSuccess, isError, message } = useSelector(
         (state) => state.doctoralMembers
     )
@@ -141,13 +150,55 @@ const AssignDoctoralMember = () => {
     useEffect(() => {
         if (params.pid) {
             setProjectId(params.pid)
-            dispatch(getIndividualProject(params.pid))
-        }
-    }, [])
 
-    useEffect(() => {
-        dispatch(allDCMembers())
-    }, [])
+            toast.dismiss()
+            toast.promise(
+                dispatch(allDCMembers())
+                    .then((res) => {
+                        //console.log('res', res)
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return dispatch(getIndividualProject(params.pid))
+                        }
+                    })
+                    .then((res) => {
+                        if (res.meta.requestStatus === 'rejected') {
+                            let responseCheck = errorHandler(res)
+                            throw new Error(responseCheck)
+                        } else {
+                            return res.payload.message
+                        }
+                    }),
+                {
+                    loading: 'Retrieving Information',
+                    success: (data) => `Successfully retrieved`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
+        }
+    }, [params.pid])
 
     /** set all the display Data */
     useEffect(() => {
@@ -181,25 +232,12 @@ const AssignDoctoralMember = () => {
 
     useEffect(() => {
         if (isError && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && message && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setSelectedExaminers([])
             setIsSubmittingp(false)
 
@@ -207,9 +245,11 @@ const AssignDoctoralMember = () => {
             routeNavigate(`/phd/projects/projectreport/${params.pid}`, {
                 replace: true,
             })
+            dispatch(areset())
             dispatch(reset())
         }
 
+        dispatch(areset())
         dispatch(reset())
     }, [isSuccess, isError, message])
 
@@ -220,7 +260,43 @@ const AssignDoctoralMember = () => {
             items: selectedExaminers,
             projectId,
         }
-        dispatch(assignDCMember(allValues))
+
+        toast.dismiss()
+        toast.promise(
+            dispatch(assignDCMember(allValues)).then((res) => {
+                if (res.meta.requestStatus === 'rejected') {
+                    let responseCheck = errorHandler(res)
+                    throw new Error(responseCheck)
+                } else {
+                    return res.payload.message
+                }
+            }),
+            {
+                loading: 'assigning DC Member to this student',
+                success: (data) => `${data}`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }
 
     /** function to handle search dc members */
@@ -461,7 +537,7 @@ const AssignDoctoralMember = () => {
                                                 )
                                             )}
                                         </span>
-                                        for this project.
+                                        as DC Member for this student.
                                     </p>
                                 </Stack>
                             </Stack>

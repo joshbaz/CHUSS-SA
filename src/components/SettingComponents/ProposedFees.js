@@ -10,7 +10,6 @@ import {
     ModalOverlay,
     ModalContent,
     ModalBody,
-    useToast,
 } from '@chakra-ui/react'
 import { HiPencil } from 'react-icons/hi'
 import { ImBin2 } from 'react-icons/im'
@@ -26,6 +25,15 @@ import {
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 
+import { reset as areset } from '../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../components/common/CustomToastFunctions/ToastFunctions'
+
 const ProposedFees = ({ handleChange, programData }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -35,7 +43,6 @@ const ProposedFees = ({ handleChange, programData }) => {
     const [editActive, setEditActive] = React.useState(false)
     const [editDetails, setEditDetails] = React.useState(null)
     let dispatch = useDispatch()
-    let toast = useToast()
 
     const validationSchema = yup.object().shape({
         programName: yup.string().required('Program Name  required'),
@@ -50,27 +57,15 @@ const ProposedFees = ({ handleChange, programData }) => {
             if (helperFunctions !== null) {
                 helperFunctions.setSubmitting(false)
             }
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
+
             setIsSubmittingp(false)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess) {
             if (helperFunctions !== null) {
-                toast({
-                    position: 'top',
-                    title: message.message,
-                    status: 'success',
-                    duration: 10000,
-                    isClosable: true,
-                })
                 helperFunctions.resetForm()
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
@@ -79,6 +74,7 @@ const ProposedFees = ({ handleChange, programData }) => {
                 onClose()
                 setHelperFunctions(null)
             }
+            dispatch(areset())
             dispatch(reset())
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -192,7 +188,67 @@ const ProposedFees = ({ handleChange, programData }) => {
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
-                                dispatch(programTypeCreate(values))
+
+                                toast.dismiss()
+                                toast.promise(
+                                    dispatch(programTypeCreate(values)).then(
+                                        (res) => {
+                                            if (
+                                                res.meta.requestStatus ===
+                                                'rejected'
+                                            ) {
+                                                let responseCheck =
+                                                    errorHandler(res)
+                                                throw new Error(responseCheck)
+                                            } else {
+                                                return res.payload.message
+                                            }
+                                        }
+                                    ),
+                                    {
+                                        loading: 'creating program type',
+                                        success: (data) => `${data}`,
+                                        error: (err) => {
+                                            if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Check your internet connection'
+                                                    )
+                                            ) {
+                                                return 'Check Internet Connection'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication required'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Not Authenticated'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication expired'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Authentication Expired'
+                                            } else {
+                                                return `${err}`
+                                            }
+                                        },
+                                    }
+                                )
                             }}>
                             {({
                                 values,
@@ -311,7 +367,66 @@ const ProposedFees = ({ handleChange, programData }) => {
                                 setHelperFunctions(helpers)
                                 setIsSubmittingp(true)
 
-                                dispatch(programTypeUpdate(values))
+                                toast.dismiss()
+                                toast.promise(
+                                    dispatch(programTypeUpdate(values)).then(
+                                        (res) => {
+                                            if (
+                                                res.meta.requestStatus ===
+                                                'rejected'
+                                            ) {
+                                                let responseCheck =
+                                                    errorHandler(res)
+                                                throw new Error(responseCheck)
+                                            } else {
+                                                return res.payload.message
+                                            }
+                                        }
+                                    ),
+                                    {
+                                        loading: 'updating program type',
+                                        success: (data) => `${data}`,
+                                        error: (err) => {
+                                            if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Check your internet connection'
+                                                    )
+                                            ) {
+                                                return 'Check Internet Connection'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication required'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Not Authenticated'
+                                            } else if (
+                                                err
+                                                    .toString()
+                                                    .includes(
+                                                        'Authentication expired'
+                                                    )
+                                            ) {
+                                                setTimeout(
+                                                    () =>
+                                                        handleLogout(dispatch),
+                                                    3000
+                                                )
+                                                return 'Authentication Expired'
+                                            } else {
+                                                return `${err}`
+                                            }
+                                        },
+                                    }
+                                )
                             }}>
                             {({
                                 values,

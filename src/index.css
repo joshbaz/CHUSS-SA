@@ -41,11 +41,12 @@ code {
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(10, 59, 28, 0.4);
+    background: rgba(10, 59, 28, 0.2);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(253, 197, 78, 0.8);
+    /* background: rgba(253, 197, 78, 0.8); */
+    background: #888;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -83,7 +84,7 @@ code {
 ::-webkit-scrollbar-button:horizontal:start:decrement {
     background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/7e/Chevron-up.svg');
     background-repeat: no-repeat;
-   
+    display: none;
 }
 
 ::-webkit-scrollbar-button:horizontal:end:decrement {
@@ -92,6 +93,7 @@ code {
 
 ::-webkit-scrollbar-button:horizontal:end:increment {
     background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/7e/Chevron-up.svg');
+    display: none;
 }
 
 ::-webkit-scrollbar-button:horizontal:start:increment {

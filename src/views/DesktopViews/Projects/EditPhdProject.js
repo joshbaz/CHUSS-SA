@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
-import { Box, Stack, Text, useToast, Button } from '@chakra-ui/react'
+import { Box, Stack, Text, Button } from '@chakra-ui/react'
 import styled from 'styled-components'
 import Navigation from '../../../components/common/Navigation/Navigation'
 import TopBar from '../../../components/common/Navigation/TopBar'
@@ -25,6 +25,15 @@ import { useSelector, useDispatch } from 'react-redux'
 import { dashboardLightTheme } from '../../../theme/dashboard_theme'
 // import EditUploadThesis from '../../../components/ProjectComponents/EditProject/EditUploadThesis'
 // import EditRegistrationForm from '../../../components/ProjectComponents/EditProject/EditRegistrationForm'
+
+import { reset as areset } from '../../../store/features/auth/authSlice'
+
+import toast from 'react-hot-toast'
+/** handle error response and logout */
+import {
+    errorHandler,
+    handleLogout,
+} from '../../../components/common/CustomToastFunctions/ToastFunctions'
 const { backgroundMainColor, textLightColor, backgroundRadius } =
     dashboardLightTheme
 
@@ -40,10 +49,59 @@ const EditPhdProject = (props) => {
 
     React.useEffect(() => {
         let id = params.id
-
-        dispatch(getIndividualProject(id))
-        dispatch(programTypeGetAll())
-        dispatch(academicYearGetAll())
+        toast.dismiss()
+        toast.promise(
+            dispatch(academicYearGetAll())
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(programTypeGetAll())
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return dispatch(getIndividualProject(id))
+                    }
+                })
+                .then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+            {
+                loading: 'Retrieving Information',
+                success: (data) => `Successfully retrieved`,
+                error: (err) => {
+                    if (
+                        err
+                            .toString()
+                            .includes('Check your internet connection')
+                    ) {
+                        return 'Check Internet Connection'
+                    } else if (
+                        err.toString().includes('Authentication required')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Not Authenticated'
+                    } else if (
+                        err.toString().includes('Authentication expired')
+                    ) {
+                        setTimeout(() => handleLogout(dispatch), 3000)
+                        return 'Authentication Expired'
+                    } else {
+                        return `${err}`
+                    }
+                },
+            }
+        )
     }, [params.id, dispatch])
 
     let { individual, isSuccess, isError, message } = useSelector(
@@ -51,46 +109,36 @@ const EditPhdProject = (props) => {
     )
     const preferencesData = useSelector((state) => state.preference)
 
-    let toast = useToast()
-
     React.useEffect(() => {
         if (isError) {
-            toast({
-                position: 'top',
-                title: message,
-                status: 'error',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(() => false)
             setChnageMade(false)
 
             dispatch(reset())
+            dispatch(areset())
         }
 
         if (isSuccess && isSubmittingp) {
-            toast({
-                position: 'top',
-                title: message.message,
-                status: 'success',
-                duration: 10000,
-                isClosable: true,
-            })
             setIsSubmittingp(false)
             setChnageMade(false)
             dispatch(reset())
+            dispatch(areset())
         }
         dispatch(reset())
+        dispatch(areset())
     }, [isError, isSuccess, message, dispatch])
 
     React.useEffect(() => {
         if (preferencesData.isError) {
+            dispatch(areset())
             dispatch(preset())
         }
 
         if (preferencesData.isSuccess) {
+            dispatch(areset())
             dispatch(preset())
         }
+        dispatch(areset())
         dispatch(preset())
     }, [
         preferencesData.isError,
@@ -255,7 +303,42 @@ const EditPhdProject = (props) => {
 
     React.useEffect(() => {
         if (Object.keys(errors).length === 0 && isSubmittingp && changeMade) {
-            dispatch(projectUpdate(initials))
+            toast.dismiss()
+            toast.promise(
+                dispatch(projectUpdate(initials)).then((res) => {
+                    if (res.meta.requestStatus === 'rejected') {
+                        let responseCheck = errorHandler(res)
+                        throw new Error(responseCheck)
+                    } else {
+                        return res.payload.message
+                    }
+                }),
+                {
+                    loading: 'upadating student information',
+                    success: (data) => `${data}`,
+                    error: (err) => {
+                        if (
+                            err
+                                .toString()
+                                .includes('Check your internet connection')
+                        ) {
+                            return 'Check Internet Connection'
+                        } else if (
+                            err.toString().includes('Authentication required')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Not Authenticated'
+                        } else if (
+                            err.toString().includes('Authentication expired')
+                        ) {
+                            setTimeout(() => handleLogout(dispatch), 3000)
+                            return 'Authentication Expired'
+                        } else {
+                            return `${err}`
+                        }
+                    },
+                }
+            )
         } else if (
             Object.keys(errors).length > 0 &&
             isSubmittingp &&
